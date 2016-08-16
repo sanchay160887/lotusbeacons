@@ -152,4 +152,4 @@ io.on('connection', function(socket) {
     //setInterval(sendDevices, 5000);
 });
 
-app.listen(3000);
+app.listen(5200);
