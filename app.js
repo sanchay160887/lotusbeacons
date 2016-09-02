@@ -206,7 +206,6 @@ app.post('/sendpushnotification', function(req, res) {
         contentAvailable: true,
         delayWhileIdle: true,
         timeToLive: 3,
-        restrictedPackageName: "lotusbeacon",
         dryRun: true,
         data: {
             key1: 'message1',
@@ -231,28 +230,55 @@ app.post('/sendpushnotification', function(req, res) {
     });*/
      
     // Set up the sender with you API key 
-    var sender = new gcm.Sender(GcmGoogleKey);
+    var sender = new gcm.Sender('AIzaSyDgiPkvvRJHS6exrEz-kAeT1DRky5QJxA0');
      
     // Add the registration tokens of the devices you want to send to 
     var registrationTokens = [];
-    registrationTokens.push('APA91bGiy3M07dBALUK8yrAOb7_QjQ8o7n3Ax4fj0tHZaQgu-X9O4kNlz-DnLwWM_wmU3u3WzjLf61qhQD4ok2yvNCvEXY9icj8lfQRWOcFrIjp8_HleS3I');
+    registrationTokens.push('APA91bHfjWbBeP7n9ICfz8dp0YNHRCTWPgv71f-VWs7ZE0ytvc-q0czunAIrjWQCAtScBGufkoB-0hZUkw4MBZHPJ4mz57gE4wpfj56eKStbxZYi82l4vww');
      
     // Send the message 
     // ... trying only once 
-    sender.sendNoRetry(message, { registrationTokens: registrationTokens }, function(err, response) {
+    /*sender.sendNoRetry(message, { registrationTokens: registrationTokens }, function(err, response) {
       if(err) console.error(err);
       else    console.log(response);
-    });
+    });*/
      
-    /*// ... or retrying 
+    // ... or retrying 
     sender.send(message, { registrationTokens: registrationTokens }, function (err, response) {
       if(err) console.error(err);
       else    console.log(response);
     });
      
-    // ... or retrying a specific number of times (10) 
+    /*// ... or retrying a specific number of times (10) 
     sender.send(message, { registrationTokens: registrationTokens }, 10, function (err, response) {
       if(err) console.error(err);
       else    console.log(response);
     });*/
 });
+
+app.post('/sendpushnotification2', function(req, res) {
+
+    var gcm = require('node-gcm');
+     
+    var message = new gcm.Message({
+        data: { key1: 'msg1' },
+        //restrictedPackageName: "lotusbeacon",
+        notification: {
+            title: "Hello, World",
+            icon: "ic_launcher",
+            body: "This is a notification that will be displayed ASAP."
+        }
+    });
+     
+    // Set up the sender with you API key, prepare your recipients' registration tokens. 
+    var sender = new gcm.Sender('AIzaSyDgiPkvvRJHS6exrEz-kAeT1DRky5QJxA0');
+    var regTokens = ['APA91bHfjWbBeP7n9ICfz8dp0YNHRCTWPgv71f-VWs7ZE0ytvc-q0czunAIrjWQCAtScBGufkoB-0hZUkw4MBZHPJ4mz57gE4wpfj56eKStbxZYi82l4vww'];
+     
+    sender.send(message, { registrationTokens: regTokens }, function (err, response) {
+        if(err) console.error(err);
+        else    console.log(response);
+    });
+
+});
+
+4012888888881881
