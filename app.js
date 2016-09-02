@@ -207,7 +207,7 @@ app.post('/sendpushnotification', function(req, res) {
             body: "This is a notification that will be displayed ASAP."
         }
     });
-     
+    console.log('Shooting push notifications');
     // Set up the sender with you API key, prepare your recipients' registration tokens. 
     var sender = new gcm.Sender();
     var regTokens = ['APA91bGiy3M07dBALUK8yrAOb7_QjQ8o7n3Ax4fj0tHZaQgu-X9O4kNlz-DnLwWM_wmU3u3WzjLf61qhQD4ok2yvNCvEXY9icj8lfQRWOcFrIjp8_HleS3I'];
