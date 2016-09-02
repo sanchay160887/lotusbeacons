@@ -79,11 +79,11 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
     };
 
     var deviceData = function(data){
-        return $http.post('http://localhost:3000/getdata', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
+        return $http.post('http://lotusbeacon.herokuapp.com/getdata', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
     }
 
     var sendNotification = function(){
-        return $http.post('http://localhost:3000/sendpushnotification', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
+        return $http.post('http://lotusbeacon.herokuapp.com/sendpushnotification', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
     }
 
 
