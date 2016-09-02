@@ -10,7 +10,11 @@ var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var async = require('async');
 var gcm = require('node-gcm');
-var GcmGoogleKey = 'AIzaSyAjC3iT71YD0dH2vqVJaTTi8dAXadB7gPs';
+//var GcmGoogleKey = 'AIzaSyAjC3iT71YD0dH2vqVJaTTi8dAXadB7gPs';
+var GcmGoogleKey = 'AIzaSyC-ibT7-VAq1oSr9xlCEdQfoO4PDHJvxEk';
+//var GcmGoogleKey = '606777369662-9q1pei75kesr2078upgdhgg6ak9afqei.apps.googleusercontent.com';
+//var GcmGoogleKey = 'okA-H3HzwbOSS_ZeKRPA5w1T';
+
 
 var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon';
 MongoClient.connect(mongourl, function(err, db) {
@@ -189,13 +193,20 @@ app.post('/getdata', function(req, res) {
 
 app.post('/sendpushnotification', function(req, res) {
     
+    var gcm = require('node-gcm');
+ 
+    // Create a message 
+    // ... with default values 
+    var message = new gcm.Message();
+     
+    // ... or some given values 
     var message = new gcm.Message({
         collapseKey: 'demo',
         priority: 'high',
         contentAvailable: true,
         delayWhileIdle: true,
         timeToLive: 3,
-        restrictedPackageName: "Lotus_beacon",
+        restrictedPackageName: "lotusbeacon",
         dryRun: true,
         data: {
             key1: 'message1',
@@ -203,17 +214,45 @@ app.post('/sendpushnotification', function(req, res) {
         },
         notification: {
             title: "Hello, World",
-            icon: "",
+            icon: "ic_launcher",
             body: "This is a notification that will be displayed ASAP."
         }
     });
-    console.log('Shooting push notifications');
-    // Set up the sender with you API key, prepare your recipients' registration tokens. 
-    var sender = new gcm.Sender();
-    var regTokens = ['APA91bGiy3M07dBALUK8yrAOb7_QjQ8o7n3Ax4fj0tHZaQgu-X9O4kNlz-DnLwWM_wmU3u3WzjLf61qhQD4ok2yvNCvEXY9icj8lfQRWOcFrIjp8_HleS3I'];
      
-    sender.send(message, { registrationTokens: regTokens }, function (err, response) {
-        if(err) console.error(err);
-        else    console.log(response);
+    /*// Change the message data 
+    // ... as key-value 
+    message.addData('key1','message1');
+    message.addData('key2','message2');
+     
+    // ... or as a data object (overwrites previous data object) 
+    message.addData({
+        key1: 'message1',
+        key2: 'message2'
+    });*/
+     
+    // Set up the sender with you API key 
+    var sender = new gcm.Sender(GcmGoogleKey);
+     
+    // Add the registration tokens of the devices you want to send to 
+    var registrationTokens = [];
+    registrationTokens.push('APA91bGiy3M07dBALUK8yrAOb7_QjQ8o7n3Ax4fj0tHZaQgu-X9O4kNlz-DnLwWM_wmU3u3WzjLf61qhQD4ok2yvNCvEXY9icj8lfQRWOcFrIjp8_HleS3I');
+     
+    // Send the message 
+    // ... trying only once 
+    sender.sendNoRetry(message, { registrationTokens: registrationTokens }, function(err, response) {
+      if(err) console.error(err);
+      else    console.log(response);
     });
+     
+    /*// ... or retrying 
+    sender.send(message, { registrationTokens: registrationTokens }, function (err, response) {
+      if(err) console.error(err);
+      else    console.log(response);
+    });
+     
+    // ... or retrying a specific number of times (10) 
+    sender.send(message, { registrationTokens: registrationTokens }, 10, function (err, response) {
+      if(err) console.error(err);
+      else    console.log(response);
+    });*/
 });
