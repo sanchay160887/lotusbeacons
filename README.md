@@ -1,1 +1,1 @@
-# lotusbeacons
+# lotus-beacons
