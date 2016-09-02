@@ -1,7 +1,7 @@
 // Getting help from this url
 //http://www.html5rocks.com/en/tutorials/frameworks/angular-websockets/
 //
-/*dashboard.factory('socket', function ($rootScope) {
+dashboard.factory('socket', function ($rootScope) {
   var socket = io.connect();
   return {
     on: function (eventName, callback) {
@@ -23,9 +23,9 @@
       })
     }
   };
-});*/
+});
 
-dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiService) { //, socket
+dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiService, socket) { //
 	var vm = this;
 	apiService.deviceData().then(function(res){
 		$scope.deviceData = res.data;
@@ -37,9 +37,9 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
       console.log(res);
     });
   }
-  $scope.sendNotification();
+  //$scope.sendNotification();
 
-	/*socket.on('showDevices', function(devicelist){
+	socket.on('showDevices', function(devicelist){
 		$scope.deviceData = devicelist;
   });
 
@@ -47,5 +47,5 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
       BeaconID : '1001',
       DeviceID : 'D1001',
       Distance : '1200'
-  });*/
+  });
 })

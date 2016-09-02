@@ -49,7 +49,7 @@ io.on('receiveTime', function(data) {
 })
 
 // Emit welcome message on connection
-/*io.on('connection', function(socket) {
+io.on('connection', function(socket) {
     // Use socket to communicate with this particular client only, sending it it's own id
     socket.emit('welcome', {
         message: 'Welcome!',
@@ -63,7 +63,7 @@ io.on('receiveTime', function(data) {
 
     socket.on('updateDevice', function(data) {
         if (!(data.BeaconID && data.DeviceID && data.Distance)) {
-            //console.log('Invalid data passing');
+            console.log('Invalid data passing');
             io.emit('updateDevice_response', {
                 'IsSuccess': false,
                 'message': 'Invalid data passing'
@@ -127,7 +127,7 @@ io.on('receiveTime', function(data) {
     }
     //sendDevices();
     //setInterval(sendDevices, 5000);
-});*/
+});
 
 app.listen(process.env.PORT || 3000, function() {
     console.log("App started with Mongodb");
@@ -191,9 +191,11 @@ app.post('/getdata', function(req, res) {
     });
 });
 
-app.post('/sendpushnotification', function(req, res) {
+app.post('/sendpushnotification1', function(req, res) {
     
     var gcm = require('node-gcm');
+
+    console.log('coming for shooting push notification');
  
     // Create a message 
     // ... with default values 
@@ -234,7 +236,7 @@ app.post('/sendpushnotification', function(req, res) {
      
     // Add the registration tokens of the devices you want to send to 
     var registrationTokens = [];
-    registrationTokens.push('APA91bHfjWbBeP7n9ICfz8dp0YNHRCTWPgv71f-VWs7ZE0ytvc-q0czunAIrjWQCAtScBGufkoB-0hZUkw4MBZHPJ4mz57gE4wpfj56eKStbxZYi82l4vww');
+    registrationTokens.push('APA91bGLJ9FIw86o8Ecbv0o0mGv4lSfM7wrTztz-geHVcEdtjeoSY0s15oAvPLIJpfoEdF81QVWpHoap601YNrfCYAsSSoDp1pJgNsGA01HZX5119GU2Big');
      
     // Send the message 
     // ... trying only once 
@@ -260,19 +262,21 @@ app.post('/sendpushnotification2', function(req, res) {
 
     var gcm = require('node-gcm');
      
-    var message = new gcm.Message({
-        data: { key1: 'msg1' },
-        //restrictedPackageName: "lotusbeacon",
-        notification: {
-            title: "Hello, World",
-            icon: "ic_launcher",
-            body: "This is a notification that will be displayed ASAP."
-        }
-    });
+    var message = new gcm.Message();
+
+    message.addData('title','Hello, World');
+    message.addData('icon','ic_launcher');
+    message.addData('body','This is a notification that will be displayed ASAP.');
+
+    message.addNotification('title', 'Alert!!!');
+    message.addNotification('body', 'Abnormal data access');
+    message.addNotification('icon', 'ic_launcher');
+    message.addNotification('message', 'Testing');
+    
      
     // Set up the sender with you API key, prepare your recipients' registration tokens. 
     var sender = new gcm.Sender('AIzaSyDgiPkvvRJHS6exrEz-kAeT1DRky5QJxA0');
-    var regTokens = ['APA91bHfjWbBeP7n9ICfz8dp0YNHRCTWPgv71f-VWs7ZE0ytvc-q0czunAIrjWQCAtScBGufkoB-0hZUkw4MBZHPJ4mz57gE4wpfj56eKStbxZYi82l4vww'];
+    var regTokens = ['APA91bGLJ9FIw86o8Ecbv0o0mGv4lSfM7wrTztz-geHVcEdtjeoSY0s15oAvPLIJpfoEdF81QVWpHoap601YNrfCYAsSSoDp1pJgNsGA01HZX5119GU2Big'];
      
     sender.send(message, { registrationTokens: regTokens }, function (err, response) {
         if(err) console.error(err);
@@ -281,4 +285,39 @@ app.post('/sendpushnotification2', function(req, res) {
 
 });
 
-4012888888881881
+app.post('/sendpushnotification3', function(req, res) {
+    var sender = new gcm.Sender('AIzaSyDgiPkvvRJHS6exrEz-kAeT1DRky5QJxA0');
+    var message = new gcm.Message();
+    message.addData('key1','testdarinodegcm');
+    message.addData('message','testdarinodegcm');
+    message.delay_while_idle = 1;
+    var registrationIds = [];
+    registrationIds.push('APA91bGLJ9FIw86o8Ecbv0o0mGv4lSfM7wrTztz-geHVcEdtjeoSY0s15oAvPLIJpfoEdF81QVWpHoap601YNrfCYAsSSoDp1pJgNsGA01HZX5119GU2Big');
+    sender.send(message, registrationIds, 4, function (err, result) {
+        console.log(result);
+    });
+});
+
+
+app.post('/sendpushnotification4', function(req, res) {
+    var GCM = require('gcm').GCM;
+
+    var apiKey = '';
+    var gcm = new GCM('AIzaSyDgiPkvvRJHS6exrEz-kAeT1DRky5QJxA0');
+
+    var message = {
+        registration_id: 'APA91bGLJ9FIw86o8Ecbv0o0mGv4lSfM7wrTztz-geHVcEdtjeoSY0s15oAvPLIJpfoEdF81QVWpHoap601YNrfCYAsSSoDp1pJgNsGA01HZX5119GU2Big', // required
+        collapse_key: 'demo', 
+        'data.title': 'Alert!!!',
+        'data.body': 'Abnormal data access',
+        'data.icon' : 'ic_launcher'
+    };
+
+    gcm.send(message, function(err, messageId){
+        if (err) {
+            console.log("Something has gone wrong!");
+        } else {
+            console.log("Sent with message ID: ", messageId);
+        }
+    });
+});
