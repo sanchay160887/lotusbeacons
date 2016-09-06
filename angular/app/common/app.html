@@ -52,24 +52,19 @@
                     <!-- User Account: style can be found in dropdown.less -->
                     <li class="dropdown user user-menu">
                         <a class="dropdown-toggle" data-toggle="dropdown">
-                            <img src="../../images/ranjith.png" class="user-image" alt="User Image" />
-                            <span class="hidden-xs">Ranjithprabhu</span>
+                            <img src="../../images/default.png" class="user-image" alt="User Image" />
+                            <span class="hidden-xs">Administrator</span>
                         </a>
                         <ul class="dropdown-menu">
                             <!-- User image -->
                             <li class="user-header">
-                                <img src="../../images/ranjith.png" class="img-circle" alt="User Image">
-                                
-                                    <h3>Ranjithprabhu. K</h3>
-                                <p class="text-center">
-                                    Software Engineer
-                                     <small>Playing in Web - since 2010</small>
-                                 </p>
+                                <img src="../../images/default.png" class="img-circle" alt="User Image">
+                                    <h3>Administrator</h3>
                             </li>
                             <!-- Menu Footer-->
                             <li class="user-footer">
                                 <div class="pull-left">
-                                    <a ui-sref="app.about" class="btn btn-success btn-flat">About Me</a>
+                                    <a ui-sref="app.about" class="btn btn-success btn-flat">About Beacon</a>
                                 </div>
                                 <div class="pull-right">
                                     <a ui-sref="login" class="btn btn-danger btn-flat">Log Out</a>
@@ -85,35 +80,10 @@
     <aside class="main-sidebar">
         <!-- sidebar -->
         <section class="sidebar">
-            <!-- Sidebar user panel -->
-            <div class="user-panel">
-                <div class="pull-left image">
-                    <img src="../../images/ranjith.png" class="img-circle" alt="User Image">
-                </div>
-                <div class="pull-left info">
-                    <p>Ranjithprabhu. K</p>
-                    <span class="text-aqua text-sm">Software Engineer</span>
-                </div>
-            </div>
-            <!-- search form -->
-            <form action="#" method="get" class="sidebar-form">
-                <div class="input-group">
-                    <input type="text" name="q" class="form-control" placeholder="Search...">
-                    <span class="input-group-btn">
-                        <button type="button" name="search" id="search-btn" class="btn btn-flat" data-ng-click="vm.search();"><i class=" fa fa-search"></i></button>
-                    </span>
-                </div>
-            </form>
-            <!-- /.search form -->
             <ul class="sidebar-menu">
                 <li class="treeview" ui-sref-active="active" ng-click="vm.sideBar();" data-ng-repeat="menu in vm.menuItems">
                     <a ui-sref="app.{{menu.state}}">
                         <i class="fa fa-{{menu.icon}}"></i> <span>{{menu.title}}</span>
-                    </a>
-                </li>
-                <li class="treeview" ui-sref-active="active" ng-click="vm.sideBar();">
-                    <a href="https://github.com/ranjithprabhuk/Angular-Bootstrap-Dashboard" target="_blank">
-                        <i class="fa fa-github"></i> <span>View in Github</span>
                     </a>
                 </li>
             </ul>

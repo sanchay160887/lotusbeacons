@@ -117,44 +117,9 @@ function ($rootScope, $scope, $state, $location, Flash,appSettings) {
             state: "dashboard"
         },
         {
-            title: "Skills",
+            title: "Devices",
             icon: "gears",
-            state: "skills"
-        },
-        {
-            title: "Education",
-            icon: "graduation-cap",
-            state: "education"
-        },
-        {
-            title: "Experience",
-            icon: "suitcase",
-            state: "experience"
-        },
-        {
-            title: "Recent Projects",
-            icon: "file-code-o",
-            state: "recent"
-        },
-        {
-            title: "Websites",
-            icon: "globe",
-            state: "websites"
-        },
-        {
-            title: "Portfolio",
-            icon: "anchor",
-            state: "portfolio"
-        },
-        {
-            title: "About Me",
-            icon: "user-secret",
-            state: "about"
-        },
-        {
-            title: "Contact",
-            icon: "phone",
-            state: "contact"
+            state: "devices"
         }
     ];
 

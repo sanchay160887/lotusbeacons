@@ -146,13 +146,23 @@ dashboard.config(["$stateProvider", function ($stateProvider) {
         }
     });
 
-    $stateProvider.state('app.devicedata', {
+    /*$stateProvider.state('app.devicedata', {
         url: '/devicedata',
         templateUrl: 'app/modules/dashboard/views/devicedata.html',
         controller: 'DeviceDataController',
         controllerAs: 'vm',
         data: {
             pageTitle: 'Device Data'
+        }
+    });*/
+
+    $stateProvider.state('app.devices', {
+        url: '/devicedata',
+        templateUrl: 'app/modules/dashboard/views/devicedata.html',
+        controller: 'DeviceDataController',
+        controllerAs: 'vm',
+        data: {
+            pageTitle: 'Devices List'
         }
     });
 

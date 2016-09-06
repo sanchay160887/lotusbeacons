@@ -15,8 +15,8 @@ function ($rootScope, $scope, $state, $location, dashboardService, Flash) {
     vm.showDetails = true;
     vm.home = {};
     
-    vm.home.mainData = [
-        {
+    vm.home.mainData = [];
+        /*{
             title: "Projects",
             value: "30+",
             theme: "aqua",
@@ -40,7 +40,7 @@ function ($rootScope, $scope, $state, $location, dashboardService, Flash) {
             theme: "yellow",
             icon: "glass"
         },
-    ];
+    ];*/
 
     //skills progress bar
     vm.home.skills = [

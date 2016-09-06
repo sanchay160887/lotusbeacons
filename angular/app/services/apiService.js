@@ -78,8 +78,8 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
         return deferred.promise;
     };
 
-    var base_url = 'http://lotusbeacon.herokuapp.com/';
-    //var base_url = 'http://localhost:3000/';
+    //var base_url = 'http://lotusbeacon.herokuapp.com/';
+    var base_url = 'http://localhost:3000/';
 
     console.log(apiBase);
 
