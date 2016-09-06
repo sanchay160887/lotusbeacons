@@ -10,6 +10,8 @@ var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var async = require('async');
 var gcm = require('node-gcm');
+var bodyParser = require('body-parser');
+var methodOverride = require('method-override');
 var GcmGoogleKey = 'AIzaSyAUxc6EwlgRP6MITCynw3_vsYatPI4iZuw';
 
 var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon';
@@ -37,6 +39,24 @@ server.listen(process.env.PORT || 3000, function() {
 
 app.use('/', express.static(__dirname + '/angular/'));
 
+app.use(bodyParser.json()); // parse application/json
+app.use(bodyParser.json({
+    type: 'application/vnd.api+json'
+})); // parse application/vnd.api+json as json
+app.use(bodyParser.urlencoded({
+    extended: true
+})); // parse application/x-www-form-urlencoded
+app.use(methodOverride('X-HTTP-Method-Override')); // override with the X-HTTP-Method-Override header in the request. simulate DELETE/PUT
+app.use(express.static(__dirname + '/public')); // set the static files location /public/img will be /img for users
+app.all("/*", function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Cache-Control, Pragma, Origin, Authorization, Content-Type, X-Requested-With");
+    res.header("Access-Control-Allow-Methods", "GET, PUT, POST");
+
+    return next();
+});
+
+
 var server = app.listen(process.env.PORT || 3000, function() {
     console.log("App started with Mongodb");
 });
@@ -56,6 +76,106 @@ io.on('receiveTime', function(data) {
     console.log('Data coming from client :: ');
 })
 
+function sendDevices() {
+    async.waterfall([
+
+        function(callback) {
+            MongoClient.connect(mongourl, function(err, db) {
+                if (err) {
+                    return console.dir(err);
+                }
+
+                var collection = db.collection('device');
+                var devicelist = new Array();
+                collection.find().toArray(function(err, devices) {
+                    for (var dvc in devices) {
+                        devicelist.push(devices[dvc]);
+                    }
+                    callback(null, devicelist);
+                })
+                db.close();
+            });
+        },
+        function(devicelist, callback) {
+            io.emit('showDevices', devicelist);
+            callback(null, devicelist);
+        }
+    ]);
+}
+
+function updateDevice(BeaconID, DeviceID, Distance, resObj){
+    if (!(DeviceID && Distance)) {
+        console.log('Invalid data passing');
+        io.emit('updateDevice_response', {
+            'IsSuccess': false,
+            'message': 'Invalid data passing'
+        });
+        return;
+    }
+    console.log('Update device called');
+    
+    var comingFromLatLong = false;
+    if (!BeaconID){
+        BeaconID = '';
+        comingFromLatLong = true;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+
+        var collection = db.collection('device');
+
+        async.waterfall([
+            function(callback) {
+                collection.find({
+                    'DeviceID': DeviceID
+                }).toArray(function(err, devices) {
+                    callback(null, devices);
+                });
+                
+            },
+            function(devicedata, callback){
+                if (devicedata && devicedata.length > 0){
+                    collection.update(
+                        {'DeviceID': DeviceID},
+                        {
+                            'BeaconID': BeaconID,
+                            'DeviceID': DeviceID,
+                            'Distance': Distance
+                        }
+                    );
+                    console.log('Device updated');
+                } else {
+                    collection.insert({
+                        'BeaconID': BeaconID,
+                        'DeviceID': DeviceID,
+                        'Distance': Distance
+                    });
+                    console.log('Device inserted');
+                }
+                callback(null, 'inserted');
+            },
+            function(response, callback) {
+                io.emit('updateDevice_response', {
+                    'IsSuccess': true,
+                    'message': 'Data inserted successfully'
+                });
+                //sendDevices();
+                console.log('coming to last callback');
+                db.close();
+                if (resObj){
+                    resObj.send();
+                }                
+                callback(null, response);
+            }
+        ]);        
+    });
+}
+
+
 // Emit welcome message on connection
 io.on('connection', function(socket) {
     // Use socket to communicate with this particular client only, sending it it's own id
@@ -70,67 +190,11 @@ io.on('connection', function(socket) {
     });
 
     socket.on('updateDevice', function(data) {
-        if (!(data.BeaconID && data.DeviceID && data.Distance)) {
-            console.log('Invalid data passing');
-            io.emit('updateDevice_response', {
-                'IsSuccess': false,
-                'message': 'Invalid data passing'
-            });
-            return;
-        }
-        MongoClient.connect(mongourl, function(err, db) {
-            if (err) {
-                return console.dir(err);
-            }
-            assert.equal(null, err);
-
-            var collection = db.collection('device');
-
-            collection.insert({
-                'BeaconID': data.BeaconID,
-                'DeviceID': data.DeviceID,
-                'Distance': data.Distance
-            });
-
-            io.emit('updateDevice_response', {
-                'IsSuccess': true,
-                'message': 'Data inserted successfully'
-            });
-
-            sendDevices();
-
-            db.close();
-        });
-
+        updateDevice(data.BeaconID, data.DeviceID, data.DeviceID);
+        sendDevices();
     });
-
-    function sendDevices() {
-        async.waterfall([
-
-            function(callback) {
-                MongoClient.connect(mongourl, function(err, db) {
-                    if (err) {
-                        return console.dir(err);
-                    }
-
-                    var collection = db.collection('device');
-                    var devicelist = new Array();
-                    collection.find().toArray(function(err, devices) {
-                        for (var dvc in devices) {
-                            devicelist.push(devices[dvc]);
-                        }
-                        callback(null, devicelist);
-                    })
-                    db.close();
-                });
-            },
-            function(devicelist, callback) {
-                io.emit('showDevices', devicelist);
-                callback(null, devicelist);
-            }
-        ]);
-    }
-    //sendDevices();
+    
+    
     //setInterval(sendDevices, 5000);
 });
 
@@ -175,63 +239,7 @@ app.post('/user/login', function(req, res) {
 });
 
 app.post('/updateDevice', function(req, res) {
-    if (!(req.body.DeviceID && req.body.Distance)) {
-        console.log('Invalid data passing');
-        io.emit('updateDevice_response', {
-            'IsSuccess': false,
-            'message': 'Invalid data passing'
-        });
-        return;
-    }
-    console.log('Update device called');
-
-    BeaconID = '';
-    if (req.body.BeaconID){
-        BeaconID = req.body.BeaconID;
-    }
-
-    MongoClient.connect(mongourl, function(err, db) {
-        if (err) {
-            return console.dir(err);
-        }
-        assert.equal(null, err);
-
-        var collection = db.collection('device');
-
-        collection.find({
-            'DeviceID': req.body.DeviceID
-        }).toArray(function(err, devices) {
-            if (devices){
-                collection.update(
-                    {'DeviceID': req.body.DeviceID},
-                    {
-                        'BeaconID': BeaconID,
-                        'DeviceID': req.body.DeviceID,
-                        'Distance': req.body.Distance
-                    }
-                );
-
-            } else {
-                collection.insert({
-                    'BeaconID': BeaconID,
-                    'DeviceID': req.body.DeviceID,
-                    'Distance': req.body.Distance
-                });
-            }
-            console.log('Device updated');
-        })
-
-        
-
-        io.emit('updateDevice_response', {
-            'IsSuccess': true,
-            'message': 'Data inserted successfully'
-        });
-
-        sendDevices();
-
-        db.close();
-    });
+    updateDevice(req.body.BeaconID, req.body.DeviceID, req.body.Distance, res);
 });
 
 app.post('/deleteDevice', function(req, res) {
@@ -298,5 +306,7 @@ app.post('/sendpushnotification', function(req, res) {
         } else {
             console.log(response);
         }
+        res.send();
     });
 });
+

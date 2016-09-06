@@ -78,8 +78,10 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
         return deferred.promise;
     };
 
-    var base_url = 'http://lotusbeacon.herokuapp.com/';
-    //var base_url = 'http://localhost:3000/';
+    //var base_url = 'http://lotusbeacon.herokuapp.com/';
+    var base_url = 'http://localhost:3000/';
+
+    console.log(apiBase);
 
     var deviceData = function(data){
         //return $http.post('http://lotusbeacon.herokuapp.com/getdata', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
@@ -96,16 +98,24 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
             'BeaconID' : BeaconID,
             'DeviceID' : DeviceID,
             'Distance' : Distance
-        }
-        $http.post(base_url + 'updateDevice', parameter, 
-                { headers: { 'Content-Type': 'application/json' } }).success(function (response) {
-            console.log('success ' . response);
-        }).catch(function (data, status, headers, config) {
-            console.log('error ' . data);
+        };
+        console.log(JSON.stringify(parameter));
+
+        $http({
+            method: "post",
+            url: "/updateDevice",
+            data: {
+                'BeaconID' : BeaconID,
+                'DeviceID' : DeviceID,
+                'Distance' : Distance
+            }
+        }).success(function(data, status, headers, config) {
+            console.log("Success.");
+        })
+        .error(function(data, status, headers, config) {
+            console.log("failed.");
         });
     }
-
-    console.log(apiBase);
 
     apiService.get = get;
 
