@@ -79,16 +79,30 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
     };
 
     var deviceData = function(data){
-        return $http.post('http://lotusbeacon.herokuapp.com/getdata', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
-        //return $http.post('http://localhost:3000/getdata', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
+        //return $http.post('http://lotusbeacon.herokuapp.com/getdata', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
+        return $http.post('http://localhost:3000/getdata', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
     }
 
     var sendNotification = function(){
-        //return $http.post('http://localhost:3000/sendpushnotification', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
-        return $http.post('http://lotusbeacon.herokuapp.com/sendpushnotification', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
+        return $http.post('http://localhost:3000/sendpushnotification', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
+        //return $http.post('http://lotusbeacon.herokuapp.com/sendpushnotification', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
     }
 
+    var updateDevice = function(BeaconID, DeviceID, Distance){
+        var parameter = {
+            'BeaconID' : BeaconID
+            'DeviceID' : DeviceID
+            'Distance' : Distance
+        }
+        $http.post('http://localhost:3000/updateDevice', parameter, 
+                { headers: { 'Content-Type': 'application/json' } }).success(function (response) {
+            console.log('success ' . response);
+        }).catch(function (data, status, headers, config) {
+            console.log('error ' . data);
+        });
+    }
 
+    
 
     apiService.get = get;
 
@@ -97,6 +111,7 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
     apiService.delet = delet;
     apiService.deviceData = deviceData;
     apiService.sendNotification = sendNotification;
+    apiService.updateDevice = updateDevice;
 
     return apiService;
 

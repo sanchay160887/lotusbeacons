@@ -25,7 +25,7 @@ dashboard.factory('socket', function ($rootScope) {
   };
 });
 
-dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiService, socket) { //
+dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiService, socket, $http) { //
 	var vm = this;
 	apiService.deviceData().then(function(res){
 		$scope.deviceData = res.data;
@@ -37,9 +37,18 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
       console.log(res);
     });
   }
+
+  $http.post('http://localhost:3000/deleteDevice', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
+  
   //$scope.sendNotification();
 
-	socket.on('showDevices', function(devicelist){
+  
+  apiService.updateDevice().then(function(res){
+    $scope.deviceData = res.data;
+    //console.log($scope.deviceData);
+  });
+
+	/*socket.on('showDevices', function(devicelist){
 		$scope.deviceData = devicelist;
   });
 
@@ -47,5 +56,5 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
       BeaconID : '1001',
       DeviceID : 'D1001',
       Distance : '1200'
-  });
+  });*/
 })

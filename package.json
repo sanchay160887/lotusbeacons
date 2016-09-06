@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "dependencies": {
+    "android-gcm": "^0.1.5",
     "assert": "^1.4.1",
     "async": "^2.0.1",
     "gcm": "^1.0.1",
