@@ -183,6 +183,8 @@ app.post('/updateDevice', function(req, res) {
         });
         return;
     }
+    console.log('Update device called');
+
     BeaconID = '';
     if (req.body.BeaconID){
         BeaconID = req.body.BeaconID;
@@ -216,6 +218,7 @@ app.post('/updateDevice', function(req, res) {
                     'Distance': req.body.Distance
                 });
             }
+            console.log('Device updated');
         })
 
         
