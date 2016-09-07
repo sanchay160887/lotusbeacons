@@ -1,0 +1,78 @@
+
+
+<style>
+
+.register_block_1 {
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    display: inline-block;
+    margin: 6% 2%;
+    padding: 20px;
+    vertical-align: top;
+    width: 34%;
+}
+
+
+.register_block_2 {
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    display: inline-block;
+    margin: 6% 1%;
+    padding: 20px;
+    vertical-align: top;
+    width: 58%;
+}
+
+
+.content-header {
+    padding: 6% 15px 0;
+    position: relative;
+}
+
+
+</style>
+
+
+
+<!--
+Author: Ranjithprabhu K
+Page Description: Dashboard Home page
+Date: 05 Jan 2016
+-->
+<!-- Content Header (Page header) -->
+<section class="content-blocks">
+    <section class="content-header">
+        <h1>
+            Registered Beacons
+        </h1>
+        <ol class="breadcrumb">
+            <li><a><i class="fa fa-dashboard"></i> Dashboard</a></li>
+            <li class="active">Beacons</li>
+        </ol>
+    </section>
+    <section class="content-body register_block_1">
+        <h4 ng-if="button_name!='update'">Add Beacons</h4>
+        <h4 ng-if="button_name=='update'">Update Beacons</h4>
+        <label>Beacon ID</label>
+        <input class="form-control" type="text" name="beacon_id" ng-model="Beacon_ID" ng-readonly="button_name=='update'" /><br>
+        <label>Beacon Key</label>
+        <input class="form-control" type="text" name="beacon_key" ng-model="Beacon_Key" /><br>
+        <label>Description</label>
+        <textarea class="form-control" name="beacon_description" ng-model="Beacon_Descr"></textarea><br>
+        <button class="btn btn-primary" ng-bind="button_name" ng-click="processBeacon()">Add</button>
+        <button class="btn btn-primary" ng-if="button_name=='update'" ng-click="deleteBeacon()">Delete</button>
+    </section>
+    <section class="content-body register_block_2">
+        <!-- Main content -->
+        <table class="table">
+            <th>Beacon ID</th>
+            <th>Key</th>
+            <th>Action</th>
+            <tr ng-repeat= "device in beaconData | orderBy:BeaconKey ">
+                <td><input class="form-control" type='text' ng-model="device.BeaconID" readonly /></td>
+                <td><input class="form-control"  type='text' ng-model="device.BeaconKey" readonly /></td>
+                <td ng-click="getBeacon(device.BeaconID)"><span class="btn btn-primary">View</span></td>
+            </tr>
+        </table>
+    </section><!-- /.content -->
+</section>
