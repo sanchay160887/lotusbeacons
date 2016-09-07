@@ -1,28 +1,107 @@
+
+<style>
+.content-device_block {
+    border: 1px solid grey;
+    margin: 2% auto;
+    min-height: 300px;
+    padding: 2% 0;
+    width: 98%;
+}
+
+
+.block_title_1 {
+    border-bottom: 1px solid;
+    font-size: 15px;
+    margin-bottom: 0;
+    padding: 3px 0;
+    text-align: center;
+}
+
+.block_title_2 {
+    border-bottom: 1px solid;
+    font-size: 12px;
+    margin-bottom: 0;
+    padding: 3px 0;   
+    min-height: 40px;
+}
+
+</style>
+
+
+
 <!--
 Author: Ranjithprabhu K
 Page Description: Dashboard Home page
 Date: 05 Jan 2016
 -->
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <h1>
-           Devices
-        </h1>
-        <ol class="breadcrumb">
-            <li><a><i class="fa fa-dashboard"></i> Dashboard</a></li>
-            <li class="active">Devices</li>
-        </ol>
-    </section>
-    <section class="content-body">
-    <!-- Main content -->
+<!-- Content Header (Page header) -->
+
+
+<section class="content-header">
+    <h1>
+       Devices
+   </h1>
+   <ol class="breadcrumb">
+    <li><a><i class="fa fa-dashboard"></i> Dashboard</a></li>
+    <li class="active">Devices</li>
+</ol>
+</section>
+
+
+
+<div class="content-device_block">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="content-device_block_1">
+                    <p class="block_title_1">Beacon ID</p>
+                   
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="content-device_block_2">
+                    <p class="block_title_1">Device ID</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="content-device_block_3">
+                    <p class="block_title_1">Distance</p>
+                </div>
+            </div>
+        </div>           
+    
+    <div class="row" ng-repeat= "device in deviceData | orderBy:Distance ">
+        <div class="col-md-3">
+            <div class="content-device_block_1">
+                <p class="block_title_2">{{ device.BeaconID }}</p>
+                
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="content-device_block_2">
+                <p class="block_title_2">{{ device.DeviceID }}</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="content-device_block_3">
+                <p class="block_title_2">{{ device.Distance }}</p>
+            </div>
+        </div>
+    </div>   
+    </div>        
+</div>
+
+
+<!--<section class="content-body">   
         <table class="table">
             <th>Beacon ID</th>
             <th>Device ID</th>
             <th>Distance</th>
             <tr ng-repeat= "device in deviceData | orderBy:Distance ">
-                <td><input type='text' ng-model="device.BeaconID" readonly /></td>
-                <td><input type='text' ng-model="device.DeviceID" readonly /></td>
-                <td><input type='text' ng-model="device.Distance" readonly /></td>
+                <td><input class="form-control" type='text' ng-model="device.BeaconID" readonly /></td>
+                <td><input class="form-control" type='text' ng-model="device.DeviceID" readonly /></td>
+                <td><input class="form-control" type='text' ng-model="device.Distance" readonly /></td>
             </tr>
         </table>
-    </section><!-- /.content -->
+    </section>-->
+

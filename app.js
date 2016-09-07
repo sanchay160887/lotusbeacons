@@ -248,38 +248,55 @@ app.post('/beaconConnected', function(req, res) {
     Distance = req.body.Distance;
     var resObj = {};
 
-    async.waterfall([
-        function(callback){
-            var collection = db.collection('beacons');
-            collection.find({
-                'BeaconID': BeaconID
-            }).toArray(function(err, devices) {
-                callback(null, devices);
-            });
-        },
-        function(devices, callback){
-            if (devices && devices.length > 0){
-                if (devices[0].BeaconKey == 'welcome'){
-                    sendpushnotification(DeviceID, 'Welcome', 'Welcome to Lotus. Exciting offers are waiting for you..');
+    MongoClient.connect(mongourl, function(err, db) {
+        async.waterfall([
+            function(callback){
+                var collection = db.collection('beacons');
+                collection.find({
+                    'BeaconID': BeaconID
+                }).toArray(function(err, devices) {
+                    callback(null, devices);
+                });
+            },
+            function(devices, callback){
+                if (devices && devices.length > 0){
+                    if (devices[0].BeaconKey == 'welcome'){
+                        sendpushnotification(DeviceID, 'Welcome', 'Welcome to Lotus. Exciting offers are waiting for you..');
+                    }
+                } else {
+                    resObj.IsSuccess = false;
+                    resObj.message = "Invalid Beacon ID";
+                    res.send(resObj);
+                    return;
                 }
-            } else {
-                resObj.IsSuccess = false;
-                resObj.message = "Invalid Beacon ID";
-                res.send(resObj);
-                return;
+                updateDevice(BeaconID, DeviceID, Distance, res);
             }
-            updateDevice(BeaconID, DeviceID, Distance, res);
-        }
-    ]);
-    
+        ]);
+    });    
 });
 
 app.post('/beaconDisconnected', function(req, res) {
-    BeaconID = req.body.BeaconID;
+    //BeaconID = req.body.BeaconID;
     DeviceID = req.body.DeviceID; 
-    Distance = req.body.Distance;
+    //Distance = req.body.Distance;
+    
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
 
-    updateDevice('', DeviceID, Distance, res);
+        var collection = db.collection('device');
+        
+        collection.deleteMany({'DeviceID' : DeviceID });
+
+        db.close();
+
+        io.emit('updateDevice_response', {
+            'IsSuccess': true,
+            'message': 'Data inserted successfully'
+        });        
+    });
 
 });
 
