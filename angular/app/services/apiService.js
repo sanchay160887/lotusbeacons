@@ -78,29 +78,17 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
         return deferred.promise;
     };
 
-    var base_url = 'http://lotusbeacon.herokuapp.com/';
-    //var base_url = 'http://localhost:3000/';
 
-    console.log(apiBase);
-
+    // Services for Devices start
     var deviceData = function(data){
-        //return $http.post('http://lotusbeacon.herokuapp.com/getdata', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
-        return $http.post(base_url + 'getdata', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
+        return $http.post('/getdata', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
     }
 
     var sendNotification = function(){
-        return $http.post(base_url + 'sendpushnotification', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
-        //return $http.post('http://lotusbeacon.herokuapp.com/sendpushnotification', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
+        return $http.post('/sendpushnotification', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
     }
 
     var updateDevice = function(BeaconID, DeviceID, Distance){
-        var parameter = {
-            'BeaconID' : BeaconID,
-            'DeviceID' : DeviceID,
-            'Distance' : Distance
-        };
-        console.log(JSON.stringify(parameter));
-
         $http({
             method: "post",
             url: "/updateDevice",
@@ -116,6 +104,55 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
             console.log("failed.");
         });
     }
+    //End
+
+    var beaconData = function(data){
+        return $http.post('/getbeacondata', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
+    }
+
+    var addBeacon = function(BeaconID, BeaconKey, BeaconDescr){
+        return $http({
+            method: "post",
+            url: "/addbeacon",
+            data: {
+                'BeaconID' : BeaconID,
+                'BeaconKey' : BeaconKey,
+                'BeaconDescr' : BeaconDescr
+            }
+        });
+    }
+
+    var updateBeacon = function(BeaconID, BeaconKey, BeaconDescr){
+        return $http({
+            method: "post",
+            url: "/updatebeacon",
+            data: {
+                'BeaconID' : BeaconID,
+                'BeaconKey' : BeaconKey,
+                'BeaconDescr' : BeaconDescr
+            }
+        });
+    }
+
+    var getBeacon = function(BeaconID){
+        return $http({
+            method: "post",
+            url: "/getbeacon",
+            data: {
+                'BeaconID' : BeaconID,
+            }
+        });
+    }
+
+    var deleteBeacon = function(BeaconID){
+        return $http({
+            method: "post",
+            url: "/deletebeacon",
+            data: {
+                'BeaconID' : BeaconID,
+            }
+        });
+    }
 
     apiService.get = get;
 
@@ -125,6 +162,11 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
     apiService.deviceData = deviceData;
     apiService.sendNotification = sendNotification;
     apiService.updateDevice = updateDevice;
+    apiService.beaconData = beaconData;
+    apiService.addBeacon = addBeacon;
+    apiService.updateBeacon = updateBeacon;
+    apiService.deleteBeacon = deleteBeacon;
+    apiService.getBeacon = getBeacon;
 
     return apiService;
 

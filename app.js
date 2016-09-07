@@ -242,6 +242,48 @@ app.post('/updateDevice', function(req, res) {
     updateDevice(req.body.BeaconID, req.body.DeviceID, req.body.Distance, res);
 });
 
+app.post('/beaconConnected', function(req, res) {
+    BeaconID = req.body.BeaconID;
+    DeviceID = req.body.DeviceID; 
+    Distance = req.body.Distance;
+    var resObj = {};
+
+    async.waterfall([
+        function(callback){
+            var collection = db.collection('beacons');
+            collection.find({
+                'BeaconID': BeaconID
+            }).toArray(function(err, devices) {
+                callback(null, devices);
+            });
+        },
+        function(devices, callback){
+            if (devices && devices.length > 0){
+                if (devices[0].BeaconKey == 'welcome'){
+                    sendpushnotification(DeviceID, 'Welcome', 'Welcome to Lotus. Exciting offers are waiting for you..');
+                }
+            } else {
+                resObj.IsSuccess = false;
+                resObj.message = "Invalid Beacon ID";
+                res.send(resObj);
+                return;
+            }
+            updateDevice(BeaconID, DeviceID, Distance, res);
+        }
+    ]);
+    
+});
+
+app.post('/beaconDisconnected', function(req, res) {
+    BeaconID = req.body.BeaconID;
+    DeviceID = req.body.DeviceID; 
+    Distance = req.body.Distance;
+
+    updateDevice('', DeviceID, Distance, res);
+
+});
+
+
 app.post('/deleteDevice', function(req, res) {
     /*MongoClient.connect(mongourl, function(err, db) {
         if (err) {
@@ -283,6 +325,219 @@ app.post('/getdata', function(req, res) {
     });
 });
 
+app.post('/getbeacondata', function(req, res) {
+    var resObj = {};
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        var collection = db.collection('beacons');
+        var devicelist = new Array();
+        collection.find().toArray(function(err, devices) {
+            if (devices && devices.length > 0){
+                for (var dvc in devices) {
+                    devicelist.push(devices[dvc]);
+                }
+                resObj.IsSuccess = true;
+                resObj.message = "Success";
+                resObj.data = devicelist;
+                res.send(resObj);
+            } else {
+                resObj.IsSuccess = false;
+                resObj.message = "No record found.";
+                resObj.data = '';
+                res.send(resObj);
+            }            
+        })
+        db.close();
+    });
+});
+
+app.post('/addbeacon', function(req, res) {
+    BeaconID = req.body.BeaconID;
+    BeaconKey = req.body.BeaconKey;
+    BeaconDescr = req.body.BeaconDescr;
+    var resObj = {};
+
+    if (!(BeaconID && BeaconKey)) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please enter BeaconID and BeaconKey";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);        
+
+        var collection = db.collection('beacons');
+
+        async.waterfall([
+            function(callback) {
+                collection.find({
+                    'BeaconID': BeaconID
+                }).toArray(function(err, devices) {
+                    callback(null, devices);
+                });
+                
+            },
+            function(beacondata, callback) {
+                if (beacondata && beacondata.length > 0){
+                    resObj.IsSuccess = false;
+                    resObj.message = "BeaconID already exists";
+                    res.send(resObj);
+                    return;
+                }
+                collection.find({
+                    'BeaconKey': BeaconKey
+                }).toArray(function(err, devices) {
+                    callback(null, devices);
+                });
+                
+            },
+            function(beacondata, callback){
+                if (beacondata && beacondata.length > 0){
+                    resObj.IsSuccess = false;
+                    resObj.message = "Beacon Key already exists";
+                    res.send(resObj);
+                    return;
+                }
+                
+                collection.insert({
+                    'BeaconID': BeaconID,
+                    'BeaconKey': BeaconKey,
+                    'BeaconDescr': BeaconDescr
+                });
+                console.log('Beacon inserted');
+                
+                callback(null, 'inserted');
+            },
+            function(response, callback) {
+                console.log('coming to last callback');
+                db.close();
+                resObj.IsSuccess = true;
+                resObj.message = "Beacon registered successfully.";
+                res.send(resObj);
+                callback(null, response);
+            }
+        ]);        
+    });
+});
+
+app.post('/updatebeacon', function(req, res) {
+    BeaconID = req.body.BeaconID;
+    BeaconKey = req.body.BeaconKey;
+    BeaconDescr = req.body.BeaconDescr;
+    var resObj = {};
+
+    if (!(BeaconID && BeaconKey)) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please enter BeaconID and BeaconKey";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        var collection = db.collection('beacons');
+        collection.update(
+            { 'BeaconID': BeaconID },
+            {
+                'BeaconID': BeaconID,
+                'BeaconKey': BeaconKey,
+                'BeaconDescr': BeaconDescr
+            }
+        );
+        db.close();
+
+        resObj.IsSuccess = true;
+        resObj.message = "Beacon updated successfully.";
+        res.send(resObj);
+        
+    });
+});
+
+app.post('/deletebeacon', function(req, res) {
+    BeaconID = req.body.BeaconID;
+    var resObj = {};
+
+    if (!BeaconID) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please enter BeaconID";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+
+        var collection = db.collection('beacons');
+        
+        collection.deleteMany({ 'BeaconID': BeaconID });
+        resObj.IsSuccess = true;
+        resObj.message = "Beacon deleted successfully";
+        res.send(resObj);
+
+        db.close();
+        
+    });
+
+});
+
+app.post('/getbeacon', function(req, res) {
+    BeaconID = req.body.BeaconID;
+    var resObj = {};
+
+    if (!(BeaconID)) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please enter BeaconID";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);        
+
+        var collection = db.collection('beacons');
+
+        async.waterfall([
+            function(callback) {
+                collection.find({
+                    'BeaconID': BeaconID
+                }).toArray(function(err, devices) {
+                    callback(null, devices);
+                });
+                
+            },
+            function(devices, callback) {
+                if (devices && devices.length > 0){
+                    resObj.IsSuccess = true;
+                    resObj.message = "success";
+                    resObj.data = devices;
+                } else {
+                    resObj.IsSuccess = false;
+                    resObj.message = "Device not found";
+                }
+                db.close();
+                res.send(resObj);
+            }
+        ]);        
+    });
+});
+
+/*This function kept as checking purpose because this is working code*/
 app.post('/sendpushnotification', function(req, res) {
     var gcm = require('android-gcm');
     //var gcmObject = new gcm.AndroidGcm('AIzaSyAUxc6EwlgRP6MITCynw3_vsYatPI4iZuw');
@@ -310,3 +565,29 @@ app.post('/sendpushnotification', function(req, res) {
     });
 });
 
+
+function sendpushnotification(gcmToken, title, message){
+    var gcm = require('android-gcm');
+    var gcmObject = new gcm.AndroidGcm(GcmGoogleKey);
+
+    // initialize new androidGcm object 
+    var message = new gcm.Message({
+        registration_ids: [gcmToken],
+        data: {
+            'message': title,
+            'badge': 1,
+            'title': title,
+            'img_url': 'https://lh4.ggpht.com/mJDgTDUOtIyHcrb69WM0cpaxFwCNW6f0VQ2ExA7dMKpMDrZ0A6ta64OCX3H-NMdRd20=w300',
+            'notification_type': 6,
+        }
+    });
+
+    gcmObject.send(message, function(err, response) {
+        if (err) {
+            console.log('Something went wrong :: ' + err);
+        } else {
+            console.log(response);
+        }
+        //res.send();
+    });
+}

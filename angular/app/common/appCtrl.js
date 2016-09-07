@@ -120,6 +120,11 @@ function ($rootScope, $scope, $state, $location, Flash,appSettings) {
             title: "Devices",
             icon: "gears",
             state: "devices"
+        },
+        {
+            title: "Beacons",
+            icon: "gears",
+            state: "beacons"
         }
     ];
 

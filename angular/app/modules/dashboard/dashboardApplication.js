@@ -166,5 +166,15 @@ dashboard.config(["$stateProvider", function ($stateProvider) {
         }
     });
 
+    $stateProvider.state('app.beacons', {
+        url: '/beacondata',
+        templateUrl: 'app/modules/dashboard/views/beacons.html',
+        controller: 'BeaconsController',
+        controllerAs: 'vm',
+        data: {
+            pageTitle: 'Beacons List'
+        }
+    });
+
 }]);
 
