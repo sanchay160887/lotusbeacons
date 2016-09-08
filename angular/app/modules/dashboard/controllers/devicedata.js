@@ -27,16 +27,43 @@ dashboard.factory('socket', function ($rootScope) {
 
 dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiService, socket, $http) { //
 	var vm = this;
-	apiService.deviceData().then(function(res){
-		$scope.deviceData = res.data;
-	});
+  $scope.BeaconID = '';
+  $scope.beaconData = [];
+  $scope.selectedBeacon = '';
+  $scope.Initialized = false;
+
+  $scope.$watchCollection('[selectedBeacon]', function() {
+      if ($scope.Initialized){
+        $scope.getAllDevices($scope.selectedBeacon);
+      }
+  });
+
+  $scope.getAllDevices = function(selectedBeacon){
+    $scope.Initialized = false;
+    apiService.deviceData($scope.selectedBeacon).then(function(res){
+      $scope.deviceData = res.data;
+      $scope.Initialized = true;
+    });
+  }
+
+  $scope.getAllDevices($scope.selectedBeacon);
+
+  $scope.getAllBeacon = function(){
+    $scope.Initialized = false;
+    apiService.beaconData().then(function(res){
+      $scope.beaconData = res.data.data;
+      $scope.Initialized = true;
+      console.log(res.data);
+    });
+  }
+  $scope.getAllBeacon();
 
   socket.on('updateDevice_response', function(response){
-      //$scope.deviceData = devicelist;
-      console.log(response);
-      apiService.deviceData().then(function(res){
+      $scope.getAllDevices($scope.selectedBeacon);
+      console.log($scope.selectedBeacon);
+      /*apiService.deviceData($scope.selectedBeacon).then(function(res){
         $scope.deviceData = res.data;
-      });
+      });*/
   });
 
   $scope.sendNotification = function(){
@@ -49,7 +76,7 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
   
   //$scope.sendNotification();
   
-  apiService.updateDevice('12:32:45:22:89','APA91bE8pbcfkLUbtfWPLurBq1h2jKe2S4LcA5mkQB7a-tp26pSBLY8jj726HqfBbxXK5hBkp1Aw9IzAlTU8DB3cxGlpIOrMbJjE6BkNA1EdZS3Xi6VaYWA','60');
+  //apiService.updateDevice('12:32:45:22:89','APA91bE8pbcfkLUbtfWPLurBq1h2jKe2S4LcA5mkQB7a-tp26pSBLY8jj726HqfBbxXK5hBkp1Aw9IzAlTU8DB3cxGlpIOrMbJjE6BkNA1EdZS3Xi6VaYWA','70');
   
 
 	/*socket.on('showDevices', function(devicelist){

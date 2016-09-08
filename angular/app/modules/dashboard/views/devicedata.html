@@ -32,6 +32,21 @@
     padding: 3px 0;   
     min-height: 40px;
 }
+
+.bcon_selection {
+    padding: 2% 0 4%;
+}
+
+.bcon-slect-title {
+    margin-bottom: 0;
+    padding: 7% 0;
+}
+
+
+
+
+
+
 </style>
 
 
@@ -46,9 +61,9 @@ Date: 05 Jan 2016
 
 <section class="content-header">
     <h1>
-       Devices
-   </h1>
-   <ol class="breadcrumb">
+     Devices
+ </h1>
+ <ol class="breadcrumb">
     <li><a><i class="fa fa-dashboard"></i> Dashboard</a></li>
     <li class="active">Devices</li>
 </ol>
@@ -58,11 +73,29 @@ Date: 05 Jan 2016
 
 <div class="content-device_block">
     <div class="container-fluid">
+
+        <div class="bcon_selection row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <label class="bcon-slect-title">Select Beacon</label>
+                    </div>
+                    <div class="col-md-6">
+                        <select class="form-control col-md-4" ng-model="selectedBeacon">
+                            <option value="">All</option>
+                            <option ng-repeat="device in beaconData | orderBy:BeaconKey" 
+                                value="{{device.BeaconID}}">{{device.BeaconID}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-1">
                 <div class="content-device_block_1">
-                    <p class="block_title_1">Beacon ID</p>
-                   
+                    <p class="block_title_1">Select</p>
                 </div>
             </div>
             <div class="col-md-6">
@@ -75,26 +108,37 @@ Date: 05 Jan 2016
                     <p class="block_title_1">Distance</p>
                 </div>
             </div>
+            <div class="col-md-2">
+                <div class="content-device_block_1">
+                    <p class="block_title_1">Beacon ID</p>
+
+                </div>
+            </div>            
         </div>           
-    
-    <div class="row" ng-repeat= "device in deviceData | orderBy:Distance ">
-        <div class="col-md-3">
-            <div class="content-device_block_1">
-                <p class="block_title_3">{{ device.BeaconID }}</p>
-                
+
+        <div class="row" ng-repeat= "device in deviceData | orderBy:Distance ">
+            <div class="col-md-1">
+                <div class="content-device_block_1">
+                    <input type="checkbox" value="{{ device.DeviceID }}">
+                </div>
             </div>
-        </div>
-        <div class="col-md-6">
-            <div class="content-device_block_2">
-                <p class="block_title_2">{{ device.DeviceID }}</p>
+            <div class="col-md-6">
+                <div class="content-device_block_2">
+                    <p class="block_title_2">{{ device.DeviceID }}</p>
+                </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="content-device_block_3">
-                <p class="block_title_3">{{ device.Distance }}</p>
+            <div class="col-md-3">
+                <div class="content-device_block_3">
+                    <p class="block_title_3">{{ device.Distance }}</p>
+                </div>
             </div>
-        </div>
-    </div>   
+            <div class="col-md-2">
+                <div class="content-device_block_1">
+                    <p class="block_title_3">{{ device.BeaconID }}</p>
+
+                </div>
+            </div>
+        </div>   
     </div>        
 </div>
 

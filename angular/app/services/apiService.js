@@ -80,8 +80,14 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
 
 
     // Services for Devices start
-    var deviceData = function(data){
-        return $http.post('/getdata', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
+    var deviceData = function(selectedBeacon){
+        return $http({
+            method: "post",
+            url: '/getdata',
+            data: {
+                'BeaconID' : selectedBeacon,
+            }
+        });
     }
 
     var sendNotification = function(){

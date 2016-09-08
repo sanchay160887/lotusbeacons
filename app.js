@@ -325,6 +325,8 @@ app.post('/deleteDevice', function(req, res) {
 
 
 app.post('/getdata', function(req, res) {
+    BeaconID = req.body.BeaconID;
+        
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
             return console.dir(err);
@@ -332,12 +334,24 @@ app.post('/getdata', function(req, res) {
 
         var collection = db.collection('device');
         var devicelist = new Array();
-        collection.find().toArray(function(err, devices) {
-            for (var dvc in devices) {
-                devicelist.push(devices[dvc]);
-            }
-            res.send(devicelist);
-        })
+        if (BeaconID){
+            collection.find({'BeaconID' : BeaconID }).toArray(function(err, devices) {
+                for (var dvc in devices) {
+                    devicelist.push(devices[dvc]);
+                }
+                res.send(devicelist);
+                return;
+            })
+        } else {
+            collection.find().toArray(function(err, devices) {
+                for (var dvc in devices) {
+                    devicelist.push(devices[dvc]);
+                }
+                res.send(devicelist);
+                return;
+            })
+        }
+        
         db.close();
     });
 });
