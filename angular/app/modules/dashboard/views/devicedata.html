@@ -25,6 +25,13 @@
     min-height: 40px;
 }
 
+.block_title_3 {
+    border-bottom: 1px solid;
+    font-size: 16px;
+    margin-bottom: 0;
+    padding: 3px 0;   
+    min-height: 40px;
+}
 </style>
 
 
@@ -73,7 +80,7 @@ Date: 05 Jan 2016
     <div class="row" ng-repeat= "device in deviceData | orderBy:Distance ">
         <div class="col-md-3">
             <div class="content-device_block_1">
-                <p class="block_title_2">{{ device.BeaconID }}</p>
+                <p class="block_title_3">{{ device.BeaconID }}</p>
                 
             </div>
         </div>
@@ -84,7 +91,7 @@ Date: 05 Jan 2016
         </div>
         <div class="col-md-3">
             <div class="content-device_block_3">
-                <p class="block_title_2">{{ device.Distance }}</p>
+                <p class="block_title_3">{{ device.Distance }}</p>
             </div>
         </div>
     </div>   
