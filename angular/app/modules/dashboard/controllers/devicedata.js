@@ -25,20 +25,32 @@ dashboard.factory('socket', function ($rootScope) {
   };
 });
 
-dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiService, socket, $http) { //
+dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiService, socket, $http, $location) { //
 	var vm = this;
   $scope.BeaconID = '';
   $scope.beaconData = [];
   $scope.selectedBeacon = '';
   $scope.Initialized = false;
 
+  var queriedUrl = $location.search()
+  if (typeof(queriedUrl.beacon) != 'undefined' && queriedUrl.beacon){
+      $scope.selectedBeacon = queriedUrl.beacon;
+    }
+
   $scope.$watchCollection('[selectedBeacon]', function() {
       if ($scope.Initialized){
-        $scope.getAllDevices($scope.selectedBeacon);
+        $location.search({'beacon': $scope.selectedBeacon});
+        $scope.getAllDevices();
+        //$scope.getAllDevices($scope.selectedBeacon);
       }
   });
 
-  $scope.getAllDevices = function(selectedBeacon){
+  $scope.getAllDevices = function(){
+    var queriedUrl = $location.search()
+    $scope.selectedBeacon = '';
+    if (typeof(queriedUrl.beacon) != 'undefined' && queriedUrl.beacon){
+      $scope.selectedBeacon = queriedUrl.beacon;
+    }
     $scope.Initialized = false;
     apiService.deviceData($scope.selectedBeacon).then(function(res){
       $scope.deviceData = res.data;
@@ -46,7 +58,7 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
     });
   }
 
-  $scope.getAllDevices($scope.selectedBeacon);
+  $scope.getAllDevices();
 
   $scope.getAllBeacon = function(){
     $scope.Initialized = false;
@@ -59,7 +71,7 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
   $scope.getAllBeacon();
 
   socket.on('updateDevice_response', function(response){
-      $scope.getAllDevices($scope.selectedBeacon);
+      $scope.getAllDevices();
       console.log($scope.selectedBeacon);
       /*apiService.deviceData($scope.selectedBeacon).then(function(res){
         $scope.deviceData = res.data;

@@ -103,15 +103,36 @@ function sendDevices() {
     ]);
 }
 
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+
 function updateDevice(BeaconID, DeviceID, Distance, resObj){
+    var resObjVal = {};
     if (!(DeviceID && Distance)) {
         console.log('Invalid data passing');
         io.emit('updateDevice_response', {
             'IsSuccess': false,
             'message': 'Invalid data passing'
         });
+        resObj.IsSuccess = false;
+        resObj.message = "Invalid data passing";
+        if (resObj){
+            resObj.send(resObj);
+        }
         return;
     }
+
+    if (!isNumeric(Distance)){
+        resObj.IsSuccess = false;
+        resObj.message = "Distance should be in numbers";
+        if (resObj){
+            resObj.send(resObj);
+        }
+        return;
+    }
+
     console.log('Update device called');
     
     var comingFromLatLong = false;
