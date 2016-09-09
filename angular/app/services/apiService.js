@@ -91,7 +91,15 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
     }
 
     var sendNotification = function(){
-        return $http.post('/sendpushnotification', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
+        return $http({
+            method: "post",
+            url: "/sendpushnotification",
+            data: {
+                'BeaconID' : BeaconID,
+                'DeviceID' : DeviceID,
+                'Distance' : Distance
+            }
+        });
     }
 
     var updateDevice = function(BeaconID, DeviceID, Distance){

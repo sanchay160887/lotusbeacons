@@ -283,7 +283,7 @@ app.post('/beaconConnected', function(req, res) {
             function(devices, callback){
                 if (devices && devices.length > 0){
                     if (devices[0].BeaconKey == 'welcome'){
-                        sendpushnotification(DeviceID, 'Welcome', 'Welcome to Lotus. Exciting offers are waiting for you..');
+                        sendpushnotification([DeviceID], 'Welcome', 'Welcome to Lotus. Exciting offers are waiting for you..');
                     }
                 } else {
                     resObj.IsSuccess = false;
@@ -810,7 +810,7 @@ app.post('/getstore', function(req, res) {
 
 
 /*This function kept as checking purpose because this is working code*/
-app.post('/sendpushnotification', function(req, res) {
+app.post('/sendpushnotification_test', function(req, res) {
     var gcm = require('android-gcm');
     //var gcmObject = new gcm.AndroidGcm('AIzaSyAUxc6EwlgRP6MITCynw3_vsYatPI4iZuw');
     var gcmObject = new gcm.AndroidGcm(GcmGoogleKey);
@@ -837,6 +837,9 @@ app.post('/sendpushnotification', function(req, res) {
     });
 });
 
+app.post('/sendpushnotification', function(req, res) {
+
+});
 
 function sendpushnotification(gcmToken, title, message){
     var gcm = require('android-gcm');
@@ -844,7 +847,7 @@ function sendpushnotification(gcmToken, title, message){
 
     // initialize new androidGcm object 
     var message = new gcm.Message({
-        registration_ids: [gcmToken],
+        registration_ids: gcmToken, //[gcmToken],
         data: {
             'message': title,
             'badge': 1,
