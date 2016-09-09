@@ -7,6 +7,7 @@ fs = require('fs'),
 index = fs.readFileSync(__dirname + '/index.html');
 
 var MongoClient = require('mongodb').MongoClient;
+var ObjectId = require('mongodb').ObjectId;
 var assert = require('assert');
 var async = require('async');
 var gcm = require('node-gcm');
@@ -322,29 +323,6 @@ app.post('/beaconDisconnected', function(req, res) {
 });
 
 
-app.post('/deleteDevice', function(req, res) {
-    /*MongoClient.connect(mongourl, function(err, db) {
-        if (err) {
-            return console.dir(err);
-        }
-        assert.equal(null, err);
-
-        var collection = db.collection('device');
-        
-        collection.deleteMany();
-
-        db.close();
-
-        io.emit('updateDevice_response', {
-            'IsSuccess': true,
-            'message': 'Data inserted successfully'
-        });
-        
-    });*/
-});
-
-
-
 app.post('/getdata', function(req, res) {
     BeaconID = req.body.BeaconID;
         
@@ -377,7 +355,10 @@ app.post('/getdata', function(req, res) {
     });
 });
 
+/*Beacon Services start*/
+
 app.post('/getbeacondata', function(req, res) {
+    BeaconStore = req.body.BeaconStore;
     var resObj = {};
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
@@ -386,7 +367,25 @@ app.post('/getbeacondata', function(req, res) {
 
         var collection = db.collection('beacons');
         var devicelist = new Array();
-        collection.find().toArray(function(err, devices) {
+
+        /*
+        beaconcollection = collection.aggregate(
+           { $lookup : { 
+                "from": "stores", 
+                "localField": "BeaconStore",
+                "foreignField" : "_id",
+                "as" : "stores_name"
+            } })
+        */
+        beaconcollection = '';
+        if (BeaconStore){
+            beaconcollection = collection.find({'BeaconStore' : ObjectId(BeaconStore)})
+        } else {
+            beaconcollection = collection.find();
+        }
+
+        beaconcollection.toArray(function(err, devices) {
+            console.log(devices);
             if (devices && devices.length > 0){
                 for (var dvc in devices) {
                     devicelist.push(devices[dvc]);
@@ -401,7 +400,7 @@ app.post('/getbeacondata', function(req, res) {
                 resObj.data = '';
                 res.send(resObj);
             }            
-        })
+        });
         db.close();
     });
 });
@@ -410,11 +409,19 @@ app.post('/addbeacon', function(req, res) {
     BeaconID = req.body.BeaconID;
     BeaconKey = req.body.BeaconKey;
     BeaconDescr = req.body.BeaconDescr;
+    BeaconStore = req.body.BeaconStore;
     var resObj = {};
 
-    if (!(BeaconID && BeaconKey)) {
+    if (!(BeaconID && BeaconKey && BeaconStore)) {
         resObj.IsSuccess = false;
         resObj.message = "Please enter BeaconID and BeaconKey";
+        res.send(resObj);
+        return;
+    }
+
+    if (BeaconStore.length != 24){
+        resObj.IsSuccess = false;
+        resObj.message = "Invalid store selected";
         res.send(resObj);
         return;
     }
@@ -461,7 +468,8 @@ app.post('/addbeacon', function(req, res) {
                 collection.insert({
                     'BeaconID': BeaconID,
                     'BeaconKey': BeaconKey,
-                    'BeaconDescr': BeaconDescr
+                    'BeaconDescr': BeaconDescr,
+                    'BeaconStore' : ObjectId(BeaconStore)
                 });
                 console.log('Beacon inserted');
                 
@@ -483,11 +491,19 @@ app.post('/updatebeacon', function(req, res) {
     BeaconID = req.body.BeaconID;
     BeaconKey = req.body.BeaconKey;
     BeaconDescr = req.body.BeaconDescr;
+    BeaconStore = req.body.BeaconStore;
+
     var resObj = {};
 
-    if (!(BeaconID && BeaconKey)) {
+    if (!(BeaconID && BeaconKey && BeaconStore)) {
         resObj.IsSuccess = false;
         resObj.message = "Please enter BeaconID and BeaconKey";
+        res.send(resObj);
+        return;
+    }
+    if (BeaconStore.length != 24){
+        resObj.IsSuccess = false;
+        resObj.message = "Invalid store selected";
         res.send(resObj);
         return;
     }
@@ -503,7 +519,8 @@ app.post('/updatebeacon', function(req, res) {
             {
                 'BeaconID': BeaconID,
                 'BeaconKey': BeaconKey,
-                'BeaconDescr': BeaconDescr
+                'BeaconDescr': BeaconDescr,
+                'BeaconStore' : ObjectId(BeaconStore)
             }
         );
         db.close();
@@ -588,6 +605,209 @@ app.post('/getbeacon', function(req, res) {
         ]);        
     });
 });
+/*Beacon services end*/
+
+
+/*Store Services start*/
+app.post('/getstoredata', function(req, res) {
+    var resObj = {};
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        var collection = db.collection('stores');
+        var devicelist = new Array();
+        collection.find().toArray(function(err, devices) {
+            if (devices && devices.length > 0){
+                for (var dvc in devices) {
+                    devicelist.push(devices[dvc]);
+                }
+                
+                resObj.IsSuccess = true;
+                resObj.message = "Success";
+                resObj.data = devicelist;
+                res.send(resObj);
+            } else {
+                resObj.IsSuccess = false;
+                resObj.message = "No record found.";
+                resObj.data = '';
+                res.send(resObj);
+            }            
+        })
+        db.close();
+    });
+});
+
+app.post('/addstore', function(req, res) {
+    StoreName = req.body.StoreName;
+    StoreDescr = req.body.StoreDescr;
+    var resObj = {};
+
+    if (!StoreName) {
+        console.log(StoreName);
+        resObj.IsSuccess = false;
+        resObj.message = "Please enter Store Name";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);        
+
+        var collection = db.collection('stores');
+
+        async.waterfall([
+            function(callback) {
+                collection.find({
+                    'StoreName': StoreName
+                }).toArray(function(err, stores) {
+                    callback(null, stores);
+                });
+                
+            },
+            function(stores, callback){
+                if (stores && stores.length > 0){
+                    resObj.IsSuccess = false;
+                    resObj.message = "Store Name already exists";
+                    res.send(resObj);
+                    return;
+                }
+                
+                collection.insert({
+                    'StoreName': StoreName,
+                    'StoreDescr': StoreDescr
+                });
+                console.log('Store inserted');
+                
+                callback(null, 'inserted');
+            },
+            function(response, callback) {
+                console.log('coming to last callback');
+                db.close();
+                resObj.IsSuccess = true;
+                resObj.message = "Store added successfully.";
+                res.send(resObj);
+                callback(null, response);
+            }
+        ]);        
+    });
+});
+
+app.post('/updatestore', function(req, res) {
+    StoreID = req.body.StoreID;
+    StoreName = req.body.StoreName;
+    StoreDescr = req.body.StoreDescr;
+    var resObj = {};
+
+    if (!StoreName) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please enter proper Store name";
+        res.send(resObj);
+        return;
+    }    
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        var collection = db.collection('stores');
+        collection.update({ _id: ObjectId(StoreID) },
+            {
+                'StoreName': StoreName,
+                'StoreDescr': StoreDescr
+            }
+        );
+        db.close();
+
+        resObj.IsSuccess = true;
+        resObj.message = "Store updated successfully.";
+        res.send(resObj);
+        
+    });
+});
+
+app.post('/deletestore', function(req, res) {
+    StoreID = req.body.StoreID;
+    var resObj = {};
+
+    if (!StoreID) {
+        resObj.IsSuccess = false;
+        resObj.message = "Invalid Store selected";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+
+        var collection = db.collection('stores');
+
+        collection.find(ObjectId(StoreID)).toArray(function(err, devices) {
+            console.log(JSON.stringify(devices));
+        });
+        
+        collection.deleteMany({ _id: ObjectId(StoreID) });
+        resObj.IsSuccess = true;
+        resObj.message = "Store deleted successfully";
+        res.send(resObj);
+
+        db.close();
+        
+    });
+
+});
+
+app.post('/getstore', function(req, res) {
+    StoreID = req.body.StoreID;
+    var resObj = {};
+
+    if (!(StoreID)) {
+        resObj.IsSuccess = false;
+        resObj.message = "Invalid Store selected";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);        
+
+        var collection = db.collection('stores');
+
+        async.waterfall([
+            function(callback) {
+                collection.find(ObjectId(StoreID)).toArray(function(err, devices) {
+                    callback(null, devices);
+                });
+                
+            },
+            function(devices, callback) {
+                if (devices && devices.length > 0){
+                    resObj.IsSuccess = true;
+                    resObj.message = "success";
+                    resObj.data = devices;
+                } else {
+                    resObj.IsSuccess = false;
+                    resObj.message = "Store not found";
+                }
+                db.close();
+                res.send(resObj);
+            }
+        ]);        
+    });
+});
+/*Stores services end*/
+
 
 /*This function kept as checking purpose because this is working code*/
 app.post('/sendpushnotification', function(req, res) {

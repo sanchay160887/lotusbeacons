@@ -112,30 +112,39 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
     }
     //End
 
-    var beaconData = function(data){
-        return $http.post('/getbeacondata', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
+    /*Beacon device start*/
+    var beaconData = function(BeaconStore){
+        return $http({
+            method: "post",
+            url: "/getbeacondata",
+            data: {
+                'BeaconStore' : BeaconStore
+            }
+        });
     }
 
-    var addBeacon = function(BeaconID, BeaconKey, BeaconDescr){
+    var addBeacon = function(BeaconID, BeaconKey, BeaconDescr, BeaconStore){
         return $http({
             method: "post",
             url: "/addbeacon",
             data: {
                 'BeaconID' : BeaconID,
                 'BeaconKey' : BeaconKey,
-                'BeaconDescr' : BeaconDescr
+                'BeaconDescr' : BeaconDescr,
+                'BeaconStore' : BeaconStore
             }
         });
     }
 
-    var updateBeacon = function(BeaconID, BeaconKey, BeaconDescr){
+    var updateBeacon = function(BeaconID, BeaconKey, BeaconDescr, BeaconStore){
         return $http({
             method: "post",
             url: "/updatebeacon",
             data: {
                 'BeaconID' : BeaconID,
                 'BeaconKey' : BeaconKey,
-                'BeaconDescr' : BeaconDescr
+                'BeaconDescr' : BeaconDescr,
+                'BeaconStore' : BeaconStore
             }
         });
     }
@@ -160,6 +169,68 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
         });
     }
 
+    apiService.beaconData = beaconData;
+    apiService.addBeacon = addBeacon;
+    apiService.updateBeacon = updateBeacon;
+    apiService.deleteBeacon = deleteBeacon;
+    apiService.getBeacon = getBeacon;
+    /*Beacon device end*/
+
+    /*Stores start*/
+    var storeData = function(data){
+        return $http.post('/getstoredata', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
+    }
+
+    var addStores = function(storename, storedescr){
+        return $http({
+            method: "post",
+            url: "/addstore",
+            data: {
+                'StoreName' : storename,
+                'StoreDescr' : storedescr
+            }
+        });
+    }
+
+    var updateStore = function(StoreID, storename, storedescr){
+        return $http({
+            method: "post",
+            url: "/updatestore",
+            data: {
+                'StoreID' : StoreID,
+                'StoreName' : storename,
+                'StoreDescr' : storedescr,
+            }
+        });
+    }
+
+    var getStore = function(StoreID){
+        return $http({
+            method: "post",
+            url: "/getstore",
+            data: {
+                'StoreID' : StoreID,
+            }
+        });
+    }
+
+    var deleteStore = function(StoreID){
+        return $http({
+            method: "post",
+            url: "/deletestore",
+            data: {
+                'StoreID' : StoreID,
+            }
+        });
+    }
+
+    apiService.storeData = storeData;
+    apiService.addStores = addStores;
+    apiService.updateStore = updateStore;
+    apiService.deleteStore = deleteStore;
+    apiService.getStore = getStore;
+    /*Beacon device end*/    
+
     apiService.get = get;
 
     apiService.create = create;
@@ -168,11 +239,7 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
     apiService.deviceData = deviceData;
     apiService.sendNotification = sendNotification;
     apiService.updateDevice = updateDevice;
-    apiService.beaconData = beaconData;
-    apiService.addBeacon = addBeacon;
-    apiService.updateBeacon = updateBeacon;
-    apiService.deleteBeacon = deleteBeacon;
-    apiService.getBeacon = getBeacon;
+
 
     return apiService;
 

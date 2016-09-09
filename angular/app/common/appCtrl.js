@@ -125,7 +125,13 @@ function ($rootScope, $scope, $state, $location, Flash,appSettings) {
             title: "Beacons",
             icon: "gears",
             state: "beacons"
+        },
+        {
+            title: "Stores",
+            icon: "gears",
+            state: "stores"
         }
+
     ];
 
     //set the theme selected

@@ -78,11 +78,25 @@ Date: 05 Jan 2016
             <div class="col-md-6">
                 <div class="form-group">
                     <div class="col-md-3">
+                        <label class="bcon-slect-title">Select Store</label>
+                    </div>
+                    <div class="col-md-6">
+                        <select class="form-control col-md-4" ng-model="selectedStore">
+                            <option value="">Select Store</option>
+                            <option ng-repeat="device in storeData" 
+                                value="{{device._id}}">{{device.StoreName}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="col-md-3">
                         <label class="bcon-slect-title">Select Beacon</label>
                     </div>
                     <div class="col-md-6">
                         <select class="form-control col-md-4" ng-model="selectedBeacon">
-                            <option value="">All</option>
+                            <option value="">Select Beacons</option>
                             <option ng-repeat="device in beaconData | orderBy:BeaconKey" 
                                 value="{{device.BeaconID}}">{{device.BeaconID}}</option>
                         </select>
@@ -119,7 +133,9 @@ Date: 05 Jan 2016
         <div class="row" ng-repeat= "device in deviceData | orderBy:Distance ">
             <div class="col-md-1">
                 <div class="content-device_block_1">
-                    <input type="checkbox" value="{{ device.DeviceID }}">
+                    <input type="checkbox" value="{{ device.DeviceID }}" 
+                    ng-click="ShowSelectedTokens()"
+                    ng-model="selectedTokens[device.DeviceID]">
                 </div>
             </div>
             <div class="col-md-6">

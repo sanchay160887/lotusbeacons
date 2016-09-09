@@ -9,7 +9,7 @@
     margin: 2% 2%;
     padding: 20px;
     vertical-align: top;
-    width: 34%;
+    width: 25%;
 }
 
 
@@ -57,6 +57,11 @@ Date: 05 Jan 2016
         <input class="form-control" type="text" name="beacon_id" ng-model="Beacon_ID" ng-readonly="button_name=='update'" /><br>
         <label>Beacon Key</label>
         <input class="form-control" type="text" name="beacon_key" ng-model="Beacon_Key" /><br>
+        <label>Select Store</label>
+        <select class="form-control col-md-4" ng-model="Beacon_Store">
+            <option ng-repeat="device in storeData | orderBy:BeaconKey" 
+                value="{{device._id}}">{{device.StoreName}}</option>
+        </select><br>
         <label>Description</label>
         <textarea class="form-control" name="beacon_description" ng-model="Beacon_Descr"></textarea><br>
         <button class="btn btn-primary" ng-bind="button_name" ng-click="processBeacon()">Add</button>

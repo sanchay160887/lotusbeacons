@@ -176,5 +176,15 @@ dashboard.config(["$stateProvider", function ($stateProvider) {
         }
     });
 
+    $stateProvider.state('app.stores', {
+        url: '/storesdata',
+        templateUrl: 'app/modules/dashboard/views/stores.html',
+        controller: 'StoresController',
+        controllerAs: 'vm',
+        data: {
+            pageTitle: 'Stores List'
+        }
+    });
+
 }]);
 

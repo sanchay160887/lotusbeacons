@@ -7,6 +7,8 @@ dashboard.controller("BeaconsController",function ($rootScope, $scope, apiServic
   $scope.Beacon_Key = '';
   $scope.Beacon_Descr = '';
   $scope.button_name = 'Add';
+  $scope.storeData = [];
+  $scope.Beacon_Store = '';
 
 	var vm = this;
 
@@ -18,12 +20,18 @@ dashboard.controller("BeaconsController",function ($rootScope, $scope, apiServic
     });
   }
   
+  apiService.storeData().then(function(res){
+      $scope.storeData = res.data.data;
+    });
+
+
   $scope.getAllBeacon();
 
   $scope.resetControls = function(){
     $scope.Beacon_ID = '';
     $scope.Beacon_Key = '';
     $scope.Beacon_Descr = '';
+    $scope.Beacon_Store = '';
     $scope.button_name = 'Add';
   }
 
@@ -36,6 +44,7 @@ dashboard.controller("BeaconsController",function ($rootScope, $scope, apiServic
               $scope.Beacon_ID = pbeacon_id;
               $scope.Beacon_Key = data.data[0].BeaconKey;
               $scope.Beacon_Descr = data.data[0].BeaconDescr;
+              $scope.Beacon_Store = data.data[0].BeaconStore;
             } else {
               $scope.Beacon_ID = '';
               alert('Device not found. Please refresh your page');
@@ -52,7 +61,7 @@ dashboard.controller("BeaconsController",function ($rootScope, $scope, apiServic
   $scope.processBeacon = function(){
     console.log($scope.button_name);
     if ($scope.button_name == 'Add'){
-      apiService.addBeacon($scope.Beacon_ID, $scope.Beacon_Key, $scope.Beacon_Descr)
+      apiService.addBeacon($scope.Beacon_ID, $scope.Beacon_Key, $scope.Beacon_Descr, $scope.Beacon_Store)
         .success(function(data, status, headers, config) {
               if (data.IsSuccess){
                 $scope.getAllBeacon();
@@ -65,7 +74,7 @@ dashboard.controller("BeaconsController",function ($rootScope, $scope, apiServic
             return '';
         });
     } else {
-      apiService.updateBeacon($scope.Beacon_ID, $scope.Beacon_Key, $scope.Beacon_Descr)
+      apiService.updateBeacon($scope.Beacon_ID, $scope.Beacon_Key, $scope.Beacon_Descr, $scope.Beacon_Store)
         .success(function(data, status, headers, config) {
             if (data.IsSuccess){
                 $scope.getAllBeacon();
@@ -89,7 +98,7 @@ dashboard.controller("BeaconsController",function ($rootScope, $scope, apiServic
     });
   }
 
-  $http({
+  /*$http({
       method: "post",
       url: "/beaconConnected",
       data: {
@@ -97,7 +106,7 @@ dashboard.controller("BeaconsController",function ($rootScope, $scope, apiServic
           'BeaconID' : 'APA91bELNsBdV4nR1j7Wh17Xx0cMD6X-wSbHfchYxaL19BspoVh-l3zGLN2r6LkHFxMuYBiEEFShDy5iAgh1h5nkK7jO3aPUsbYVOjkPLgwZaOEwxES5TZ0',
           'BeaconID' : '2.5',
       }
-  });
+  });*/
   
   //apiService.updateDevice('12:32:45:22:89','APA91bE8pbcfkLUbtfWPLurBq1h2jKe2S4LcA5mkQB7a-tp26pSBLY8jj726HqfBbxXK5hBkp1Aw9IzAlTU8DB3cxGlpIOrMbJjE6BkNA1EdZS3Xi6VaYWA','60');
   

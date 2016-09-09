@@ -25,48 +25,93 @@ dashboard.factory('socket', function ($rootScope) {
   };
 });
 
-dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiService, socket, $http, $location) { //
+dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiService, socket, $http, $location, $window) { //
 	var vm = this;
   $scope.BeaconID = '';
   $scope.beaconData = [];
   $scope.selectedBeacon = '';
+  $scope.storeData = [];
+  $scope.selectedStore = '';
+  $scope.deviceData = [];
+  $scope.selectedTokens = {};
+
   $scope.Initialized = false;
 
-  var queriedUrl = $location.search()
-  if (typeof(queriedUrl.beacon) != 'undefined' && queriedUrl.beacon){
-      $scope.selectedBeacon = queriedUrl.beacon;
-    }
+  var queriedUrl = $location.search();
+  
+  
+  apiService.storeData().then(function(res){
+      $scope.Initialized = false;
+      $scope.storeData = res.data.data;
+      if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store){
+          $scope.selectedStore = queriedUrl.store;
+      }
+      $scope.getAllBeacon();
+      $scope.Initialized = true;
+  });
 
+  $scope.ShowSelectedTokens = function() {
+      $scope.records = $.grep($scope.records, function( record ) {
+        alert($scope.selectedTokens[ record.Id ]);
+        return $scope.selectedTokens[ record.Id ];
+      });
+  };
+  
+
+  $scope.$watchCollection('[selectedStore]', function() {
+      if ($scope.Initialized){
+        $location.search({'store' : $scope.selectedStore});
+        $scope.getAllBeacon();
+      }
+  });
+  
   $scope.$watchCollection('[selectedBeacon]', function() {
       if ($scope.Initialized){
-        $location.search({'beacon': $scope.selectedBeacon});
+        $location.search({'store' : $scope.selectedStore, 'beacon' : $scope.selectedBeacon});
         $scope.getAllDevices();
-        //$scope.getAllDevices($scope.selectedBeacon);
       }
   });
 
   $scope.getAllDevices = function(){
     var queriedUrl = $location.search()
     $scope.selectedBeacon = '';
+    if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store){
+      $scope.selectedStore = queriedUrl.store;
+    }
     if (typeof(queriedUrl.beacon) != 'undefined' && queriedUrl.beacon){
       $scope.selectedBeacon = queriedUrl.beacon;
     }
-    $scope.Initialized = false;
-    apiService.deviceData($scope.selectedBeacon).then(function(res){
-      $scope.deviceData = res.data;
-      $scope.Initialized = true;
-    });
+
+    if ($scope.selectedBeacon){
+      $scope.Initialized = false;
+      apiService.deviceData($scope.selectedBeacon).then(function(res){
+        $scope.deviceData = res.data;
+        $scope.Initialized = true;
+      });
+    }
   }
 
   $scope.getAllDevices();
 
   $scope.getAllBeacon = function(){
-    $scope.Initialized = false;
-    apiService.beaconData().then(function(res){
-      $scope.beaconData = res.data.data;
-      $scope.Initialized = true;
-      console.log(res.data);
-    });
+    $scope.selectedStore = '';
+    if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store){
+      $scope.selectedstore = queriedUrl.store;
+    }
+    if ($scope.selectedstore){
+      $scope.Initialized = false;
+      apiService.beaconData($scope.selectedstore).then(function(res){
+        $scope.beaconData = res.data.data;
+        if (typeof(queriedUrl.beacon) != 'undefined' && queriedUrl.beacon){
+          $scope.selectedBeacon = queriedUrl.beacon;
+        }
+        $scope.Initialized = true;
+        console.log(res.data);
+      });
+    } else {
+      $scope.beaconData = [];
+    }
+    
   }
   $scope.getAllBeacon();
 
