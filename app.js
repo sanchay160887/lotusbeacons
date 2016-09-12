@@ -121,6 +121,10 @@ function isNumeric(n) {
 
 
 function updateDevice(BeaconID, DeviceID, Distance, resObj){
+    console.log('Beacon ID ' + BeaconID);
+    console.log('Device ID ' + DeviceID);
+    console.log('Distance ' + Distance);
+
     var resObjVal = {};
     if (!(DeviceID && Distance)) {
         console.log('Invalid data passing');
