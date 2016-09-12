@@ -128,18 +128,19 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj){
             'IsSuccess': false,
             'message': 'Invalid data passing'
         });
-        resObj.IsSuccess = false;
-        resObj.message = "Invalid data passing";
+        
         if (resObj){
+            resObj.IsSuccess = false;
+            resObj.message = "Invalid data passing";
             resObj.send(resObj);
         }
         return;
     }
 
     if (!isNumeric(Distance)){
-        resObj.IsSuccess = false;
-        resObj.message = "Distance should be in numbers";
         if (resObj){
+            resObj.IsSuccess = false;
+            resObj.message = "Distance should be in numbers";
             resObj.send(resObj);
         }
         return;
