@@ -228,7 +228,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('updateDevice', function(data) {
-        updateDevice(data.BeaconID, data.DeviceID, data.DeviceID);
+        updateDevice(data.BeaconID, data.DeviceID, data.Distance);
         sendDevices();
     });
     
