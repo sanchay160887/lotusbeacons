@@ -30,6 +30,17 @@ var server = http.createServer(function(req, res) {
     res.end(index);
 });
 
+var multer  =   require('multer');
+var storage =   multer.diskStorage({
+  destination: function (req, file, callback) {
+    callback(null, './uploads');
+  },
+  filename: function (req, file, callback) {
+    callback(null, file.fieldname + '-' + Date.now());
+  }
+});
+var upload = multer({ storage : storage}).single('userPhoto');
+
 var app = express();
 
 /*var server = app.listen(3000);
@@ -837,13 +848,32 @@ app.post('/sendpushnotification_test', function(req, res) {
     });
 });
 
-app.post('/sendpushnotification', function(req, res) {
-
+app.post('/sendpushnotification_plain', function(req, res) {
+    not_title = req.body.title;
+    not_descr = req.body.description;
+    not_device_token = req.body.gcmTokens;
+    sendpushnotification(not_device_token, not_title, not_descr);
+    res.send();
 });
 
-function sendpushnotification(gcmToken, title, message){
+app.post('/testfileupload', function(req, res) {
+    console.log(req.body.file);
+});
+
+
+app.post('/sendpushnotification_image', function(req, res) {
+    not_title = req.body.title;
+    not_descr = req.body.description;
+    not_device_token = req.body.gcmToken;
+    sendpushnotification(res, not_device_token, not_title, not_descr);
+});
+
+function sendpushnotification(gcmToken, title, message, image_url){
     var gcm = require('android-gcm');
     var gcmObject = new gcm.AndroidGcm(GcmGoogleKey);
+    if (!image_url){
+        image_url = '';
+    }
 
     // initialize new androidGcm object 
     var message = new gcm.Message({
@@ -852,7 +882,8 @@ function sendpushnotification(gcmToken, title, message){
             'message': title,
             'badge': 1,
             'title': title,
-            'img_url': 'https://lh4.ggpht.com/mJDgTDUOtIyHcrb69WM0cpaxFwCNW6f0VQ2ExA7dMKpMDrZ0A6ta64OCX3H-NMdRd20=w300',
+            //'img_url': 'https://lh4.ggpht.com/mJDgTDUOtIyHcrb69WM0cpaxFwCNW6f0VQ2ExA7dMKpMDrZ0A6ta64OCX3H-NMdRd20=w300',
+            'img_url': image_url,
             'notification_type': 6,
         }
     });

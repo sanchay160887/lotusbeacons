@@ -23,6 +23,7 @@
     margin-bottom: 0;
     padding: 3px 0;   
     min-height: 40px;
+    word-wrap: break-word;
 }
 
 .block_title_3 {
@@ -73,6 +74,13 @@ Date: 05 Jan 2016
 
 <div class="content-device_block">
     <div class="container-fluid">
+        <!-- <div class="row">
+            <div>
+                 <input type = "file" file-model = "myFile"/>
+                 <button ng-click = "uploadFile()">upload me</button>
+              </div>
+              <div class="clearfix"></div>
+        </div> -->
 
         <div class="bcon_selection row">
             <div class="col-md-4">
@@ -103,13 +111,16 @@ Date: 05 Jan 2016
                     </div>
                 </div>
             </div>
+            <!-- <div class="col-md-1">
+                <button type="button" class="btn btn-info" ng-click="loadData()">Show</button>
+            </div> -->
             <div class="col-md-2">
-                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#text-message">Send Text Message</button>
+                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#text-message">Send Notification</button>
                 
             </div>
-            <div class="col-md-2">
+            <!-- <div class="col-md-2">
                 <button type="button" class="btn btn-info" data-toggle="modal" data-target="#graphic-message">Send Image Message</button>
-            </div>
+            </div> -->
         </div>
 
 
@@ -152,7 +163,7 @@ Date: 05 Jan 2016
             </div>
             <div class="col-md-3">
                 <div class="content-device_block_3">
-                    <p class="block_title_3">{{ device.Distance }}</p>
+                    <p class="block_title_3">{{ device.Distance | numberEx:2 }} M</p>
                 </div>
             </div>
             <div class="col-md-2">

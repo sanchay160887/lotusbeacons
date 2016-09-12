@@ -1,0 +1,73 @@
+<style>
+
+.register_block_1 {
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    display: inline-block;
+    margin: 2% 2%;
+    padding: 20px;
+    vertical-align: top;
+    width: 34%;
+}
+
+
+.register_block_2 {
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    display: inline-block;
+    margin: 2% 1%;
+    padding: 20px;
+    vertical-align: top;
+    width: 58%;
+}
+
+
+.content-header {
+    padding: 6% 15px 0;
+    position: relative;
+}
+
+
+</style>
+
+
+
+<!--
+Author: Ranjithprabhu K
+Page Description: Dashboard Home page
+Date: 05 Jan 2016
+-->
+<!-- Content Header (Page header) -->
+<section class="content-blocks">
+    <section class="content-header">
+        <h1>
+            Register Stores
+        </h1>
+        <ol class="breadcrumb">
+            <li><a><i class="fa fa-dashboard"></i> Dashboard</a></li>
+            <li class="active">Stores</li>
+        </ol>
+    </section>
+    <section class="content-body register_block_1">
+        <h4 ng-if="button_name!='update'">Add Stores</h4>
+        <h4 ng-if="button_name=='update'">Update Stores</h4>
+        <label>Store Name</label>
+        <input class="form-control" type="text" name="store_name" ng-model="Store_Name" /><br>
+        <label>Description</label>
+        <textarea class="form-control" name="store_descr" ng-model="Store_Descr"></textarea><br>
+        <button class="btn btn-primary" ng-bind="button_name" ng-click="processStore()">Add</button>
+        <button class="btn btn-primary" ng-if="button_name=='update'" ng-click="deleteStore()">Delete</button>
+    </section>
+    <section class="content-body register_block_2">
+        <!-- Main content -->
+        <table class="table">
+            <th>Store Name</th>
+            <th>Description</th>
+            <tr ng-repeat= "device in storeData | orderBy:BeaconKey ">
+                <td><input class="form-control" type='text' ng-model="device.StoreName" readonly /></td>
+                <td><input class="form-control"  type='text' ng-model="device.StoreDescr" readonly /></td>
+                <td ng-click="getStore(device._id)"><span class="btn btn-primary">View</span></td>
+            </tr>
+        </table>
+    </section><!-- /.content -->
+</section>

@@ -232,12 +232,24 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
         });
     }
 
+    var sendNotification_plain = function(gcmTokens, title, description){
+        return $http({
+            method: "post",
+            url: "/sendpushnotification_plain",
+            data: {
+                'gcmTokens' : gcmTokens,
+                'description' : description,
+                'title' : title
+            }
+        });
+    }
+
     apiService.storeData = storeData;
     apiService.addStores = addStores;
     apiService.updateStore = updateStore;
     apiService.deleteStore = deleteStore;
     apiService.getStore = getStore;
-    /*Beacon device end*/    
+    /*Beacon device end*/
 
     apiService.get = get;
 
@@ -246,6 +258,7 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
     apiService.delet = delet;
     apiService.deviceData = deviceData;
     apiService.sendNotification = sendNotification;
+    apiService.sendNotification_plain = sendNotification_plain;
     apiService.updateDevice = updateDevice;
 
 

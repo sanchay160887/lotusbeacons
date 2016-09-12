@@ -25,7 +25,66 @@ dashboard.factory('socket', function ($rootScope) {
   };
 });
 
-dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiService, socket, $http, $location, $window) { //
+dashboard.directive('fileModel', ['$parse', function ($parse) {
+  return {
+     restrict: 'A',
+     link: function(scope, element, attrs) {
+        var model = $parse(attrs.fileModel);
+        var modelSetter = model.assign;
+        
+        element.bind('change', function(){
+           scope.$apply(function(){
+              modelSetter(scope, element[0].files[0]);
+           });
+        });
+     }
+  };
+}]);
+
+dashboard.service('fileUpload', ['$http', function ($http) {
+  this.uploadFileToUrl = function(file, uploadUrl){
+     var fd = new FormData();
+     fd.append('file', file);
+     fd.append('name', 'ali');
+     fd.append('surname', 'sabun');
+  
+     $http.post(uploadUrl, fd, {
+        transformRequest: angular.identity,
+        headers: {'Content-Type': undefined}
+     })
+  
+     .success(function(){
+     })
+  
+     .error(function(){
+     });
+  }
+}]);
+
+dashboard.filter('numberEx', ['numberFilter', '$locale',
+  function(number, $locale) {
+
+    var formats = $locale.NUMBER_FORMATS;
+    return function(input, fractionSize) {
+      //Get formatted value
+      var formattedValue = number(input, fractionSize);
+
+      //get the decimalSepPosition
+      var decimalIdx = formattedValue.indexOf(formats.DECIMAL_SEP);
+
+      //If no decimal just return
+      if (decimalIdx == -1) return formattedValue;
+
+
+      var whole = formattedValue.substring(0, decimalIdx);
+      var decimal = (Number(formattedValue.substring(decimalIdx)) || "").toString();
+
+      return whole +  decimal.substring(1);
+    };
+  }
+]);
+
+dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiService, socket, $http, $location, $window, fileUpload) { //
 	var vm = this;
   $scope.BeaconID = '';
   $scope.beaconData = [];
@@ -55,6 +114,16 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
   $scope.ShowSelectedTokens = function() {
       console.log($scope.deviceData);
   };
+
+  $scope.uploadFile = function(){
+     var file = $scope.myFile;
+     
+     console.log('file is ' );
+     console.dir(file);
+     
+     var uploadUrl = "/testfileupload";
+     fileUpload.uploadFileToUrl(file, uploadUrl);
+  };
   
 
   $scope.$watchCollection('[selectedStore]', function() {
@@ -72,6 +141,10 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
         //$window.location.reload();
       }
   });
+
+  /*$scope.loadData = function(){
+    $scope.getAllDevices();
+  }*/
 
   $scope.getAllDevices = function(){
     var queriedUrl = $location.search()
@@ -137,7 +210,9 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
       }
     }
     
-
+    apiService.sendNotification_plain(checkedlist, $scope.TM_title, $scope.TM_descr).then(function(res){
+      console.log(res);
+    });
   }
 
   //$http.post('http://localhost:3000/deleteDevice', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
