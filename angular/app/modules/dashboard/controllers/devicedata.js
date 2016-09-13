@@ -149,14 +149,14 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
     }
   }
 
-  /*$http({
+  $http({
         method: "post",
-        url: "/getdevicetoken",
+        url: "/getdeviceidentity",
     }).success(function(data, status, headers, config) {
         console.log(data);
     }).error(function(data, status, headers, config) {
         console.log("failed.");
-    });*/
+    });
 
   
   /*apiService.updateDeviceHistory('12:32:45:22:89',

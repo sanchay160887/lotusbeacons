@@ -15,6 +15,9 @@ var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var GcmGoogleKey = 'AIzaSyAUxc6EwlgRP6MITCynw3_vsYatPI4iZuw';
 var gcm = require('android-gcm');
+var Client = require('node-rest-client').Client;
+var request = require('request');
+var querystring = require('querystring')
 
 var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon';
 MongoClient.connect(mongourl, function(err, db) {
@@ -290,8 +293,7 @@ io.on('connection', function(socket) {
         updateDevice(data.BeaconID, data.DeviceID, data.Distance);
 		updateDeviceHistory(data.BeaconID, data.DeviceID, data.StayTime);
         sendDevices();
-    });
-    
+    });    
     
     //setInterval(sendDevices, 5000);
 });
@@ -446,8 +448,8 @@ app.post('/getdata', function(req, res) {
 							devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
 							devicelist.push(devices[dvc]);
 						}
-						res.send(devicelist);
-						callback(null, beaconlist);
+						//res.send(devicelist);
+						callback(null, devicelist);
 						return;
 					})
 				} else {
@@ -456,15 +458,53 @@ app.post('/getdata', function(req, res) {
 							devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
 							devicelist.push(devices[dvc]);
 						}
-						res.send(devicelist);
-						callback(null, beaconlist);
-						return;
+						//res.send(devicelist);
+						callback(null, devicelist);
 					})
 				}				
 			},
-			function(beaconlist, callback){
-		        db.close();				
-			}
+			function(devicelist, callback){
+                console.log(devicelist);
+                var devices = [];
+                for(var d in devicelist){
+                    devices.push(devicelist[d].DeviceID);
+                }
+                var request = require('request');
+                var data = JSON.stringify(devices);
+
+                request.post('http://lampdemos.com/lotus15/v2/user/get_user_name',{form : {'android_device_token': data}},
+                function(res2, err, body){
+                    console.log(body);
+                    device_detail = [];
+                    if (body.data){
+                        for(var d in body.data){
+                            if (body.data[d].name){
+                                device_detail[body.data[d].device_token] = body.data[d].name;
+                            } else if (body.data[d].mobile_no){
+                                device_detail[body.data[d].device_token] = body.data[d].mobile_no;
+                            } else {
+                                device_detail[body.data[d].device_token] = body.data[d].device_token;
+                            }
+                        }
+                        for(var d in devicelist){
+                            if ( typeof(device_detail[devicelist[d].DeviceID]) != 'undefined'){
+                                devicelist[d].DeviceName = devicelist[d].DeviceID;
+                            }
+                        }
+                    } else {
+                        for(var d in devicelist){
+                            devicelist[d].DeviceName = devicelist[d].DeviceID;
+                        }
+                    }
+
+                    //console.log(devicelist);
+                    res.send(devicelist);
+                    callback(null, devicelist);
+                })
+			},
+            function(devicelist, callback){
+                db.close();             
+            }
 		]);
 
     });
@@ -1048,7 +1088,7 @@ function sendpushnotification(gcmToken, title, message, image_url){
     var message = new gcm.Message({
         registration_ids: gcmToken, //[gcmToken],
         data: {
-            'message': title,
+            'message': message,
             'badge': 1,
             'title': title,
             //'img_url': 'https://lh4.ggpht.com/mJDgTDUOtIyHcrb69WM0cpaxFwCNW6f0VQ2ExA7dMKpMDrZ0A6ta64OCX3H-NMdRd20=w300',
@@ -1098,11 +1138,13 @@ app.post('/api/photo',function(req,res){
     });
 });
 
-app.post('/getdevicetoken',function(req,res){
-    var devicelist = [];
-    var device = [];
-    device.push('APA91bELNsBdV4nR1j7Wh17Xx0cMD6X-wSbHfchYxaL19BspoVh-l3zGLN2r6LkHFxMuYBiEEFShDy5iAgh1h5nkK7jO3aPUsbYVOjkPLgwZaOEwxES5TZ0');
-    device.push('APA91bFieVf2vEQQDAeXtsBkOCJgMks_Sg6LKgVZ0uCl1O0reLZfRZXpsNKvg68744SFfUbV2U9L8QA_TBDJ3GbnbOOiv3og6JYBD-JJwwNU77U08Uhzke4');
-    JSON.stringify(device);
+app.post('/getdeviceidentity',function(req,res){
+    var request = require('request');
+    var data = JSON.stringify(["APA91bHcxKvZbp5pcY_KeivI3qbHj1LF0KNct3Vx13jXVEFLzZDH5LMaE_1j08rClLhzAOwVJLp9Jmga0rPX3qndKOe6kK35sG8yDSYg4dipInhSZsgZOTU"]);
+
+    request.post('http://lampdemos.com/lotus15/v2/user/get_user_name',{form : {'android_device_token': data }},
+        function(res, err, body){
+        console.log(body);
+    })
     res.send();
 });
