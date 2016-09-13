@@ -308,7 +308,6 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
     //apiService.base_url = 'http://localhost:3000';
     apiService.base_url = 'http://lotusbeacon.herokuapp.com';
 
-
     return apiService;
 
 }]);

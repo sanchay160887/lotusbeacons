@@ -1144,6 +1144,20 @@ function sendpushnotification(gcmToken, title, message, image_url){
         }
         //res.send();
     });
+    /*var data = JSON.stringify(gcmToken);
+    request.post('http://lampdemos.com/lotus15/v2/user/add_notification',
+        {
+            form : {
+                'android_device_token': data,
+                'title' : title,
+                'message' : message,
+                'img_url' : image_url
+            }
+    },
+    function(res2, err, body){
+        console.log('Entry made');
+
+    });*/
 }
 
 var multer  =   require('multer');
