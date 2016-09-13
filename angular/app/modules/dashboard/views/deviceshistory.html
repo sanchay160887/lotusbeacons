@@ -115,13 +115,14 @@ Date: 05 Jan 2016
             <td><input type="checkbox" value="{{ device.DeviceID }}" 
                     ng-click="ShowSelectedTokens()"
                     ng-model="device.checked"></td>
-            <td>{{ device.DeviceID }}</td>
+            <!-- <td>{{ device.DeviceID }}</td> -->
+            <td>{{ device.DeviceName }}</td>
             <td>{{ device.StayTime }} minute</td>
             <td>{{ device.BeaconKey }}</td>
           </tr>
         </tbody>
       </table>
-      
+
       <!-- <div class="col-md-1">
         <div class="content-device_block_1">
           <p class="block_title_1">Select</p>

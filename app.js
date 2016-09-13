@@ -550,8 +550,8 @@ app.post('/getDeviceHistorydata', function(req, res) {
 							devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
 							devicelist.push(devices[dvc]);
 						}
-						res.send(devicelist);
-						callback(null, beaconlist);
+						//res.send(devicelist);
+						callback(null, devicelist);
 						return;
 					})
 				} else {
@@ -560,12 +560,51 @@ app.post('/getDeviceHistorydata', function(req, res) {
 							devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
 							devicelist.push(devices[dvc]);
 						}
-						res.send(devicelist);
-						callback(null, beaconlist);
+						//res.send(devicelist);
+						callback(null, devicelist);
 						return;
 					})
 				}				
 			},
+            function(devicelist, callback){
+                console.log(devicelist);
+                var devices = [];
+                for(var d in devicelist){
+                    devices.push(devicelist[d].DeviceID);
+                }
+                var request = require('request');
+                var data = JSON.stringify(devices);
+
+                request.post('http://lampdemos.com/lotus15/v2/user/get_user_name',{form : {'android_device_token': data}},
+                function(res2, err, body){
+                    console.log(body);
+                    device_detail = [];
+                    if (body.data){
+                        for(var d in body.data){
+                            if (body.data[d].name){
+                                device_detail[body.data[d].device_token] = body.data[d].name;
+                            } else if (body.data[d].mobile_no){
+                                device_detail[body.data[d].device_token] = body.data[d].mobile_no;
+                            } else {
+                                device_detail[body.data[d].device_token] = body.data[d].device_token;
+                            }
+                        }
+                        for(var d in devicelist){
+                            if ( typeof(device_detail[devicelist[d].DeviceID]) != 'undefined'){
+                                devicelist[d].DeviceName = devicelist[d].DeviceID;
+                            }
+                        }
+                    } else {
+                        for(var d in devicelist){
+                            devicelist[d].DeviceName = devicelist[d].DeviceID;
+                        }
+                    }
+
+                    //console.log(devicelist);
+                    res.send(devicelist);
+                    callback(null, devicelist);
+                })
+            },
 			function(beaconlist, callback){
 		        db.close();				
 			}
