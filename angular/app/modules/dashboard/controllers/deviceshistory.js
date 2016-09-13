@@ -114,9 +114,11 @@ dashboard.controller("DeviceHistoryController",function ($rootScope, $scope, api
       }
     }
     
-    apiService.sendNotification_plain(checkedlist, $scope.TM_title, $scope.TM_descr).then(function(res){
-      console.log(res);
-    });
+    if (checkedlist && checkedlist.length > 0){
+      apiService.sendNotification_plain(checkedlist, $scope.GM_title, $scope.GM_descr).then(function(res){
+        console.log(res);
+      });
+    }
   }
 
   $scope.sendImageMessage = function(){

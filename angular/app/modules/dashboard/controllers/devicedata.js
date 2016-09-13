@@ -148,6 +148,16 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
       alert('No device selected');
     }
   }
+
+  /*$http({
+        method: "post",
+        url: "/getdevicetoken",
+    }).success(function(data, status, headers, config) {
+        console.log(data);
+    }).error(function(data, status, headers, config) {
+        console.log("failed.");
+    });*/
+
   
   /*apiService.updateDeviceHistory('12:32:45:22:89',
   	'APA91bE8pbcfkLUbtfWPLurBq1h2jKe2S4LcA5mkQB7a-tp26pSBLY8jj726HqfBbxXK5hBkp1Aw9IzAlTU8DB3cxGlpIOrMbJjE6BkNA1EdZS3Xi6VaYWA', 2)

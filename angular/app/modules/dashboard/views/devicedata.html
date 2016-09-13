@@ -93,7 +93,27 @@ Date: 05 Jan 2016
       </div> 
     </div>
     <div class="row">
-      <div class="col-md-1">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Select</th>
+            <th>Device ID</th>
+            <th>Distance</th>
+            <th>Beacon</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat= "device in deviceData | orderBy:Distance ">
+            <td><input type="checkbox" value="{{ device.DeviceID }}" 
+                    ng-click="ShowSelectedTokens()"
+                    ng-model="device.checked"></td>
+            <td>{{ device.DeviceID }}</td>
+            <td>{{ device.Distance | numberEx:2 }} meter</td>
+            <td>{{ device.BeaconKey }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <!-- <div class="col-md-1">
         <div class="content-device_block_1">
           <p class="block_title_1">Select</p>
         </div>
@@ -112,9 +132,9 @@ Date: 05 Jan 2016
         <div class="content-device_block_1">
           <p class="block_title_1">Beacon</p>
         </div>
-      </div>
+      </div> -->
     </div>
-    <div class="row" ng-repeat= "device in deviceData | orderBy:Distance ">
+    <!-- <div class="row" ng-repeat= "device in deviceData | orderBy:Distance ">
       <div class="col-md-1">
         <div class="content-device_block_1">
           <input type="checkbox" value="{{ device.DeviceID }}" 
@@ -137,7 +157,7 @@ Date: 05 Jan 2016
           <p class="block_title_3">{{ device.BeaconKey }}</p>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </div>
 

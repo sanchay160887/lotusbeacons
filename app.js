@@ -111,9 +111,9 @@ function isNumeric(n) {
 
 
 function updateDevice(BeaconID, DeviceID, Distance, resObj){
-    console.log('Beacon ID ' + BeaconID);
+    /*console.log('Beacon ID ' + BeaconID);
     console.log('Device ID ' + DeviceID);
-    console.log('Distance ' + Distance);
+    console.log('Distance ' + Distance);*/
 
     var resObjVal = {};
     if (!(DeviceID && Distance)) {
@@ -204,9 +204,9 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj){
 }
 
 function updateDeviceHistory(BeaconID, DeviceID, StayTime){
-    console.log('Beacon ID ' + BeaconID);
+    /*console.log('Beacon ID ' + BeaconID);
     console.log('Device ID ' + DeviceID);
-    console.log('Stay Time ' + StayTime);
+    console.log('Stay Time ' + StayTime);*/
 
     var resObjVal = {};
     if (!(BeaconID && DeviceID && StayTime)) {
@@ -427,12 +427,11 @@ app.post('/getdata', function(req, res) {
 					for(var b in beacons){
 						beaconslist[beacons[b].BeaconID] = beacons[b].BeaconKey;
 					}
-					console.log(beaconslist['00:A0:50:0E:0E:0D']);
+					
 					callback(null, beaconslist);
 				});				
 			}, 
 			function(beaconlist, callback){
-				console.log(beaconlist);
 				var collection = db.collection('device');
 				var devicelist = new Array();
 				if (BeaconID){
@@ -447,7 +446,6 @@ app.post('/getdata', function(req, res) {
 							devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
 							devicelist.push(devices[dvc]);
 						}
-						console.log(devicelist);
 						res.send(devicelist);
 						callback(null, beaconlist);
 						return;
@@ -458,7 +456,6 @@ app.post('/getdata', function(req, res) {
 							devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
 							devicelist.push(devices[dvc]);
 						}
-						console.log(devicelist);
 						res.send(devicelist);
 						callback(null, beaconlist);
 						return;
@@ -500,7 +497,6 @@ app.post('/getDeviceHistorydata', function(req, res) {
 				});				
 			}, 
 			function(beaconlist, callback){
-				console.log(beaconlist);
 				var collection = db.collection('device_history');
 				var devicelist = new Array();
 				if (BeaconID){
@@ -514,7 +510,6 @@ app.post('/getDeviceHistorydata', function(req, res) {
 							devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
 							devicelist.push(devices[dvc]);
 						}
-						console.log(devicelist);
 						res.send(devicelist);
 						callback(null, beaconlist);
 						return;
@@ -525,7 +520,6 @@ app.post('/getDeviceHistorydata', function(req, res) {
 							devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
 							devicelist.push(devices[dvc]);
 						}
-						console.log(devicelist);
 						res.send(devicelist);
 						callback(null, beaconlist);
 						return;
@@ -570,7 +564,6 @@ app.post('/getbeacondata', function(req, res) {
         }
 
         beaconcollection.toArray(function(err, devices) {
-            console.log(devices);
             if (devices && devices.length > 0){
                 for (var dvc in devices) {
                     devicelist.push(devices[dvc]);
@@ -1046,7 +1039,11 @@ function sendpushnotification(gcmToken, title, message, image_url){
     if (!image_url){
         image_url = '';
     }
-        
+    /*console.log(gcmToken);
+    console.log(title);
+    console.log(message);
+    console.log(image_url);*/
+    
     // initialize new androidGcm object 
     var message = new gcm.Message({
         registration_ids: gcmToken, //[gcmToken],
@@ -1099,4 +1096,13 @@ app.post('/api/photo',function(req,res){
          
         res.send(filename);
     });
+});
+
+app.post('/getdevicetoken',function(req,res){
+    var devicelist = [];
+    var device = [];
+    device.push('APA91bELNsBdV4nR1j7Wh17Xx0cMD6X-wSbHfchYxaL19BspoVh-l3zGLN2r6LkHFxMuYBiEEFShDy5iAgh1h5nkK7jO3aPUsbYVOjkPLgwZaOEwxES5TZ0');
+    device.push('APA91bFieVf2vEQQDAeXtsBkOCJgMks_Sg6LKgVZ0uCl1O0reLZfRZXpsNKvg68744SFfUbV2U9L8QA_TBDJ3GbnbOOiv3og6JYBD-JJwwNU77U08Uhzke4');
+    JSON.stringify(device);
+    res.send();
 });
