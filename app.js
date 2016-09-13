@@ -207,9 +207,9 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj){
 }
 
 function updateDeviceHistory(BeaconID, DeviceID, StayTime){
-    /*console.log('Beacon ID ' + BeaconID);
+    console.log('Beacon ID ' + BeaconID);
     console.log('Device ID ' + DeviceID);
-    console.log('Stay Time ' + StayTime);*/
+    console.log('Stay Time ' + StayTime);
 
     var resObjVal = {};
     if (!(BeaconID && DeviceID && StayTime)) {
