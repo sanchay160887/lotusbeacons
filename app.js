@@ -14,6 +14,7 @@ var gcm = require('node-gcm');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var GcmGoogleKey = 'AIzaSyAUxc6EwlgRP6MITCynw3_vsYatPI4iZuw';
+var gcm = require('android-gcm');
 
 var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon';
 MongoClient.connect(mongourl, function(err, db) {
@@ -29,17 +30,6 @@ var server = http.createServer(function(req, res) {
     });
     res.end(index);
 });
-
-var multer  =   require('multer');
-var storage =   multer.diskStorage({
-  destination: function (req, file, callback) {
-    callback(null, './uploads');
-  },
-  filename: function (req, file, callback) {
-    callback(null, file.fieldname + '-' + Date.now());
-  }
-});
-var upload = multer({ storage : storage}).single('userPhoto');
 
 var app = express();
 
@@ -1040,25 +1030,23 @@ app.post('/sendpushnotification_plain', function(req, res) {
     res.send();
 });
 
-app.post('/testfileupload', function(req, res) {
-    console.log(req.body.file);
-});
-
 
 app.post('/sendpushnotification_image', function(req, res) {
     not_title = req.body.title;
     not_descr = req.body.description;
-    not_device_token = req.body.gcmToken;
-    sendpushnotification(res, not_device_token, not_title, not_descr);
+    not_image = req.body.image_url;
+    not_device_token = req.body.gcmTokens;
+
+    sendpushnotification(not_device_token, not_title, not_descr, not_image);
+    res.send();
 });
 
 function sendpushnotification(gcmToken, title, message, image_url){
-    var gcm = require('android-gcm');
     var gcmObject = new gcm.AndroidGcm(GcmGoogleKey);
     if (!image_url){
         image_url = '';
     }
-
+        
     // initialize new androidGcm object 
     var message = new gcm.Message({
         registration_ids: gcmToken, //[gcmToken],
@@ -1081,3 +1069,34 @@ function sendpushnotification(gcmToken, title, message, image_url){
         //res.send();
     });
 }
+
+var multer  =   require('multer');
+var storage =   multer.diskStorage({
+  destination: function (req, file, callback) {
+    callback(null, './angular/images/notificationuploads/');
+  },
+  filename: function (req, file, callback) {
+    extension = file.originalname.split('.')[1];
+    callback(null, file.fieldname + '-' + Date.now() + '.' + extension);
+  }
+});
+
+var upload = multer({ storage : storage}).single('userPhoto');
+
+app.post('/api/photo',function(req,res){
+    upload(req,res,function(err) {
+        if(err) {
+            console.log(err);
+            return res.end("Error uploading file.");
+        }
+        var filename = '';
+        if (req.file){
+            filename = req.file.destination + req.file.filename;
+            filename = filename.replace('./','');
+            filename = filename.replace('\\','/');
+            filename = filename.replace('angular','');
+        }        
+         
+        res.send(filename);
+    });
+});

@@ -272,6 +272,19 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
         });
     }
 
+    var sendNotification_image = function(gcmTokens, title, description, image_url){
+        return $http({
+            method: "post",
+            url: "/sendpushnotification_image",
+            data: {
+                'gcmTokens' : gcmTokens,
+                'description' : description,
+                'title' : title,
+                'image_url' : image_url
+            }
+        });
+    }
+
     apiService.storeData = storeData;
     apiService.addStores = addStores;
     apiService.updateStore = updateStore;
@@ -288,8 +301,11 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
 	apiService.deviceHistoryData = deviceHistoryData;
     apiService.sendNotification = sendNotification;
     apiService.sendNotification_plain = sendNotification_plain;
+    apiService.sendNotification_image = sendNotification_image;
     apiService.updateDevice = updateDevice;
 	apiService.updateDeviceHistory = updateDeviceHistory;
+
+    apiService.base_url = 'http://localhost:3000';
 
 
     return apiService;

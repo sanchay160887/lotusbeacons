@@ -1,4 +1,4 @@
-dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiService, socket, $http, $location, $window, fileUpload) { //
+dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiService, socket, $http, $location) { //
 	var vm = this;
   $scope.BeaconID = '';
   $scope.beaconData = [];
@@ -9,6 +9,10 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
   $scope.selectedTokens = {};
   $scope.TM_title = '';
   $scope.TM_descr = '';
+  $scope.GM_title = '';
+  $scope.GM_descr = '';
+  $scope.GM_ImageFilePath = '';
+  $scope.baseUrl = apiService.base_url;
 
   $scope.Initialized = false;
 
@@ -26,17 +30,7 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
   });
 
   $scope.ShowSelectedTokens = function() {
-      console.log($scope.deviceData);
-  };
-
-  $scope.uploadFile = function(){
-     var file = $scope.myFile;
-     
-     console.log('file is ' );
-     console.dir(file);
-     
-     var uploadUrl = "/testfileupload";
-     fileUpload.uploadFileToUrl(file, uploadUrl);
+      //console.log($scope.deviceData);
   };
   
 
@@ -46,14 +40,8 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
         $scope.getAllBeacon();
       }
   });
-  
-  /*$scope.$watchCollection('[selectedBeacon]', function() {
-      if ($scope.Initialized){
-        $scope.getAllDevices();
-        //$window.location.reload();
-      }
-  });*/
 
+  
   $scope.loadData = function(){
 	$location.search({'store' : $scope.selectedStore, 'beacon' : $scope.selectedBeacon});
     $scope.getAllDevices();
@@ -65,16 +53,16 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
     if (typeof(queriedUrl.beacon) != 'undefined' && queriedUrl.beacon){
       selectedBeacon = queriedUrl.beacon;
     }
-	beaconlist = [];
-	if (!selectedBeacon && $scope.beaconData){
-		for(var b in $scope.beaconData){
-			beaconlist.push( $scope.beaconData[b].BeaconID );
-		}
-	} else {
-		if (selectedBeacon){
-			beaconlist.push(selectedBeacon);
-		}
-	}
+  	beaconlist = [];
+  	if (!selectedBeacon && $scope.beaconData){
+  		for(var b in $scope.beaconData){
+  			beaconlist.push( $scope.beaconData[b].BeaconID );
+  		}
+  	} else {
+  		if (selectedBeacon){
+  			beaconlist.push(selectedBeacon);
+  		}
+  	}
 
   	$scope.Initialized = false;
   	apiService.deviceData(beaconlist).then(function(res){
@@ -132,9 +120,33 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
       }
     }
     
-    apiService.sendNotification_plain(checkedlist, $scope.TM_title, $scope.TM_descr).then(function(res){
-      console.log(res);
-    });
+    if (checkedlist && checkedlist.length > 0){
+      apiService.sendNotification_plain(checkedlist, $scope.TM_title, $scope.TM_descr).then(function(res){
+        console.log(res);
+      });
+    } else {
+      alert('No device selected');
+    }
+    
+  }
+
+  $scope.sendImageMessage = function(){
+    var checkedlist = [];
+    for(var dd in $scope.deviceData){
+      if ($scope.deviceData[dd].checked){
+        checkedlist.push($scope.deviceData[dd].DeviceID);
+      }
+    }
+    
+    var ImageFilePath = $scope.baseUrl + $scope.GM_ImageFilePath;
+
+    if (checkedlist && checkedlist.length > 0){
+      apiService.sendNotification_image(checkedlist, $scope.GM_title, $scope.GM_descr, ImageFilePath).then(function(res){
+        console.log(res);
+      });
+    } else {
+      alert('No device selected');
+    }
   }
   
   /*apiService.updateDeviceHistory('12:32:45:22:89',

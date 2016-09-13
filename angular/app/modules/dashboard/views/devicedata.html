@@ -53,14 +53,6 @@ Date: 05 Jan 2016
 </section>
 <div class="content-device_block">
   <div class="container-fluid"> 
-    <!-- <div class="row">
-            <div>
-                 <input type = "file" file-model = "myFile"/>
-                 <button ng-click = "uploadFile()">upload me</button>
-              </div>
-              <div class="clearfix"></div>
-        </div> -->
-    
     <div class="bcon_selection row">
       <div class="col-md-4">
         <div class="form-group">
@@ -96,9 +88,9 @@ Date: 05 Jan 2016
       <div class="col-md-2">
         <button type="button" class="btn btn-info" data-toggle="modal" data-target="#text-message">Send Notification</button>
       </div>
-      <!-- <div class="col-md-2">
-                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#graphic-message">Send Image Message</button>
-            </div> --> 
+      <div class="col-md-2">
+          <button type="button" class="btn btn-info" data-toggle="modal" data-target="#graphic-message">Send Image Notification</button>
+      </div> 
     </div>
     <div class="row">
       <div class="col-md-1">
@@ -137,7 +129,7 @@ Date: 05 Jan 2016
       </div>
       <div class="col-md-3">
         <div class="content-device_block_3">
-          <p class="block_title_3"> {{ device.Distance }} {{ device.Distance | numberEx:2 }} meter</p>
+          <p class="block_title_3"> {{ device.Distance | numberEx:2 }} meter</p>
         </div>
       </div>
       <div class="col-md-2">
@@ -189,14 +181,78 @@ Date: 05 Jan 2016
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Modal Header</h4>
+        <h4 class="modal-title">Send Image Message</h4>
       </div>
       <div class="modal-body">
-        <p>Some text in the modal.</p>
+        <div class="form-group clearfix">
+          <label for="inputEmail3" class="col-sm-4 control-label">Title</label>
+          <div class="col-sm-8">
+            <div class="input-icon right">
+              <input class="form-control tag-inpt" ng-model="GM_title" />
+            </div>
+          </div>
+        </div>
+        <div class="form-group clearfix">
+          <label for="inputEmail3" class="col-sm-4 control-label">Description</label>
+          <div class="col-sm-8">
+            <div class="input-icon right">
+              <textarea ng-model="GM_descr" style="width:100%"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="form-group clearfix">
+          <label for="inputEmail3" class="col-sm-4 control-label">Upload Image</label>
+          <div class="col-sm-8">
+            <form id="uploadForm"
+                 enctype="multipart/form-data"
+                 action="/api/photo"
+                 method="post">
+              <input type="file" name="userPhoto" />
+              <input type="submit" value="Upload Image" name="submit">
+              <img src="#" width="50px" height="50px" id="imagepreview">
+              <span id = "status"></span>
+            </form>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="sendImageMessage()"> Send</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal" > Close </button>
+        <!-- <input type="submit" value="Submit"> -->
       </div>
     </div>
   </div>
 </div>
+<script type="text/javascript">
+$(document).ready(function() {
+  $("#imagepreview").hide();
+     $('#uploadForm').submit(function() {
+        $("#status").empty().text("Image is uploading...");
+        $(this).ajaxSubmit({
+
+            error: function(xhr) {
+        status('Error: ' + xhr.status);
+            },
+
+            success: function(response) {
+                if (response != 'Error uploading file.'){
+                  $("#status").empty();
+                  $("#imagepreview").attr('src',response);
+                  $("#imagepreview").show();
+                  var scope = angular.element($("#imagepreview")).scope();
+                  scope.$apply(function(){
+                      scope.GM_ImageFilePath = response;
+                  });
+                } else {
+                  $("#status").empty().text(response);
+                  $("#imagepreview").hide();
+                }                
+                console.log(response);
+                
+            }
+    });
+        //Very important line, it disable the page refresh.
+    return false;
+    });    
+});
+</script>
