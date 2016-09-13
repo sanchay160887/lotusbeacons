@@ -213,6 +213,75 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj){
     });
 }
 
+function updateDeviceHistory(BeaconID, DeviceID, StayTime){
+    console.log('Beacon ID ' + BeaconID);
+    console.log('Device ID ' + DeviceID);
+    console.log('Stay Time ' + StayTime);
+
+    var resObjVal = {};
+    if (!(BeaconID && DeviceID && StayTime)) {
+        return;
+    }
+
+    if (!isNumeric(StayTime)){
+        return;
+    }
+
+    console.log('Update device history called');
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+
+        var collection = db.collection('device_history');
+
+        async.waterfall([
+            function(callback) {
+                collection.find({
+                    'DeviceID': DeviceID,
+					'BeaconID': BeaconID
+                }).toArray(function(err, devices) {
+                    callback(null, devices);
+                });
+                
+            },
+            function(devicedata, callback){
+                if (devicedata && devicedata.length > 0){
+                    collection.update(
+                        {'DeviceID': DeviceID, 'BeaconID': BeaconID},
+                        {
+                            'BeaconID': BeaconID,
+                            'DeviceID': DeviceID,
+                            'StayTime': StayTime
+                        }
+                    );
+                    console.log('Device History updated');
+                } else {
+                    collection.insert({
+                        'BeaconID': BeaconID,
+						'DeviceID': DeviceID,
+						'StayTime': StayTime
+                    });
+                    console.log('Device History inserted');
+                }
+                callback(null, 'inserted');
+            },
+            function(response, callback) {
+                io.emit('updateDeviceHistory_response', {
+                    'IsSuccess': true,
+                    'message': 'Data updated successfully'
+                });
+                //sendDevices();
+                console.log('coming to last callback');
+                db.close();                
+                callback(null, response);
+            }
+        ]);        
+    });
+}
+
 
 // Emit welcome message on connection
 io.on('connection', function(socket) {
@@ -229,6 +298,7 @@ io.on('connection', function(socket) {
 
     socket.on('updateDevice', function(data) {
         updateDevice(data.BeaconID, data.DeviceID, data.Distance);
+		updateDeviceHistory(data.BeaconID, data.DeviceID, data.StayTime);
         sendDevices();
     });
     
@@ -278,6 +348,10 @@ app.post('/user/login', function(req, res) {
 
 app.post('/updateDevice', function(req, res) {
     updateDevice(req.body.BeaconID, req.body.DeviceID, req.body.Distance, res);
+});
+
+app.post('/updateDeviceHistory', function(req, res) {
+	updateDeviceHistory(req.body.BeaconID, req.body.DeviceID, req.body.StayTime);
 });
 
 app.post('/beaconConnected', function(req, res) {
@@ -341,33 +415,138 @@ app.post('/beaconDisconnected', function(req, res) {
 
 app.post('/getdata', function(req, res) {
     BeaconID = req.body.BeaconID;
+	//StoreID = req.body.StoreID;
         
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
             return console.dir(err);
         }
+		
+		async.waterfall([
+			function(callback){
+				var collection = db.collection('beacons');
+				var beaconcollection = [];
+				if (BeaconID){
+					//beaconcollection = collection.find({'BeaconID' : BeaconID });
+					beaconcollection = collection.find({'BeaconID' : { $in : BeaconID } });
+				} else {
+					beaconcollection = collection.find();
+				}
+				beaconcollection.toArray(function(err, beacons){
+					var beaconslist = [];
+					for(var b in beacons){
+						beaconslist[beacons[b].BeaconID] = beacons[b].BeaconKey;
+					}
+					console.log(beaconslist['00:A0:50:0E:0E:0D']);
+					callback(null, beaconslist);
+				});				
+			}, 
+			function(beaconlist, callback){
+				console.log(beaconlist);
+				var collection = db.collection('device');
+				var devicelist = new Array();
+				if (BeaconID){
+					if (BeaconID){
+						//beaconcollection = collection.find({'BeaconID' : BeaconID });
+						devicecollection = collection.find({'BeaconID' : { $in : BeaconID } });
+					} else {
+						devicecollection = collection.find();
+					}
+					devicecollection.toArray(function(err, devices) {
+						for (var dvc in devices) {
+							devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
+							devicelist.push(devices[dvc]);
+						}
+						console.log(devicelist);
+						res.send(devicelist);
+						callback(null, beaconlist);
+						return;
+					})
+				} else {
+					collection.find().toArray(function(err, devices) {
+						for (var dvc in devices) {
+							devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
+							devicelist.push(devices[dvc]);
+						}
+						console.log(devicelist);
+						res.send(devicelist);
+						callback(null, beaconlist);
+						return;
+					})
+				}				
+			},
+			function(beaconlist, callback){
+		        db.close();				
+			}
+		]);
 
-        var collection = db.collection('device');
-        var devicelist = new Array();
-        if (BeaconID){
-            collection.find({'BeaconID' : BeaconID }).toArray(function(err, devices) {
-                for (var dvc in devices) {
-                    devicelist.push(devices[dvc]);
-                }
-                res.send(devicelist);
-                return;
-            })
-        } else {
-            collection.find().toArray(function(err, devices) {
-                for (var dvc in devices) {
-                    devicelist.push(devices[dvc]);
-                }
-                res.send(devicelist);
-                return;
-            })
-        }
+    });
+});
+
+app.post('/getDeviceHistorydata', function(req, res) {
+    BeaconID = req.body.BeaconID;
         
-        db.close();
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+		
+		async.waterfall([
+			function(callback){
+				var collection = db.collection('beacons');
+				var beaconcollection = [];
+				if (BeaconID){
+					//beaconcollection = collection.find({'BeaconID' : BeaconID });
+					beaconcollection = collection.find({'BeaconID' : { $in : BeaconID } });
+				} else {
+					beaconcollection = collection.find();
+				}
+				beaconcollection.toArray(function(err, beacons){
+					var beaconslist = [];
+					for(var b in beacons){
+						beaconslist[beacons[b].BeaconID] = beacons[b].BeaconKey;
+					}
+					callback(null, beaconslist);
+				});				
+			}, 
+			function(beaconlist, callback){
+				console.log(beaconlist);
+				var collection = db.collection('device_history');
+				var devicelist = new Array();
+				if (BeaconID){
+					if (BeaconID){
+						devicecollection = collection.find({'BeaconID' : { $in : BeaconID } });
+					} else {
+						devicecollection = collection.find();
+					}
+					devicecollection.toArray(function(err, devices) {
+						for (var dvc in devices) {
+							devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
+							devicelist.push(devices[dvc]);
+						}
+						console.log(devicelist);
+						res.send(devicelist);
+						callback(null, beaconlist);
+						return;
+					})
+				} else {
+					collection.find().toArray(function(err, devices) {
+						for (var dvc in devices) {
+							devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
+							devicelist.push(devices[dvc]);
+						}
+						console.log(devicelist);
+						res.send(devicelist);
+						callback(null, beaconlist);
+						return;
+					})
+				}				
+			},
+			function(beaconlist, callback){
+		        db.close();				
+			}
+		]);
+
     });
 });
 

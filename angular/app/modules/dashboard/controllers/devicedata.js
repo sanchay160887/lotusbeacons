@@ -1,89 +1,3 @@
-// Getting help from this url
-//http://www.html5rocks.com/en/tutorials/frameworks/angular-websockets/
-//
-dashboard.factory('socket', function ($rootScope) {
-  var socket = io.connect();
-  return {
-    on: function (eventName, callback) {
-      socket.on(eventName, function () {  
-        var args = arguments;
-        $rootScope.$apply(function () {
-          callback.apply(socket, args);
-        });
-      });
-    },
-    emit: function (eventName, data, callback) {
-      socket.emit(eventName, data, function () {
-        var args = arguments;
-        $rootScope.$apply(function () {
-          if (callback) {
-            callback.apply(socket, args);
-          }
-        });
-      })
-    }
-  };
-});
-
-dashboard.directive('fileModel', ['$parse', function ($parse) {
-  return {
-     restrict: 'A',
-     link: function(scope, element, attrs) {
-        var model = $parse(attrs.fileModel);
-        var modelSetter = model.assign;
-        
-        element.bind('change', function(){
-           scope.$apply(function(){
-              modelSetter(scope, element[0].files[0]);
-           });
-        });
-     }
-  };
-}]);
-
-dashboard.service('fileUpload', ['$http', function ($http) {
-  this.uploadFileToUrl = function(file, uploadUrl){
-     var fd = new FormData();
-     fd.append('file', file);
-     fd.append('name', 'ali');
-     fd.append('surname', 'sabun');
-  
-     $http.post(uploadUrl, fd, {
-        transformRequest: angular.identity,
-        headers: {'Content-Type': undefined}
-     })
-  
-     .success(function(){
-     })
-  
-     .error(function(){
-     });
-  }
-}]);
-
-dashboard.filter('numberEx', ['numberFilter', '$locale',
-  function(number, $locale) {
-
-    var formats = $locale.NUMBER_FORMATS;
-    return function(input, fractionSize) {
-      //Get formatted value
-      var formattedValue = number(input, fractionSize);
-
-      //get the decimalSepPosition
-      var decimalIdx = formattedValue.indexOf(formats.DECIMAL_SEP);
-
-      //If no decimal just return
-      if (decimalIdx == -1) return formattedValue;
-
-
-      var whole = formattedValue.substring(0, decimalIdx);
-      var decimal = (Number(formattedValue.substring(decimalIdx)) || "").toString();
-
-      return whole +  decimal.substring(1);
-    };
-  }
-]);
-
 dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiService, socket, $http, $location, $window, fileUpload) { //
 	var vm = this;
   $scope.BeaconID = '';
@@ -129,22 +43,21 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
   $scope.$watchCollection('[selectedStore]', function() {
       if ($scope.Initialized){
         $location.search({'store' : $scope.selectedStore});
-        console.log($scope.selectedStore);
         $scope.getAllBeacon();
       }
   });
   
-  $scope.$watchCollection('[selectedBeacon]', function() {
+  /*$scope.$watchCollection('[selectedBeacon]', function() {
       if ($scope.Initialized){
-        $location.search({'store' : $scope.selectedStore, 'beacon' : $scope.selectedBeacon});
         $scope.getAllDevices();
         //$window.location.reload();
       }
-  });
+  });*/
 
-  /*$scope.loadData = function(){
+  $scope.loadData = function(){
+	$location.search({'store' : $scope.selectedStore, 'beacon' : $scope.selectedBeacon});
     $scope.getAllDevices();
-  }*/
+  }
 
   $scope.getAllDevices = function(){
     var queriedUrl = $location.search()
@@ -152,17 +65,26 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
     if (typeof(queriedUrl.beacon) != 'undefined' && queriedUrl.beacon){
       selectedBeacon = queriedUrl.beacon;
     }
+	beaconlist = [];
+	if (!selectedBeacon && $scope.beaconData){
+		for(var b in $scope.beaconData){
+			beaconlist.push( $scope.beaconData[b].BeaconID );
+		}
+	} else {
+		if (selectedBeacon){
+			beaconlist.push(selectedBeacon);
+		}
+	}
 
-    if ($scope.selectedBeacon){
-      $scope.Initialized = false;
-      apiService.deviceData(selectedBeacon).then(function(res){
-        $scope.deviceData = res.data;
-        $scope.Initialized = true;
-      });
-    }
+  	$scope.Initialized = false;
+  	apiService.deviceData(beaconlist).then(function(res){
+		$scope.deviceData = res.data;
+		$scope.Initialized = true;
+  	});
+
   }
 
-  $scope.getAllDevices();
+  //$scope.getAllDevices();
 
   $scope.getAllBeacon = function(){
     selectedStore = '';
@@ -186,7 +108,7 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
     }
     
   }
-  $scope.getAllBeacon();
+  //$scope.getAllBeacon();
 
   socket.on('updateDevice_response', function(response){
       $scope.getAllDevices();
@@ -214,6 +136,12 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
       console.log(res);
     });
   }
+  
+  /*apiService.updateDeviceHistory('12:32:45:22:89',
+  	'APA91bE8pbcfkLUbtfWPLurBq1h2jKe2S4LcA5mkQB7a-tp26pSBLY8jj726HqfBbxXK5hBkp1Aw9IzAlTU8DB3cxGlpIOrMbJjE6BkNA1EdZS3Xi6VaYWA', 2)
+
+  apiService.updateDeviceHistory('00:A0:50:0E:0E:0D',
+  	'APA91bG-BDmozFR_A3cGkJ0WhNlURm38NxQclddjqt3HV1jiIWRPZdGO88nysUVaWNHlC-FTjtZAU7HMyiQZwJ5aOzZ85Pz7gjn7ND5FligAIUSgCm3ZfJg', 3)*/
 
   //$http.post('http://localhost:3000/deleteDevice', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
   

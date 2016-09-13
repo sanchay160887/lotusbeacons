@@ -130,6 +130,11 @@ function ($rootScope, $scope, $state, $location, Flash,appSettings) {
             title: "Stores",
             icon: "gears",
             state: "stores"
+        },
+        {
+            title: "Devices History",
+            icon: "gears",
+            state: "deviceshistory"
         }
 
     ];

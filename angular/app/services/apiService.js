@@ -89,6 +89,16 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
             }
         });
     }
+	
+	var deviceHistoryData = function(selectedBeacon){
+        return $http({
+            method: "post",
+            url: '/getDeviceHistorydata',
+            data: {
+                'BeaconID' : selectedBeacon,
+            }
+        });
+    }
 
     var sendNotification = function(){
         return $http({
@@ -119,6 +129,24 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
         });
     }
     //End
+	
+	var updateDeviceHistory = function(BeaconID, DeviceID, StayTime){
+        $http({
+            method: "post",
+            url: "/updateDeviceHistory",
+            data: {
+                'BeaconID' : BeaconID,
+                'DeviceID' : DeviceID,
+                'StayTime' : StayTime
+            }
+        }).success(function(data, status, headers, config) {
+            console.log("Success.");
+        })
+        .error(function(data, status, headers, config) {
+            console.log("failed.");
+        });
+    }
+	
 
     /*Beacon device start*/
     var beaconData = function(BeaconStore){
@@ -257,9 +285,11 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
     apiService.update = update;
     apiService.delet = delet;
     apiService.deviceData = deviceData;
+	apiService.deviceHistoryData = deviceHistoryData;
     apiService.sendNotification = sendNotification;
     apiService.sendNotification_plain = sendNotification_plain;
     apiService.updateDevice = updateDevice;
+	apiService.updateDeviceHistory = updateDeviceHistory;
 
 
     return apiService;

@@ -165,6 +165,16 @@ dashboard.config(["$stateProvider", function ($stateProvider) {
             pageTitle: 'Devices List'
         }
     });
+	
+	$stateProvider.state('app.deviceshistory', {
+        url: '/deviceshistory',
+        templateUrl: 'app/modules/dashboard/views/deviceshistory.html',
+        controller: 'DeviceHistoryController',
+        controllerAs: 'vm',
+        data: {
+            pageTitle: 'Devices History'
+        }
+    });
 
     $stateProvider.state('app.beacons', {
         url: '/beacondata',
