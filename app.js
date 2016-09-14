@@ -380,11 +380,11 @@ app.post('/beaconConnected', function(req, res) {
 });
 
 app.post('/beaconDisconnected', function(req, res) {
-    //BeaconID = req.body.BeaconID;
+    BeaconID = req.body.BeaconID;
     DeviceID = req.body.DeviceID; 
     //Distance = req.body.Distance;
 
-    updateDevice('', DeviceID, -1);
+    updateDevice(BeaconID, DeviceID, -1);
     
     setTimeout(function(){
         MongoClient.connect(mongourl, function(err, db) {
