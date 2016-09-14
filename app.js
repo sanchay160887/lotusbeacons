@@ -15,6 +15,7 @@ var methodOverride = require('method-override');
 var GcmGoogleKey = 'AIzaSyAUxc6EwlgRP6MITCynw3_vsYatPI4iZuw';
 var gcm = require('android-gcm');
 var request = require('request');
+querystring = require('querystring');
 require('timers')
 
 var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon';
@@ -1173,24 +1174,26 @@ function sendpushnotification(gcmToken, title, message, image_url){
         if (err) {
             console.log('Something went wrong :: ' + err);
         } else {
-            console.log(response);
+            console.log(response.success);
+            if (response.success == '1'){
+                var gcmdata = JSON.stringify(gcmToken);
+                console.log(gcmdata);
+                request.post('http://lampdemos.com/lotus15/v2/user/get_notification_entry',
+                    {
+                        form : {
+                            'android_device_token': gcmdata,
+                            'title' : title,
+                            'message' : message,
+                            'notification_img' : image_url
+                        }
+                },
+                function(res2, err, body){
+                    console.log('Data send to service --> ' + JSON.stringify(body));
+                });
+            }
         }
         //res.send();
-    });
-    /*var data = JSON.stringify(gcmToken);
-    request.post('http://lampdemos.com/lotus15/v2/user/add_notification',
-        {
-            form : {
-                'android_device_token': data,
-                'title' : title,
-                'message' : message,
-                'img_url' : image_url
-            }
-    },
-    function(res2, err, body){
-        console.log('Entry made');
-
-    });*/
+    });    
 }
 
 var multer  =   require('multer');
