@@ -10,14 +10,12 @@ var MongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectId;
 var assert = require('assert');
 var async = require('async');
-var gcm = require('node-gcm');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var GcmGoogleKey = 'AIzaSyAUxc6EwlgRP6MITCynw3_vsYatPI4iZuw';
 var gcm = require('android-gcm');
-var Client = require('node-rest-client').Client;
 var request = require('request');
-var querystring = require('querystring')
+require('timers')
 
 var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon';
 MongoClient.connect(mongourl, function(err, db) {
@@ -383,31 +381,60 @@ app.post('/beaconDisconnected', function(req, res) {
     //BeaconID = req.body.BeaconID;
     DeviceID = req.body.DeviceID; 
     //Distance = req.body.Distance;
+
+    updateDevice('', DeviceID, -1);
     
-    MongoClient.connect(mongourl, function(err, db) {
-        if (err) {
-            return console.dir(err);
-        }
-        assert.equal(null, err);
+    setTimeout(function(){
+        MongoClient.connect(mongourl, function(err, db) {
+            if (err) {
+                return console.dir(err);
+            }
+            assert.equal(null, err);
 
-        var collection = db.collection('device');
-        
-        collection.deleteMany({'DeviceID' : DeviceID });
+            var collection = db.collection('device');
 
-        db.close();
-
-        io.emit('updateDevice_response', {
-            'IsSuccess': true,
-            'message': 'Data inserted successfully'
-        });        
-    });
+            async.waterfall([
+                function(callback) {
+                    collection.find({
+                        'DeviceID': DeviceID
+                    }).toArray(function(err, devices) {
+                        callback(null, devices);
+                    });
+                }, 
+                function(devices, callback){
+                    var DeleteMe = false;
+                    if (devices && devices.length > 0){
+                        for(var d in devices){
+                            if (devices[d].Distance < 0){
+                                DeleteMe = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (DeleteMe){
+                        collection.deleteMany({'DeviceID' : DeviceID });
+                        io.emit('updateDevice_response', {
+                            'IsSuccess': true,
+                            'message': 'Data inserted successfully'
+                        });
+                    }                    
+                },
+                function(acknowledge, callback){
+                    db.close();
+                }
+            ]);
+        });
+    }, 120000);    
 
 });
 
-
 app.post('/getdata', function(req, res) {
+    console.log(JSON.stringify(req.body));
     BeaconID = req.body.BeaconID;
 	//StoreID = req.body.StoreID;
+
+    console.log('Beacon Parameter on start');
+    console.log(BeaconID);
         
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
@@ -430,6 +457,12 @@ app.post('/getdata', function(req, res) {
 						beaconslist[beacons[b].BeaconID] = beacons[b].BeaconKey;
 					}
 					
+                    console.log('Get Data Webservice');
+                    console.log(beaconslist);
+                    console.log('Beacon Parameter');
+                    console.log(BeaconID);
+
+
 					callback(null, beaconslist);
 				});				
 			}, 
@@ -1201,3 +1234,18 @@ app.post('/getdeviceidentity',function(req,res){
     })
     res.send();
 });
+
+app.post('/beaconIntervalTesting', function(req, res) {
+    var myval = 200;
+    setTimeout(function(){
+        console.log(myval);
+        console.log('==================');
+        console.log('Interval fired');
+    }, 10000);
+});
+
+function testInterval(param1){
+    console.log(param1);
+    console.log('==================');
+    console.log('Interval fired');
+}

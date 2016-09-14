@@ -43,7 +43,7 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
 
   
   $scope.loadData = function(){
-	$location.search({'store' : $scope.selectedStore, 'beacon' : $scope.selectedBeacon});
+	  $location.search({'store' : $scope.selectedStore, 'beacon' : $scope.selectedBeacon});
     $scope.getAllDevices();
   }
 
@@ -66,8 +66,8 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
 
   	$scope.Initialized = false;
   	apiService.deviceData(beaconlist).then(function(res){
-		$scope.deviceData = res.data;
-		$scope.Initialized = true;
+  		$scope.deviceData = res.data;
+  		$scope.Initialized = true;
   	});
 
   }
@@ -99,8 +99,12 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
   //$scope.getAllBeacon();
 
   socket.on('updateDevice_response', function(response){
-      $scope.getAllDevices();
-      console.log($scope.selectedBeacon);
+      /*console.log($scope.selectedBeacon);
+      $location.search({'store' : $scope.selectedStore, 'beacon' : $scope.selectedBeacon});
+      $scope.getAllDevices();*/
+      console.log('socket called');
+      $scope.loadData();
+      
       /*apiService.deviceData($scope.selectedBeacon).then(function(res){
         $scope.deviceData = res.data;
       });*/
@@ -149,14 +153,14 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
     }
   }
 
-  $http({
+  /*$http({
         method: "post",
         url: "/getdeviceidentity",
     }).success(function(data, status, headers, config) {
         console.log(data);
     }).error(function(data, status, headers, config) {
         console.log("failed.");
-    });
+    });*/
 
   
   /*apiService.updateDeviceHistory('12:32:45:22:89',
@@ -169,7 +173,15 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
   
   //$scope.sendNotification();
   
-  //apiService.updateDevice('12:32:45:22:89','APA91bE8pbcfkLUbtfWPLurBq1h2jKe2S4LcA5mkQB7a-tp26pSBLY8jj726HqfBbxXK5hBkp1Aw9IzAlTU8DB3cxGlpIOrMbJjE6BkNA1EdZS3Xi6VaYWA','70');
+  apiService.updateDevice('00:A0:50:0E:0E:0D','APA91bG-BDmozFR_A3cGkJ0WhNlURm38NxQclddjqt3HV1jiIWRPZdGO88nysUVaWNHlC-FTjtZAU7HMyiQZwJ5aOzZ85Pz7gjn7ND5FligAIUSgCm3ZfJg','3');
+
+  /*$http({
+      method: "post",
+      url: "/beaconDisconnected",
+      data: {
+          'DeviceID' : 'APA91bE8pbcfkLUbtfWPLurBq1h2jKe2S4LcA5mkQB7a-tp26pSBLY8jj726HqfBbxXK5hBkp1Aw9IzAlTU8DB3cxGlpIOrMbJjE6BkNA1EdZS3Xi6VaYWA',
+      }
+  })*/
   
 
 	/*socket.on('showDevices', function(devicelist){

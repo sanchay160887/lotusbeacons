@@ -109,6 +109,8 @@ Date: 05 Jan 2016
                     ng-model="device.checked"></td>
             <!-- <td>{{ device.DeviceID }}</td> -->
             <td>{{ device.DeviceName }}</td>            
+            <td ng-if="device.Distance < 0">Out of range</td>
+            <td ng-if="device.Distance > 0">{{ device.Distance | numberEx:2 }} meter</td>
             <td>{{ device.Distance | numberEx:2 }} meter</td>
             <td>{{ device.BeaconKey }}</td>
           </tr>

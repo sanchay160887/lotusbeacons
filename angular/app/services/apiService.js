@@ -285,11 +285,19 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
         });
     }
 
+    var test_Timeout = function(gcmTokens, title, description){
+        return $http({
+            method: "post",
+            url: "/beaconIntervalTesting",
+        });
+    }
+
     apiService.storeData = storeData;
     apiService.addStores = addStores;
     apiService.updateStore = updateStore;
     apiService.deleteStore = deleteStore;
     apiService.getStore = getStore;
+    apiService.test_Timeout = test_Timeout;
     /*Beacon device end*/
 
     apiService.get = get;

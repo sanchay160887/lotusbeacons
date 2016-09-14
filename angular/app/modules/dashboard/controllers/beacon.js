@@ -98,6 +98,8 @@ dashboard.controller("BeaconsController",function ($rootScope, $scope, apiServic
     });
   }
 
+  //apiService.test_Timeout();
+
   /*$http({
       method: "post",
       url: "/beaconConnected",
