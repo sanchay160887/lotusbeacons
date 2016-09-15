@@ -365,7 +365,7 @@ app.post('/beaconConnected', function(req, res) {
             function(devices, callback){
                 if (devices && devices.length > 0){
                     if (devices[0].BeaconKey == 'welcome'){
-                        sendpushnotification([DeviceID], 'Welcome', 'Welcome to Lotus. Exciting offers are waiting for you..');
+                        sendpushnotification('', [DeviceID], 'Welcome', 'Welcome to Lotus. Exciting offers are waiting for you..');
                     }
                 } else {
                     resObj.IsSuccess = false;
@@ -1134,8 +1134,8 @@ app.post('/sendpushnotification_plain', function(req, res) {
     not_title = req.body.title;
     not_descr = req.body.description;
     not_device_token = req.body.gcmTokens;
-    sendpushnotification(not_device_token, not_title, not_descr);
-    res.send();
+    sendpushnotification(res, not_device_token, not_title, not_descr);
+    //res.send();
 });
 
 
@@ -1145,11 +1145,11 @@ app.post('/sendpushnotification_image', function(req, res) {
     not_image = req.body.image_url;
     not_device_token = req.body.gcmTokens;
 
-    sendpushnotification(not_device_token, not_title, not_descr, not_image);
-    res.send();
+    sendpushnotification(res, not_device_token, not_title, not_descr, not_image);
+    //res.send();
 });
 
-function sendpushnotification(gcmToken, title, message, image_url){
+function sendpushnotification(resObj, gcmToken, title, messagebody, image_url){
     var gcmObject = new gcm.AndroidGcm(GcmGoogleKey);
     if (!image_url){
         image_url = '';
@@ -1159,11 +1159,11 @@ function sendpushnotification(gcmToken, title, message, image_url){
     console.log(message);
     console.log(image_url);*/
     
-    // initialize new androidGcm object 
+    // initialize new androidGcm object
     var message = new gcm.Message({
         registration_ids: gcmToken, //[gcmToken],
         data: {
-            'message': message,
+            'message': messagebody,
             'badge': 1,
             'title': title,
             //'img_url': 'https://lh4.ggpht.com/mJDgTDUOtIyHcrb69WM0cpaxFwCNW6f0VQ2ExA7dMKpMDrZ0A6ta64OCX3H-NMdRd20=w300',
@@ -1172,31 +1172,32 @@ function sendpushnotification(gcmToken, title, message, image_url){
         }
     });
 
-    console.log(JSON.stringify(message));
-
     gcmObject.send(message, function(err, response) {
         if (err) {
             console.log('Something went wrong :: ' + err);
         } else {
             console.log(response.success);
             if (response.success == '1'){
+                var request = require('request');
                 var gcmdata = JSON.stringify(gcmToken);
-                console.log(gcmdata);
+                //console.log(gcmdata);
                 request.post('http://lampdemos.com/lotus15/v2/user/get_notification_entry',
                     {
                         form : {
                             'android_device_token': gcmdata,
                             'title' : title,
-                            'message' : message,
+                            'message' : messagebody,
                             'notification_img' : image_url
                         }
                 },
                 function(res2, err, body){
-                    console.log('Data send to service --> ' + JSON.stringify(body));
+                    console.log('Data coming from service --> ' + JSON.stringify(body));
+                    if (resObj){
+                        resObj.send(body);
+                    }
                 });
             }
         }
-        //res.send();
     });    
 }
 
