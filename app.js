@@ -793,6 +793,7 @@ app.post('/updatebeacon', function(req, res) {
         res.send(resObj);
         return;
     }
+    
     if (BeaconStore.length != 24){
         resObj.IsSuccess = false;
         resObj.message = "Invalid store selected";
