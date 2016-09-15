@@ -1187,7 +1187,7 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url){
                             'android_device_token': gcmdata,
                             'title' : title,
                             'message' : messagebody,
-                            'notification_img' : image_url
+                            'notification_img' : images_url
                         }
                 },
                 function(res2, err, body){
