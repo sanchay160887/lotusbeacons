@@ -1179,7 +1179,7 @@ function sendpushnotification(gcmToken, title, message, image_url){
             console.log('Something went wrong :: ' + err);
         } else {
             console.log(response.success);
-            if (response.success == '1' || 1 == 1){
+            if (response.success == '1'){
                 var gcmdata = JSON.stringify(gcmToken);
                 console.log(gcmdata);
                 request.post('http://lampdemos.com/lotus15/v2/user/get_notification_entry',
