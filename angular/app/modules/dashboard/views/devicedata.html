@@ -110,7 +110,7 @@ Date: 05 Jan 2016
             <!-- <td>{{ device.DeviceID }}</td> -->
             <td>{{ device.DeviceName }}</td>            
             <td>{{ (device.Distance < 0) && ("Out of range") || (device.Distance | numberEx:2) + ' meter' }}</td>
-            <td>{{ device.Distance | numberEx:2 }} meter</td>
+            <!-- <td>{{ device.Distance | numberEx:2 }} meter</td> -->
             <td>{{ device.BeaconKey }}</td>
           </tr>
         </tbody>
