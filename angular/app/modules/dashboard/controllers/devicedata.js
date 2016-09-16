@@ -15,7 +15,7 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
   $scope.baseUrl = apiService.base_url;
 
   $scope.Initialized = false;
-  $scope.BeaconInitialized = false;
+  $scope.BeaconInitialized = true;
 
   var queriedUrl = $location.search();
   
