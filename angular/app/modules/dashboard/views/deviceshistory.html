@@ -88,10 +88,10 @@ Date: 05 Jan 2016
             <label class="bcon-slect-title">Select Beacon</label>
           </div>
           <div class="col-md-5">
-            <select class="form-control col-md-4" ng-if="!BeaconInitialized">
+            <select class="form-control col-md-4" ng-show="!BeaconInitialized">
               <option value="">Please wait..</option>
             </select>
-            <select class="form-control col-md-4" ng-model="selectedBeacon" ng-if="BeaconInitialized">
+            <select class="form-control col-md-4" ng-model="selectedBeacon" ng-show="BeaconInitialized">
               <option value="">All</option>
               <option ng-repeat="device in beaconData | orderBy:BeaconKey" 
                                 value="{{device.BeaconID}}">{{device.BeaconKey}}</option>

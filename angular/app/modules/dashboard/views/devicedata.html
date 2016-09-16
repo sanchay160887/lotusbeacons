@@ -45,7 +45,7 @@
     padding: 8px 10px;
     font-style: italic;
     border:1px solid #bce8f1;
-  }
+}
 </style>
 
 <!--
@@ -68,8 +68,6 @@ Date: 05 Jan 2016
       <p class="wait_text">Please Wait...</p>
     </div>
 
-
-
     <div class="bcon_selection row">
       <div class="col-md-4">
         <div class="form-group">
@@ -90,10 +88,10 @@ Date: 05 Jan 2016
             <label class="bcon-slect-title">Select Beacon</label>
           </div>
           <div class="col-md-5">
-            <select class="form-control col-md-4" ng-if="!BeaconInitialized">
+            <select class="form-control col-md-4" ng-show="!BeaconInitialized">
               <option value="">Please wait..</option>
             </select>
-            <select class="form-control col-md-4" ng-model="selectedBeacon" ng-if="BeaconInitialized">
+            <select class="form-control col-md-4" ng-model="selectedBeacon" ng-show="BeaconInitialized">
               <option value="">All</option>
               <option ng-repeat="device in beaconData | orderBy:BeaconKey" value="{{device.BeaconID}}">{{device.BeaconKey}}</option>
             </select>

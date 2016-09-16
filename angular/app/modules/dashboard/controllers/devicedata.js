@@ -31,7 +31,7 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
 
   $scope.ShowSelectedTokens = function() {
       //console.log($scope.deviceData);
-  };  
+  };
 
   $scope.$watchCollection('[selectedStore]', function() {
       if ($scope.Initialized){
@@ -39,6 +39,10 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
         $scope.getAllBeacon();
       }
   });
+
+  $scope.$watchCollection('[selectedBeacon]', function() {
+    $location.search({'store' : $scope.selectedStore, 'beacon' : $scope.selectedBeacon});
+  });  
 
   
   $scope.loadData = function(){
@@ -61,7 +65,9 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
   	beaconlist = [];
 		if (selectedBeacon){
 			beaconlist.push(selectedBeacon);
+      console.log(beaconlist);
 		}
+
 	
 
   	$scope.Initialized = false;
