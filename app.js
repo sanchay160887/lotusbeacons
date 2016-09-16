@@ -19,8 +19,8 @@ querystring = require('querystring');
 require('timers')
 
 
-//var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon';
-var mongourl = 'mongodb://localhost:27017/lotusbeacon';
+var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon';
+//var mongourl = 'mongodb://localhost:27017/lotusbeacon';
 MongoClient.connect(mongourl, function(err, db) {
     assert.equal(null, err);
     console.log("Connected correctly to server.");
@@ -1215,7 +1215,7 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url){
                             'android_device_token': gcmdata,
                             'title' : title,
                             'message' : messagebody,
-                            'notification_img' : images_url
+                            'notification_img' : image_url
                         }
                 },
                 function(res2, err, body){
