@@ -453,6 +453,8 @@ app.post('/getdata', function(req, res) {
 
     console.log('Beacon Parameter on start');
     console.log(BeaconID);
+    console.log('Store Parameter on start');
+    console.log(StoreID);
         
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
