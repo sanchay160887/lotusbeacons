@@ -68,7 +68,7 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
       console.log(beaconlist);
 		}
 	
-  	if (beaconlist || selectedStore) {
+  	if ((beaconlist && beaconlist.length > 0) || selectedStore) {
       $scope.Initialized = false;
     	apiService.deviceData(beaconlist, selectedStore).then(function(res){
     		$scope.deviceData = res.data;

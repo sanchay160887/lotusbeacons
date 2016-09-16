@@ -69,11 +69,13 @@ dashboard.controller("DeviceHistoryController",function ($rootScope, $scope, api
   		}
   	}
 
-  	$scope.Initialized = false;
-  	apiService.deviceHistoryData(beaconlist, selectedStore).then(function(res){
-  		$scope.deviceData = res.data;
-  		$scope.Initialized = true;
-  	});
+  	if ((beaconlist && beaconlist.length > 0) || selectedStore) {
+      $scope.Initialized = false;
+    	apiService.deviceHistoryData(beaconlist, selectedStore).then(function(res){
+    		$scope.deviceData = res.data;
+    		$scope.Initialized = true;
+    	});
+    }
 
   }
 
