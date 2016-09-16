@@ -340,6 +340,14 @@ app.post('/user/login', function(req, res) {
 
 app.post('/updateDevice', function(req, res) {
     updateDevice(req.body.BeaconID, req.body.DeviceID, req.body.Distance, res);
+    if (req.body.BeaconID){
+        var staytime = 0;
+        if (req.body.StayTime){
+            staytime = req.body.StayTime;
+        }
+        updateDeviceHistory(req.body.BeaconID, req.body.DeviceID, staytime);
+    }
+    
 });
 
 app.post('/updateDeviceHistory', function(req, res) {
@@ -374,6 +382,13 @@ app.post('/beaconConnected', function(req, res) {
                     return;
                 }
                 updateDevice(BeaconID, DeviceID, Distance, res);
+                if (req.body.BeaconID){
+                    var staytime = 0;
+                    if (req.body.StayTime){
+                        staytime = req.body.StayTime;
+                    }
+                    updateDeviceHistory(BeaconID, DeviceID, staytime);
+                }
             }
         ]);
     });    
@@ -481,13 +496,8 @@ app.post('/getdata', function(req, res) {
                     beacons.push(b);
                 }
 
-				if (BeaconID){
-					if (BeaconID){
-						//beaconcollection = collection.find({'BeaconID' : BeaconID });
-						devicecollection = collection.find({'BeaconID' : { $in : beacons } });
-					} else {
-						devicecollection = collection.find();
-					}
+				if (beacons && beacons.length > 0){
+					devicecollection = collection.find({'BeaconID' : { $in : beacons } });
 					devicecollection.toArray(function(err, devices) {
 						for (var dvc in devices) {
 							devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
@@ -557,6 +567,7 @@ app.post('/getdata', function(req, res) {
 
 app.post('/getDeviceHistorydata', function(req, res) {
     BeaconID = req.body.BeaconID;
+    StoreID = req.body.StoreID;
         
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
@@ -567,12 +578,16 @@ app.post('/getDeviceHistorydata', function(req, res) {
 			function(callback){
 				var collection = db.collection('beacons');
 				var beaconcollection = [];
-				if (BeaconID){
-					//beaconcollection = collection.find({'BeaconID' : BeaconID });
-					beaconcollection = collection.find({'BeaconID' : { $in : BeaconID } });
-				} else {
-					beaconcollection = collection.find();
-				}
+				if (BeaconID && BeaconID.length > 0){
+                    //beaconcollection = collection.find({'BeaconID' : BeaconID });
+                    beaconcollection = collection.find({'BeaconID' : { $in : BeaconID } });
+                } else if (StoreID){
+                    console.log('coming here');
+                    beaconcollection = collection.find({'BeaconStore' : ObjectId(StoreID) });
+                } else {
+                    beaconcollection = collection.find();
+                }
+
 				beaconcollection.toArray(function(err, beacons){
 					var beaconslist = [];
 					for(var b in beacons){
@@ -584,12 +599,14 @@ app.post('/getDeviceHistorydata', function(req, res) {
 			function(beaconlist, callback){
 				var collection = db.collection('device_history');
 				var devicelist = new Array();
-				if (BeaconID){
-					if (BeaconID){
-						devicecollection = collection.find({'BeaconID' : { $in : BeaconID } });
-					} else {
-						devicecollection = collection.find();
-					}
+
+                var beacons = []
+                for(var b in beaconlist){
+                    beacons.push(b);
+                }
+
+				if (beacons && beacons.length > 0){
+					devicecollection = collection.find({'BeaconID' : { $in : beacons } });
 					devicecollection.toArray(function(err, devices) {
 						for (var dvc in devices) {
 							devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];

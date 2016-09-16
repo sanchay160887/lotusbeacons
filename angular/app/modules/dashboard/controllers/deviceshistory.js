@@ -47,15 +47,21 @@ dashboard.controller("DeviceHistoryController",function ($rootScope, $scope, api
 
   $scope.getAllDevicesHistory = function(){
     var queriedUrl = $location.search()
+
+    var selectedStore = '';
+    if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store){
+      selectedStore = queriedUrl.store;
+    }
+
     var selectedBeacon = '';
     if (typeof(queriedUrl.beacon) != 'undefined' && queriedUrl.beacon){
       selectedBeacon = queriedUrl.beacon;
     }
   	beaconlist = [];
   	if (!selectedBeacon && $scope.beaconData){
-  		for(var b in $scope.beaconData){
+  		/*for(var b in $scope.beaconData){
   			beaconlist.push( $scope.beaconData[b].BeaconID );
-  		}
+  		}*/
   	} else {
   		if (selectedBeacon){
   			beaconlist.push(selectedBeacon);
@@ -63,9 +69,9 @@ dashboard.controller("DeviceHistoryController",function ($rootScope, $scope, api
   	}
 
   	$scope.Initialized = false;
-  	apiService.deviceHistoryData(beaconlist).then(function(res){
-		$scope.deviceData = res.data;
-		$scope.Initialized = true;
+  	apiService.deviceHistoryData(beaconlist, selectedStore).then(function(res){
+  		$scope.deviceData = res.data;
+  		$scope.Initialized = true;
   	});
 
   }
