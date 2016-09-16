@@ -15,12 +15,12 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
   $scope.baseUrl = apiService.base_url;
 
   $scope.Initialized = false;
+  $scope.BeaconInitialized = false;
 
   var queriedUrl = $location.search();
   
   
   apiService.storeData().then(function(res){
-      $scope.Initialized = false;
       $scope.storeData = res.data.data;
       if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store){
           $scope.selectedStore = queriedUrl.store;
@@ -31,8 +31,7 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
 
   $scope.ShowSelectedTokens = function() {
       //console.log($scope.deviceData);
-  };
-  
+  };  
 
   $scope.$watchCollection('[selectedStore]', function() {
       if ($scope.Initialized){
@@ -72,8 +71,7 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
   	});
 
   }
-
-  //$scope.getAllDevices();
+  
 
   $scope.getAllBeacon = function(){
     selectedStore = '';
@@ -81,16 +79,15 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
     if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store){
       selectedStore = queriedUrl.store;
     }
-    console.log(selectedStore);
+    
     if (selectedStore){
-      $scope.Initialized = false;
+      $scope.BeaconInitialized = false;
       apiService.beaconData(selectedStore).then(function(res){
         $scope.beaconData = res.data.data;
         if (typeof(queriedUrl.beacon) != 'undefined' && queriedUrl.beacon){
           $scope.selectedBeacon = queriedUrl.beacon;
         }
-        $scope.Initialized = true;
-        console.log(res.data);
+        $scope.BeaconInitialized = true;
       });
     } else {
       $scope.beaconData = [];

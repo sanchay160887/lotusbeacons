@@ -15,6 +15,7 @@ dashboard.controller("DeviceHistoryController",function ($rootScope, $scope, api
   $scope.baseUrl = apiService.base_url;
 
   $scope.Initialized = false;
+  $scope.BeaconInitialized = true;
 
   var queriedUrl = $location.search();
   
@@ -85,13 +86,13 @@ dashboard.controller("DeviceHistoryController",function ($rootScope, $scope, api
     }
     console.log(selectedStore);
     if (selectedStore){
-      $scope.Initialized = false;
+      $scope.BeaconInitialized = false;
       apiService.beaconData(selectedStore).then(function(res){
         $scope.beaconData = res.data.data;
         if (typeof(queriedUrl.beacon) != 'undefined' && queriedUrl.beacon){
           $scope.selectedBeacon = queriedUrl.beacon;
         }
-        $scope.Initialized = true;
+        $scope.BeaconInitialized = true;
         console.log(res.data);
       });
     } else {
