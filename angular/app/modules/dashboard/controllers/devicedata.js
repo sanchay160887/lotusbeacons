@@ -60,15 +60,10 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
       selectedBeacon = queriedUrl.beacon;
     }
   	beaconlist = [];
-  	if (!selectedBeacon && $scope.beaconData){
-  		/*for(var b in $scope.beaconData){
-  			beaconlist.push( $scope.beaconData[b].BeaconID );
-  		}*/
-  	} else {
-  		if (selectedBeacon){
-  			beaconlist.push(selectedBeacon);
-  		}
-  	}
+		if (selectedBeacon){
+			beaconlist.push(selectedBeacon);
+		}
+	
 
   	$scope.Initialized = false;
   	apiService.deviceData(beaconlist, selectedStore).then(function(res){
@@ -102,18 +97,10 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
     }
     
   }
-  //$scope.getAllBeacon();
 
   socket.on('updateDevice_response', function(response){
-      /*console.log($scope.selectedBeacon);
-      $location.search({'store' : $scope.selectedStore, 'beacon' : $scope.selectedBeacon});
-      $scope.getAllDevices();*/
       console.log('socket called');
       $scope.loadData();
-      
-      /*apiService.deviceData($scope.selectedBeacon).then(function(res){
-        $scope.deviceData = res.data;
-      });*/
   });
 
   $scope.sendNotification = function(){
@@ -179,7 +166,7 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
   
   //$scope.sendNotification();
   
-  apiService.updateDevice('00:A0:50:0E:0E:0D','APA91bG-BDmozFR_A3cGkJ0WhNlURm38NxQclddjqt3HV1jiIWRPZdGO88nysUVaWNHlC-FTjtZAU7HMyiQZwJ5aOzZ85Pz7gjn7ND5FligAIUSgCm3ZfJg','2');
+  apiService.updateDevice('00:A0:50:0E:0E:0D','APA91bEVXY0L-98aBJ81ucT07_RjjRBKFjt5R_uEc0bQ4E_D_mZoK_01ePuUsC9zl8sOI_oiVTUfpphnhFHPAs9LeWdLr0gZIDqZ5bTzjZ7FRghmdK74Rs4','3.25');
 
   /*$http({
       method: "post",

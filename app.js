@@ -19,7 +19,8 @@ querystring = require('querystring');
 require('timers')
 
 
-var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon';
+//var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon';
+var mongourl = 'mongodb://localhost:27017/lotusbeacon';
 MongoClient.connect(mongourl, function(err, db) {
     assert.equal(null, err);
     console.log("Connected correctly to server.");
