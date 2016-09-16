@@ -316,8 +316,8 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
 	apiService.updateDeviceHistory = updateDeviceHistory;
 
     //apiService.base_url = 'http://localhost:3000';
-    //apiService.base_url = 'http://lotusbeacon.herokuapp.com';
-    apiService.base_url = 'http://52.205.143.53:3000';
+    apiService.base_url = 'http://lotusbeacon.herokuapp.com';
+    //apiService.base_url = 'http://52.205.143.53:3000';
 
     return apiService;
 
