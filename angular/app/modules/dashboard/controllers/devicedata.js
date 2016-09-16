@@ -63,7 +63,7 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
       selectedBeacon = queriedUrl.beacon;
     }
   	beaconlist = [];
-		if (selectedBeacon){
+		if ($scope.selectedBeacon){
 			beaconlist.push(selectedBeacon);
       console.log(beaconlist);
 		}

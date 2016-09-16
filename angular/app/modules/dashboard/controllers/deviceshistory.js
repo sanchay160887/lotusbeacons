@@ -58,16 +58,11 @@ dashboard.controller("DeviceHistoryController",function ($rootScope, $scope, api
     if (typeof(queriedUrl.beacon) != 'undefined' && queriedUrl.beacon){
       selectedBeacon = queriedUrl.beacon;
     }
-  	beaconlist = [];
-  	if (!selectedBeacon && $scope.beaconData){
-  		/*for(var b in $scope.beaconData){
-  			beaconlist.push( $scope.beaconData[b].BeaconID );
-  		}*/
-  	} else {
-  		if (selectedBeacon){
-  			beaconlist.push(selectedBeacon);
-  		}
-  	}
+  	
+    beaconlist = [];
+	  if ($scope.selectedBeacon){
+			beaconlist.push(selectedBeacon);
+		}  	
 
   	if ((beaconlist && beaconlist.length > 0) || selectedStore) {
       $scope.Initialized = false;

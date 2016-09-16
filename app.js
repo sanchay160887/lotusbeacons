@@ -467,7 +467,6 @@ app.post('/getdata', function(req, res) {
 					//beaconcollection = collection.find({'BeaconID' : BeaconID });
                     beaconcollection = collection.find({'BeaconID' : { $in : BeaconID } });
 				} else if (StoreID){
-                    console.log('coming here');
                     beaconcollection = collection.find({'BeaconStore' : ObjectId(StoreID) });
                 } else {
 					beaconcollection = collection.find();
