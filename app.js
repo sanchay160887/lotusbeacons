@@ -433,7 +433,7 @@ app.post('/beaconDisconnected', function(req, res) {
 app.post('/getdata', function(req, res) {
     console.log(JSON.stringify(req.body));
     BeaconID = req.body.BeaconID;
-	//StoreID = req.body.StoreID;
+	StoreID = req.body.StoreID;
 
     console.log('Beacon Parameter on start');
     console.log(BeaconID);
@@ -447,12 +447,16 @@ app.post('/getdata', function(req, res) {
 			function(callback){
 				var collection = db.collection('beacons');
 				var beaconcollection = [];
-				if (BeaconID){
+				if (BeaconID && BeaconID.length > 0){
 					//beaconcollection = collection.find({'BeaconID' : BeaconID });
-					beaconcollection = collection.find({'BeaconID' : { $in : BeaconID } });
-				} else {
+                    beaconcollection = collection.find({'BeaconID' : { $in : BeaconID } });
+				} else if (StoreID){
+                    console.log('coming here');
+                    beaconcollection = collection.find({'BeaconStore' : ObjectId(StoreID) });
+                } else {
 					beaconcollection = collection.find();
 				}
+
 				beaconcollection.toArray(function(err, beacons){
 					var beaconslist = [];
 					for(var b in beacons){
@@ -471,10 +475,16 @@ app.post('/getdata', function(req, res) {
 			function(beaconlist, callback){
 				var collection = db.collection('device');
 				var devicelist = new Array();
+
+                var beacons = []
+                for(var b in beaconlist){
+                    beacons.push(b);
+                }
+
 				if (BeaconID){
 					if (BeaconID){
 						//beaconcollection = collection.find({'BeaconID' : BeaconID });
-						devicecollection = collection.find({'BeaconID' : { $in : BeaconID } });
+						devicecollection = collection.find({'BeaconID' : { $in : beacons } });
 					} else {
 						devicecollection = collection.find();
 					}

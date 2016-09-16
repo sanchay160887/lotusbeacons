@@ -49,15 +49,21 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
 
   $scope.getAllDevices = function(){
     var queriedUrl = $location.search()
+    
+    var selectedStore = '';
+    if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store){
+      selectedStore = queriedUrl.store;
+    }
+
     var selectedBeacon = '';
     if (typeof(queriedUrl.beacon) != 'undefined' && queriedUrl.beacon){
       selectedBeacon = queriedUrl.beacon;
     }
   	beaconlist = [];
   	if (!selectedBeacon && $scope.beaconData){
-  		for(var b in $scope.beaconData){
+  		/*for(var b in $scope.beaconData){
   			beaconlist.push( $scope.beaconData[b].BeaconID );
-  		}
+  		}*/
   	} else {
   		if (selectedBeacon){
   			beaconlist.push(selectedBeacon);
@@ -65,7 +71,7 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
   	}
 
   	$scope.Initialized = false;
-  	apiService.deviceData(beaconlist).then(function(res){
+  	apiService.deviceData(beaconlist, selectedStore).then(function(res){
   		$scope.deviceData = res.data;
   		$scope.Initialized = true;
   	});
@@ -173,7 +179,7 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
   
   //$scope.sendNotification();
   
-  //apiService.updateDevice('00:A0:50:0E:0E:0D','APA91bG-BDmozFR_A3cGkJ0WhNlURm38NxQclddjqt3HV1jiIWRPZdGO88nysUVaWNHlC-FTjtZAU7HMyiQZwJ5aOzZ85Pz7gjn7ND5FligAIUSgCm3ZfJg','2');
+  apiService.updateDevice('00:A0:50:0E:0E:0D','APA91bG-BDmozFR_A3cGkJ0WhNlURm38NxQclddjqt3HV1jiIWRPZdGO88nysUVaWNHlC-FTjtZAU7HMyiQZwJ5aOzZ85Pz7gjn7ND5FligAIUSgCm3ZfJg','2');
 
   /*$http({
       method: "post",

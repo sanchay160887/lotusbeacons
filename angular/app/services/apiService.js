@@ -80,12 +80,13 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
 
 
     // Services for Devices start
-    var deviceData = function(selectedBeacon){
+    var deviceData = function(selectedBeacon, selectedStore){
         return $http({
             method: "post",
             url: '/getdata',
             data: {
                 'BeaconID' : selectedBeacon,
+                'StoreID' : selectedStore
             }
         });
     }
