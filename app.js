@@ -292,7 +292,7 @@ io.on('connection', function(socket) {
 
     socket.on('updateDevice', function(data) {
         updateDevice(data.BeaconID, data.DeviceID, data.Distance);
-		updateDeviceHistory(data.BeaconID, data.DeviceID, data.StayTime);
+		updateDeviceHistory(data.BeaconID, data.DeviceID, data.stayTime);
         sendDevices();
     });    
     
@@ -343,8 +343,8 @@ app.post('/updateDevice', function(req, res) {
     updateDevice(req.body.BeaconID, req.body.DeviceID, req.body.Distance, res);
     if (req.body.BeaconID){
         var staytime = 0;
-        if (req.body.StayTime){
-            staytime = req.body.StayTime;
+        if (req.body.stayTime){
+            staytime = req.body.stayTime;
         }
         updateDeviceHistory(req.body.BeaconID, req.body.DeviceID, staytime);
     }
@@ -352,7 +352,7 @@ app.post('/updateDevice', function(req, res) {
 });
 
 app.post('/updateDeviceHistory', function(req, res) {
-	updateDeviceHistory(req.body.BeaconID, req.body.DeviceID, req.body.StayTime);
+	updateDeviceHistory(req.body.BeaconID, req.body.DeviceID, req.body.stayTime);
 });
 
 app.post('/beaconConnected', function(req, res) {
@@ -385,8 +385,8 @@ app.post('/beaconConnected', function(req, res) {
                 updateDevice(BeaconID, DeviceID, Distance, res);
                 if (req.body.BeaconID){
                     var staytime = 0;
-                    if (req.body.StayTime){
-                        staytime = req.body.StayTime;
+                    if (req.body.stayTime){
+                        staytime = req.body.stayTime;
                     }
                     updateDeviceHistory(BeaconID, DeviceID, staytime);
                 }
