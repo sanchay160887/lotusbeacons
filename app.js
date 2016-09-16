@@ -1200,6 +1200,8 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url){
         }
     });
 
+    console.log(message);
+
     gcmObject.send(message, function(err, response) {
         if (err) {
             console.log('Something went wrong :: ' + err);
