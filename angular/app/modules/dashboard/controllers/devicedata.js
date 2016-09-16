@@ -71,6 +71,21 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
   	if ((beaconlist && beaconlist.length > 0) || selectedStore) {
       $scope.Initialized = false;
     	apiService.deviceData(beaconlist, selectedStore).then(function(res){
+        var checkedlist = [];
+        for(var dd in $scope.deviceData){
+          if ($scope.deviceData[dd].checked){
+            checkedlist.push($scope.deviceData[dd].DeviceID);
+          }
+        }
+
+        for(var dd in res.data){
+          if (in_array(res.data[dd].DeviceID, checkedlist)){
+            res.data[dd].checked = true;
+          } else {
+            res.data[dd].checked = false;
+          }
+        }
+
     		$scope.deviceData = res.data;
     		$scope.Initialized = true;
     	});
@@ -105,6 +120,13 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
       console.log('socket called');
       $scope.loadData();
   });
+
+  function in_array(needle, haystack) {
+      for(var i in haystack) {
+          if(haystack[i] == needle) return true;
+      }
+      return false;
+  }
 
   $scope.sendNotification = function(){
     apiService.sendNotification().then(function(res){
@@ -169,7 +191,7 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
   
   //$scope.sendNotification();
   
-  apiService.updateDevice('00:A0:50:0E:0E:0D','APA91bEVXY0L-98aBJ81ucT07_RjjRBKFjt5R_uEc0bQ4E_D_mZoK_01ePuUsC9zl8sOI_oiVTUfpphnhFHPAs9LeWdLr0gZIDqZ5bTzjZ7FRghmdK74Rs4','3.25');
+  apiService.updateDevice('00:A0:50:0E:0F:23','APA91bGKd3ygLbJsaTvCL7d_M2nLc0-XZuU2DqwcYCwTdG7rJKWwmi_um8H_0xj4K7f_pfc2w6C6LeeBYoRXRw6QjvMSQWVZ0O871XkxH8pVBXLFM8WbezY','3.25');
 
   /*$http({
       method: "post",

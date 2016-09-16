@@ -67,11 +67,33 @@ dashboard.controller("DeviceHistoryController",function ($rootScope, $scope, api
   	if ((beaconlist && beaconlist.length > 0) || selectedStore) {
       $scope.Initialized = false;
     	apiService.deviceHistoryData(beaconlist, selectedStore).then(function(res){
+        var checkedlist = [];
+        for(var dd in $scope.deviceData){
+          if ($scope.deviceData[dd].checked){
+            checkedlist.push($scope.deviceData[dd].DeviceID);
+          }
+        }
+
+        for(var dd in res.data){
+          if (in_array(res.data[dd].DeviceID, checkedlist)){
+            res.data[dd].checked = true;
+          } else {
+            res.data[dd].checked = false;
+          }
+        }
+        
     		$scope.deviceData = res.data;
     		$scope.Initialized = true;
     	});
     }
 
+  }
+
+  function in_array(needle, haystack) {
+      for(var i in haystack) {
+          if(haystack[i] == needle) return true;
+      }
+      return false;
   }
 
 
