@@ -67,14 +67,14 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
 			beaconlist.push(selectedBeacon);
       console.log(beaconlist);
 		}
-
 	
-
-  	$scope.Initialized = false;
-  	apiService.deviceData(beaconlist, selectedStore).then(function(res){
-  		$scope.deviceData = res.data;
-  		$scope.Initialized = true;
-  	});
+  	if (beaconlist || selectedStore) {
+      $scope.Initialized = false;
+    	apiService.deviceData(beaconlist, selectedStore).then(function(res){
+    		$scope.deviceData = res.data;
+    		$scope.Initialized = true;
+    	});
+    }
 
   }
   
