@@ -28,9 +28,7 @@
 	padding: 3px 0;
 	min-height: 40px;
 }
-.bcon_selection {
-	padding: 2% 0 4%;
-}
+
 .bcon-slect-title {
 	margin-bottom: 0;
 	padding: 7% 0;
@@ -46,13 +44,43 @@
     font-style: italic;
     border:1px solid #bce8f1;
 }
+
+.bcon_selection_block_left {
+   
+    border-radius: 3px;
+    width: 70%;
+    display: inline-block;
+    vertical-align: top;
+}
+
+
+.bcon_selection_block_right {
+    border-radius: 3px;
+    width: 29%;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.bcon_selection_left_1 {
+    display: inline-block;
+    width: 42%;
+}
+
+.bcon_selection_left_2 {
+    display: inline-block;
+    width: 37%;
+}
+
+.no-pad {
+    padding: 0 2px;
+}
+
+.bcon_selection_section {
+    padding: 0 0 24px 12px;
+}
+
 </style>
 
-<!--
-Author: Ranjithprabhu K
-Page Description: Dashboard Home page
-Date: 05 Jan 2016
--->
 <!-- Content Header (Page header) -->
 
 <section class="content-header">
@@ -68,13 +96,16 @@ Date: 05 Jan 2016
       <p class="wait_text">Please Wait...</p>
     </div>
 
+
+<div class="bcon_selection_section">
+  <div class="bcon_selection_block_left">
     <div class="bcon_selection row">
-      <div class="col-md-4">
+      <div class="bcon_selection_left_1">
         <div class="form-group">
-          <div class="col-md-4">
+          <div class="col-md-3 no-pad">
             <label class="bcon-slect-title">Select Store</label>
           </div>
-          <div class="col-md-8">
+          <div class="col-md-8 no-pad">
             <select class="form-control col-md-4" ng-model="selectedStore">
               <option value="">Select Store</option>
               <option ng-repeat="device in storeData" value="{{device._id}}">{{device.StoreName}}</option>
@@ -82,32 +113,45 @@ Date: 05 Jan 2016
           </div>
         </div>
       </div>
-      <div class="col-md-4">
+      <div class="bcon_selection_left_2">
         <div class="form-group">
-          <div class="col-md-5">
+          <div class="col-md-4 no-pad">
             <label class="bcon-slect-title">Select Beacon</label>
           </div>
-          <div class="col-md-5">
-            <select class="form-control col-md-4" ng-show="!BeaconInitialized">
+          <div class="col-md-7 no-pad">
+            <select class="form-control" ng-show="!BeaconInitialized">
               <option value="">Please wait..</option>
             </select>
-            <select class="form-control col-md-4" ng-model="selectedBeacon" ng-show="BeaconInitialized">
+            <select class="form-control" ng-model="selectedBeacon" ng-show="BeaconInitialized">
               <option value="">All</option>
               <option ng-repeat="device in beaconData | orderBy:BeaconKey" value="{{device.BeaconID}}">{{device.BeaconKey}}</option>
             </select>
           </div>
-          <div class="col-md-1">
+          <div class="col-md-1 no-pad">
             <button type="button" class="btn btn-info" ng-click="loadData()">Show</button>
           </div>
         </div>
       </div>
-      <div class="col-md-2">
+      
+    </div>
+  </div>
+
+
+  <div class="bcon_selection_block_right">
+    <div class="bcon_selection row">
+      <div class="col-md-5">
         <button type="button" class="btn btn-info" data-toggle="modal" data-target="#text-message">Send Notification</button>
       </div>
-      <div class="col-md-2">
+      <div class="col-md-7">
           <button type="button" class="btn btn-info" data-toggle="modal" data-target="#graphic-message">Send Image Notification</button>
       </div> 
     </div>
+  </div>
+</div>
+
+
+
+
     <div class="row">
       <table class="table table-striped">
         <thead>

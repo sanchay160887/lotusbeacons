@@ -1,40 +1,39 @@
 <style>
 .content-device_block {
-	border: 1px solid grey;
-	margin: 2% auto;
-	min-height: 300px;
-	padding: 2% 0;
-	width: 98%;
+  border: 1px solid grey;
+  margin: 2% auto;
+  min-height: 300px;
+  padding: 2% 0;
+  width: 98%;
 }
 .block_title_1 {
-	border-bottom: 1px solid;
-	font-size: 15px;
-	margin-bottom: 0;
-	padding: 3px 0;
-	text-align: center;
+  border-bottom: 1px solid;
+  font-size: 15px;
+  margin-bottom: 0;
+  padding: 3px 0;
+  text-align: center;
 }
 .block_title_2 {
-	border-bottom: 1px solid;
-	font-size: 12px;
-	margin-bottom: 0;
-	padding: 3px 0;
-	min-height: 40px;
-	word-wrap: break-word;
+  border-bottom: 1px solid;
+  font-size: 12px;
+  margin-bottom: 0;
+  padding: 3px 0;
+  min-height: 40px;
+  word-wrap: break-word;
 }
 .block_title_3 {
-	border-bottom: 1px solid;
-	font-size: 16px;
-	margin-bottom: 0;
-	padding: 3px 0;
-	min-height: 40px;
+  border-bottom: 1px solid;
+  font-size: 16px;
+  margin-bottom: 0;
+  padding: 3px 0;
+  min-height: 40px;
 }
-.bcon_selection {
-	padding: 2% 0 4%;
-}
+
 .bcon-slect-title {
-	margin-bottom: 0;
-	padding: 7% 0;
+  margin-bottom: 0;
+  padding: 7% 0;
 }
+
 .wait_text {
     background-color: #d9edf7;
     border-radius: 3px;
@@ -44,6 +43,41 @@
     padding: 8px 10px;
     font-style: italic;
     border:1px solid #bce8f1;
+}
+
+
+.bcon_selection_block_left {
+
+  border-radius: 3px;
+  width: 70%;
+  display: inline-block;
+  vertical-align: top;
+}
+
+
+.bcon_selection_block_right {
+  border-radius: 3px;
+  width: 29%;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.bcon_selection_left_1 {
+  display: inline-block;
+  width: 42%;
+}
+
+.bcon_selection_left_2 {
+  display: inline-block;
+  width: 37%;
+}
+
+.no-pad {
+  padding: 0 2px;
+}
+
+.bcon_selection_section {
+  padding: 0 0 24px 12px;
 }
 </style>
 
@@ -66,49 +100,60 @@ Date: 05 Jan 2016
     <div class="wait_block" ng-if="!Initialized">
       <p class="wait_text">Please Wait...</p>
     </div>
-    
-    <div class="bcon_selection row">
-      <div class="col-md-4">
-        <div class="form-group">
-          <div class="col-md-4">
-            <label class="bcon-slect-title">Select Store</label>
+    <div class="bcon_selection_section">
+      <div class="bcon_selection_block_left">
+        <div class="bcon_selection row">
+          <div class="bcon_selection_left_1">
+            <div class="form-group">
+              <div class="col-md-3 no-pad">
+                <label class="bcon-slect-title">Select Store</label>
+              </div>
+              <div class="col-md-8 no-pad">
+                <select class="form-control col-md-4" ng-model="selectedStore">
+                  <option value="">Select Store</option>
+                  <option ng-repeat="device in storeData" 
+                  value="{{device._id}}">{{device.StoreName}}</option>
+                </select>
+              </div>
+            </div>
           </div>
-          <div class="col-md-8">
-            <select class="form-control col-md-4" ng-model="selectedStore">
-              <option value="">Select Store</option>
-              <option ng-repeat="device in storeData" 
-                                value="{{device._id}}">{{device.StoreName}}</option>
-            </select>
+          <div class="bcon_selection_left_2">
+            <div class="form-group">
+              <div class="col-md-4 no-pad">
+                <label class="bcon-slect-title">Select Beacon</label>
+              </div>
+              <div class="col-md-7 no-pad">
+                <select class="form-control col-md-4" ng-show="!BeaconInitialized">
+                  <option value="">Please wait..</option>
+                </select>
+                <select class="form-control col-md-4" ng-model="selectedBeacon" ng-show="BeaconInitialized">
+                  <option value="">All</option>
+                  <option ng-repeat="device in beaconData | orderBy:BeaconKey" 
+                  value="{{device.BeaconID}}">{{device.BeaconKey}}</option>
+                </select>
+              </div>
+              <div class="col-md-1 no-pad">
+                <button type="button" class="btn btn-info" ng-click="loadData()">Show</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="col-md-4">
-        <div class="form-group">
+      <div class="bcon_selection_block_right">
+        <div class="bcon_selection row">
           <div class="col-md-5">
-            <label class="bcon-slect-title">Select Beacon</label>
+            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#text-message">Send Notification</button>
           </div>
-          <div class="col-md-5">
-            <select class="form-control col-md-4" ng-show="!BeaconInitialized">
-              <option value="">Please wait..</option>
-            </select>
-            <select class="form-control col-md-4" ng-model="selectedBeacon" ng-show="BeaconInitialized">
-              <option value="">All</option>
-              <option ng-repeat="device in beaconData | orderBy:BeaconKey" 
-                                value="{{device.BeaconID}}">{{device.BeaconKey}}</option>
-            </select>
-          </div>
-          <div class="col-md-1">
-            <button type="button" class="btn btn-info" ng-click="loadData()">Show</button>
-          </div>
+          <div class="col-md-7">
+            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#graphic-message">Send Image Notification</button>
+          </div> 
         </div>
       </div>
-      <div class="col-md-2">
-        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#text-message">Send Notification</button>
-      </div>
-      <div class="col-md-2">
-          <button type="button" class="btn btn-info" data-toggle="modal" data-target="#graphic-message">Send Image Notification</button>
-      </div> 
     </div>
+
+    
+
+
     <div class="row">
       <table class="table table-striped">
         <thead>
@@ -122,15 +167,15 @@ Date: 05 Jan 2016
         <tbody>
           <tr ng-repeat= "device in deviceData | orderBy:Distance ">
             <td><input type="checkbox" value="{{ device.DeviceID }}" 
-                    ng-click="ShowSelectedTokens()"
-                    ng-model="device.checked"></td>
-            <!-- <td>{{ device.DeviceID }}</td> -->
-            <td>{{ device.DeviceName }}</td>
-            <td>{{ device.StayTime }} minute</td>
-            <td>{{ device.BeaconKey }}</td>
-          </tr>
-        </tbody>
-      </table>
+              ng-click="ShowSelectedTokens()"
+              ng-model="device.checked"></td>
+              <!-- <td>{{ device.DeviceID }}</td> -->
+              <td>{{ device.DeviceName }}</td>
+              <td>{{ device.StayTime | numberEx:2 }} minute</td>
+              <td>{{ device.BeaconKey }}</td>
+            </tr>
+          </tbody>
+        </table>
 
       <!-- <div class="col-md-1">
         <div class="content-device_block_1">
@@ -243,55 +288,55 @@ Date: 05 Jan 2016
           <label for="inputEmail3" class="col-sm-4 control-label">Upload Image</label>
           <div class="col-sm-8">
             <form id="uploadForm"
-                 enctype="multipart/form-data"
-                 action="/api/photo"
-                 method="post">
-              <input type="file" name="userPhoto" />
-              <input type="submit" value="Upload Image" name="submit">
-              <img src="#" width="50px" height="50px" id="imagepreview">
-              <span id = "status"></span>
-            </form>
-          </div>
+            enctype="multipart/form-data"
+            action="/api/photo"
+            method="post">
+            <input type="file" name="userPhoto" />
+            <input type="submit" value="Upload Image" name="submit">
+            <img src="#" width="50px" height="50px" id="imagepreview">
+            <span id = "status"></span>
+          </form>
         </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="sendImageMessage()"> Send</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal" > Close </button>
-        <!-- <input type="submit" value="Submit"> -->
-      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="sendImageMessage()"> Send</button>
+      <button type="button" class="btn btn-default" data-dismiss="modal" > Close </button>
+      <!-- <input type="submit" value="Submit"> -->
     </div>
   </div>
+</div>
 </div>
 <script type="text/javascript">
 $(document).ready(function() {
   $("#imagepreview").hide();
-     $('#uploadForm').submit(function() {
-        $("#status").empty().text("Image is uploading...");
-        $(this).ajaxSubmit({
+  $('#uploadForm').submit(function() {
+    $("#status").empty().text("Image is uploading...");
+    $(this).ajaxSubmit({
 
-            error: function(xhr) {
+      error: function(xhr) {
         status('Error: ' + xhr.status);
-            },
+      },
 
-            success: function(response) {
-                if (response != 'Error uploading file.'){
-                  $("#status").empty();
-                  $("#imagepreview").attr('src',response);
-                  $("#imagepreview").show();
-                  var scope = angular.element($("#imagepreview")).scope();
-                  scope.$apply(function(){
-                      scope.GM_ImageFilePath = response;
-                  });
-                } else {
-                  $("#status").empty().text(response);
-                  $("#imagepreview").hide();
-                }                
-                console.log(response);
-                
-            }
+      success: function(response) {
+        if (response != 'Error uploading file.'){
+          $("#status").empty();
+          $("#imagepreview").attr('src',response);
+          $("#imagepreview").show();
+          var scope = angular.element($("#imagepreview")).scope();
+          scope.$apply(function(){
+            scope.GM_ImageFilePath = response;
+          });
+        } else {
+          $("#status").empty().text(response);
+          $("#imagepreview").hide();
+        }                
+        console.log(response);
+
+      }
     });
         //Very important line, it disable the page refresh.
-    return false;
-    });    
+        return false;
+      });    
 });
 </script>

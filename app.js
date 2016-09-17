@@ -207,6 +207,20 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj){
     });
 }
 
+function convertToMinutes(timeValue){
+
+    var a = timeValue.split(':'); // split it at the colons
+    if (a.length < 3){
+        return 0;
+    }
+
+    // minutes are worth 60 seconds. Hours are worth 60 minutes.
+    var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]); 
+
+    return (seconds / 60);
+
+}
+
 function updateDeviceHistory(BeaconID, DeviceID, StayTime){
     console.log('Beacon ID ' + BeaconID);
     console.log('Device ID ' + DeviceID);
@@ -216,6 +230,8 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime){
     if (!(BeaconID && DeviceID && StayTime)) {
         return;
     }
+
+    var StayTime = convertToMinutes(StayTime);   // your input string
 
     if (!isNumeric(StayTime)){
         return;
@@ -531,20 +547,26 @@ app.post('/getdata', function(req, res) {
 
                 request.post('http://lampdemos.com/lotus15/v2/user/get_user_name',{form : {'android_device_token': data}},
                 function(res2, err, body){
-                    console.log(body);
                     device_detail = [];
-                    if (body.data){
-                        for(var d in body.data){
-                            if (body.data[d].name){
-                                device_detail[body.data[d].device_token] = body.data[d].name;
-                            } else if (body.data[d].mobile_no){
-                                device_detail[body.data[d].device_token] = body.data[d].mobile_no;
-                            } else {
-                                device_detail[body.data[d].device_token] = body.data[d].device_token;
+                    var reqbody = JSON.parse(body);
+                    reqbody = reqbody.data;
+                    if (reqbody){
+                        for(var d in reqbody){
+                            if (reqbody[d] != false) {
+                                singleRow = reqbody[d][0];
+                                if (singleRow.name){
+                                    device_detail[singleRow.device_token] = singleRow.name;
+                                } else if (singleRow.mobile_no){
+                                    device_detail[singleRow.device_token] = singleRow.mobile_no;
+                                } else {
+                                    device_detail[singleRow.device_token] = singleRow.device_token;
+                                }
                             }
                         }
                         for(var d in devicelist){
                             if ( typeof(device_detail[devicelist[d].DeviceID]) != 'undefined'){
+                                devicelist[d].DeviceName = device_detail[devicelist[d].DeviceID];
+                            } else {
                                 devicelist[d].DeviceName = devicelist[d].DeviceID;
                             }
                         }
@@ -641,20 +663,26 @@ app.post('/getDeviceHistorydata', function(req, res) {
 
                 request.post('http://lampdemos.com/lotus15/v2/user/get_user_name',{form : {'android_device_token': data}},
                 function(res2, err, body){
-                    console.log(body);
                     device_detail = [];
-                    if (body.data){
-                        for(var d in body.data){
-                            if (body.data[d].name){
-                                device_detail[body.data[d].device_token] = body.data[d].name;
-                            } else if (body.data[d].mobile_no){
-                                device_detail[body.data[d].device_token] = body.data[d].mobile_no;
-                            } else {
-                                device_detail[body.data[d].device_token] = body.data[d].device_token;
+                    var reqbody = JSON.parse(body);
+                    reqbody = reqbody.data;
+                    if (reqbody){
+                        for(var d in reqbody){
+                            if (reqbody[d] != false) {
+                                singleRow = reqbody[d][0];
+                                if (singleRow.name){
+                                    device_detail[singleRow.device_token] = singleRow.name;
+                                } else if (singleRow.mobile_no){
+                                    device_detail[singleRow.device_token] = singleRow.mobile_no;
+                                } else {
+                                    device_detail[singleRow.device_token] = singleRow.device_token;
+                                }
                             }
                         }
                         for(var d in devicelist){
                             if ( typeof(device_detail[devicelist[d].DeviceID]) != 'undefined'){
+                                devicelist[d].DeviceName = device_detail[devicelist[d].DeviceID];
+                            } else {
                                 devicelist[d].DeviceName = devicelist[d].DeviceID;
                             }
                         }
