@@ -9,14 +9,18 @@ dashboard.controller("BeaconsController",function ($rootScope, $scope, apiServic
   $scope.button_name = 'Add';
   $scope.storeData = [];
   $scope.Beacon_Store = '';
+  $scope.ListInitialized = false;
+  $scope.FormInitialized = true;
 
 	var vm = this;
 
   
   $scope.getAllBeacon = function(){
+    $scope.ListInitialized = false;
     apiService.beaconData().then(function(res){
       $scope.resetControls();
       $scope.beaconData = res.data.data;
+      $scope.ListInitialized = true;
     });
   }
   
@@ -36,6 +40,7 @@ dashboard.controller("BeaconsController",function ($rootScope, $scope, apiServic
   }
 
   $scope.getBeacon = function(pbeacon_id){
+    $scope.FormInitialized = false;
     apiService.getBeacon(pbeacon_id).
         success(function(data, status, headers, config) {
             if (data.data){
@@ -50,15 +55,18 @@ dashboard.controller("BeaconsController",function ($rootScope, $scope, apiServic
               alert('Device not found. Please refresh your page');
               $scope.button_name = 'add';
             }
+            $scope.FormInitialized = true;
         })
         .error(function(data, status, headers, config) {
             console.log("failed.");
-            return '';
+            $scope.FormInitialized = true;
+            return '';            
         });
   }
 
 
   $scope.processBeacon = function(){
+    $scope.FormInitialized = false;
     console.log($scope.button_name);
     if ($scope.button_name == 'Add'){
       apiService.addBeacon($scope.Beacon_ID, $scope.Beacon_Key, $scope.Beacon_Descr, $scope.Beacon_Store)
@@ -68,30 +76,36 @@ dashboard.controller("BeaconsController",function ($rootScope, $scope, apiServic
               } else {
                 alert(data.message);
               }
+              $scope.FormInitialized = true;
           })
         .error(function(data, status, headers, config) {
             console.log("failed.");
+            $scope.FormInitialized = true;
             return '';
         });
     } else {
       apiService.updateBeacon($scope.Beacon_ID, $scope.Beacon_Key, $scope.Beacon_Descr, $scope.Beacon_Store)
         .success(function(data, status, headers, config) {
             if (data.IsSuccess){
-                $scope.getAllBeacon();
-              } else {
-                alert(data.message);
-              }
+              $scope.getAllBeacon();
+            } else {
+              alert(data.message);
+            }
+            $scope.FormInitialized = true;
         })
         .error(function(data, status, headers, config) {
             console.log("failed.");
+            $scope.FormInitialized = true;
             return '';
         });
     }
   }
 
   $scope.deleteBeacon = function(){
+    $scope.FormInitialized = false;
     apiService.deleteBeacon($scope.Beacon_ID).success(function(res){
       console.log(res);
+      $scope.FormInitialized = true;
       if (res.IsSuccess){
         $scope.getAllBeacon();
       }
@@ -111,7 +125,4 @@ dashboard.controller("BeaconsController",function ($rootScope, $scope, apiServic
   });*/
   
   //apiService.updateDevice('12:32:45:22:89','APA91bE8pbcfkLUbtfWPLurBq1h2jKe2S4LcA5mkQB7a-tp26pSBLY8jj726HqfBbxXK5hBkp1Aw9IzAlTU8DB3cxGlpIOrMbJjE6BkNA1EdZS3Xi6VaYWA','60');
-  
-
-	
 })

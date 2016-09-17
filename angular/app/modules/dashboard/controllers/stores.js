@@ -7,14 +7,18 @@ dashboard.controller("StoresController",function ($rootScope, $scope, apiService
   $scope.Store_Name = '';
   $scope.Store_Descr = '';
   $scope.button_name = 'Add';
+  $scope.ListInitialized = false;
+  $scope.FormInitialized = true;
 
 	var vm = this;
 
   
   $scope.getAllStores = function(){
+    $scope.ListInitialized = false;
     apiService.storeData().then(function(res){
       $scope.resetControls();
       $scope.storeData = res.data.data;
+      $scope.ListInitialized = true;
     });
   }
   
@@ -27,6 +31,7 @@ dashboard.controller("StoresController",function ($rootScope, $scope, apiService
   }
 
   $scope.getStore = function(pStoreID){
+    $scope.FormInitialized = false;
     apiService.getStore(pStoreID).
         success(function(data, status, headers, config) {
             if (data.data){
@@ -40,6 +45,7 @@ dashboard.controller("StoresController",function ($rootScope, $scope, apiService
               alert('Store not found. Please refresh your page');
               $scope.button_name = 'add';
             }
+            $scope.FormInitialized = true;
         })
         .error(function(data, status, headers, config) {
             console.log("failed.");
@@ -50,6 +56,7 @@ dashboard.controller("StoresController",function ($rootScope, $scope, apiService
 
   $scope.processStore = function(){
     console.log($scope.button_name);
+    $scope.FormInitialized = false;
     if ($scope.button_name == 'Add'){
       apiService.addStores($scope.Store_Name, $scope.Store_Descr)
         .success(function(data, status, headers, config) {
@@ -58,30 +65,37 @@ dashboard.controller("StoresController",function ($rootScope, $scope, apiService
               } else {
                 alert(data.message);
               }
+              $scope.FormInitialized = true;
           })
         .error(function(data, status, headers, config) {
             console.log("failed.");
+            $scope.FormInitialized = true;
             return '';
         });
     } else {
+      $scope.FormInitialized = false;
       apiService.updateStore($scope.Store_Id, $scope.Store_Name, $scope.Store_Descr)
         .success(function(data, status, headers, config) {
             if (data.IsSuccess){
-                $scope.getAllStores();
-              } else {
-                alert(data.message);
-              }
+              $scope.getAllStores();
+            } else {
+              alert(data.message);
+            }
+            $scope.FormInitialized = true;
         })
         .error(function(data, status, headers, config) {
             console.log("failed.");
+            $scope.FormInitialized = true;
             return '';
         });
     }
   }
 
   $scope.deleteStore = function(){
+    $scope.FormInitialized = false;
     apiService.deleteStore($scope.Store_Id).success(function(res){
       console.log(res);
+      $scope.FormInitialized = true;
       if (res.IsSuccess){
         $scope.getAllStores();
       }

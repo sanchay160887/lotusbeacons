@@ -27,6 +27,17 @@
     position: relative;
 }
 
+.wait_text {
+    background-color: #d9edf7;
+    border-radius: 3px;
+    color: #31708f;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 8px 10px;
+    font-style: italic;
+    border:1px solid #bce8f1;
+}
+
 
 </style>
 
@@ -49,6 +60,9 @@ Date: 05 Jan 2016
         </ol>
     </section>
     <section class="content-body register_block_1">
+        <div class="wait_block" ng-if="!FormInitialized">
+          <p class="wait_text">Please Wait...</p>
+        </div>
         <h4 ng-if="button_name!='update'">Add Stores</h4>
         <h4 ng-if="button_name=='update'">Update Stores</h4>
         <label>Store Name</label>
@@ -59,6 +73,9 @@ Date: 05 Jan 2016
         <button class="btn btn-primary" ng-if="button_name=='update'" ng-click="deleteStore()">Delete</button>
     </section>
     <section class="content-body register_block_2">
+        <div class="wait_block" ng-if="!ListInitialized">
+          <p class="wait_text">Please Wait...</p>
+        </div>
         <!-- Main content -->
         <table class="table">
             <th>Store Name</th>

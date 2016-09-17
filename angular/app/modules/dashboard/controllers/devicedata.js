@@ -191,7 +191,7 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
   
   //$scope.sendNotification();
   
-  apiService.updateDevice('00:A0:50:0E:0F:23','APA91bGKd3ygLbJsaTvCL7d_M2nLc0-XZuU2DqwcYCwTdG7rJKWwmi_um8H_0xj4K7f_pfc2w6C6LeeBYoRXRw6QjvMSQWVZ0O871XkxH8pVBXLFM8WbezY','3.25');
+  //apiService.updateDevice('00:A0:50:0E:0F:23','APA91bGKd3ygLbJsaTvCL7d_M2nLc0-XZuU2DqwcYCwTdG7rJKWwmi_um8H_0xj4K7f_pfc2w6C6LeeBYoRXRw6QjvMSQWVZ0O871XkxH8pVBXLFM8WbezY','3.25');
 
   /*$http({
       method: "post",
@@ -199,8 +199,7 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
       data: {
           'DeviceID' : 'APA91bE8pbcfkLUbtfWPLurBq1h2jKe2S4LcA5mkQB7a-tp26pSBLY8jj726HqfBbxXK5hBkp1Aw9IzAlTU8DB3cxGlpIOrMbJjE6BkNA1EdZS3Xi6VaYWA',
       }
-  })*/
-  
+  })*/  
 
 	/*socket.on('showDevices', function(devicelist){
 		$scope.deviceData = devicelist;
