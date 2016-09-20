@@ -86,6 +86,7 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
           }
         }
 
+        console.log($scope.deviceData);
     		$scope.deviceData = res.data;
     		$scope.Initialized = true;
     	});
