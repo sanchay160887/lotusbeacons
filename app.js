@@ -556,27 +556,34 @@ app.post('/getdata', function(req, res) {
                                 singleRow = reqbody[d][0];
                                 if (singleRow.name){
                                     device_detail[singleRow.device_token] = singleRow.name;
+                                    console.log('1');
                                 } else if (singleRow.mobile_no){
                                     device_detail[singleRow.device_token] = singleRow.mobile_no;
+                                    console.log('2');
                                 } else {
                                     device_detail[singleRow.device_token] = singleRow.device_token;
+                                    console.log('3');
                                 }
                             }
                         }
                         for(var d in devicelist){
                             if ( typeof(device_detail[devicelist[d].DeviceID]) != 'undefined'){
                                 devicelist[d].DeviceName = device_detail[devicelist[d].DeviceID];
+                                devicelist[d].DevicePhone = '+'+singleRow.mobile_no;
+                                console.log('4 ----> '+devicelist[d].DevicePhone);
                             } else {
                                 devicelist[d].DeviceName = devicelist[d].DeviceID;
+                                console.log('5')
                             }
                         }
                     } else {
                         for(var d in devicelist){
                             devicelist[d].DeviceName = devicelist[d].DeviceID;
+                            console.log('6');
                         }
                     }
 
-                    //console.log(devicelist);
+                    console.log('---------->'+JSON.stringify(devicelist)+'<-------------');
                     res.send(devicelist);
                     callback(null, devicelist);
                 })
@@ -682,6 +689,7 @@ app.post('/getDeviceHistorydata', function(req, res) {
                         for(var d in devicelist){
                             if ( typeof(device_detail[devicelist[d].DeviceID]) != 'undefined'){
                                 devicelist[d].DeviceName = device_detail[devicelist[d].DeviceID];
+                                devicelist[d].DevicePhone = '+'+singleRow.mobile_no;
                             } else {
                                 devicelist[d].DeviceName = devicelist[d].DeviceID;
                             }

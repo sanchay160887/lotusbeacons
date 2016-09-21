@@ -160,6 +160,7 @@ Date: 05 Jan 2016
           <tr>
             <th>Select</th>
             <th>Device ID</th>
+            <th>Person's Number</th>
             <th>Stay Time</th>
             <th>Beacon</th>
           </tr>
@@ -170,7 +171,8 @@ Date: 05 Jan 2016
               ng-click="ShowSelectedTokens()"
               ng-model="device.checked"></td>
               <!-- <td>{{ device.DeviceID }}</td> -->
-              <td>{{ device.DeviceName }}</td>
+              <td>{{ device.DeviceName }}</td>\
+              <td>{{ device.DevicePhone }}</td>
               <td>{{ device.StayTime | numberEx:2 }} minute</td>
               <td>{{ device.BeaconKey }}</td>
             </tr>
