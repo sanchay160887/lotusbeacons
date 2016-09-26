@@ -2,9 +2,9 @@
 var express = require('express');
 
 var http = require('http'),
-fs = require('fs'),
-// NEVER use a Sync function except at start-up!
-index = fs.readFileSync(__dirname + '/index.html');
+    fs = require('fs'),
+    // NEVER use a Sync function except at start-up!
+    index = fs.readFileSync(__dirname + '/index.html');
 
 var MongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectId;
@@ -110,11 +110,11 @@ function sendDevices() {
 }
 
 function isNumeric(n) {
-  return !isNaN(parseFloat(n)) && isFinite(n);
+    return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
 
-function updateDevice(BeaconID, DeviceID, Distance, resObj){
+function updateDevice(BeaconID, DeviceID, Distance, resObj) {
     /*console.log('Beacon ID ' + BeaconID);
     console.log('Device ID ' + DeviceID);
     console.log('Distance ' + Distance);*/
@@ -126,8 +126,8 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj){
             'IsSuccess': false,
             'message': 'Invalid data passing'
         });
-        
-        if (resObj){
+
+        if (resObj) {
             resObj.IsSuccess = false;
             resObj.message = "Invalid data passing";
             resObj.send(resObj);
@@ -135,8 +135,8 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj){
         return;
     }
 
-    if (!isNumeric(Distance)){
-        if (resObj){
+    if (!isNumeric(Distance)) {
+        if (resObj) {
             resObj.IsSuccess = false;
             resObj.message = "Distance should be in numbers";
             resObj.send(resObj);
@@ -145,9 +145,9 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj){
     }
 
     console.log('Update device called');
-    
+
     var comingFromLatLong = false;
-    if (!BeaconID){
+    if (!BeaconID) {
         BeaconID = '';
         comingFromLatLong = true;
     }
@@ -167,18 +167,15 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj){
                 }).toArray(function(err, devices) {
                     callback(null, devices);
                 });
-                
+
             },
-            function(devicedata, callback){
-                if (devicedata && devicedata.length > 0){
-                    collection.update(
-                        {'DeviceID': DeviceID},
-                        {
-                            'BeaconID': BeaconID,
-                            'DeviceID': DeviceID,
-                            'Distance': Distance
-                        }
-                    );
+            function(devicedata, callback) {
+                if (devicedata && devicedata.length > 0) {
+                    collection.update({ 'DeviceID': DeviceID }, {
+                        'BeaconID': BeaconID,
+                        'DeviceID': DeviceID,
+                        'Distance': Distance
+                    });
                     console.log('Device updated');
                 } else {
                     collection.insert({
@@ -198,30 +195,30 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj){
                 //sendDevices();
                 console.log('coming to last callback');
                 db.close();
-                if (resObj){
+                if (resObj) {
                     resObj.send();
-                }                
+                }
                 callback(null, response);
             }
-        ]);        
+        ]);
     });
 }
 
-function convertToMinutes(timeValue){
+function convertToMinutes(timeValue) {
 
     var a = timeValue.split(':'); // split it at the colons
-    if (a.length < 3){
+    if (a.length < 3) {
         return 0;
     }
 
     // minutes are worth 60 seconds. Hours are worth 60 minutes.
-    var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]); 
+    var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
 
     return (seconds / 60);
 
 }
 
-function updateDeviceHistory(BeaconID, DeviceID, StayTime){
+function updateDeviceHistory(BeaconID, DeviceID, StayTime) {
     console.log('Beacon ID ' + BeaconID);
     console.log('Device ID ' + DeviceID);
     console.log('Stay Time ' + StayTime);
@@ -231,9 +228,9 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime){
         return;
     }
 
-    var StayTime = convertToMinutes(StayTime);   // your input string
+    var StayTime = convertToMinutes(StayTime); // your input string
 
-    if (!isNumeric(StayTime)){
+    if (!isNumeric(StayTime)) {
         return;
     }
 
@@ -251,28 +248,25 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime){
             function(callback) {
                 collection.find({
                     'DeviceID': DeviceID,
-					'BeaconID': BeaconID
+                    'BeaconID': BeaconID
                 }).toArray(function(err, devices) {
                     callback(null, devices);
                 });
-                
+
             },
-            function(devicedata, callback){
-                if (devicedata && devicedata.length > 0){
-                    collection.update(
-                        {'DeviceID': DeviceID, 'BeaconID': BeaconID},
-                        {
-                            'BeaconID': BeaconID,
-                            'DeviceID': DeviceID,
-                            'StayTime': StayTime
-                        }
-                    );
+            function(devicedata, callback) {
+                if (devicedata && devicedata.length > 0) {
+                    collection.update({ 'DeviceID': DeviceID, 'BeaconID': BeaconID }, {
+                        'BeaconID': BeaconID,
+                        'DeviceID': DeviceID,
+                        'StayTime': StayTime
+                    });
                     console.log('Device History updated');
                 } else {
                     collection.insert({
                         'BeaconID': BeaconID,
-						'DeviceID': DeviceID,
-						'StayTime': StayTime
+                        'DeviceID': DeviceID,
+                        'StayTime': StayTime
                     });
                     console.log('Device History inserted');
                 }
@@ -285,10 +279,10 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime){
                 });
                 //sendDevices();
                 console.log('coming to last callback');
-                db.close();                
+                db.close();
                 callback(null, response);
             }
-        ]);        
+        ]);
     });
 }
 
@@ -308,10 +302,10 @@ io.on('connection', function(socket) {
 
     socket.on('updateDevice', function(data) {
         updateDevice(data.BeaconID, data.DeviceID, data.Distance);
-		updateDeviceHistory(data.BeaconID, data.DeviceID, data.stayTime);
+        updateDeviceHistory(data.BeaconID, data.DeviceID, data.stayTime);
         sendDevices();
-    });    
-    
+    });
+
     //setInterval(sendDevices, 5000);
 });
 
@@ -357,29 +351,29 @@ app.post('/user/login', function(req, res) {
 
 app.post('/updateDevice', function(req, res) {
     updateDevice(req.body.BeaconID, req.body.DeviceID, req.body.Distance, res);
-    if (req.body.BeaconID){
+    if (req.body.BeaconID) {
         var staytime = 0;
-        if (req.body.stayTime){
+        if (req.body.stayTime) {
             staytime = req.body.stayTime;
         }
         updateDeviceHistory(req.body.BeaconID, req.body.DeviceID, staytime);
     }
-    
+
 });
 
 app.post('/updateDeviceHistory', function(req, res) {
-	updateDeviceHistory(req.body.BeaconID, req.body.DeviceID, req.body.stayTime);
+    updateDeviceHistory(req.body.BeaconID, req.body.DeviceID, req.body.stayTime);
 });
 
 app.post('/beaconConnected', function(req, res) {
     BeaconID = req.body.BeaconID;
-    DeviceID = req.body.DeviceID; 
+    DeviceID = req.body.DeviceID;
     Distance = req.body.Distance;
     var resObj = {};
 
     MongoClient.connect(mongourl, function(err, db) {
         async.waterfall([
-            function(callback){
+            function(callback) {
                 var collection = db.collection('beacons');
                 collection.find({
                     'BeaconID': BeaconID
@@ -387,9 +381,9 @@ app.post('/beaconConnected', function(req, res) {
                     callback(null, devices);
                 });
             },
-            function(devices, callback){
-                if (devices && devices.length > 0){
-                    if (devices[0].BeaconKey == 'welcome'){
+            function(devices, callback) {
+                if (devices && devices.length > 0) {
+                    if (devices[0].BeaconKey == 'welcome') {
                         sendpushnotification('', [DeviceID], 'Welcome', 'Welcome to Lotus. Exciting offers are waiting for you..');
                     }
                 } else {
@@ -399,26 +393,26 @@ app.post('/beaconConnected', function(req, res) {
                     return;
                 }
                 updateDevice(BeaconID, DeviceID, Distance, res);
-                if (req.body.BeaconID){
+                if (req.body.BeaconID) {
                     var staytime = 0;
-                    if (req.body.stayTime){
+                    if (req.body.stayTime) {
                         staytime = req.body.stayTime;
                     }
                     updateDeviceHistory(BeaconID, DeviceID, staytime);
                 }
             }
         ]);
-    });    
+    });
 });
 
 app.post('/beaconDisconnected', function(req, res) {
     BeaconID = req.body.BeaconID;
-    DeviceID = req.body.DeviceID; 
+    DeviceID = req.body.DeviceID;
     //Distance = req.body.Distance;
 
     updateDevice(BeaconID, DeviceID, -1);
-    
-    setTimeout(function(){
+
+    setTimeout(function() {
         MongoClient.connect(mongourl, function(err, db) {
             if (err) {
                 return console.dir(err);
@@ -434,31 +428,31 @@ app.post('/beaconDisconnected', function(req, res) {
                     }).toArray(function(err, devices) {
                         callback(null, devices);
                     });
-                }, 
-                function(devices, callback){
+                },
+                function(devices, callback) {
                     var DeleteMe = false;
-                    if (devices && devices.length > 0){
-                        for(var d in devices){
-                            if (devices[d].Distance < 0){
+                    if (devices && devices.length > 0) {
+                        for (var d in devices) {
+                            if (devices[d].Distance < 0) {
                                 DeleteMe = true;
                                 break;
                             }
                         }
                     }
-                    if (DeleteMe){
-                        collection.deleteMany({'DeviceID' : DeviceID });
+                    if (DeleteMe) {
+                        collection.deleteMany({ 'DeviceID': DeviceID });
                         io.emit('updateDevice_response', {
                             'IsSuccess': true,
                             'message': 'Data inserted successfully'
                         });
-                    }                    
+                    }
                 },
-                function(acknowledge, callback){
+                function(acknowledge, callback) {
                     db.close();
                 }
             ]);
         });
-    }, 120000);    
+    }, 120000);
 
 });
 
@@ -471,31 +465,31 @@ app.post('/getdata', function(req, res) {
     console.log(BeaconID);
     console.log('Store Parameter on start');
     console.log(StoreID);
-        
+
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
             return console.dir(err);
         }
-        
+
         async.waterfall([
-            function(callback){
+            function(callback) {
                 var collection = db.collection('beacons');
                 var beaconcollection = [];
-                if (BeaconID && BeaconID.length > 0){
+                if (BeaconID && BeaconID.length > 0) {
                     //beaconcollection = collection.find({'BeaconID' : BeaconID });
-                    beaconcollection = collection.find({'BeaconID' : { $in : BeaconID } });
-                } else if (StoreID){
-                    beaconcollection = collection.find({'BeaconStore' : ObjectId(StoreID) });
+                    beaconcollection = collection.find({ 'BeaconID': { $in: BeaconID } });
+                } else if (StoreID) {
+                    beaconcollection = collection.find({ 'BeaconStore': ObjectId(StoreID) });
                 } else {
                     beaconcollection = collection.find();
                 }
 
-                beaconcollection.toArray(function(err, beacons){
+                beaconcollection.toArray(function(err, beacons) {
                     var beaconslist = [];
-                    for(var b in beacons){
+                    for (var b in beacons) {
                         beaconslist[beacons[b].BeaconID] = beacons[b].BeaconKey;
                     }
-                    
+
                     console.log('Get Data Webservice');
                     console.log(beaconslist);
                     console.log('Beacon Parameter');
@@ -503,19 +497,19 @@ app.post('/getdata', function(req, res) {
 
 
                     callback(null, beaconslist);
-                });             
-            }, 
-            function(beaconlist, callback){
+                });
+            },
+            function(beaconlist, callback) {
                 var collection = db.collection('device');
                 var devicelist = new Array();
 
                 var beacons = []
-                for(var b in beaconlist){
+                for (var b in beaconlist) {
                     beacons.push(b);
                 }
 
-                if (beacons && beacons.length > 0){
-                    devicecollection = collection.find({'BeaconID' : { $in : beacons } });
+                if (beacons && beacons.length > 0) {
+                    devicecollection = collection.find({ 'BeaconID': { $in: beacons } });
                     devicecollection.toArray(function(err, devices) {
                         for (var dvc in devices) {
                             devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
@@ -534,57 +528,44 @@ app.post('/getdata', function(req, res) {
                         //res.send(devicelist);
                         callback(null, devicelist);
                     })
-                }               
+                }
             },
-            function(devicelist, callback){
+            function(devicelist, callback) {
                 console.log(devicelist);
                 var devices = [];
-                for(var d in devicelist){
+                for (var d in devicelist) {
                     devices.push(devicelist[d].DeviceID);
                 }
                 var request = require('request');
                 var data = JSON.stringify(devices);
 
-                request.post('http://lampdemos.com/lotus15/v2/user/get_user_name',{form : {'android_device_token': data}},
-                function(res2, err, body){
-                    device_detail = [];
-                    var reqbody = JSON.parse(body);
-                    reqbody = reqbody.data;
-                    if (reqbody){
-                        for(var d in reqbody){
-                            if (reqbody[d] != false) {
-                                singleRow = reqbody[d][0];
-                                if (singleRow.name){
-                                    device_detail[singleRow.device_token] = singleRow.name;
-                                } else if (singleRow.mobile_no){
-                                    device_detail[singleRow.device_token] = singleRow.mobile_no;
-                                } else {
-                                    device_detail[singleRow.device_token] = singleRow.device_token;
+                request.post('http://lampdemos.com/lotus15/v2/user/get_user_name', { form: { 'android_device_token': data } },
+                    function(res2, err, body) {
+                        device_detail = [];
+                        var reqbody = JSON.parse(body);
+                        reqbody = reqbody.data;
+                        if (reqbody) {
+                            for (var d in reqbody) {
+                                if (reqbody[d] != false) {
+                                    singleRow = reqbody[d][0];
+                                    if (devicelist[d].DeviceID === singleRow.device_token) {
+                                        devicelist[d].DeviceName = singleRow.name;
+                                        devicelist[d].DevicePhone = singleRow.mobile_no;
+
+                                    }
+
                                 }
                             }
-                        }
-                        for(var d in devicelist){
-                            if ( typeof(device_detail[devicelist[d].DeviceID]) != 'undefined'){
-                                devicelist[d].DeviceName = device_detail[devicelist[d].DeviceID];
-                                //devicelist[d].DevicePhone = '+'+singleRow.mobile_no;
-                            } else {
-                                devicelist[d].DeviceName = devicelist[d].DeviceID;
-                            }
-                        }
-                    } else {
-                        for(var d in devicelist){
-                            devicelist[d].DeviceName = devicelist[d].DeviceID;
-                            devicelist[d].DevicePhone = '+'+singleRow.mobile_no;
-                        }
-                    }
 
-                    //console.log(devicelist);
-                    res.send(devicelist);
-                    callback(null, devicelist);
-                })
+                        }
+
+                        //console.log(devicelist);
+                        res.send(devicelist);
+                        callback(null, devicelist);
+                    })
             },
-            function(devicelist, callback){
-                db.close();             
+            function(devicelist, callback) {
+                db.close();
             }
         ]);
 
@@ -594,45 +575,45 @@ app.post('/getdata', function(req, res) {
 app.post('/getDeviceHistorydata', function(req, res) {
     BeaconID = req.body.BeaconID;
     StoreID = req.body.StoreID;
-        
+
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
             return console.dir(err);
         }
-        
+
         async.waterfall([
-            function(callback){
+            function(callback) {
                 var collection = db.collection('beacons');
                 var beaconcollection = [];
-                if (BeaconID && BeaconID.length > 0){
+                if (BeaconID && BeaconID.length > 0) {
                     //beaconcollection = collection.find({'BeaconID' : BeaconID });
-                    beaconcollection = collection.find({'BeaconID' : { $in : BeaconID } });
-                } else if (StoreID){
+                    beaconcollection = collection.find({ 'BeaconID': { $in: BeaconID } });
+                } else if (StoreID) {
                     console.log('coming here');
-                    beaconcollection = collection.find({'BeaconStore' : ObjectId(StoreID) });
+                    beaconcollection = collection.find({ 'BeaconStore': ObjectId(StoreID) });
                 } else {
                     beaconcollection = collection.find();
                 }
 
-                beaconcollection.toArray(function(err, beacons){
+                beaconcollection.toArray(function(err, beacons) {
                     var beaconslist = [];
-                    for(var b in beacons){
+                    for (var b in beacons) {
                         beaconslist[beacons[b].BeaconID] = beacons[b].BeaconKey;
                     }
                     callback(null, beaconslist);
-                });             
-            }, 
-            function(beaconlist, callback){
+                });
+            },
+            function(beaconlist, callback) {
                 var collection = db.collection('device_history');
                 var devicelist = new Array();
 
                 var beacons = []
-                for(var b in beaconlist){
+                for (var b in beaconlist) {
                     beacons.push(b);
                 }
 
-                if (beacons && beacons.length > 0){
-                    devicecollection = collection.find({'BeaconID' : { $in : beacons } });
+                if (beacons && beacons.length > 0) {
+                    devicecollection = collection.find({ 'BeaconID': { $in: beacons } });
                     devicecollection.toArray(function(err, devices) {
                         for (var dvc in devices) {
                             devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
@@ -652,57 +633,44 @@ app.post('/getDeviceHistorydata', function(req, res) {
                         callback(null, devicelist);
                         return;
                     })
-                }               
+                }
             },
-            function(devicelist, callback){
+            function(devicelist, callback) {
                 console.log(devicelist);
                 var devices = [];
-                for(var d in devicelist){
+                for (var d in devicelist) {
                     devices.push(devicelist[d].DeviceID);
                 }
                 var request = require('request');
                 var data = JSON.stringify(devices);
 
-                request.post('http://lampdemos.com/lotus15/v2/user/get_user_name',{form : {'android_device_token': data}},
-                function(res2, err, body){
-                    device_detail = [];
-                    var reqbody = JSON.parse(body);
-                    reqbody = reqbody.data;
-                    if (reqbody){
-                        for(var d in reqbody){
-                            if (reqbody[d] != false) {
-                                singleRow = reqbody[d][0];
-                                if (singleRow.name){
-                                    device_detail[singleRow.device_token] = singleRow.name;
-                                } else if (singleRow.mobile_no){
-                                    device_detail[singleRow.device_token] = singleRow.mobile_no;
-                                } else {
-                                    device_detail[singleRow.device_token] = singleRow.device_token;
+                request.post('http://lampdemos.com/lotus15/v2/user/get_user_name', { form: { 'android_device_token': data } },
+                    function(res2, err, body) {
+                        device_detail = [];
+                        var reqbody = JSON.parse(body);
+                        reqbody = reqbody.data;
+                        if (reqbody) {
+                            for (var d in reqbody) {
+                                if (reqbody[d] != false) {
+                                    singleRow = reqbody[d][0];
+                                    if (devicelist[d].DeviceID === singleRow.device_token) {
+                                        devicelist[d].DeviceName = singleRow.name;
+                                        devicelist[d].DevicePhone = singleRow.mobile_no;
+
+                                    }
+
                                 }
                             }
-                        }
-                        for(var d in devicelist){
-                            if ( typeof(device_detail[devicelist[d].DeviceID]) != 'undefined'){
-                                devicelist[d].DeviceName = device_detail[devicelist[d].DeviceID];
-                                
-                            } else {
-                                devicelist[d].DeviceName = devicelist[d].DeviceID;
-                                devicelist[d].DevicePhone = '+'+singleRow.mobile_no;
-                            }
-                        }
-                    } else {
-                        for(var d in devicelist){
-                            devicelist[d].DeviceName = devicelist[d].DeviceID;
-                        }
-                    }
 
-                    //console.log(devicelist);
-                    res.send(devicelist);
-                    callback(null, devicelist);
-                })
+                        }
+
+                        //console.log(devicelist);
+                        res.send(devicelist);
+                        callback(null, devicelist);
+                    })
             },
-            function(beaconlist, callback){
-                db.close();             
+            function(beaconlist, callback) {
+                db.close();
             }
         ]);
 
@@ -731,14 +699,14 @@ app.post('/getbeacondata', function(req, res) {
             } })
         */
         beaconcollection = '';
-        if (BeaconStore){
-            beaconcollection = collection.find({'BeaconStore' : ObjectId(BeaconStore)})
+        if (BeaconStore) {
+            beaconcollection = collection.find({ 'BeaconStore': ObjectId(BeaconStore) })
         } else {
             beaconcollection = collection.find();
         }
 
         beaconcollection.toArray(function(err, devices) {
-            if (devices && devices.length > 0){
+            if (devices && devices.length > 0) {
                 for (var dvc in devices) {
                     devicelist.push(devices[dvc]);
                 }
@@ -751,7 +719,7 @@ app.post('/getbeacondata', function(req, res) {
                 resObj.message = "No record found.";
                 resObj.data = '';
                 res.send(resObj);
-            }            
+            }
         });
         db.close();
     });
@@ -771,7 +739,7 @@ app.post('/addbeacon', function(req, res) {
         return;
     }
 
-    if (BeaconStore.length != 24){
+    if (BeaconStore.length != 24) {
         resObj.IsSuccess = false;
         resObj.message = "Invalid store selected";
         res.send(resObj);
@@ -782,7 +750,7 @@ app.post('/addbeacon', function(req, res) {
         if (err) {
             return console.dir(err);
         }
-        assert.equal(null, err);        
+        assert.equal(null, err);
 
         var collection = db.collection('beacons');
 
@@ -793,10 +761,10 @@ app.post('/addbeacon', function(req, res) {
                 }).toArray(function(err, devices) {
                     callback(null, devices);
                 });
-                
+
             },
             function(beacondata, callback) {
-                if (beacondata && beacondata.length > 0){
+                if (beacondata && beacondata.length > 0) {
                     resObj.IsSuccess = false;
                     resObj.message = "BeaconID already exists";
                     res.send(resObj);
@@ -807,24 +775,24 @@ app.post('/addbeacon', function(req, res) {
                 }).toArray(function(err, devices) {
                     callback(null, devices);
                 });
-                
+
             },
-            function(beacondata, callback){
-                if (beacondata && beacondata.length > 0){
+            function(beacondata, callback) {
+                if (beacondata && beacondata.length > 0) {
                     resObj.IsSuccess = false;
                     resObj.message = "Beacon Key already exists";
                     res.send(resObj);
                     return;
                 }
-                
+
                 collection.insert({
                     'BeaconID': BeaconID,
                     'BeaconKey': BeaconKey,
                     'BeaconDescr': BeaconDescr,
-                    'BeaconStore' : ObjectId(BeaconStore)
+                    'BeaconStore': ObjectId(BeaconStore)
                 });
                 console.log('Beacon inserted');
-                
+
                 callback(null, 'inserted');
             },
             function(response, callback) {
@@ -835,7 +803,7 @@ app.post('/addbeacon', function(req, res) {
                 res.send(resObj);
                 callback(null, response);
             }
-        ]);        
+        ]);
     });
 });
 
@@ -853,8 +821,8 @@ app.post('/updatebeacon', function(req, res) {
         res.send(resObj);
         return;
     }
-    
-    if (BeaconStore.length != 24){
+
+    if (BeaconStore.length != 24) {
         resObj.IsSuccess = false;
         resObj.message = "Invalid store selected";
         res.send(resObj);
@@ -867,21 +835,18 @@ app.post('/updatebeacon', function(req, res) {
         }
 
         var collection = db.collection('beacons');
-        collection.update(
-            { 'BeaconID': BeaconID },
-            {
-                'BeaconID': BeaconID,
-                'BeaconKey': BeaconKey,
-                'BeaconDescr': BeaconDescr,
-                'BeaconStore' : ObjectId(BeaconStore)
-            }
-        );
+        collection.update({ 'BeaconID': BeaconID }, {
+            'BeaconID': BeaconID,
+            'BeaconKey': BeaconKey,
+            'BeaconDescr': BeaconDescr,
+            'BeaconStore': ObjectId(BeaconStore)
+        });
         db.close();
 
         resObj.IsSuccess = true;
         resObj.message = "Beacon updated successfully.";
         res.send(resObj);
-        
+
     });
 });
 
@@ -903,14 +868,14 @@ app.post('/deletebeacon', function(req, res) {
         assert.equal(null, err);
 
         var collection = db.collection('beacons');
-        
+
         collection.deleteMany({ 'BeaconID': BeaconID });
         resObj.IsSuccess = true;
         resObj.message = "Beacon deleted successfully";
         res.send(resObj);
 
         db.close();
-        
+
     });
 
 });
@@ -930,7 +895,7 @@ app.post('/getbeacon', function(req, res) {
         if (err) {
             return console.dir(err);
         }
-        assert.equal(null, err);        
+        assert.equal(null, err);
 
         var collection = db.collection('beacons');
 
@@ -941,10 +906,10 @@ app.post('/getbeacon', function(req, res) {
                 }).toArray(function(err, devices) {
                     callback(null, devices);
                 });
-                
+
             },
             function(devices, callback) {
-                if (devices && devices.length > 0){
+                if (devices && devices.length > 0) {
                     resObj.IsSuccess = true;
                     resObj.message = "success";
                     resObj.data = devices;
@@ -955,7 +920,7 @@ app.post('/getbeacon', function(req, res) {
                 db.close();
                 res.send(resObj);
             }
-        ]);        
+        ]);
     });
 });
 /*Beacon services end*/
@@ -972,11 +937,11 @@ app.post('/getstoredata', function(req, res) {
         var collection = db.collection('stores');
         var devicelist = new Array();
         collection.find().toArray(function(err, devices) {
-            if (devices && devices.length > 0){
+            if (devices && devices.length > 0) {
                 for (var dvc in devices) {
                     devicelist.push(devices[dvc]);
                 }
-                
+
                 resObj.IsSuccess = true;
                 resObj.message = "Success";
                 resObj.data = devicelist;
@@ -986,7 +951,7 @@ app.post('/getstoredata', function(req, res) {
                 resObj.message = "No record found.";
                 resObj.data = '';
                 res.send(resObj);
-            }            
+            }
         })
         db.close();
     });
@@ -1009,7 +974,7 @@ app.post('/addstore', function(req, res) {
         if (err) {
             return console.dir(err);
         }
-        assert.equal(null, err);        
+        assert.equal(null, err);
 
         var collection = db.collection('stores');
 
@@ -1020,22 +985,22 @@ app.post('/addstore', function(req, res) {
                 }).toArray(function(err, stores) {
                     callback(null, stores);
                 });
-                
+
             },
-            function(stores, callback){
-                if (stores && stores.length > 0){
+            function(stores, callback) {
+                if (stores && stores.length > 0) {
                     resObj.IsSuccess = false;
                     resObj.message = "Store Name already exists";
                     res.send(resObj);
                     return;
                 }
-                
+
                 collection.insert({
                     'StoreName': StoreName,
                     'StoreDescr': StoreDescr
                 });
                 console.log('Store inserted');
-                
+
                 callback(null, 'inserted');
             },
             function(response, callback) {
@@ -1046,7 +1011,7 @@ app.post('/addstore', function(req, res) {
                 res.send(resObj);
                 callback(null, response);
             }
-        ]);        
+        ]);
     });
 });
 
@@ -1061,7 +1026,7 @@ app.post('/updatestore', function(req, res) {
         resObj.message = "Please enter proper Store name";
         res.send(resObj);
         return;
-    }    
+    }
 
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
@@ -1069,18 +1034,16 @@ app.post('/updatestore', function(req, res) {
         }
 
         var collection = db.collection('stores');
-        collection.update({ _id: ObjectId(StoreID) },
-            {
-                'StoreName': StoreName,
-                'StoreDescr': StoreDescr
-            }
-        );
+        collection.update({ _id: ObjectId(StoreID) }, {
+            'StoreName': StoreName,
+            'StoreDescr': StoreDescr
+        });
         db.close();
 
         resObj.IsSuccess = true;
         resObj.message = "Store updated successfully.";
         res.send(resObj);
-        
+
     });
 });
 
@@ -1106,14 +1069,14 @@ app.post('/deletestore', function(req, res) {
         collection.find(ObjectId(StoreID)).toArray(function(err, devices) {
             console.log(JSON.stringify(devices));
         });
-        
+
         collection.deleteMany({ _id: ObjectId(StoreID) });
         resObj.IsSuccess = true;
         resObj.message = "Store deleted successfully";
         res.send(resObj);
 
         db.close();
-        
+
     });
 
 });
@@ -1133,7 +1096,7 @@ app.post('/getstore', function(req, res) {
         if (err) {
             return console.dir(err);
         }
-        assert.equal(null, err);        
+        assert.equal(null, err);
 
         var collection = db.collection('stores');
 
@@ -1142,10 +1105,10 @@ app.post('/getstore', function(req, res) {
                 collection.find(ObjectId(StoreID)).toArray(function(err, devices) {
                     callback(null, devices);
                 });
-                
+
             },
             function(devices, callback) {
-                if (devices && devices.length > 0){
+                if (devices && devices.length > 0) {
                     resObj.IsSuccess = true;
                     resObj.message = "success";
                     resObj.data = devices;
@@ -1156,7 +1119,7 @@ app.post('/getstore', function(req, res) {
                 db.close();
                 res.send(resObj);
             }
-        ]);        
+        ]);
     });
 });
 /*Stores services end*/
@@ -1209,16 +1172,16 @@ app.post('/sendpushnotification_image', function(req, res) {
     //res.send();
 });
 
-function sendpushnotification(resObj, gcmToken, title, messagebody, image_url){
+function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
     var gcmObject = new gcm.AndroidGcm(GcmGoogleKey);
-    if (!image_url){
+    if (!image_url) {
         image_url = '';
     }
     /*console.log(gcmToken);
     console.log(title);
     console.log(message);
     console.log(image_url);*/
-    
+
     // initialize new androidGcm object
     var message = new gcm.Message({
         registration_ids: gcmToken, //[gcmToken],
@@ -1239,82 +1202,81 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url){
             console.log('Something went wrong :: ' + err);
         } else {
             console.log(response.success);
-            if (response.success == '1'){
+            if (response.success == '1') {
                 var request = require('request');
                 var gcmdata = JSON.stringify(gcmToken);
                 //console.log(gcmdata);
-                request.post('http://lampdemos.com/lotus15/v2/user/get_notification_entry',
-                    {
-                        form : {
+                request.post('http://lampdemos.com/lotus15/v2/user/get_notification_entry', {
+                        form: {
                             'android_device_token': gcmdata,
-                            'title' : title,
-                            'message' : messagebody,
-                            'notification_img' : image_url
+                            'title': title,
+                            'message': messagebody,
+                            'notification_img': image_url
                         }
-                },
-                function(res2, err, body){
-                    console.log('Data coming from service --> ' + JSON.stringify(body));
-                    if (resObj){
-                        resObj.send(body);
-                    }
-                });
+                    },
+                    function(res2, err, body) {
+                        console.log('Data coming from service --> ' + JSON.stringify(body));
+                        if (resObj) {
+                            resObj.send(body);
+                        }
+                    });
             }
         }
-    });    
+    });
 }
 
-var multer  =   require('multer');
-var storage =   multer.diskStorage({
-  destination: function (req, file, callback) {
-    callback(null, './angular/images/notificationuploads/');
-  },
-  filename: function (req, file, callback) {
-    extension = file.originalname.split('.')[1];
-    callback(null, file.fieldname + '-' + Date.now() + '.' + extension);
-  }
+var multer = require('multer');
+var storage = multer.diskStorage({
+    destination: function(req, file, callback) {
+        callback(null, './angular/images/notificationuploads/');
+    },
+    filename: function(req, file, callback) {
+        extension = file.originalname.split('.')[1];
+        callback(null, file.fieldname + '-' + Date.now() + '.' + extension);
+    }
 });
 
-var upload = multer({ storage : storage}).single('userPhoto');
+var upload = multer({ storage: storage }).single('userPhoto');
 
-app.post('/api/photo',function(req,res){
-    upload(req,res,function(err) {
-        if(err) {
+app.post('/api/photo', function(req, res) {
+    upload(req, res, function(err) {
+        if (err) {
             console.log(err);
             return res.end("Error uploading file.");
         }
         var filename = '';
-        if (req.file){
+        if (req.file) {
             filename = req.file.destination + req.file.filename;
-            filename = filename.replace('./','');
-            filename = filename.replace('\\','/');
-            filename = filename.replace('angular','');
-        }        
-         
+            filename = filename.replace('./', '');
+            filename = filename.replace('\\', '/');
+            filename = filename.replace('angular', '');
+        }
+
         res.send(filename);
     });
 });
 
-app.post('/getdeviceidentity',function(req,res){
+app.post('/getdeviceidentity', function(req, res) {
     var request = require('request');
     var data = JSON.stringify(["APA91bHcxKvZbp5pcY_KeivI3qbHj1LF0KNct3Vx13jXVEFLzZDH5LMaE_1j08rClLhzAOwVJLp9Jmga0rPX3qndKOe6kK35sG8yDSYg4dipInhSZsgZOTU"]);
 
-    request.post('http://lampdemos.com/lotus15/v2/user/get_user_name',{form : {'android_device_token': data }},
-        function(res, err, body){
-        console.log(body);
-    })
+    request.post('http://lampdemos.com/lotus15/v2/user/get_user_name', { form: { 'android_device_token': data } },
+        function(res, err, body) {
+            console.log(body);
+        })
     res.send();
 });
 
 app.post('/beaconIntervalTesting', function(req, res) {
     var myval = 200;
-    setTimeout(function(){
+    setTimeout(function() {
         console.log(myval);
         console.log('==================');
         console.log('Interval fired');
     }, 10000);
 });
 
-function testInterval(param1){
+function testInterval(param1) {
     console.log(param1);
     console.log('==================');
     console.log('Interval fired');
