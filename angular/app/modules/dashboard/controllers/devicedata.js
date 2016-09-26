@@ -118,7 +118,7 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
   }
 
   socket.on('updateDevice_response', function(response){
-      console.log('socket called');
+      console.log('socket called ==> '+ response);
       $scope.loadData();
   });
 
