@@ -121,18 +121,20 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
 
     if (Distance == -1) {
 
-        MongoClient.connect(mongourl, function(err, db) {
-            if (err) {
-                return console.dir(err);
-            }
-            assert.equal(null, err);
+        setTimeout(function() {
+            MongoClient.connect(mongourl, function(err, db) {
+                if (err) {
+                    return console.dir(err);
+                }
+                assert.equal(null, err);
 
-            var collection = db.collection('device');
-            collection.deleteMany({
-                'DeviceID': DeviceID
+                var collection = db.collection('device');
+                collection.deleteMany({
+                    'DeviceID': DeviceID
+                });
+
             });
-
-        });
+        }, 10000);
 
     } else {
 
