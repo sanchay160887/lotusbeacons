@@ -366,7 +366,7 @@ app.post('/updateDevice', function(req, res) {
             DeleteRecordFromMongo(req.body.DeviceID);
         }
         var staytime = 0;
-        if (req.body.stayTime) {
+        else if (req.body.stayTime) {
             staytime = req.body.stayTime;
         }
         updateDeviceHistory(req.body.BeaconID, req.body.DeviceID, staytime);
