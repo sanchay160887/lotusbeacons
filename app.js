@@ -218,14 +218,14 @@ function convertToMinutes(timeValue) {
     }
 
     // minutes are worth 60 seconds. Hours are worth 60 minutes.
-    //var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
-    var seconds = a[1] + ' Min ' + a[2] + ' Sec';
-    return (seconds);
+    var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
+    // var seconds = a[1] + ' Min ' + a[2] + ' Sec';
+    return (seconds / 60);
 
 }
 
 function updateDeviceHistory(BeaconID, DeviceID, StayTime) {
-    var StayTime = convertToMinutes(StayTime); // your input string
+    //var StayTime = convertToMinutes(StayTime); // your input string
     console.log('------------Updating device History--------------');
     console.log('Beacon ID ' + BeaconID);
     console.log('Device ID ' + DeviceID);
