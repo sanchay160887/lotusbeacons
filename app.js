@@ -434,11 +434,12 @@ app.post('/beaconDisconnected', function(req, res) {
                         callback(null, devices);
                     });
                 },
+
                 function(devices, callback) {
                     var DeleteMe = false;
                     if (devices && devices.length > 0) {
                         for (var d in devices) {
-                            if (devices[d].Distance < 0) {
+                            if (devices[d].Distance == 0) {
                                 DeleteMe = true;
                                 break;
                             }
