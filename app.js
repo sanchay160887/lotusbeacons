@@ -171,7 +171,9 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
             },
             function(devicedata, callback) {
                 if (devicedata && devicedata.length > 0) {
-                    collection.update({ 'DeviceID': DeviceID }, {
+                    collection.update({
+                        'DeviceID': DeviceID
+                    }, {
                         'BeaconID': BeaconID,
                         'DeviceID': DeviceID,
                         'Distance': Distance
@@ -256,7 +258,10 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime) {
             },
             function(devicedata, callback) {
                 if (devicedata && devicedata.length > 0) {
-                    collection.update({ 'DeviceID': DeviceID, 'BeaconID': BeaconID }, {
+                    collection.update({
+                        'DeviceID': DeviceID,
+                        'BeaconID': BeaconID
+                    }, {
                         'BeaconID': BeaconID,
                         'DeviceID': DeviceID,
                         'StayTime': StayTime
@@ -410,7 +415,7 @@ app.post('/beaconDisconnected', function(req, res) {
     DeviceID = req.body.DeviceID;
     //Distance = req.body.Distance;
 
-    updateDevice(BeaconID, DeviceID, -1);
+    updateDevice(BeaconID, DeviceID, 0.00);
 
     setTimeout(function() {
         MongoClient.connect(mongourl, function(err, db) {
@@ -440,7 +445,9 @@ app.post('/beaconDisconnected', function(req, res) {
                         }
                     }
                     if (DeleteMe) {
-                        collection.deleteMany({ 'DeviceID': DeviceID });
+                        collection.deleteMany({
+                            'DeviceID': DeviceID
+                        });
                         io.emit('updateDevice_response', {
                             'IsSuccess': true,
                             'message': 'Data inserted successfully'
@@ -477,9 +484,15 @@ app.post('/getdata', function(req, res) {
                 var beaconcollection = [];
                 if (BeaconID && BeaconID.length > 0) {
                     //beaconcollection = collection.find({'BeaconID' : BeaconID });
-                    beaconcollection = collection.find({ 'BeaconID': { $in: BeaconID } });
+                    beaconcollection = collection.find({
+                        'BeaconID': {
+                            $in: BeaconID
+                        }
+                    });
                 } else if (StoreID) {
-                    beaconcollection = collection.find({ 'BeaconStore': ObjectId(StoreID) });
+                    beaconcollection = collection.find({
+                        'BeaconStore': ObjectId(StoreID)
+                    });
                 } else {
                     beaconcollection = collection.find();
                 }
@@ -509,7 +522,11 @@ app.post('/getdata', function(req, res) {
                 }
 
                 if (beacons && beacons.length > 0) {
-                    devicecollection = collection.find({ 'BeaconID': { $in: beacons } });
+                    devicecollection = collection.find({
+                        'BeaconID': {
+                            $in: beacons
+                        }
+                    });
                     devicecollection.toArray(function(err, devices) {
                         for (var dvc in devices) {
                             devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
@@ -539,7 +556,11 @@ app.post('/getdata', function(req, res) {
                 var request = require('request');
                 var data = JSON.stringify(devices);
 
-                request.post('http://lampdemos.com/lotus15/v2/user/get_user_name', { form: { 'android_device_token': data } },
+                request.post('http://lampdemos.com/lotus15/v2/user/get_user_name', {
+                        form: {
+                            'android_device_token': data
+                        }
+                    },
                     function(res2, err, body) {
                         device_detail = [];
                         var reqbody = JSON.parse(body);
@@ -587,10 +608,16 @@ app.post('/getDeviceHistorydata', function(req, res) {
                 var beaconcollection = [];
                 if (BeaconID && BeaconID.length > 0) {
                     //beaconcollection = collection.find({'BeaconID' : BeaconID });
-                    beaconcollection = collection.find({ 'BeaconID': { $in: BeaconID } });
+                    beaconcollection = collection.find({
+                        'BeaconID': {
+                            $in: BeaconID
+                        }
+                    });
                 } else if (StoreID) {
                     console.log('coming here');
-                    beaconcollection = collection.find({ 'BeaconStore': ObjectId(StoreID) });
+                    beaconcollection = collection.find({
+                        'BeaconStore': ObjectId(StoreID)
+                    });
                 } else {
                     beaconcollection = collection.find();
                 }
@@ -613,7 +640,11 @@ app.post('/getDeviceHistorydata', function(req, res) {
                 }
 
                 if (beacons && beacons.length > 0) {
-                    devicecollection = collection.find({ 'BeaconID': { $in: beacons } });
+                    devicecollection = collection.find({
+                        'BeaconID': {
+                            $in: beacons
+                        }
+                    });
                     devicecollection.toArray(function(err, devices) {
                         for (var dvc in devices) {
                             devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
@@ -644,11 +675,17 @@ app.post('/getDeviceHistorydata', function(req, res) {
                 var request = require('request');
                 var data = JSON.stringify(devices);
 
-                request.post('http://lampdemos.com/lotus15/v2/user/get_user_name', { form: { 'android_device_token': data } },
-                    function(res2, err, body) {
+                request.post('http://lampdemos.com/lotus15/v2/user/get_user_name', {
+                        form: {
+                            'android_device_token': data
+                        }
+                    },
+                    function(req, res2, err, body) {
                         device_detail = [];
                         var reqbody = JSON.parse(body);
                         reqbody = reqbody.data;
+                        console.log('Here is the request ' + req);
+                        console.log('-----------------------------');
                         if (reqbody) {
                             for (var d in reqbody) {
                                 if (reqbody[d] != false) {
@@ -700,7 +737,9 @@ app.post('/getbeacondata', function(req, res) {
         */
         beaconcollection = '';
         if (BeaconStore) {
-            beaconcollection = collection.find({ 'BeaconStore': ObjectId(BeaconStore) })
+            beaconcollection = collection.find({
+                'BeaconStore': ObjectId(BeaconStore)
+            })
         } else {
             beaconcollection = collection.find();
         }
@@ -835,7 +874,9 @@ app.post('/updatebeacon', function(req, res) {
         }
 
         var collection = db.collection('beacons');
-        collection.update({ 'BeaconID': BeaconID }, {
+        collection.update({
+            'BeaconID': BeaconID
+        }, {
             'BeaconID': BeaconID,
             'BeaconKey': BeaconKey,
             'BeaconDescr': BeaconDescr,
@@ -869,7 +910,9 @@ app.post('/deletebeacon', function(req, res) {
 
         var collection = db.collection('beacons');
 
-        collection.deleteMany({ 'BeaconID': BeaconID });
+        collection.deleteMany({
+            'BeaconID': BeaconID
+        });
         resObj.IsSuccess = true;
         resObj.message = "Beacon deleted successfully";
         res.send(resObj);
@@ -1034,7 +1077,9 @@ app.post('/updatestore', function(req, res) {
         }
 
         var collection = db.collection('stores');
-        collection.update({ _id: ObjectId(StoreID) }, {
+        collection.update({
+            _id: ObjectId(StoreID)
+        }, {
             'StoreName': StoreName,
             'StoreDescr': StoreDescr
         });
@@ -1070,7 +1115,9 @@ app.post('/deletestore', function(req, res) {
             console.log(JSON.stringify(devices));
         });
 
-        collection.deleteMany({ _id: ObjectId(StoreID) });
+        collection.deleteMany({
+            _id: ObjectId(StoreID)
+        });
         resObj.IsSuccess = true;
         resObj.message = "Store deleted successfully";
         res.send(resObj);
@@ -1236,7 +1283,9 @@ var storage = multer.diskStorage({
     }
 });
 
-var upload = multer({ storage: storage }).single('userPhoto');
+var upload = multer({
+    storage: storage
+}).single('userPhoto');
 
 app.post('/api/photo', function(req, res) {
     upload(req, res, function(err) {
@@ -1260,7 +1309,11 @@ app.post('/getdeviceidentity', function(req, res) {
     var request = require('request');
     var data = JSON.stringify(["APA91bHcxKvZbp5pcY_KeivI3qbHj1LF0KNct3Vx13jXVEFLzZDH5LMaE_1j08rClLhzAOwVJLp9Jmga0rPX3qndKOe6kK35sG8yDSYg4dipInhSZsgZOTU"]);
 
-    request.post('http://lampdemos.com/lotus15/v2/user/get_user_name', { form: { 'android_device_token': data } },
+    request.post('http://lampdemos.com/lotus15/v2/user/get_user_name', {
+            form: {
+                'android_device_token': data
+            }
+        },
         function(res, err, body) {
             console.log(body);
         })
