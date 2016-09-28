@@ -225,6 +225,7 @@ function convertToMinutes(timeValue) {
 }
 
 function updateDeviceHistory(BeaconID, DeviceID, StayTime) {
+    var StayTime = convertToMinutes(StayTime); // your input string
     console.log('------------Updating device History--------------');
     console.log('Beacon ID ' + BeaconID);
     console.log('Device ID ' + DeviceID);
