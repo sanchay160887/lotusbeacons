@@ -225,12 +225,11 @@ function convertToMinutes(timeValue) {
 }
 
 function updateDeviceHistory(BeaconID, DeviceID, StayTime) {
-    //var StayTime = convertToMinutes(StayTime); // your input string
-    console.log('------------Updating device History--------------');
+    /*console.log('------------Updating device History--------------');
     console.log('Beacon ID ' + BeaconID);
     console.log('Device ID ' + DeviceID);
     console.log('Stay Time ' + StayTime);
-    console.log('------------Updating device History--------------');
+    console.log('------------Updating device History--------------');*/
     var resObjVal = {};
     if (!(BeaconID && DeviceID && StayTime)) {
         return;
@@ -417,6 +416,7 @@ app.post('/beaconConnected', function(req, res) {
 });
 
 app.post('/beaconDisconnected', function(req, res) {
+    console.log('-------------------Beacon disconnected------------- ')
     BeaconID = req.body.BeaconID;
     DeviceID = req.body.DeviceID;
     //Distance = req.body.Distance;
@@ -444,14 +444,18 @@ app.post('/beaconDisconnected', function(req, res) {
                 function(devices, callback) {
                     var DeleteMe = false;
                     if (devices && devices.length > 0) {
+                        console.log('going to Delete record >>>>>>>>>>>>');
                         for (var d in devices) {
                             if (devices[d].Distance == 0) {
+
                                 DeleteMe = true;
+                                console.log('Record Deleted >>>>>>> ' + DeleteMe);
                                 break;
                             }
                         }
                     }
                     if (DeleteMe) {
+                        console.log('Deleting records from mongo >>>>>>> ' + DeleteMe + ' Device Id ' + DeviceID);
                         collection.deleteMany({
                             'DeviceID': DeviceID
                         });
