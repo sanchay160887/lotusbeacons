@@ -238,9 +238,9 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime) {
 
     var StayTime = convertToMinutes(StayTime); // your input string
 
-    if (!isNumeric(StayTime)) {
-        return;
-    }
+    /* if (!isNumeric(StayTime)) {
+         return;
+     }*/
 
     console.log('Update device history called');
 
