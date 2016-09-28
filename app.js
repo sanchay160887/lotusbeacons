@@ -214,9 +214,9 @@ function convertToMinutes(timeValue) {
     }
 
     // minutes are worth 60 seconds. Hours are worth 60 minutes.
-    var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
-
-    return (seconds / 60);
+    //var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
+    var seconds = a[1] + ':' + a[2];
+    return (seconds);
 
 }
 
@@ -225,70 +225,70 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime) {
     console.log('Device ID ' + DeviceID);
     console.log('Stay Time ' + StayTime);
 
-    var resObjVal = {};
-    if (!(BeaconID && DeviceID && StayTime)) {
-        return;
-    }
+    /* var resObjVal = {};
+     if (!(BeaconID && DeviceID && StayTime)) {
+         return;
+     }
 
-    var StayTime = convertToMinutes(StayTime); // your input string
+     var StayTime = convertToMinutes(StayTime); // your input string
 
-    if (!isNumeric(StayTime)) {
-        return;
-    }
+     if (!isNumeric(StayTime)) {
+         return;
+     }
 
-    console.log('Update device history called');
+     console.log('Update device history called');
 
-    MongoClient.connect(mongourl, function(err, db) {
-        if (err) {
-            return console.dir(err);
-        }
-        assert.equal(null, err);
+     MongoClient.connect(mongourl, function(err, db) {
+         if (err) {
+             return console.dir(err);
+         }
+         assert.equal(null, err);
 
-        var collection = db.collection('device_history');
+         var collection = db.collection('device_history');
 
-        async.waterfall([
-            function(callback) {
-                collection.find({
-                    'DeviceID': DeviceID,
-                    'BeaconID': BeaconID
-                }).toArray(function(err, devices) {
-                    callback(null, devices);
-                });
+         async.waterfall([
+             function(callback) {
+                 collection.find({
+                     'DeviceID': DeviceID,
+                     'BeaconID': BeaconID
+                 }).toArray(function(err, devices) {
+                     callback(null, devices);
+                 });
 
-            },
-            function(devicedata, callback) {
-                if (devicedata && devicedata.length > 0) {
-                    collection.update({
-                        'DeviceID': DeviceID,
-                        'BeaconID': BeaconID
-                    }, {
-                        'BeaconID': BeaconID,
-                        'DeviceID': DeviceID,
-                        'StayTime': StayTime
-                    });
-                    console.log('Device History updated');
-                } else {
-                    collection.insert({
-                        'BeaconID': BeaconID,
-                        'DeviceID': DeviceID,
-                        'StayTime': StayTime
-                    });
-                    console.log('Device History inserted');
-                }
-                callback(null, 'inserted');
-            },
-            function(response, callback) {
-                io.emit('updateDeviceHistory_response', {
-                    'IsSuccess': true,
-                    'message': 'Data updated successfully'
-                });
-                //sendDevices();
-                console.log('coming to last callback');
-                db.close();
-                callback(null, response);
-            }
-        ]);
-    });
+             },
+             function(devicedata, callback) {
+                 if (devicedata && devicedata.length > 0) {
+                     collection.update({
+                         'DeviceID': DeviceID,
+                         'BeaconID': BeaconID
+                     }, {
+                         'BeaconID': BeaconID,
+                         'DeviceID': DeviceID,
+                         'StayTime': StayTime
+                     });
+                     console.log('Device History updated');
+                 } else {
+                     collection.insert({
+                         'BeaconID': BeaconID,
+                         'DeviceID': DeviceID,
+                         'StayTime': StayTime
+                     });
+                     console.log('Device History inserted');
+                 }
+                 callback(null, 'inserted');
+             },
+             function(response, callback) {
+                 io.emit('updateDeviceHistory_response', {
+                     'IsSuccess': true,
+                     'message': 'Data updated successfully'
+                 });
+                 //sendDevices();
+                 console.log('coming to last callback');
+                 db.close();
+                 callback(null, response);
+             }
+         ]);
+     });*/
 }
 
 
@@ -460,7 +460,7 @@ app.post('/beaconDisconnected', function(req, res) {
                 }
             ]);
         });
-    }, 60000);
+    }, 0);
 
 });
 
