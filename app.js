@@ -681,11 +681,11 @@ app.post('/getDeviceHistorydata', function(req, res) {
                             'android_device_token': data
                         }
                     },
-                    function(req, res2, err, body) {
+                    function(res2, err, body) {
+                        console.log('Here is the request ' + res2);
                         device_detail = [];
                         var reqbody = JSON.parse(body);
                         reqbody = reqbody.data;
-                        console.log('Here is the request ' + req);
                         console.log('-----------------------------');
                         if (reqbody) {
                             for (var d in reqbody) {
