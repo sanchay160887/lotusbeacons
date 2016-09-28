@@ -423,54 +423,54 @@ app.post('/beaconDisconnected', function(req, res) {
 
     updateDevice(BeaconID, DeviceID, -1);
 
-    setTimeout(function() {
-        MongoClient.connect(mongourl, function(err, db) {
-            if (err) {
-                return console.dir(err);
-            }
-            assert.equal(null, err);
 
-            var collection = db.collection('device');
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
 
-            async.waterfall([
-                function(callback) {
-                    collection.find({
-                        'DeviceID': DeviceID
-                    }).toArray(function(err, devices) {
-                        callback(null, devices);
-                    });
-                },
+        var collection = db.collection('device');
 
-                function(devices, callback) {
-                    var DeleteMe = false;
-                    if (devices && devices.length > 0) {
-                        console.log('going to Delete record >>>>>>>>>>>>');
-                        for (var d in devices) {
-                            if (devices[d].Distance == 0) {
+        async.waterfall([
+            function(callback) {
+                collection.find({
+                    'DeviceID': DeviceID
+                }).toArray(function(err, devices) {
+                    callback(null, devices);
+                });
+            },
 
-                                DeleteMe = true;
-                                console.log('Record Deleted >>>>>>> ' + DeleteMe);
-                                break;
-                            }
+            function(devices, callback) {
+                var DeleteMe = false;
+                if (devices && devices.length > 0) {
+                    console.log('going to Delete record >>>>>>>>>>>>');
+                    for (var d in devices) {
+                        if (devices[d].Distance == 0) {
+
+                            DeleteMe = true;
+                            console.log('Record Deleted >>>>>>> ' + DeleteMe);
+                            break;
                         }
                     }
-                    if (DeleteMe) {
-                        console.log('Deleting records from mongo >>>>>>> ' + DeleteMe + ' Device Id ' + DeviceID);
-                        collection.deleteMany({
-                            'DeviceID': DeviceID
-                        });
-                        io.emit('updateDevice_response', {
-                            'IsSuccess': true,
-                            'message': 'Data inserted successfully'
-                        });
-                    }
-                },
-                function(acknowledge, callback) {
-                    db.close();
                 }
-            ]);
-        });
-    }, 0);
+                if (DeleteMe) {
+                    console.log('Deleting records from mongo >>>>>>> ' + DeleteMe + ' Device Id ' + DeviceID);
+                    collection.deleteMany({
+                        'DeviceID': DeviceID
+                    });
+                    io.emit('updateDevice_response', {
+                        'IsSuccess': true,
+                        'message': 'Data inserted successfully'
+                    });
+                }
+            },
+            function(acknowledge, callback) {
+                db.close();
+            }
+        ]);
+    });
+
 
 });
 
