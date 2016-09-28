@@ -170,26 +170,30 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
 
             },
             function(devicedata, callback) {
-                if (devicedata && devicedata.length > 0 && BeaconID != '') {
-                    collection.update({
-                        'DeviceID': DeviceID
-                    }, {
-                        'BeaconID': BeaconID,
-                        'DeviceID': DeviceID,
-                        'Distance': Distance
-                    });
-                    console.log('Device updated');
+                if (Distance == -1) {
+                    deleteRecordFromMongo(DeviceID);
                 } else {
-                    if (BeaconID != '') {
-                        collection.insert({
+                    if (devicedata && devicedata.length > 0 && BeaconID != '') {
+                        collection.update({
+                            'DeviceID': DeviceID
+                        }, {
                             'BeaconID': BeaconID,
                             'DeviceID': DeviceID,
                             'Distance': Distance
                         });
-                        console.log('Device inserted');
+                        console.log('Device updated');
+                    } else {
+                        if (BeaconID != '') {
+                            collection.insert({
+                                'BeaconID': BeaconID,
+                                'DeviceID': DeviceID,
+                                'Distance': Distance
+                            });
+                            console.log('Device inserted');
+
+                        }
 
                     }
-
                 }
                 callback(null, 'inserted');
             },
@@ -414,6 +418,56 @@ app.post('/beaconConnected', function(req, res) {
         ]);
     });
 });
+
+function deleteRecordFromMongo(DeviceID) {
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+
+        var collection = db.collection('device');
+
+        async.waterfall([
+            function(callback) {
+                collection.find({
+                    'DeviceID': DeviceID
+                }).toArray(function(err, devices) {
+                    callback(null, devices);
+                });
+            },
+
+            function(devices, callback) {
+                var DeleteMe = false;
+                if (devices && devices.length > 0) {
+                    console.log('going to Delete record >>>>>>>>>>>>');
+                    console.log(JSON.stringify(devices))
+                    for (var d in devices) {
+                        if (devices[d].Distance == 0) {
+
+                            DeleteMe = true;
+                            console.log('Record Deleted >>>>>>> ' + DeleteMe);
+                            break;
+                        }
+                    }
+                }
+                if (DeleteMe) {
+                    console.log('Deleting records from mongo >>>>>>> ' + DeleteMe + ' Device Id ' + DeviceID);
+                    collection.deleteMany({
+                        'DeviceID': DeviceID
+                    });
+                    io.emit('updateDevice_response', {
+                        'IsSuccess': true,
+                        'message': 'Data inserted successfully'
+                    });
+                }
+            },
+            function(acknowledge, callback) {
+                db.close();
+            }
+        ]);
+    });
+}
 
 app.post('/beaconDisconnected', function(req, res) {
     console.log('-------------------Beacon disconnected------------- ')
