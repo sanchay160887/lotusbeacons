@@ -134,7 +134,7 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
                 });
 
             });
-        }, 10000);
+        }, 60000);
 
     } else {
 
