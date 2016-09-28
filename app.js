@@ -364,12 +364,15 @@ app.post('/updateDevice', function(req, res) {
     if (req.body.BeaconID) {
         if (req.body.Distance == -1) {
             DeleteRecordFromMongo(req.body.DeviceID);
+        } else {
+            var staytime = 0;
+            if (req.body.stayTime) {
+                staytime = req.body.stayTime;
+            }
+            updateDeviceHistory(req.body.BeaconID, req.body.DeviceID, staytime);
+
         }
-        var staytime = 0;
-        else if (req.body.stayTime) {
-            staytime = req.body.stayTime;
-        }
-        updateDeviceHistory(req.body.BeaconID, req.body.DeviceID, staytime);
+
     }
 
 });
