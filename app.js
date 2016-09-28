@@ -218,9 +218,9 @@ function convertToMinutes(timeValue) {
     }
 
     // minutes are worth 60 seconds. Hours are worth 60 minutes.
-    var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
-    // var seconds = a[1] + ' Min ' + a[2] + ' Sec';
-    return (seconds / 60);
+    // var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
+    var seconds = a[1] + ' Min ' + a[2] + ' Sec';
+    return (seconds);
 
 }
 
