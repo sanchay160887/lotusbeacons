@@ -170,7 +170,7 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
 
             },
             function(devicedata, callback) {
-                if (devicedata && devicedata.length > 0) {
+                if (devicedata && devicedata.length > 0 && BeaconID != '') {
                     collection.update({
                         'DeviceID': DeviceID
                     }, {
@@ -180,12 +180,16 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
                     });
                     console.log('Device updated');
                 } else {
-                    collection.insert({
-                        'BeaconID': BeaconID,
-                        'DeviceID': DeviceID,
-                        'Distance': Distance
-                    });
-                    console.log('Device inserted');
+                    if (BeaconID != '') {
+                        collection.insert({
+                            'BeaconID': BeaconID,
+                            'DeviceID': DeviceID,
+                            'Distance': Distance
+                        });
+                        console.log('Device inserted');
+
+                    }
+
                 }
                 callback(null, 'inserted');
             },
