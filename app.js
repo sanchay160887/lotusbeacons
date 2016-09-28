@@ -445,6 +445,7 @@ app.post('/beaconDisconnected', function(req, res) {
                 var DeleteMe = false;
                 if (devices && devices.length > 0) {
                     console.log('going to Delete record >>>>>>>>>>>>');
+                    console.log(JSON.stringify(devices))
                     for (var d in devices) {
                         if (devices[d].Distance == 0) {
 
