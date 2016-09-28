@@ -415,7 +415,7 @@ app.post('/beaconDisconnected', function(req, res) {
     DeviceID = req.body.DeviceID;
     //Distance = req.body.Distance;
 
-    updateDevice(BeaconID, DeviceID, 0);
+    updateDevice(BeaconID, DeviceID, -1);
 
     setTimeout(function() {
         MongoClient.connect(mongourl, function(err, db) {
@@ -460,7 +460,7 @@ app.post('/beaconDisconnected', function(req, res) {
                 }
             ]);
         });
-    }, 0);
+    }, 60000);
 
 });
 
