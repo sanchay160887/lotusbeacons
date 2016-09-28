@@ -459,7 +459,7 @@ app.post('/beaconDisconnected', function(req, res) {
                 }
             ]);
         });
-    }, 120000);
+    }, 0);
 
 });
 
