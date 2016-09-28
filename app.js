@@ -362,17 +362,11 @@ app.post('/user/login', function(req, res) {
 app.post('/updateDevice', function(req, res) {
     updateDevice(req.body.BeaconID, req.body.DeviceID, req.body.Distance, res);
     if (req.body.BeaconID) {
-        if (req.body.Distance == -1) {
-            DeleteRecordFromMongo(req.body.DeviceID);
-        } else {
-            var staytime = 0;
-            if (req.body.stayTime) {
-                staytime = req.body.stayTime;
-            }
-            updateDeviceHistory(req.body.BeaconID, req.body.DeviceID, staytime);
-
+        var staytime = 0;
+        if (req.body.stayTime) {
+            staytime = req.body.stayTime;
         }
-
+        updateDeviceHistory(req.body.BeaconID, req.body.DeviceID, staytime);
     }
 
 });
@@ -420,56 +414,6 @@ app.post('/beaconConnected', function(req, res) {
         ]);
     });
 });
-
-function DeleteRecordFromMongo(DeviceID) {
-    MongoClient.connect(mongourl, function(err, db) {
-        if (err) {
-            return console.dir(err);
-        }
-        assert.equal(null, err);
-
-        var collection = db.collection('device');
-
-        async.waterfall([
-            function(callback) {
-                collection.find({
-                    'DeviceID': DeviceID
-                }).toArray(function(err, devices) {
-                    callback(null, devices);
-                });
-            },
-
-            function(devices, callback) {
-                var DeleteMe = false;
-                if (devices && devices.length > 0) {
-                    console.log('going to Delete record >>>>>>>>>>>>');
-                    console.log(JSON.stringify(devices))
-                    for (var d in devices) {
-                        if (devices[d].Distance == 0) {
-
-                            DeleteMe = true;
-                            console.log('Record Deleted >>>>>>> ' + DeleteMe);
-                            break;
-                        }
-                    }
-                }
-                if (DeleteMe) {
-                    console.log('Deleting records from mongo >>>>>>> ' + DeleteMe + ' Device Id ' + DeviceID);
-                    collection.deleteMany({
-                        'DeviceID': DeviceID
-                    });
-                    io.emit('updateDevice_response', {
-                        'IsSuccess': true,
-                        'message': 'Data inserted successfully'
-                    });
-                }
-            },
-            function(acknowledge, callback) {
-                db.close();
-            }
-        ]);
-    });
-}
 
 app.post('/beaconDisconnected', function(req, res) {
     console.log('-------------------Beacon disconnected------------- ')
