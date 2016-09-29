@@ -119,7 +119,7 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
     console.log('Device ID ' + DeviceID);
     console.log('Distance ' + Distance);*/
 
-    if (Distance == -1) {
+    if (Distance == -1 || !io.emit()) {
 
         setTimeout(function() {
             MongoClient.connect(mongourl, function(err, db) {
