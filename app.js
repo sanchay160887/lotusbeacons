@@ -132,7 +132,10 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
                 collection.deleteMany({
                     'DeviceID': DeviceID
                 });
-
+                io.emit('updateDevice_response', {
+                    'IsSuccess': true,
+                    'message': 'Data inserted successfully'
+                });
             });
         }, 60000);
 
