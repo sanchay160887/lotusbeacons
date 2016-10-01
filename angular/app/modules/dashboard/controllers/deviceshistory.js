@@ -17,8 +17,7 @@ dashboard.controller("DeviceHistoryController",function ($rootScope, $scope, api
   $scope.Initialized = false;
   $scope.BeaconInitialized = true;
 
-  var queriedUrl = $location.search();
-  
+  var queriedUrl = $location.search();  
   
   apiService.storeData().then(function(res){
       $scope.Initialized = false;
@@ -29,6 +28,34 @@ dashboard.controller("DeviceHistoryController",function ($rootScope, $scope, api
       $scope.getAllBeacon();
       $scope.Initialized = true;
   });
+
+  $scope.IsRecordSelected = false;
+
+  $scope.checkClickedRecords = function(){
+    var checkedlist = [];
+    for(var dd in $scope.deviceData){
+      if ($scope.deviceData[dd].checked){
+        checkedlist.push($scope.deviceData[dd].DeviceID);
+      }
+    }
+    if (checkedlist && checkedlist.length > 0){
+      $scope.IsRecordSelected =  true;
+    } else {
+      $scope.IsRecordSelected = false;
+    }
+  }
+
+  $scope.selectRecords = function(){
+    for(var dd in $scope.deviceData){
+      $scope.deviceData[dd].checked = true;
+    }
+  }
+
+  $scope.unselectRecords = function(){
+    for(var dd in $scope.deviceData){
+      $scope.deviceData[dd].checked = false;
+    }    
+  }
 
   $scope.ShowSelectedTokens = function() {
       //console.log($scope.deviceData);

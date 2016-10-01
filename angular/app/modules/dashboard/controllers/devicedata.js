@@ -117,6 +117,34 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
     
   }
 
+  $scope.IsRecordSelected = false;
+
+  $scope.checkClickedRecords = function(){
+    var checkedlist = [];
+    for(var dd in $scope.deviceData){
+      if ($scope.deviceData[dd].checked){
+        checkedlist.push($scope.deviceData[dd].DeviceID);
+      }
+    }
+    if (checkedlist && checkedlist.length > 0){
+      $scope.IsRecordSelected =  true;
+    } else {
+      $scope.IsRecordSelected = false;
+    }
+  }
+
+  $scope.selectRecords = function(){
+    for(var dd in $scope.deviceData){
+      $scope.deviceData[dd].checked = true;
+    }
+  }
+
+  $scope.unselectRecords = function(){
+    for(var dd in $scope.deviceData){
+      $scope.deviceData[dd].checked = false;
+    }    
+  }
+
   socket.on('updateDevice_response', function(response){
       console.log('socket called ==> '+ JSON.stringify(response));
       $scope.loadData();
