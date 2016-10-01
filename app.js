@@ -115,11 +115,11 @@ function isNumeric(n) {
 
 
 function updateDevice(BeaconID, DeviceID, Distance, resObj) {
-    /*console.log('Beacon ID ' + BeaconID);
+    console.log('Beacon ID ' + BeaconID);
     console.log('Device ID ' + DeviceID);
-    console.log('Distance ' + Distance);*/
+    console.log('Distance ' + Distance);
 
-    if (Distance == -1) {
+    /*if (Distance == -1) {
 
         setTimeout(function() {
             MongoClient.connect(mongourl, function(err, db) {
@@ -140,106 +140,100 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
             });
         }, 60000);
 
-    } else {
+    } else {*/
 
-        var resObjVal = {};
-        if (!(DeviceID && Distance)) {
-            console.log('Invalid data passing');
-            io.emit('updateDevice_response', {
-                'IsSuccess': false,
-                'message': 'Invalid data passing'
-            });
-
-            if (resObj) {
-                resObj.IsSuccess = false;
-                resObj.message = "Invalid data passing";
-                resObj.send(resObj);
-            }
-            return;
-        }
-
-
-
-        if (!isNumeric(Distance)) {
-            if (resObj) {
-                resObj.IsSuccess = false;
-                resObj.message = "Distance should be in numbers";
-                resObj.send(resObj);
-            }
-            return;
-        }
-
-        console.log('Update device called');
-
-        var comingFromLatLong = false;
-        if (!BeaconID) {
-            BeaconID = '';
-            comingFromLatLong = true;
-        }
-
-        MongoClient.connect(mongourl, function(err, db) {
-            if (err) {
-                return console.dir(err);
-            }
-            assert.equal(null, err);
-
-            var collection = db.collection('device');
-
-            async.waterfall([
-                function(callback) {
-                    collection.find({
-                        'DeviceID': DeviceID
-                    }).toArray(function(err, devices) {
-                        callback(null, devices);
-                    });
-
-                },
-                function(devicedata, callback) {
-                    if (devicedata && devicedata.length > 0 && BeaconID != '') {
-                        collection.update({
-                            'DeviceID': DeviceID
-                        }, {
-                            'BeaconID': BeaconID,
-                            'DeviceID': DeviceID,
-                            'Distance': Distance
-                        });
-                        console.log('Device updated');
-                    } else {
-                        if (BeaconID != '') {
-                            collection.insert({
-                                'BeaconID': BeaconID,
-                                'DeviceID': DeviceID,
-                                'Distance': Distance
-                            });
-                            console.log('Device inserted');
-
-                        }
-
-                    }
-                    callback(null, 'inserted');
-                },
-                function(response, callback) {
-                    io.emit('updateDevice_response', {
-                        'IsSuccess': true,
-                        'message': 'Data inserted successfully'
-                    });
-                    //sendDevices();
-                    console.log('coming to last callback');
-                    db.close();
-                    if (resObj) {
-                        resObj.send();
-                    }
-                    callback(null, response);
-                }
-            ]);
+    var resObjVal = {};
+    if (!(DeviceID && Distance)) {
+        console.log('Invalid data passing');
+        io.emit('updateDevice_response', {
+            'IsSuccess': false,
+            'message': 'Invalid data passing'
         });
 
-
+        if (resObj) {
+            resObj.IsSuccess = false;
+            resObj.message = "Invalid data passing";
+            resObj.send(resObj);
+        }
+        return;
     }
 
 
 
+    if (!isNumeric(Distance)) {
+        if (resObj) {
+            resObj.IsSuccess = false;
+            resObj.message = "Distance should be in numbers";
+            resObj.send(resObj);
+        }
+        return;
+    }
 
+    console.log('Update device called');
+
+    var comingFromLatLong = false;
+    if (!BeaconID) {
+        BeaconID = '';
+        comingFromLatLong = true;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+
+        var collection = db.collection('device');
+
+        async.waterfall([
+            function(callback) {
+                collection.find({
+                    'DeviceID': DeviceID
+                }).toArray(function(err, devices) {
+                    callback(null, devices);
+                });
+
+            },
+            function(devicedata, callback) {
+                if (devicedata && devicedata.length > 0 && BeaconID != '') {
+                    collection.update({
+                        'DeviceID': DeviceID
+                    }, {
+                        'BeaconID': BeaconID,
+                        'DeviceID': DeviceID,
+                        'Distance': Distance
+                    });
+                    console.log('Device updated');
+                } else {
+                    if (BeaconID != '') {
+                        collection.insert({
+                            'BeaconID': BeaconID,
+                            'DeviceID': DeviceID,
+                            'Distance': Distance
+                        });
+                        console.log('Device inserted');
+
+                    }
+
+                }
+                callback(null, 'inserted');
+            },
+            function(response, callback) {
+                io.emit('updateDevice_response', {
+                    'IsSuccess': true,
+                    'message': 'Data inserted successfully'
+                });
+                //sendDevices();
+                console.log('coming to last callback');
+                db.close();
+                if (resObj) {
+                    resObj.send();
+                }
+                callback(null, response);
+            }
+        ]);
+    });
+    //}
 
 }
 
@@ -480,7 +474,7 @@ app.post('/beaconDisconnected', function(req, res) {
                         console.log('going to Delete record >>>>>>>>>>>>');
                         console.log(JSON.stringify(devices));
                         for (var d in devices) {
-                            if (devices[d].Distance == 0) {
+                            if (devices[d].Distance < 0) {
                                 DeleteMe = true;
                                 console.log('Record Deleted >>>>>>> ' + DeleteMe);
                                 break;
