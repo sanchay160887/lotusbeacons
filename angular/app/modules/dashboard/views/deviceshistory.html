@@ -142,10 +142,11 @@ Date: 05 Jan 2016
       <div class="bcon_selection_block_right">
         <div class="bcon_selection row">
           <div class="col-md-5">
-            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#text-message">Send Notification</button>
+            <!-- <button type="button" class="btn btn-info" data-toggle="modal" data-target="#text-message">
+            Send Notification</button> -->
           </div>
           <div class="col-md-7">
-            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#graphic-message">Send Image Notification</button>
+            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#graphic-message">Send Push Notification</button>
           </div> 
         </div>
       </div>
@@ -171,59 +172,14 @@ Date: 05 Jan 2016
               ng-click="ShowSelectedTokens()"
               ng-model="device.checked"></td>
               <!-- <td>{{ device.DeviceID }}</td> -->
-              <td>{{ device.DeviceName }}</td>\
+              <td>{{ device.DeviceName }}</td>
               <td>{{ device.DevicePhone }}</td>
               <td>{{ device.StayTime}}</td>
               <td>{{ device.BeaconKey }}</td>
             </tr>
           </tbody>
         </table>
-
-      <!-- <div class="col-md-1">
-        <div class="content-device_block_1">
-          <p class="block_title_1">Select</p>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="content-device_block_2">
-          <p class="block_title_1">Device ID</p>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="content-device_block_3">
-          <p class="block_title_1">Stay Time</p>
-        </div>
-      </div>
-      <div class="col-md-2">
-        <div class="content-device_block_1">
-          <p class="block_title_1">Beacon</p>
-        </div>
-      </div> -->
     </div>
-    <!-- <div class="row" ng-repeat= "device in deviceData | orderBy:Distance ">
-      <div class="col-md-1">
-        <div class="content-device_block_1">
-          <input type="checkbox" value="{{ device.DeviceID }}" 
-                    ng-click="ShowSelectedTokens()"
-                    ng-model="device.checked">
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="content-device_block_2">
-          <p class="block_title_2">{{ device.DeviceID }}</p>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="content-device_block_3">
-          <p class="block_title_3">{{ device.StayTime }} minute</p>
-        </div>
-      </div>
-      <div class="col-md-2">
-        <div class="content-device_block_1">
-          <p class="block_title_3">{{ device.BeaconKey }}</p>
-        </div>
-      </div>
-    </div> -->
   </div>
 </div>
 
@@ -300,6 +256,9 @@ Date: 05 Jan 2016
           </form>
         </div>
       </div>
+      <small>
+          Note: Please click on Upload button after making Image selection with Browse button if you want to send image notification
+        </small>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="sendImageMessage()"> Send</button>
