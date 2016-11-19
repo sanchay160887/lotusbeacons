@@ -139,11 +139,11 @@
 
   <div class="bcon_selection_block_right">
     <div class="bcon_selection row">
-      <div class="col-md-5">
+      <!-- <div class="col-md-5">
         <button type="button" class="btn btn-info" data-toggle="modal" data-target="#text-message">Send Notification</button>
-      </div>
+      </div> -->
       <div class="col-md-7">
-          <button type="button" class="btn btn-info" data-toggle="modal" data-target="#graphic-message">Send Image Notification</button>
+          <button type="button" class="btn btn-info" data-toggle="modal" data-target="#graphic-message">Send Push Notification</button>
       </div> 
     </div>
   </div>
@@ -265,7 +265,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Send Image Message</h4>
+        <h4 class="modal-title">Send Push Notification</h4>
       </div>
       <div class="modal-body">
         <div class="form-group clearfix">
@@ -298,6 +298,9 @@
             </form>
           </div>
         </div>
+        <small>
+          Note: Please click on Upload button after making Image selection with Browse button if you want to send image notification
+        </small>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="sendImageMessage()"> Send</button>
