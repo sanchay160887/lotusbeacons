@@ -326,7 +326,7 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime) {
             function(devicedata, callback) {
                 if (devicedata && devicedata.length > 0) {
                     var oldstaytime = 0;
-                    oldstaytime = int.parse(devicedata.StayTime);
+                    oldstaytime = parseInt(devicedata.StayTime);
                     if (!isNaN(oldstaytime)){
                         oldstaytime = 0;
                     }                    
@@ -1321,6 +1321,7 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
     console.log(message);
 
     gcmObject.send(message, function(err, response) {
+        console.log(response);
         if (err) {
             console.log('Something went wrong :: ' + err);
         } else {
