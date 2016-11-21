@@ -164,7 +164,10 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
       }
     }
     
-    var ImageFilePath = $scope.baseUrl + $scope.GM_ImageFilePath;
+    var ImageFilePath = '';
+    if ($scope.GM_ImageFilePath){
+      var ImageFilePath = $scope.baseUrl + $scope.GM_ImageFilePath;
+    }
 
     if (checkedlist && checkedlist.length > 0){
       apiService.sendNotification_image(checkedlist, $scope.GM_title, $scope.GM_descr, ImageFilePath).then(function(res){
