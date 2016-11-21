@@ -607,10 +607,9 @@ app.post('/getdata', function(req, res) {
                             for (var r in reqbody) {
                                 if (reqbody[r] != false) {
                                     for (var d in devicelist) {
-                                        if (devicelist[d].DeviceID === reqbody[r].device_token) {
+                                        if (devicelist[d].DeviceID == reqbody[r].device_token) {
                                             devicelist[d].DeviceName = reqbody[r].name;
                                             devicelist[d].DevicePhone = reqbody[r].mobile_no;
-                                            break;
                                         }
                                     }
                                 }
@@ -727,10 +726,9 @@ app.post('/getDeviceHistorydata', function(req, res) {
                             for (var r in reqbody) {
                                 if (reqbody[r] != false) {
                                     for (var d in devicelist) {
-                                        if (devicelist[d].DeviceID === reqbody[r].device_token) {
+                                        if (devicelist[d].DeviceID == reqbody[r].device_token) {
                                             devicelist[d].DeviceName = reqbody[r].name;
                                             devicelist[d].DevicePhone = reqbody[r].mobile_no;
-                                            break;
                                         }
                                     }
                                 }
