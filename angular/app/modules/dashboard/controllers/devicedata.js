@@ -13,12 +13,16 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
   $scope.GM_descr = '';
   $scope.GM_ImageFilePath = '';
   $scope.baseUrl = apiService.base_url;
-
+  $scope.orderbyfield = 'Distance';
   $scope.Initialized = false;
   $scope.BeaconInitialized = true;
 
   var queriedUrl = $location.search();
   
+  $scope.sortDevicedata = function(fieldname){
+    console.log('sortDevicedata');
+    $scope.orderbyfield = fieldname;
+  }
   
   apiService.storeData().then(function(res){
       $scope.storeData = res.data.data;
@@ -86,7 +90,6 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
           }
         }
 
-        console.log($scope.deviceData);
     		$scope.deviceData = res.data;
     		$scope.Initialized = true;
     	});
