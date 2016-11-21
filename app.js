@@ -251,6 +251,41 @@ function convertToMinutes(timeValue) {
 
 }
 
+function convertStringTimeToSeconds(timeValue) {
+
+    var a = timeValue.split(':'); // split it at the colons
+    if (a.length < 3) {
+        return 0;
+    }
+
+    // minutes are worth 60 seconds. Hours are worth 60 minutes.
+    var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
+    return (seconds);
+}
+
+function convertSecondsToStringTime(seconds){
+    if (seconds && !isNumeric(seconds)){
+        return 0;
+    }
+    seconds = parseInt(seconds);
+    var timestring = '';
+    hours = Math.floor(seconds / 3600);
+    seconds %= 3600;
+    minutes = Math.floor(seconds / 60);
+    seconds = seconds % 60;
+    if (hours > 0){
+        timestring = hours + ' hr ';
+    }
+    if (minutes > 0){
+        timestring = timestring + minutes + ' min ';
+    }
+    if (seconds > 0){
+        timestring = timestring + minutes + ' sec';
+    }
+    return timestring;
+
+}
+
 function updateDeviceHistory(BeaconID, DeviceID, StayTime) {
     /*console.log('------------Updating device History--------------');
     console.log('Beacon ID ' + BeaconID);
@@ -262,7 +297,7 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime) {
         return;
     }
 
-    var StayTime = convertToMinutes(StayTime); // your input string
+    var StayTime = convertStringTimeToSeconds(StayTime); // your input string
 
     /* if (!isNumeric(StayTime)) {
          return;
@@ -290,6 +325,12 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime) {
             },
             function(devicedata, callback) {
                 if (devicedata && devicedata.length > 0) {
+                    var oldstaytime = 0;
+                    oldstaytime = int.parse(devicedata.StayTime);
+                    if (!isNaN(oldstaytime)){
+                        oldstaytime = 0;
+                    }                    
+                    StayTime = oldstaytime + StayTime;
                     collection.update({
                         'DeviceID': DeviceID,
                         'BeaconID': BeaconID
@@ -684,6 +725,7 @@ app.post('/getDeviceHistorydata', function(req, res) {
                     devicecollection.toArray(function(err, devices) {
                         for (var dvc in devices) {
                             devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
+                            devices[dvc].StayTime = convertSecondsToStringTime(devices[dvc].StayTime);
                             devicelist.push(devices[dvc]);
                         }
                         //res.send(devicelist);
