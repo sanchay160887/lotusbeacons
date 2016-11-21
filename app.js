@@ -587,7 +587,6 @@ app.post('/getdata', function(req, res) {
                 }
             },
             function(devicelist, callback) {
-                console.log(devicelist);
                 var devices = [];
                 for (var d in devicelist) {
                     devices.push(devicelist[d].DeviceID);
@@ -605,18 +604,17 @@ app.post('/getdata', function(req, res) {
                         var reqbody = JSON.parse(body);
                         reqbody = reqbody.data;
                         if (reqbody) {
-                            for (var d in reqbody) {
-                                if (reqbody[d] != false) {
-                                    singleRow = reqbody[d][0];
-                                    if (devicelist[d].DeviceID === singleRow.device_token) {
-                                        devicelist[d].DeviceName = singleRow.name;
-                                        devicelist[d].DevicePhone = singleRow.mobile_no;
-
+                            for (var r in reqbody) {
+                                if (reqbody[r] != false) {
+                                    for (var d in devicelist) {
+                                        if (devicelist[d].DeviceID === reqbody[r].device_token) {
+                                            devicelist[d].DeviceName = reqbody[r].name;
+                                            devicelist[d].DevicePhone = reqbody[r].mobile_no;
+                                            break;
+                                        }
                                     }
-
                                 }
                             }
-
                         }
 
                         //console.log(devicelist);
@@ -653,7 +651,7 @@ app.post('/getDeviceHistorydata', function(req, res) {
                         }
                     });
                 } else if (StoreID) {
-                    console.log('coming here');
+                    //console.log('coming here');
                     beaconcollection = collection.find({
                         'BeaconStore': ObjectId(StoreID)
                     });
@@ -714,30 +712,29 @@ app.post('/getDeviceHistorydata', function(req, res) {
                 var request = require('request');
                 var data = JSON.stringify(devices);
 
+                console.log(data);
+
                 request.post('http://lampdemos.com/lotus15/v2/user/get_user_name', {
                         form: {
                             'android_device_token': data
                         }
                     },
                     function(res2, err, body) {
-                        console.log('Here is the request ' + res2);
                         device_detail = [];
                         var reqbody = JSON.parse(body);
                         reqbody = reqbody.data;
-                        console.log('-----------------------------');
                         if (reqbody) {
-                            for (var d in reqbody) {
-                                if (reqbody[d] != false) {
-                                    singleRow = reqbody[d][0];
-                                    if (devicelist[d].DeviceID === singleRow.device_token) {
-                                        devicelist[d].DeviceName = singleRow.name;
-                                        devicelist[d].DevicePhone = singleRow.mobile_no;
-
+                            for (var r in reqbody) {
+                                if (reqbody[r] != false) {
+                                    for (var d in devicelist) {
+                                        if (devicelist[d].DeviceID === reqbody[r].device_token) {
+                                            devicelist[d].DeviceName = reqbody[r].name;
+                                            devicelist[d].DevicePhone = reqbody[r].mobile_no;
+                                            break;
+                                        }
                                     }
-
                                 }
                             }
-
                         }
 
                         //console.log(devicelist);
