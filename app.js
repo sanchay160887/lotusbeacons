@@ -280,28 +280,24 @@ function convertSecondsToStringTime(seconds){
         timestring = timestring + minutes + ' min ';
     }
     if (seconds > 0){
-        timestring = timestring + minutes + ' sec';
+        timestring = timestring + seconds + ' sec';
     }
     return timestring;
 
 }
 
-function updateDeviceHistory(BeaconID, DeviceID, StayTime) {
-    /*console.log('------------Updating device History--------------');
+function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
+    console.log('------------Updating device History--------------');
     console.log('Beacon ID ' + BeaconID);
     console.log('Device ID ' + DeviceID);
     console.log('Stay Time ' + StayTime);
-    console.log('------------Updating device History--------------');*/
+    console.log('------------Updating device History--------------');
     var resObjVal = {};
     if (!(BeaconID && DeviceID && StayTime)) {
         return;
     }
 
     var StayTime = convertStringTimeToSeconds(StayTime); // your input string
-
-    /* if (!isNumeric(StayTime)) {
-         return;
-     }*/
 
     console.log('Update device history called');
 
@@ -325,12 +321,15 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime) {
             },
             function(devicedata, callback) {
                 if (devicedata && devicedata.length > 0) {
+                    console.log(devicedata);
                     var oldstaytime = 0;
-                    oldstaytime = parseInt(devicedata.StayTime);
+                    oldstaytime = parseInt(devicedata[0].StayTime);
                     if (!isNaN(oldstaytime)){
                         oldstaytime = 0;
-                    }                    
+                    }
+                    
                     StayTime = oldstaytime + StayTime;
+                    
                     collection.update({
                         'DeviceID': DeviceID,
                         'BeaconID': BeaconID
@@ -358,6 +357,10 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime) {
                 //sendDevices();
                 console.log('coming to last callback');
                 db.close();
+                if (resObj){
+                    resObjVal.data = 'History updated upto last callback';
+                   resObj.send(resObjVal);
+                }                
                 callback(null, response);
             }
         ]);
@@ -440,7 +443,8 @@ app.post('/updateDevice', function(req, res) {
 });
 
 app.post('/updateDeviceHistory', function(req, res) {
-    updateDeviceHistory(req.body.BeaconID, req.body.DeviceID, req.body.stayTime);
+    console.log('service calling');
+    updateDeviceHistory(req.body.BeaconID, req.body.DeviceID, req.body.stayTime, res);
 });
 
 app.post('/beaconConnected', function(req, res) {

@@ -166,6 +166,11 @@ dashboard.controller("DeviceHistoryController",function ($rootScope, $scope, api
     }
   }
   
+  console.log('coming here');
+
+  /*apiService.updateDeviceHistory('00:A0:50:0E:0E:0D',
+    'APA91bFyGniNrOq7BnA0jX2F29vizUm6HDRXcab-PACcczk_Xd_gXjCwxRsqh8Gp5yXDYrI2IxJIT2WUmFtstN7uzTYwBJfFoP4pBGRtf5ATUNEtOhDMbO4', '00:00:45');*/
+
   /*apiService.updateDeviceHistory('12:32:45:22:89',
   	'APA91bE8pbcfkLUbtfWPLurBq1h2jKe2S4LcA5mkQB7a-tp26pSBLY8jj726HqfBbxXK5hBkp1Aw9IzAlTU8DB3cxGlpIOrMbJjE6BkNA1EdZS3Xi6VaYWA', 2)*/
 

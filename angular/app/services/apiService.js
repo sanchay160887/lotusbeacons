@@ -139,7 +139,7 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
             data: {
                 'BeaconID' : BeaconID,
                 'DeviceID' : DeviceID,
-                'StayTime' : StayTime
+                'stayTime' : StayTime
             }
         }).success(function(data, status, headers, config) {
             console.log("Success.");
