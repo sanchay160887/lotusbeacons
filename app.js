@@ -1,9 +1,7 @@
 /*Node Modules*/
 var express = require('express');
 
-var http = require('http'),
-    fs = require('fs'),
-    // NEVER use a Sync function except at start-up!
+var http = require('http'), fs = require('fs'),    // NEVER use a Sync function except at start-up!
     index = fs.readFileSync(__dirname + '/index.html');
 
 var MongoClient = require('mongodb').MongoClient;

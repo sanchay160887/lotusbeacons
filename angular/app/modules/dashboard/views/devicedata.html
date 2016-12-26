@@ -173,7 +173,7 @@
             <td>{{ device.DevicePhone }}</td>            
             <td>{{ (device.Distance < 0) && ("Out of range") || (device.Distance | numberEx:2) + ' meter' }}</td>
             <!-- <td>{{ device.Distance | numberEx:2 }} meter</td> -->
-            <td>{{ device.BeaconKey }}</td>
+            <td>{{ device.BeaconKey }} ({{ device.BeaconID }})</td>
           </tr>
         </tbody>
       </table>
