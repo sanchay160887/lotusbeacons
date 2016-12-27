@@ -29,8 +29,8 @@ dashboard.controller("StoresController",function ($rootScope, $scope, apiService
   $scope.resetControls = function(){
     $scope.Store_Name = '';
     $scope.Store_Descr = '';
-	$scope.Store_Lat         = '';
-	$scope.Store_Long         = '';
+	$scope.Store_Lat   = '';
+	$scope.Store_Long  = '';
     $scope.button_name = 'Add';
   }
 
@@ -46,15 +46,15 @@ dashboard.controller("StoresController",function ($rootScope, $scope, apiService
               $scope.Store_Descr = data.data[0].StoreDescr;
 			  
 			 
-			  if (typeof(data.data[0].Lat) != 'undefined'){
-			  	$scope.Lat  = data.data[0].Store_Lat;
+			  if (typeof(data.data[0].StoreLat) != 'undefined'){
+			  	$scope.Store_Lat   = data.data[0].StoreLat;
 			  } else {
-				  $scope.Lat = 0;
+				  $scope.Store_Lat  = 0;
 			  }
-			  if (typeof(data.data[0].Long) != 'undefined'){
-			    $scope.Long = data.data[0].Store_Long;
+			  if (typeof(data.data[0].StoreLong) != 'undefined'){
+			    $scope.Store_Long = data.data[0].StoreLong;
 			  }else{
-				$scope.Long = 0;  
+				$scope.Store_Long= 0;  
 				  
 			  }
             } else {

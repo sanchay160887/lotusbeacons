@@ -50,7 +50,7 @@ dashboard.controller("BeaconsController",function ($rootScope, $scope, apiServic
               $scope.button_name = 'update';
               $scope.Beacon_ID = pbeacon_id;
               $scope.Beacon_Key = data.data[0].BeaconKey;
-			  $scope.Beacon_Key = data.data[0].Beacon_Welcome;
+			  $scope.Beacon_Welcome = data.data[0].BeaconWelcome;
               $scope.Beacon_Descr = data.data[0].BeaconDescr;
               $scope.Beacon_Store = data.data[0].BeaconStore;
             } else {
