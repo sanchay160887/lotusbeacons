@@ -219,18 +219,20 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
         return $http.post('/getstoredata', {headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'}});
     }
 
-    var addStores = function(storename, storedescr){
+    var addStores = function(storename, storedescr,storelat,storelong){
         return $http({
             method: "post",
             url: "/addstore",
             data: {
                 'StoreName' : storename,
-                'StoreDescr' : storedescr
+                'StoreDescr' : storedescr,
+                'StoreLat'  :  storelat,
+                'StoreLong'  :  storelong,
             }
         });
     }
 
-    var updateStore = function(StoreID, storename, storedescr){
+    var updateStore = function(StoreID, storename, storedescr,storelat,storelong){
         return $http({
             method: "post",
             url: "/updatestore",
@@ -238,6 +240,8 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
                 'StoreID' : StoreID,
                 'StoreName' : storename,
                 'StoreDescr' : storedescr,
+                'StoreLat'  :  storelat,
+                'StoreLong'  :  storelong,
             }
         });
     }

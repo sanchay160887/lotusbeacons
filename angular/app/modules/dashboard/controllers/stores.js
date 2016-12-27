@@ -27,6 +27,8 @@ dashboard.controller("StoresController",function ($rootScope, $scope, apiService
   $scope.resetControls = function(){
     $scope.Store_Name = '';
     $scope.Store_Descr = '';
+	$scope.Store_Lat         = '';
+	$scope.Store_Long         = '';
     $scope.button_name = 'Add';
   }
 
@@ -40,6 +42,19 @@ dashboard.controller("StoresController",function ($rootScope, $scope, apiService
               $scope.Store_Id = pStoreID;
               $scope.Store_Name = data.data[0].StoreName;
               $scope.Store_Descr = data.data[0].StoreDescr;
+			  
+			 
+			  if (typeof(data.data[0].Lat) != 'undefined'){
+			  	$scope.Lat  = data.data[0].Store_Lat;
+			  } else {
+				  $scope.Lat = 0;
+			  }
+			  if (typeof(data.data[0].Long) != 'undefined'){
+			    $scope.Long = data.data[0].Store_Long;
+			  }else{
+				$scope.Long = 0;  
+				  
+			  }
             } else {
               $scope.Store_Id = '';
               alert('Store not found. Please refresh your page');
@@ -58,7 +73,7 @@ dashboard.controller("StoresController",function ($rootScope, $scope, apiService
     console.log($scope.button_name);
     $scope.FormInitialized = false;
     if ($scope.button_name == 'Add'){
-      apiService.addStores($scope.Store_Name, $scope.Store_Descr)
+      apiService.addStores($scope.Store_Name, $scope.Store_Descr,$scope.Store_Lat,$scope.Store_Long)
         .success(function(data, status, headers, config) {
               if (data.IsSuccess){
                 $scope.getAllStores();
@@ -74,7 +89,7 @@ dashboard.controller("StoresController",function ($rootScope, $scope, apiService
         });
     } else {
       $scope.FormInitialized = false;
-      apiService.updateStore($scope.Store_Id, $scope.Store_Name, $scope.Store_Descr)
+      apiService.updateStore($scope.Store_Id, $scope.Store_Name, $scope.Store_Descr,$scope.Store_Lat,$scope.Store_Long)
         .success(function(data, status, headers, config) {
             if (data.IsSuccess){
               $scope.getAllStores();

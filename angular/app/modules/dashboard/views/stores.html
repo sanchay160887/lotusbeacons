@@ -69,6 +69,13 @@ Date: 05 Jan 2016
         <input class="form-control" type="text" name="store_name" ng-model="Store_Name" /><br>
         <label>Description</label>
         <textarea class="form-control" name="store_descr" ng-model="Store_Descr"></textarea><br>
+        
+        <label>Lat</label>
+        <input class="form-control" type="text" name="Store_lat" ng-model="Store_Lat" /><br>
+        
+         <label>Long</label>
+        <input class="form-control" type="text" name="Store_long" ng-model="Store_Long" /><br>
+        
         <button class="btn btn-primary" ng-bind="button_name" ng-click="processStore()">Add</button>
         <button class="btn btn-primary" ng-if="button_name=='update'" ng-click="deleteStore()">Delete</button>
     </section>

@@ -1,7 +1,8 @@
 /*Node Modules*/
 var express = require('express');
 
-var http = require('http'), fs = require('fs'),    // NEVER use a Sync function except at start-up!
+var http = require('http'),
+    fs = require('fs'), // NEVER use a Sync function except at start-up!
     index = fs.readFileSync(__dirname + '/index.html');
 
 var MongoClient = require('mongodb').MongoClient;
@@ -261,8 +262,8 @@ function convertStringTimeToSeconds(timeValue) {
     return (seconds);
 }
 
-function convertSecondsToStringTime(seconds){
-    if (seconds && !isNumeric(seconds)){
+function convertSecondsToStringTime(seconds) {
+    if (seconds && !isNumeric(seconds)) {
         return 0;
     }
     seconds = parseInt(seconds);
@@ -271,13 +272,13 @@ function convertSecondsToStringTime(seconds){
     seconds %= 3600;
     minutes = Math.floor(seconds / 60);
     seconds = seconds % 60;
-    if (hours > 0){
+    if (hours > 0) {
         timestring = hours + ' hr ';
     }
-    if (minutes > 0){
+    if (minutes > 0) {
         timestring = timestring + minutes + ' min ';
     }
-    if (seconds > 0){
+    if (seconds > 0) {
         timestring = timestring + seconds + ' sec';
     }
     return timestring;
@@ -322,12 +323,12 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
                     console.log(devicedata);
                     var oldstaytime = 0;
                     oldstaytime = parseInt(devicedata[0].StayTime);
-                    if (!isNaN(oldstaytime)){
+                    if (!isNaN(oldstaytime)) {
                         oldstaytime = 0;
                     }
-                    
+
                     StayTime = oldstaytime + StayTime;
-                    
+
                     collection.update({
                         'DeviceID': DeviceID,
                         'BeaconID': BeaconID
@@ -355,10 +356,10 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
                 //sendDevices();
                 console.log('coming to last callback');
                 db.close();
-                if (resObj){
+                if (resObj) {
                     resObjVal.data = 'History updated upto last callback';
-                   resObj.send(resObjVal);
-                }                
+                    resObj.send(resObjVal);
+                }
                 callback(null, response);
             }
         ]);
@@ -472,6 +473,41 @@ app.post('/beaconConnected', function(req, res) {
                     res.send(resObj);
                     return;
                 }
+/*----------------Update Beacon ID------------------*/
+                collection.find({ "DeviceID": DeviceID }).toArray(function(err, value) {
+
+                    if (err) {
+                        console.log(err);
+
+                    } else {
+                        if (value.BeaconID != BeaconID) {
+                            //console.log(JSON.stringify(value));
+                      
+
+                            collection.update({ 'BeaconID': BeaconID }, function(err, numUpdated) { // update by callback
+                                if (err) {
+                                    console.log(err);
+                                } else if (numUpdated) {
+
+                                    console.log('Updated Successfully %d document(s).', numUpdated);
+                                } else {
+                                    console.log('No document found with defined "find" criteria!');
+                                }
+                                //Close connection
+
+                            });
+
+                        }
+
+                        //console.log(JSON.stringify(value));
+
+                    }
+
+                });
+
+
+                /*--------------Update Beacon ID END --------------------*/
+
                 updateDevice(BeaconID, DeviceID, Distance, res);
                 if (req.body.BeaconID) {
                     var staytime = 0;
@@ -1081,6 +1117,8 @@ app.post('/getstoredata', function(req, res) {
 app.post('/addstore', function(req, res) {
     StoreName = req.body.StoreName;
     StoreDescr = req.body.StoreDescr;
+	StoreLat = req.body.StoreLat;
+	StoreLong = req.body.StoreLong;
     var resObj = {};
 
     if (!StoreName) {
@@ -1118,7 +1156,9 @@ app.post('/addstore', function(req, res) {
 
                 collection.insert({
                     'StoreName': StoreName,
-                    'StoreDescr': StoreDescr
+                    'StoreDescr': StoreDescr,
+					'StoreLat':StoreLat,
+					'StoreLong':StoreLong
                 });
                 console.log('Store inserted');
 
@@ -1140,6 +1180,8 @@ app.post('/updatestore', function(req, res) {
     StoreID = req.body.StoreID;
     StoreName = req.body.StoreName;
     StoreDescr = req.body.StoreDescr;
+	StoreLat = req.body.StoreLat;
+	StoreLong = req.body.StoreLong;
     var resObj = {};
 
     if (!StoreName) {
@@ -1159,7 +1201,9 @@ app.post('/updatestore', function(req, res) {
             _id: ObjectId(StoreID)
         }, {
             'StoreName': StoreName,
-            'StoreDescr': StoreDescr
+            'StoreDescr': StoreDescr,
+			'StoreLat' : StoreLat,
+			'StoreLong' : StoreLong,
         });
         db.close();
 

@@ -207,6 +207,16 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
           'DeviceID' : 'APA91bFz0w8XKMDg9vASZwLSJqBgIPuGCPJeXqX_VlhBXfePS8RBxdWIUnaWeP_IhPeLfLwhSQXpn-NtwJlW2Sww5M1YMzbYp6vyHnNpbptsePYodFACzKA',
       }
   })*/  
+  
+/*  $http({
+      method: "post",
+      url: "/beaconConnected",
+      data: {
+          DeviceID : 'APA91bFz0w8XKMDg9vASZwLSJqBgIPuGCPJeXqX_VlhBXfePS8RBxdWIUnaWeP_IhPeLfLwhSQXpn-NtwJlW2Sww5M1YMzbYp6vyHnNpbptsePYodFACzKA',
+		  BeaconID : '00:A0:50:0E:0F:23',
+      Distance : '10'
+      }
+  })*/
 
 	/*socket.on('showDevices', function(devicelist){
 		$scope.deviceData = devicelist;
