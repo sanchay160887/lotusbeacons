@@ -16,6 +16,7 @@ var gcm = require('android-gcm');
 var request = require('request');
 querystring = require('querystring');
 require('timers')
+var devicecron = require('node-cron');
 
 
 var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon';
@@ -112,6 +113,36 @@ function isNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
+//devicecron.schedule('*/2 * * * *', function(){
+/*  async.waterfall([
+
+        function(callback) {
+            MongoClient.connect(mongourl, function(err, db) {
+                if (err) {
+                    return console.dir(err);
+                }
+
+                var collection = db.collection('device');
+                var devicelist = new Array();
+                var outofrangelimit = new Date().getTime();
+                var outofrangelimit = outofrangelimit - (60 * 3 * 1000);
+                collection.find({"connectiontime" : { $lte: outofrangelimit } }).toArray(function(err, devices) {
+                    for (var dvc in devices) {
+                        devicelist.push(devices[dvc]);
+                    }
+                    callback(null, devicelist);
+                })
+                db.close();
+            });
+        },
+        function(devicelist, callback) {
+        	console.log(devicelist);
+            io.emit('showDevices', devicelist);
+            callback(null, devicelist);
+        }
+    ]);
+});*/
+
 
 function updateDevice(BeaconID, DeviceID, Distance, resObj) {
     console.log('Beacon ID ' + BeaconID);
@@ -200,7 +231,8 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
                     }, {
                         'BeaconID': BeaconID,
                         'DeviceID': DeviceID,
-                        'Distance': Distance
+                        'Distance': Distance,
+                        'connectiontime': new Date().getTime(),
                     });
                     console.log('Device updated');
                 } else {
@@ -208,10 +240,10 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
                         collection.insert({
                             'BeaconID': BeaconID,
                             'DeviceID': DeviceID,
-                            'Distance': Distance
+                            'Distance': Distance,
+                            'connectiontime': new Date().getTime(),
                         });
                         console.log('Device inserted');
-
                     }
 
                 }
