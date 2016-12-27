@@ -161,26 +161,28 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
         });
     }
 
-    var addBeacon = function(BeaconID, BeaconKey, BeaconDescr, BeaconStore){
+    var addBeacon = function(BeaconID, BeaconKey,BeaconWelcome, BeaconDescr, BeaconStore){
         return $http({
             method: "post",
             url: "/addbeacon",
             data: {
                 'BeaconID' : BeaconID,
                 'BeaconKey' : BeaconKey,
+				'BeaconWelcome' : BeaconWelcome,
                 'BeaconDescr' : BeaconDescr,
                 'BeaconStore' : BeaconStore
             }
         });
     }
 
-    var updateBeacon = function(BeaconID, BeaconKey, BeaconDescr, BeaconStore){
+    var updateBeacon = function(BeaconID, BeaconKey,BeaconWelcome, BeaconDescr, BeaconStore){
         return $http({
             method: "post",
             url: "/updatebeacon",
             data: {
                 'BeaconID' : BeaconID,
                 'BeaconKey' : BeaconKey,
+				'BeaconWelcome' : BeaconWelcome,
                 'BeaconDescr' : BeaconDescr,
                 'BeaconStore' : BeaconStore
             }

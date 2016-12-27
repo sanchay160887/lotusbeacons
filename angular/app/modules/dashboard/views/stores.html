@@ -71,10 +71,10 @@ Date: 05 Jan 2016
         <textarea class="form-control" name="store_descr" ng-model="Store_Descr"></textarea><br>
         
         <label>Lat</label>
-        <input class="form-control" type="text" name="Store_lat" ng-model="Store_Lat" /><br>
+        <input class="form-control" type="text" name="store_lat" ng-model="Store_Lat" /><br>
         
          <label>Long</label>
-        <input class="form-control" type="text" name="Store_long" ng-model="Store_Long" /><br>
+        <input class="form-control" type="text" name="store_long" ng-model="Store_Long" /><br>
         
         <button class="btn btn-primary" ng-bind="button_name" ng-click="processStore()">Add</button>
         <button class="btn btn-primary" ng-if="button_name=='update'" ng-click="deleteStore()">Delete</button>
@@ -87,9 +87,13 @@ Date: 05 Jan 2016
         <table class="table">
             <th>Store Name</th>
             <th>Description</th>
+            <th>Store Lat</th>
+            <th>Store Long</th>
             <tr ng-repeat= "device in storeData | orderBy:BeaconKey ">
                 <td><input class="form-control" type='text' ng-model="device.StoreName" readonly /></td>
                 <td><input class="form-control"  type='text' ng-model="device.StoreDescr" readonly /></td>
+                <td><input class="form-control"  type='text' ng-model="device.StoreLat" readonly /></td>
+                 <td><input class="form-control"  type='text' ng-model="device.StoreLong" readonly /></td>
                 <td ng-click="getStore(device._id)"><span class="btn btn-primary">View</span></td>
             </tr>
         </table>

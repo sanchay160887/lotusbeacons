@@ -77,6 +77,8 @@ Date: 05 Jan 2016
         </select><br>
         <label>Description</label>
         <textarea class="form-control" name="beacon_description" ng-model="Beacon_Descr"></textarea><br>
+        <label>Is Welcome</label>
+        <input class="form-control" type="checkbox" name="beacon_welcome" ng-model="Beacon_Welcome" /><br>
         <button class="btn btn-primary" ng-bind="button_name" ng-click="processBeacon()">Add</button>
         <button class="btn btn-primary" ng-if="button_name=='update'" ng-click="deleteBeacon()">Delete</button>
     </section>

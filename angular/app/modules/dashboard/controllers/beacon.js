@@ -5,6 +5,7 @@
 dashboard.controller("BeaconsController",function ($rootScope, $scope, apiService, $http) { //
   $scope.Beacon_ID = '';
   $scope.Beacon_Key = '';
+   $scope.Beacon_Welcome = '';
   $scope.Beacon_Descr = '';
   $scope.button_name = 'Add';
   $scope.storeData = [];
@@ -34,6 +35,7 @@ dashboard.controller("BeaconsController",function ($rootScope, $scope, apiServic
   $scope.resetControls = function(){
     $scope.Beacon_ID = '';
     $scope.Beacon_Key = '';
+	 $scope.Beacon_Welcome = '';
     $scope.Beacon_Descr = '';
     $scope.Beacon_Store = '';
     $scope.button_name = 'Add';
@@ -48,6 +50,7 @@ dashboard.controller("BeaconsController",function ($rootScope, $scope, apiServic
               $scope.button_name = 'update';
               $scope.Beacon_ID = pbeacon_id;
               $scope.Beacon_Key = data.data[0].BeaconKey;
+			  $scope.Beacon_Key = data.data[0].Beacon_Welcome;
               $scope.Beacon_Descr = data.data[0].BeaconDescr;
               $scope.Beacon_Store = data.data[0].BeaconStore;
             } else {
@@ -69,7 +72,7 @@ dashboard.controller("BeaconsController",function ($rootScope, $scope, apiServic
     $scope.FormInitialized = false;
     console.log($scope.button_name);
     if ($scope.button_name == 'Add'){
-      apiService.addBeacon($scope.Beacon_ID, $scope.Beacon_Key, $scope.Beacon_Descr, $scope.Beacon_Store)
+      apiService.addBeacon($scope.Beacon_ID, $scope.Beacon_Key,$scope.Beacon_Welcome, $scope.Beacon_Descr, $scope.Beacon_Store)
         .success(function(data, status, headers, config) {
               if (data.IsSuccess){
                 $scope.getAllBeacon();
@@ -84,7 +87,7 @@ dashboard.controller("BeaconsController",function ($rootScope, $scope, apiServic
             return '';
         });
     } else {
-      apiService.updateBeacon($scope.Beacon_ID, $scope.Beacon_Key, $scope.Beacon_Descr, $scope.Beacon_Store)
+      apiService.updateBeacon($scope.Beacon_ID, $scope.Beacon_Key,$scope.Beacon_Welcome, $scope.Beacon_Descr, $scope.Beacon_Store)
         .success(function(data, status, headers, config) {
             if (data.IsSuccess){
               $scope.getAllBeacon();

@@ -6,6 +6,8 @@ dashboard.controller("StoresController",function ($rootScope, $scope, apiService
   $scope.Store_Id = '';
   $scope.Store_Name = '';
   $scope.Store_Descr = '';
+  $scope.Store_Lat = '';
+  $scope.Store_Long = '';
   $scope.button_name = 'Add';
   $scope.ListInitialized = false;
   $scope.FormInitialized = true;

@@ -881,6 +881,7 @@ app.post('/getbeacondata', function(req, res) {
 app.post('/addbeacon', function(req, res) {
     BeaconID = req.body.BeaconID;
     BeaconKey = req.body.BeaconKey;
+	 BeaconWelcome = req.body.BeaconWelcome;
     BeaconDescr = req.body.BeaconDescr;
     BeaconStore = req.body.BeaconStore;
     var resObj = {};
@@ -941,6 +942,7 @@ app.post('/addbeacon', function(req, res) {
                 collection.insert({
                     'BeaconID': BeaconID,
                     'BeaconKey': BeaconKey,
+					'BeaconWelcome': BeaconWelcome,
                     'BeaconDescr': BeaconDescr,
                     'BeaconStore': ObjectId(BeaconStore)
                 });
@@ -963,6 +965,7 @@ app.post('/addbeacon', function(req, res) {
 app.post('/updatebeacon', function(req, res) {
     BeaconID = req.body.BeaconID;
     BeaconKey = req.body.BeaconKey;
+	BeaconWelcome = req.body.BeaconWelcome;
     BeaconDescr = req.body.BeaconDescr;
     BeaconStore = req.body.BeaconStore;
 
@@ -993,6 +996,7 @@ app.post('/updatebeacon', function(req, res) {
         }, {
             'BeaconID': BeaconID,
             'BeaconKey': BeaconKey,
+			'BeaconWelcome': BeaconWelcome,
             'BeaconDescr': BeaconDescr,
             'BeaconStore': ObjectId(BeaconStore)
         });
