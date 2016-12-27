@@ -113,37 +113,6 @@ function isNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
-//devicecron.schedule('*/2 * * * *', function(){
-/*  async.waterfall([
-
-        function(callback) {
-            MongoClient.connect(mongourl, function(err, db) {
-                if (err) {
-                    return console.dir(err);
-                }
-
-                var collection = db.collection('device');
-                var devicelist = new Array();
-                var outofrangelimit = new Date().getTime();
-                var outofrangelimit = outofrangelimit - (60 * 3 * 1000);
-                collection.find({"connectiontime" : { $lte: outofrangelimit } }).toArray(function(err, devices) {
-                    for (var dvc in devices) {
-                        devicelist.push(devices[dvc]);
-                    }
-                    callback(null, devicelist);
-                })
-                db.close();
-            });
-        },
-        function(devicelist, callback) {
-        	console.log(devicelist);
-            io.emit('showDevices', devicelist);
-            callback(null, devicelist);
-        }
-    ]);
-});*/
-
-
 function updateDevice(BeaconID, DeviceID, Distance, resObj) {
     console.log('Beacon ID ' + BeaconID);
     console.log('Device ID ' + DeviceID);
@@ -505,7 +474,7 @@ app.post('/beaconConnected', function(req, res) {
                     res.send(resObj);
                     return;
                 }
-/*----------------Update Beacon ID------------------*/
+                /*----------------Update Beacon ID------------------*/
                 collection.find({ "DeviceID": DeviceID }).toArray(function(err, value) {
 
                     if (err) {
@@ -514,7 +483,7 @@ app.post('/beaconConnected', function(req, res) {
                     } else {
                         if (value.BeaconID != BeaconID) {
                             //console.log(JSON.stringify(value));
-                      
+
 
                             collection.update({ 'BeaconID': BeaconID }, function(err, numUpdated) { // update by callback
                                 if (err) {
@@ -553,11 +522,8 @@ app.post('/beaconConnected', function(req, res) {
     });
 });
 
-app.post('/beaconDisconnected', function(req, res) {
+function beaconDisconnect(BeaconID, DeviceID) {
     console.log('-------------------Beacon disconnected------------- ')
-    BeaconID = req.body.BeaconID;
-    DeviceID = req.body.DeviceID;
-    //Distance = req.body.Distance;
 
     updateDevice(BeaconID, DeviceID, -1);
 
@@ -609,8 +575,53 @@ app.post('/beaconDisconnected', function(req, res) {
             ]);
         });
     }, 60000);
+}
 
+app.post('/beaconDisconnected', function(req, res) {
+    console.log('-------------------Beacon disconnected------------- ')
+    BeaconID = req.body.BeaconID;
+    DeviceID = req.body.DeviceID;
+    beaconDisconnect(BeaconID, DeviceID);
+});
 
+devicecron.schedule('*/5 * * * * *', function() {
+    async.waterfall([
+
+        function(callback) {
+            MongoClient.connect(mongourl, function(err, db) {
+                if (err) {
+                    return console.dir(err);
+                }
+
+                var collection = db.collection('device');
+                var devicelist = new Array();
+                var outofrangelimit = new Date().getTime();
+                var outofrangelimit = outofrangelimit - (60 * 1 * 1000);
+                console.log(outofrangelimit);
+                collection.find({ "connectiontime": { "$lte": outofrangelimit.toString() } }).toArray(function(err, devices) {
+                    for (var dvc in devices) {
+                        devicelist.push(devices[dvc]);
+                    }
+                    callback(null, devicelist);
+                })
+                db.close();
+            });
+        },
+        function(devicelist, callback) {
+            console.log(devicelist);
+            if (devicelist.length > 0) {
+                for (var dvc in devicelist) {
+                    console.log(devicelist[dvc].DeviceID);
+                    console.log(devicelist[dvc].BeaconID);
+                    beaconDisconnect(devicelist[dvc].BeaconID, devicelist[dvc].DeviceID);
+                }
+            }
+
+            //beaconDisconnect(BeaconID, DeviceID)
+            io.emit('showDevices', devicelist);
+            callback(null, devicelist);
+        }
+    ]);
 });
 
 app.post('/getdata', function(req, res) {
@@ -913,7 +924,7 @@ app.post('/getbeacondata', function(req, res) {
 app.post('/addbeacon', function(req, res) {
     BeaconID = req.body.BeaconID;
     BeaconKey = req.body.BeaconKey;
-	 BeaconWelcome = req.body.BeaconWelcome;
+    BeaconWelcome = req.body.BeaconWelcome;
     BeaconDescr = req.body.BeaconDescr;
     BeaconStore = req.body.BeaconStore;
     var resObj = {};
@@ -974,7 +985,7 @@ app.post('/addbeacon', function(req, res) {
                 collection.insert({
                     'BeaconID': BeaconID,
                     'BeaconKey': BeaconKey,
-					'BeaconWelcome': BeaconWelcome,
+                    'BeaconWelcome': BeaconWelcome,
                     'BeaconDescr': BeaconDescr,
                     'BeaconStore': ObjectId(BeaconStore)
                 });
@@ -997,7 +1008,7 @@ app.post('/addbeacon', function(req, res) {
 app.post('/updatebeacon', function(req, res) {
     BeaconID = req.body.BeaconID;
     BeaconKey = req.body.BeaconKey;
-	BeaconWelcome = req.body.BeaconWelcome;
+    BeaconWelcome = req.body.BeaconWelcome;
     BeaconDescr = req.body.BeaconDescr;
     BeaconStore = req.body.BeaconStore;
 
@@ -1028,7 +1039,7 @@ app.post('/updatebeacon', function(req, res) {
         }, {
             'BeaconID': BeaconID,
             'BeaconKey': BeaconKey,
-			'BeaconWelcome': BeaconWelcome,
+            'BeaconWelcome': BeaconWelcome,
             'BeaconDescr': BeaconDescr,
             'BeaconStore': ObjectId(BeaconStore)
         });
@@ -1153,8 +1164,8 @@ app.post('/getstoredata', function(req, res) {
 app.post('/addstore', function(req, res) {
     StoreName = req.body.StoreName;
     StoreDescr = req.body.StoreDescr;
-	StoreLat = req.body.StoreLat;
-	StoreLong = req.body.StoreLong;
+    StoreLat = req.body.StoreLat;
+    StoreLong = req.body.StoreLong;
     var resObj = {};
 
     if (!StoreName) {
@@ -1193,8 +1204,8 @@ app.post('/addstore', function(req, res) {
                 collection.insert({
                     'StoreName': StoreName,
                     'StoreDescr': StoreDescr,
-					'StoreLat':StoreLat,
-					'StoreLong':StoreLong
+                    'StoreLat': StoreLat,
+                    'StoreLong': StoreLong
                 });
                 console.log('Store inserted');
 
@@ -1216,8 +1227,8 @@ app.post('/updatestore', function(req, res) {
     StoreID = req.body.StoreID;
     StoreName = req.body.StoreName;
     StoreDescr = req.body.StoreDescr;
-	StoreLat = req.body.StoreLat;
-	StoreLong = req.body.StoreLong;
+    StoreLat = req.body.StoreLat;
+    StoreLong = req.body.StoreLong;
     var resObj = {};
 
     if (!StoreName) {
@@ -1238,8 +1249,8 @@ app.post('/updatestore', function(req, res) {
         }, {
             'StoreName': StoreName,
             'StoreDescr': StoreDescr,
-			'StoreLat' : StoreLat,
-			'StoreLong' : StoreLong,
+            'StoreLat': StoreLat,
+            'StoreLong': StoreLong,
         });
         db.close();
 
