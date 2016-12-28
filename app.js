@@ -584,7 +584,7 @@ app.post('/beaconDisconnected', function(req, res) {
     beaconDisconnect(BeaconID, DeviceID);
 });
 
-devicecron.schedule('*/5 * * * * *', function() {
+devicecron.schedule('*/2 * * * *', function() {
     async.waterfall([
 
         function(callback) {
@@ -598,7 +598,7 @@ devicecron.schedule('*/5 * * * * *', function() {
                 var outofrangelimit = new Date().getTime();
                 var outofrangelimit = outofrangelimit - (60 * 1 * 1000);
                 console.log(outofrangelimit);
-                collection.find({ "connectiontime": { "$lte": outofrangelimit.toString() } }).toArray(function(err, devices) {
+                collection.find({ "connectiontime": { "$lte": outofrangelimit } }).toArray(function(err, devices) {
                     for (var dvc in devices) {
                         devicelist.push(devices[dvc]);
                     }
