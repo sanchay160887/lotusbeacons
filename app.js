@@ -574,7 +574,7 @@ function beaconDisconnect(BeaconID, DeviceID) {
                 }
             ]);
         });
-    }, 60000);
+    }, 120000);
 }
 
 app.post('/beaconDisconnected', function(req, res) {
@@ -584,7 +584,7 @@ app.post('/beaconDisconnected', function(req, res) {
     beaconDisconnect(BeaconID, DeviceID);
 });
 
-devicecron.schedule('*/2 * * * *', function() {
+devicecron.schedule('* * * * *', function() {
     async.waterfall([
 
         function(callback) {
@@ -596,7 +596,7 @@ devicecron.schedule('*/2 * * * *', function() {
                 var collection = db.collection('device');
                 var devicelist = new Array();
                 var outofrangelimit = new Date().getTime();
-                var outofrangelimit = outofrangelimit - (60 * 1 * 1000);
+                var outofrangelimit = outofrangelimit - (60 * 3 * 1000);
                 console.log(outofrangelimit);
                 collection.find({ "connectiontime": { "$lte": outofrangelimit } }).toArray(function(err, devices) {
                     for (var dvc in devices) {
