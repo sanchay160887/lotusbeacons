@@ -178,7 +178,7 @@ dashboard.controller("DeviceDataController",function ($rootScope, $scope, apiSer
     }
   }
 
-  apiService.updateDevice('00:A0:50:0E:0F:23','APA91bFvaILdRXwqIopkKzByeFujzqHwsuNcsVZ8TSyO7GRGPzzMwISIpPjSO4xbzNffIiXX5TZL5ZQwLfjf46Hx7TDXcHi2hUXJzMb_4leR-IMvDPLP-9E','3.25');
+  //apiService.updateDevice('00:A0:50:0E:0F:23','APA91bFvaILdRXwqIopkKzByeFujzqHwsuNcsVZ8TSyO7GRGPzzMwISIpPjSO4xbzNffIiXX5TZL5ZQwLfjf46Hx7TDXcHi2hUXJzMb_4leR-IMvDPLP-9E','3.25');
 
   /*$http({
         method: "post",

@@ -9,10 +9,10 @@
 
  ===========================================================*/
 
-var dashboard = angular.module('dashboard', ['ui.router', 'ngAnimate','ngMaterial']);
+var dashboard = angular.module('dashboard', ['ui.router', 'ngAnimate', 'ngMaterial']);
 
 
-dashboard.config(["$stateProvider", function ($stateProvider) {
+dashboard.config(["$stateProvider", function($stateProvider) {   
 
     //dashboard home page state
     $stateProvider.state('app.dashboard', {
@@ -165,8 +165,8 @@ dashboard.config(["$stateProvider", function ($stateProvider) {
             pageTitle: 'Devices List'
         }
     });
-	
-	$stateProvider.state('app.deviceshistory', {
+
+    $stateProvider.state('app.deviceshistory', {
         url: '/deviceshistory',
         templateUrl: 'app/modules/dashboard/views/deviceshistory.html',
         controller: 'DeviceHistoryController',
@@ -197,4 +197,3 @@ dashboard.config(["$stateProvider", function ($stateProvider) {
     });
 
 }]);
-

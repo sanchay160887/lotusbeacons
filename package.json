@@ -5,6 +5,7 @@
   "main": "app.js",
   "dependencies": {
     "android-gcm": "^0.1.5",
+    "angular-material-datetimepicker": "^1.4.0",
     "assert": "^1.4.1",
     "async": "^2.0.1",
     "body-parser": "^1.15.2",

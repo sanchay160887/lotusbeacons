@@ -6,7 +6,8 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.storeData = [];
     $scope.selectedStore = '';
     $scope.deviceData = [];
-    $scope.selectedDate = '';
+    var currdate = new Date();
+    $scope.selectedDate = (currdate.getFullYear() + '/' + (currdate.getMonth() + 1) + '/' + currdate.getDate());
     $scope.selectedTokens = {};
     $scope.TM_title = '';
     $scope.TM_descr = '';
@@ -15,11 +16,21 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.GM_ImageFilePath = '';
     $scope.baseUrl = apiService.base_url;
 
+    $scope.maxDate = new Date(
+        currdate.getFullYear(),
+        currdate.getMonth() + 1,
+        currdate.getDate())
+
     $scope.Initialized = false;
     $scope.BeaconInitialized = true;
 
-    var queriedUrl = $location.search();
 
+
+    setTimeout(function(){
+      jQuery( ".datepicker" ).datepicker({'dateFormat':'yy/mm/dd'});
+    }, 1000);
+
+    var queriedUrl = $location.search();
 
     apiService.storeData().then(function(res) {
         $scope.Initialized = false;
@@ -124,7 +135,6 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
                     $scope.selectedBeacon = queriedUrl.beacon;
                 }
                 $scope.BeaconInitialized = true;
-                console.log(res.data);
             });
         } else {
             $scope.beaconData = [];
