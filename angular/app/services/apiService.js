@@ -91,13 +91,17 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
         });
     }
 	
-	var deviceHistoryData = function(selectedBeacon, selectedStore){
+	var deviceHistoryData = function(selectedBeacon, selectedStore, selectedDate){
+        if (selectedDate != ''){
+            selectedDate
+        }
         return $http({
             method: "post",
             url: '/getDeviceHistorydata',
             data: {
                 'BeaconID' : selectedBeacon,
-                'StoreID' : selectedStore
+                'StoreID' : selectedStore,
+                'Date' : selectedDate
             }
         });
     }

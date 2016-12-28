@@ -262,11 +262,6 @@ function getCurrentTime() {
     return new Date().getTime();
 }
 
-function convertTimetoDate(timestamp) {
-    var ndate = new Date(timestamp);
-    return ndate.getFullYear() + '-' + (ndate.getMonth() + 1) + '-' + ndate.getDate();
-}
-
 function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
     console.log('------------Updating device History--------------');
     console.log('Beacon ID ' + BeaconID);
@@ -292,7 +287,7 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
 
         async.waterfall([
             function(callback) {
-            	currdate = convertTimetoDate(getCurrentTime());
+                currdate = getCurrentTime();
                 collection.find({
                     'DeviceID': DeviceID,
                     'BeaconID': BeaconID,
@@ -311,12 +306,23 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
                     }
 
                     StayTime = oldstaytime + StayTime;
-                    currdate = convertTimetoDate(getCurrentTime());
+                    currdate = getCurrentTime();
+
+                    fromDate = 0;
+                    seldate = new Date(currdate);
+                    SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate());
+                    fromDate = SelectedDate.getTime();
+                    seldate = new Date(currdate);
+                    SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate() + ' 23:59:59');
+                    toDate = SelectedDate.getTime();
 
                     collection.update({
                         'DeviceID': DeviceID,
                         'BeaconID': BeaconID,
-                        'Date': currdate,
+                        'Date': {
+                            $gte: fromDate,
+                            $lte: toDate,
+                        }
                     }, {
                         'BeaconID': BeaconID,
                         'DeviceID': DeviceID,
@@ -742,6 +748,15 @@ app.post('/getdata', function(req, res) {
 app.post('/getDeviceHistorydata', function(req, res) {
     BeaconID = req.body.BeaconID;
     StoreID = req.body.StoreID;
+    SelectedDate = req.body.Date;
+
+    fromDate = 0;
+    seldate = new Date(req.body.Date);
+    SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate());
+    fromDate = SelectedDate.getTime();
+    seldate = new Date(req.body.Date);
+    SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate() + ' 23:59:59');
+    toDate = SelectedDate.getTime();
 
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
@@ -788,7 +803,11 @@ app.post('/getDeviceHistorydata', function(req, res) {
                 if (beacons && beacons.length > 0) {
                     devicecollection = collection.find({
                         'BeaconID': {
-                            $in: beacons
+                            $in: beacons,
+                        },
+                        'Date': {
+                            $gte: fromDate,
+                            $lte: toDate,
                         }
                     });
                     devicecollection.toArray(function(err, devices) {
