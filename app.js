@@ -613,7 +613,9 @@ devicecron.schedule('* * * * *', function() {
                 for (var dvc in devicelist) {
                     console.log(devicelist[dvc].DeviceID);
                     console.log(devicelist[dvc].BeaconID);
-                    beaconDisconnect(devicelist[dvc].BeaconID, devicelist[dvc].DeviceID);
+                    if (devicelist[dvc].Distance != "-1") {
+                        beaconDisconnect(devicelist[dvc].BeaconID, devicelist[dvc].DeviceID);
+                    }
                 }
             }
 
