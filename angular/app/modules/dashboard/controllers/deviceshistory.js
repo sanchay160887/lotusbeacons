@@ -83,7 +83,6 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
         selectedDate = Date.parse(selectedDate);
         if (isNaN(selectedDate)) {
-            alert('Invalid date selected');
             return;
         }
 
