@@ -118,29 +118,6 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
     console.log('Device ID ' + DeviceID);
     console.log('Distance ' + Distance);
 
-    /*if (Distance == -1) {
-
-        setTimeout(function() {
-            MongoClient.connect(mongourl, function(err, db) {
-                if (err) {
-                    return console.dir(err);
-                }
-                assert.equal(null, err);
-
-                var collection = db.collection('device');
-                collection.deleteMany({
-                    'DeviceID': DeviceID
-                });
-
-                io.emit('updateDevice_response', {
-                    'IsSuccess': true,
-                    'message': 'Data inserted successfully'
-                });
-            });
-        }, 60000);
-
-    } else {*/
-
     var resObjVal = {};
     if (!(DeviceID && Distance)) {
         console.log('Invalid data passing');
@@ -156,8 +133,6 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
         }
         return;
     }
-
-
 
     if (!isNumeric(Distance)) {
         if (resObj) {
@@ -201,7 +176,7 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
                         'BeaconID': BeaconID,
                         'DeviceID': DeviceID,
                         'Distance': Distance,
-                        'connectiontime': new Date().getTime(),
+                        'connectiontime': getCurrentTime(),
                     });
                     console.log('Device updated');
                 } else {
@@ -210,7 +185,7 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
                             'BeaconID': BeaconID,
                             'DeviceID': DeviceID,
                             'Distance': Distance,
-                            'connectiontime': new Date().getTime(),
+                            'connectiontime': getCurrentTime(),
                         });
                         console.log('Device inserted');
                     }
@@ -233,8 +208,6 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
             }
         ]);
     });
-    //}
-
 }
 
 function convertToMinutes(timeValue) {
@@ -283,7 +256,15 @@ function convertSecondsToStringTime(seconds) {
         timestring = timestring + seconds + ' sec';
     }
     return timestring;
+}
 
+function getCurrentTime() {
+    return new Date().getTime();
+}
+
+function convertTimetoDate(timestamp) {
+    var ndate = new Date(timestamp);
+    return ndate.getFullYear() + '-' + (ndate.getMonth() + 1) + '-' + ndate.getDate();
 }
 
 function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
@@ -311,13 +292,14 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
 
         async.waterfall([
             function(callback) {
+            	currdate = convertTimetoDate(getCurrentTime());
                 collection.find({
                     'DeviceID': DeviceID,
-                    'BeaconID': BeaconID
+                    'BeaconID': BeaconID,
+                    'Date': currdate
                 }).toArray(function(err, devices) {
                     callback(null, devices);
                 });
-
             },
             function(devicedata, callback) {
                 if (devicedata && devicedata.length > 0) {
@@ -329,21 +311,25 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
                     }
 
                     StayTime = oldstaytime + StayTime;
+                    currdate = convertTimetoDate(getCurrentTime());
 
                     collection.update({
                         'DeviceID': DeviceID,
-                        'BeaconID': BeaconID
+                        'BeaconID': BeaconID,
+                        'Date': currdate,
                     }, {
                         'BeaconID': BeaconID,
                         'DeviceID': DeviceID,
-                        'StayTime': StayTime
+                        'StayTime': StayTime,
+                        'Date': currdate,
                     });
                     console.log('Device History updated');
                 } else {
                     collection.insert({
                         'BeaconID': BeaconID,
                         'DeviceID': DeviceID,
-                        'StayTime': StayTime
+                        'StayTime': StayTime,
+                        'Date': currdate,
                     });
                     console.log('Device History inserted');
                 }
@@ -595,7 +581,7 @@ devicecron.schedule('* * * * *', function() {
 
                 var collection = db.collection('device');
                 var devicelist = new Array();
-                var outofrangelimit = new Date().getTime();
+                var outofrangelimit = getCurrentTime();
                 var outofrangelimit = outofrangelimit - (60 * 3 * 1000);
                 console.log(outofrangelimit);
                 collection.find({ "connectiontime": { "$lte": outofrangelimit } }).toArray(function(err, devices) {
