@@ -288,10 +288,21 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
         async.waterfall([
             function(callback) {
                 currdate = getCurrentTime();
+
+                fromDate = 0;
+                seldate = new Date(currdate);
+                SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate());
+                fromDate = SelectedDate.getTime();
+                seldate = new Date(currdate);
+                SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate() + ' 23:59:59');
+                toDate = SelectedDate.getTime();
                 collection.find({
                     'DeviceID': DeviceID,
                     'BeaconID': BeaconID,
-                    'Date': currdate
+                    'Date': {
+                        $gte: fromDate,
+                        $lte: toDate,
+                    }
                 }).toArray(function(err, devices) {
                     callback(null, devices);
                 });
