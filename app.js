@@ -587,6 +587,44 @@ app.post('/beaconDisconnected', function(req, res) {
     beaconDisconnect(BeaconID, DeviceID);
 });
 
+//For testing purpose
+//devicecron.schedule('*/5 * * * * *', function() {
+   /* MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        fromDate = 0;
+        seldate = new Date();
+        SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate());
+        fromDate = SelectedDate.getTime();
+        seldate = new Date();
+        SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate() + ' 23:59:59');
+        toDate = SelectedDate.getTime();
+
+        console.log('=============from Date===============')
+        console.log(fromDate);
+        console.log('=============To Date=================')
+        console.log(toDate);
+
+        var collection = db.collection('device_history');
+        var devicelist = new Array();
+        collection.find({
+            'DeviceID': 'APA91bFvaILdRXwqIopkKzByeFujzqHwsuNcsVZ8TSyO7GRGPzzMwISIpPjSO4xbzNffIiXX5TZL5ZQwLfjf46Hx7TDXcHi2hUXJzMb_4leR-IMvDPLP-9E',
+            'BeaconID': '00:A0:50:0E:0F:23',
+            'Date': {
+                $gte: fromDate,
+                $lte: toDate,
+            }
+        }).toArray(function(err, devices) {
+            console.log(devices);
+        });
+        db.close();
+    });*/
+
+//});
+
+
 devicecron.schedule('* * * * *', function() {
     async.waterfall([
 
@@ -599,7 +637,7 @@ devicecron.schedule('* * * * *', function() {
                 var collection = db.collection('device');
                 var devicelist = new Array();
                 var outofrangelimit = getCurrentTime();
-                var outofrangelimit = outofrangelimit - (60 * 3 * 1000);
+                outofrangelimit = outofrangelimit - (60 * 3 * 1000);
                 console.log(outofrangelimit);
                 collection.find({ "connectiontime": { "$lte": outofrangelimit } }).toArray(function(err, devices) {
                     for (var dvc in devices) {
@@ -817,8 +855,8 @@ app.post('/getDeviceHistorydata', function(req, res) {
                             $in: beacons,
                         },
                         'Date': {
-                            $gte: fromDate,
-                            $lte: toDate,
+                            '$gte': fromDate,
+                            '$lte': toDate,
                         }
                     });
                     devicecollection.toArray(function(err, devices) {
