@@ -901,6 +901,7 @@ app.post('/getDeviceHistorydata', function(req, res) {
                             devices[dvc].StayTime = convertSecondsToStringTime(devices[dvc].StayTime);
                             devicelist.push(devices[dvc]);
                         }
+                        console.log(devicelist);
 
                         //res.send(devicelist);
                         callback(null, devicelist);
@@ -911,6 +912,7 @@ app.post('/getDeviceHistorydata', function(req, res) {
                             devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
                             devicelist.push(devices[dvc]);
                         }
+                        console.log(devicelist);
                         //res.send(devicelist);
                         callback(null, devicelist);
                     })
