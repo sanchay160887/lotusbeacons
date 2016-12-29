@@ -340,7 +340,7 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
                 }).toArray(function(err, devices) {
                     if (!(devices && devices.length > 0)) {
                         if (typeof(beacons[0].BeaconWelcome) != 'undefined' && beacons[0].BeaconWelcome) {
-                            sendpushnotification('', [DeviceID], 'Welcome', 'Welcome to Lotus. Exciting offers are waiting for you....');
+                            sendpushnotification('', [DeviceID], 'Welcome to Lotus Electronics. Look out for latest deals for the products you are shopping for');
                         }
                     }
                     callback(null, devices);
@@ -507,9 +507,9 @@ app.post('/beaconConnected', function(req, res) {
             },
             function(devices, callback) {
                 if (devices && devices.length > 0) {
-                    if (devices[0].BeaconKey == 'welcome') {
+                    /*if (devices[0].BeaconKey == 'welcome') {
                         sendpushnotification('', [DeviceID], 'Welcome', 'Welcome to Lotus. Exciting offers are waiting for you..');
-                    }
+                    }*/
                 } else {
                     resObj.IsSuccess = false;
                     resObj.message = "Invalid Beacon ID";
