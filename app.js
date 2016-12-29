@@ -157,10 +157,24 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
         }
         assert.equal(null, err);
 
-        var collection = db.collection('device');
-
         async.waterfall([
             function(callback) {
+                var collection = db.collection('beacons');
+                collection.find({
+                    'BeaconID': BeaconID
+                }).toArray(function(err, beacons) {
+                    callback(null, beacons);
+                });
+            },
+            function(beacons, callback) {
+                if (!(beacons && beacons.length > 0)) {
+                    resObj.IsSuccess = false;
+                    resObj.message = "Invalid Beacon ID";
+                    res.send(resObj);
+                    return;
+                }
+                var collection = db.collection('device');
+
                 collection.find({
                     'DeviceID': DeviceID
                 }).toArray(function(err, devices) {
@@ -287,6 +301,21 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
 
         async.waterfall([
             function(callback) {
+                var collection = db.collection('beacons');
+                collection.find({
+                    'BeaconID': BeaconID
+                }).toArray(function(err, beacons) {
+                    callback(null, beacons);
+                });
+            },
+            function(beacons, callback) {
+                if (!(beacons && beacons.length > 0)) {
+                    resObj.IsSuccess = false;
+                    resObj.message = "Invalid Beacon ID";
+                    res.send(resObj);
+                    return;
+                }
+
                 currdate = getCurrentTime();
 
                 fromDate = 0;
@@ -304,6 +333,11 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
                         $lte: toDate,
                     }
                 }).toArray(function(err, devices) {
+                    if (!(devices && devices.length > 0)) {
+                        if (typeof(beacons[0].BeaconWelcome) != 'undefined' && beacons[0].BeaconWelcome) {
+                            sendpushnotification('', [DeviceID], 'Welcome', 'Welcome to Lotus. Exciting offers are waiting for you..');
+                        }
+                    }
                     callback(null, devices);
                 });
             },
@@ -589,38 +623,38 @@ app.post('/beaconDisconnected', function(req, res) {
 
 //For testing purpose
 //devicecron.schedule('*/5 * * * * *', function() {
-   /* MongoClient.connect(mongourl, function(err, db) {
-        if (err) {
-            return console.dir(err);
-        }
+/* MongoClient.connect(mongourl, function(err, db) {
+     if (err) {
+         return console.dir(err);
+     }
 
-        fromDate = 0;
-        seldate = new Date();
-        SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate());
-        fromDate = SelectedDate.getTime();
-        seldate = new Date();
-        SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate() + ' 23:59:59');
-        toDate = SelectedDate.getTime();
+     fromDate = 0;
+     seldate = new Date();
+     SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate());
+     fromDate = SelectedDate.getTime();
+     seldate = new Date();
+     SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate() + ' 23:59:59');
+     toDate = SelectedDate.getTime();
 
-        console.log('=============from Date===============')
-        console.log(fromDate);
-        console.log('=============To Date=================')
-        console.log(toDate);
+     console.log('=============from Date===============')
+     console.log(fromDate);
+     console.log('=============To Date=================')
+     console.log(toDate);
 
-        var collection = db.collection('device_history');
-        var devicelist = new Array();
-        collection.find({
-            'DeviceID': 'APA91bFvaILdRXwqIopkKzByeFujzqHwsuNcsVZ8TSyO7GRGPzzMwISIpPjSO4xbzNffIiXX5TZL5ZQwLfjf46Hx7TDXcHi2hUXJzMb_4leR-IMvDPLP-9E',
-            'BeaconID': '00:A0:50:0E:0F:23',
-            'Date': {
-                $gte: fromDate,
-                $lte: toDate,
-            }
-        }).toArray(function(err, devices) {
-            console.log(devices);
-        });
-        db.close();
-    });*/
+     var collection = db.collection('device_history');
+     var devicelist = new Array();
+     collection.find({
+         'DeviceID': 'APA91bFvaILdRXwqIopkKzByeFujzqHwsuNcsVZ8TSyO7GRGPzzMwISIpPjSO4xbzNffIiXX5TZL5ZQwLfjf46Hx7TDXcHi2hUXJzMb_4leR-IMvDPLP-9E',
+         'BeaconID': '00:A0:50:0E:0F:23',
+         'Date': {
+             $gte: fromDate,
+             $lte: toDate,
+         }
+     }).toArray(function(err, devices) {
+         console.log(devices);
+     });
+     db.close();
+ });*/
 
 //});
 
@@ -638,7 +672,7 @@ devicecron.schedule('* * * * *', function() {
                 var devicelist = new Array();
                 var outofrangelimit = getCurrentTime();
                 outofrangelimit = outofrangelimit - (60 * 3 * 1000);
-                console.log(outofrangelimit);
+                //console.log(outofrangelimit);
                 collection.find({ "connectiontime": { "$lte": outofrangelimit } }).toArray(function(err, devices) {
                     for (var dvc in devices) {
                         devicelist.push(devices[dvc]);
@@ -649,18 +683,15 @@ devicecron.schedule('* * * * *', function() {
             });
         },
         function(devicelist, callback) {
-            console.log(devicelist);
+            //console.log(devicelist);
             if (devicelist.length > 0) {
                 for (var dvc in devicelist) {
-                    console.log(devicelist[dvc].DeviceID);
-                    console.log(devicelist[dvc].BeaconID);
                     if (devicelist[dvc].Distance != "-1") {
                         beaconDisconnect(devicelist[dvc].BeaconID, devicelist[dvc].DeviceID);
                     }
                 }
             }
 
-            //beaconDisconnect(BeaconID, DeviceID)
             io.emit('showDevices', devicelist);
             callback(null, devicelist);
         }
@@ -1545,18 +1576,3 @@ app.post('/getdeviceidentity', function(req, res) {
         })
     res.send();
 });
-
-app.post('/beaconIntervalTesting', function(req, res) {
-    var myval = 200;
-    setTimeout(function() {
-        console.log(myval);
-        console.log('==================');
-        console.log('Interval fired');
-    }, 10000);
-});
-
-function testInterval(param1) {
-    console.log(param1);
-    console.log('==================');
-    console.log('Interval fired');
-}

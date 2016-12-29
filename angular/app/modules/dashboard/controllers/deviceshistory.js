@@ -7,7 +7,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.selectedStore = '';
     $scope.deviceData = [];
     var currdate = new Date();
-    $scope.selectedDate = (currdate.getFullYear() + '/' + (currdate.getMonth() + 1) + '/' + currdate.getDate());
+    $scope.selectedDate = (currdate.getDate() + '/' + (currdate.getMonth() + 1) + '/' + currdate.getFullYear());
     $scope.selectedTokens = {};
     $scope.TM_title = '';
     $scope.TM_descr = '';
@@ -15,6 +15,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.GM_descr = '';
     $scope.GM_ImageFilePath = '';
     $scope.baseUrl = apiService.base_url;
+    $scope.InvalidInputs = false;
 
     $scope.maxDate = new Date(
         currdate.getFullYear(),
@@ -24,10 +25,18 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.Initialized = false;
     $scope.BeaconInitialized = true;
 
+    $scope.$watchCollection('[InvalidInputs]', function() {
+        if ($scope.InvalidInputs) {
+            setTimeout(function() {
+                $scope.InvalidInputs = false;
+            }, 5000);
+        }
+    });
 
 
-    setTimeout(function(){
-      jQuery( ".datepicker" ).datepicker({'dateFormat':'yy/mm/dd'});
+
+    setTimeout(function() {
+        jQuery(".datepicker").datepicker({ 'dateFormat': 'dd/mm/yy', 'maxDate': '0' });
     }, 1000);
 
     var queriedUrl = $location.search();
@@ -64,6 +73,8 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         var selectedStore = '';
         if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store) {
             selectedStore = queriedUrl.store;
+        } else {
+            $scope.InvalidInputs = true;
         }
 
         var selectedBeacon = '';
@@ -81,8 +92,16 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             beaconlist.push(selectedBeacon);
         }
 
+        dateelemarray = selectedDate.split('/');
+        if (dateelemarray.length < 3) {
+            $scope.InvalidInputs = true;
+            return;
+        }
+        selectedDate = dateelemarray[2] + '/' + dateelemarray[1] + '/' + dateelemarray[0];
+
         selectedDate = Date.parse(selectedDate);
         if (isNaN(selectedDate)) {
+            $scope.InvalidInputs = true;
             return;
         }
 
@@ -143,6 +162,18 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
 
     socket.on('updateDeviceHistory_response', function(response) {
+        var queriedUrl = $location.search()
+        if (!(typeof(queriedUrl.store) != 'undefined' && queriedUrl.store)) {
+            return;
+        }
+
+        if (!(typeof(queriedUrl.beacon) != 'undefined' && queriedUrl.beacon)) {
+            return;
+        }
+
+        if (!(typeof(queriedUrl.date) != 'undefined' && queriedUrl.date)) {
+            return;
+        }
         $scope.getAllDevicesHistory();
         console.log($scope.selectedBeacon);
     });
@@ -190,7 +221,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     console.log('coming here');
 
     /*apiService.updateDeviceHistory('00:A0:50:0E:0E:0D',
-      'APA91bFyGniNrOq7BnA0jX2F29vizUm6HDRXcab-PACcczk_Xd_gXjCwxRsqh8Gp5yXDYrI2IxJIT2WUmFtstN7uzTYwBJfFoP4pBGRtf5ATUNEtOhDMbO4', '00:00:45');*/
+      'APA91bFyGniNrOq7BnA0jX2F29vizUm6HDRXcab-PACcczk_Xd_gXjCwxRsqh8Gp5yXDYrI2IxJIT2WUmFtstN7uzTYwBJfFoP4pBGRtf5ATUNEtOhDMbO4', '00:02:45');*/
 
     /*apiService.updateDeviceHistory('12:32:45:22:89',
       'APA91bE8pbcfkLUbtfWPLurBq1h2jKe2S4LcA5mkQB7a-tp26pSBLY8jj726HqfBbxXK5hBkp1Aw9IzAlTU8DB3cxGlpIOrMbJjE6BkNA1EdZS3Xi6VaYWA', 2)*/

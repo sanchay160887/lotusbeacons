@@ -37,10 +37,10 @@
     padding: 7% 0;
 }
 
-.wait_text {
+.error_text {
     background-color: #d9edf7;
     border-radius: 3px;
-    color: #31708f;
+    color: red;
     font-size: 15px;
     font-weight: 500;
     padding: 8px 10px;
@@ -79,6 +79,7 @@
 .bcon_selection_section {
     padding: 0 0 24px 12px;
 }
+
 </style>
 <!--
 Author: Ranjithprabhu K
@@ -95,9 +96,9 @@ Date: 05 Jan 2016
 </section>
 <div class="content-device_block">
     <div class="container-fluid">
-        <!--  <div class="wait_block" ng-if="!Initialized">
-      <p class="wait_text">Please Wait...</p>
-    </div> -->
+        <div class="wait_block" ng-if="InvalidInputs">
+            <p class="error_text">Please select Store and Date for getting list of device history..</p>
+        </div>
         <div class="bcon_selection_section">
             <div class="bcon_selection_block_left">
                 <div class="bcon_selection row">
@@ -136,7 +137,7 @@ Date: 05 Jan 2016
                                 <label class="bcon-slect-title">Select Date</label>
                             </div>
                             <div class="col-md-7 no-pad">
-                                <input type="text" ng-model="selectedDate" class="datepicker">
+                                <input type="text" ng-model="selectedDate" class="datepicker form-control">
                             </div>
                             <div class="col-md-1 no-pad">
                                 <button type="button" class="btn btn-info" ng-click="loadData()">Show</button>
@@ -165,6 +166,7 @@ Date: 05 Jan 2016
                         <th>Device ID</th>
                         <th>Person's Number</th>
                         <th>Stay Time</th>
+                        <th>Today</th>
                         <th>Beacon</th>
                     </tr>
                 </thead>
@@ -177,6 +179,7 @@ Date: 05 Jan 2016
                         <td>{{ device.DeviceName }}</td>
                         <td>{{ device.DevicePhone }}</td>
                         <td>{{ device.StayTime}}</td>
+                        <td>{{ device.Date | date:'yyyy-MM-dd HH:mm:ss Z' }}</td>
                         <td>{{ device.BeaconKey }}</td>
                     </tr>
                 </tbody>
