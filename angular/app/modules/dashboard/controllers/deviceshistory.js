@@ -55,6 +55,18 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         //console.log($scope.deviceData);
     };
 
+    $scope.selectRecords = function() {
+        for (var dd in $scope.deviceData) {
+            $scope.deviceData[dd].checked = true;
+        }
+    }
+
+    $scope.unselectRecords = function() {
+        for (var dd in $scope.deviceData) {
+            $scope.deviceData[dd].checked = false;
+        }
+    }
+
     $scope.$watchCollection('[selectedStore]', function() {
         if ($scope.Initialized) {
             $location.search({ 'store': $scope.selectedStore });
@@ -176,7 +188,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         }
         $scope.getAllDevicesHistory();
         console.log($scope.selectedBeacon);
-        
+
     });
 
     $scope.sendNotification = function() {
