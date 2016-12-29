@@ -325,10 +325,10 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
 
                 fromDate = 0;
                 seldate = new Date(currdate);
-                SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + (seldate.getDate() + 1).toISOString();
+                SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + (seldate.getDate() + 1)).toISOString();
                 fromDate = new Date(SelectedDate).getTime();
                 seldate = new Date(currdate);
-                SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + (seldate.getDate()+1) + ' 23:59:59').toISOString();
+                SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + (seldate.getDate() + 1) + ' 23:59:59').toISOString();
                 toDate = new Date(SelectedDate).getTime();
                 collection.find({
                     'DeviceID': DeviceID,
