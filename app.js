@@ -325,10 +325,10 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
 
                 fromDate = 0;
                 seldate = new Date(currdate);
-                SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + (seldate.getDate() + 1)).toISOString();
+                SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate()).toISOString();
                 fromDate = new Date(SelectedDate).getTime();
                 seldate = new Date(currdate);
-                SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + (seldate.getDate() + 1) + ' 23:59:59').toISOString();
+                SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate() + ' 23:59:59').toISOString();
                 toDate = new Date(SelectedDate).getTime();
                 collection.find({
                     'DeviceID': DeviceID,
@@ -839,9 +839,9 @@ app.post('/getDeviceHistorydata', function(req, res) {
     fromDate = 0;
     toDate = 0;
     seldate = new Date(req.body.Date);
-    SelectedDate = new Date(seldate.getFullYear() + '/' + (seldate.getMonth() + 1) + '/' + seldate.getDate()).toISOString();
+    SelectedDate = new Date(seldate.getFullYear() + '/' + (seldate.getMonth() + 1) + '/' + (seldate.getDate()+1) ).toISOString();
     fromDate = new Date(SelectedDate).getTime();
-    SelectedDate = new Date(seldate.getFullYear() + '/' + (seldate.getMonth() + 1) + '/' + seldate.getDate() + ' 23:59:59').toISOString();
+    SelectedDate = new Date(seldate.getFullYear() + '/' + (seldate.getMonth() + 1) + '/' + (seldate.getDate() +1) + ' 23:59:59').toISOString();
     toDate = new Date(SelectedDate).getTime();
 
     MongoClient.connect(mongourl, function(err, db) {
