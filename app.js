@@ -901,9 +901,9 @@ app.post('/getDeviceHistorydata', function(req, res) {
                             devices[dvc].StayTime = convertSecondsToStringTime(devices[dvc].StayTime);
                             devicelist.push(devices[dvc]);
                         }
+
                         //res.send(devicelist);
                         callback(null, devicelist);
-                        return;
                     })
                 } else {
                     collection.find().toArray(function(err, devices) {
@@ -913,7 +913,6 @@ app.post('/getDeviceHistorydata', function(req, res) {
                         }
                         //res.send(devicelist);
                         callback(null, devicelist);
-                        return;
                     })
                 }
             },
