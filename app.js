@@ -834,12 +834,13 @@ app.post('/getDeviceHistorydata', function(req, res) {
     BeaconID = req.body.BeaconID;
     StoreID = req.body.StoreID;
     SelectedDate = req.body.Date;
+    console.log('date:' + SelectedDate);
 
     fromDate = 0;
+    toDate = 0;
     seldate = new Date(req.body.Date);
     SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate());
     fromDate = SelectedDate.getTime();
-    seldate = new Date(req.body.Date);
     SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate() + ' 23:59:59');
     toDate = SelectedDate.getTime();
 
