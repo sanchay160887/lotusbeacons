@@ -40,7 +40,7 @@
 .error_text {
     background-color: #d9edf7;
     border-radius: 3px;
-    color: red;
+    color: #ffffff;
     font-size: 15px;
     font-weight: 500;
     padding: 8px 10px;
@@ -50,27 +50,33 @@
 
 .bcon_selection_block_left {
     border-radius: 3px;
-    width: 70%;
+    width: 80%;
     display: inline-block;
     vertical-align: top;
 }
 
 .bcon_selection_block_right {
     border-radius: 3px;
-    width: 29%;
+    width: 19.5%;
     display: inline-block;
     vertical-align: top;
 }
 
+/*
 .bcon_selection_left_1 {
     display: inline-block;
-    width: 42%;
+    width: 34%;
 }
 
 .bcon_selection_left_2 {
     display: inline-block;
-    width: 37%;
+    width: 23%;
 }
+
+.bcon_selection_left_3 {
+    display: inline-block;
+    width: 25%;
+}*/
 
 .no-pad {
     padding: 0 2px;
@@ -79,6 +85,12 @@
 .bcon_selection_section {
     padding: 0 0 24px 12px;
 }
+
+.push_btnn_block {
+    text-align: right;
+}
+
+
 
 </style>
 <!--
@@ -102,9 +114,9 @@ Date: 05 Jan 2016
         <div class="bcon_selection_section">
             <div class="bcon_selection_block_left">
                 <div class="bcon_selection row">
-                    <div class="bcon_selection_left_1">
+                    <div class="bcon_selection_left_1 col-md-4 no-pad">
                         <div class="form-group">
-                            <div class="col-md-3 no-pad">
+                            <div class="col-md-4 no-pad">
                                 <label class="bcon-slect-title">Select Store</label>
                             </div>
                             <div class="col-md-8 no-pad">
@@ -115,12 +127,12 @@ Date: 05 Jan 2016
                             </div>
                         </div>
                     </div>
-                    <div class="bcon_selection_left_2">
+                    <div class="bcon_selection_left_2 col-md-4">
                         <div class="form-group">
-                            <div class="col-md-4 no-pad">
+                            <div class="col-md-5 no-pad">
                                 <label class="bcon-slect-title">Select Beacon</label>
                             </div>
-                            <div class="col-md-4 no-pad">
+                            <div class="col-md-7 no-pad">
                                 <select class="form-control col-md-4" ng-show="!BeaconInitialized">
                                     <option value="">Please wait..</option>
                                 </select>
@@ -131,15 +143,15 @@ Date: 05 Jan 2016
                             </div>
                         </div>
                     </div>
-                    <div class="bcon_selection_left_2">
+                    <div class="bcon_selection_left_3 col-md-4">
                         <div class="form-group">
                             <div class="col-md-4 no-pad">
                                 <label class="bcon-slect-title">Select Date</label>
                             </div>
-                            <div class="col-md-7 no-pad">
+                            <div class="col-md-6 no-pad">
                                 <input type="text" ng-model="selectedDate" class="datepicker form-control">
                             </div>
-                            <div class="col-md-1 no-pad">
+                            <div class="col-md-2 no-pad">
                                 <button type="button" class="btn btn-info" ng-click="loadData()">Show</button>
                             </div>
                         </div>
@@ -147,12 +159,8 @@ Date: 05 Jan 2016
                 </div>
             </div>
             <div class="bcon_selection_block_right">
-                <div class="bcon_selection row">
-                    <div class="col-md-5">
-                        <!-- <button type="button" class="btn btn-info" data-toggle="modal" data-target="#text-message">
-            Send Notification</button> -->
-                    </div>
-                    <div class="col-md-7">
+                <div class="bcon_selection push_btnn_block row">
+                    <div class="col-md-12">
                         <button type="button" class="btn btn-info" data-toggle="modal" data-target="#graphic-message">Send Push Notification</button>
                     </div>
                 </div>
@@ -166,7 +174,6 @@ Date: 05 Jan 2016
                         <th>Device ID</th>
                         <th>Person's Number</th>
                         <th>Stay Time</th>
-                        <th>Today</th>
                         <th>Beacon</th>
                     </tr>
                 </thead>
@@ -179,7 +186,6 @@ Date: 05 Jan 2016
                         <td>{{ device.DeviceName }}</td>
                         <td>{{ device.DevicePhone }}</td>
                         <td>{{ device.StayTime}}</td>
-                        <td>{{ device.Date | date:'yyyy-MM-dd HH:mm:ss Z' }}</td>
                         <td>{{ device.BeaconKey }}</td>
                     </tr>
                 </tbody>

@@ -218,8 +218,6 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         }
     }
 
-    console.log('coming here');
-
     /*apiService.updateDeviceHistory('00:A0:50:0E:0E:0D',
       'APA91bFyGniNrOq7BnA0jX2F29vizUm6HDRXcab-PACcczk_Xd_gXjCwxRsqh8Gp5yXDYrI2IxJIT2WUmFtstN7uzTYwBJfFoP4pBGRtf5ATUNEtOhDMbO4', '00:02:45');*/
 
