@@ -891,8 +891,8 @@ app.post('/getDeviceHistorydata', function(req, res) {
                             $in: beacons,
                         },
                         'Date': {
-                            '$gte': fromDate,
-                            '$lte': toDate,
+                            $gte: fromDate,
+                            $lte: toDate,
                         }
                     });
                     devicecollection.toArray(function(err, devices) {
