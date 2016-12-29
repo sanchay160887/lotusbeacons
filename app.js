@@ -340,7 +340,7 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
                 }).toArray(function(err, devices) {
                     if (!(devices && devices.length > 0)) {
                         if (typeof(beacons[0].BeaconWelcome) != 'undefined' && beacons[0].BeaconWelcome) {
-                            sendpushnotification('', [DeviceID], 'Welcome', 'Welcome to Lotus. Exciting offers are waiting for you..');
+                            sendpushnotification('', [DeviceID], 'Welcome', 'Welcome to Lotus. Exciting offers are waiting for you....');
                         }
                     }
                     callback(null, devices);

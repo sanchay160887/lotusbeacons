@@ -176,6 +176,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         }
         $scope.getAllDevicesHistory();
         console.log($scope.selectedBeacon);
+        
     });
 
     $scope.sendNotification = function() {
