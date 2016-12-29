@@ -110,9 +110,9 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             return;
         }
         selectedDate = dateelemarray[2] + '/' + dateelemarray[1] + '/' + dateelemarray[0];
-        console.log(selectedDate);
 
-        selectedDate = Date.parse(selectedDate);
+        selectedDate = new Date(date.toISOString()).getTime();
+        console.log(selectedDate);
         if (isNaN(selectedDate)) {
             $scope.InvalidInputs = true;
             return;
