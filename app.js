@@ -175,7 +175,7 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
                         resObj.message = "Invalid Beacon ID";
                         resObj.send(resObj);
                     }
-                    callback(null);
+                    process.exit();
                     return false;
                 }
 
