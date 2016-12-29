@@ -168,9 +168,11 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
             },
             function(beacons, callback) {
                 if (!(beacons && beacons.length > 0)) {
-                    resObj.IsSuccess = false;
-                    resObj.message = "Invalid Beacon ID";
-                    res.send(resObj);
+                    if (resObj) {
+                        resObj.IsSuccess = false;
+                        resObj.message = "Invalid Beacon ID";
+                        resObj.send(resObj);
+                    }
                     callback(null);
                     return false;
                 }
