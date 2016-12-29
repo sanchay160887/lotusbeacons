@@ -157,10 +157,12 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
         }
         assert.equal(null, err);
 
+        var collection = db.collection('device');
+
         async.waterfall([
             function(callback) {
-                var collection = db.collection('beacons');
-                collection.find({
+                var bcollection = db.collection('beacons');
+                bcollection.find({
                     'BeaconID': BeaconID
                 }).toArray(function(err, beacons) {
                     callback(null, beacons);
@@ -176,7 +178,6 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
                     callback(null);
                     return false;
                 }
-                var collection = db.collection('device');
 
                 collection.find({
                     'DeviceID': DeviceID
