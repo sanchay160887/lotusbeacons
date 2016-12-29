@@ -886,6 +886,9 @@ app.post('/getDeviceHistorydata', function(req, res) {
                 }
 
                 if (beacons && beacons.length > 0) {
+                    console.log(fromDate);
+                    console.log('......')
+                    console.log(toDate);
                     devicecollection = collection.find({
                         'BeaconID': {
                             $in: beacons,
