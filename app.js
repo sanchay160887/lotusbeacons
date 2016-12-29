@@ -171,7 +171,7 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
                     resObj.IsSuccess = false;
                     resObj.message = "Invalid Beacon ID";
                     res.send(resObj);
-                    process.exit();
+                    return false;
                 }
                 var collection = db.collection('device');
 
