@@ -48,6 +48,17 @@
     border: 1px solid #bce8f1;
 }
 
+.wait_text {
+    background-color: #d9edf7;
+    border-radius: 3px;
+    color: #31708f;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 8px 10px;
+    font-style: italic;
+    border: 1px solid #bce8f1;
+}
+
 .bcon_selection_block_left {
     border-radius: 3px;
     width: 80%;
@@ -110,6 +121,9 @@ Date: 05 Jan 2016
     <div class="container-fluid">
         <div class="wait_block" ng-if="InvalidInputs">
             <p class="error_text">Please select Store and Date for getting list of device history..</p>
+        </div>
+        <div class="wait_block" ng-if="!Initialized">
+            <p class="wait_text">Please Wait...</p>
         </div>
         <div class="bcon_selection_section">
             <div class="bcon_selection_block_left">

@@ -310,9 +310,11 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
             },
             function(beacons, callback) {
                 if (!(beacons && beacons.length > 0)) {
-                    resObj.IsSuccess = false;
-                    resObj.message = "Invalid Beacon ID";
-                    res.send(resObj);
+                    if (typeof(resObj) != 'undefined') {
+                        resObj.IsSuccess = false;
+                        resObj.message = "Invalid Beacon ID";
+                        res.send(resObj);
+                    }
                     return;
                 }
 
