@@ -127,18 +127,18 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
         });
 
         if (resObj) {
-            resObj.IsSuccess = false;
-            resObj.message = "Invalid data passing";
-            resObj.send(resObj);
+            resObjVal.IsSuccess = false;
+            resObjVal.message = "Invalid data passing";
+            resObj.send(resObjVal);
         }
         return;
     }
 
     if (!isNumeric(Distance)) {
         if (resObj) {
-            resObj.IsSuccess = false;
-            resObj.message = "Distance should be in numbers";
-            resObj.send(resObj);
+            resObjVal.IsSuccess = false;
+            resObjVal.message = "Distance should be in numbers";
+            resObj.send(resObjVal);
         }
         return;
     }
@@ -171,9 +171,9 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
             function(beacons, callback) {
                 if (!(beacons && beacons.length > 0)) {
                     if (resObj) {
-                        resObj.IsSuccess = false;
-                        resObj.message = "Invalid Beacon ID";
-                        resObj.send(resObj);
+                        resObjVal.IsSuccess = false;
+                        resObjVal.message = "Invalid Beacon ID";
+                        resObj.send(resObjVal);
                     }
                     return 0;
                 }
