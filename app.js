@@ -339,9 +339,9 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
                     }
                 }).toArray(function(err, devices) {
                     if (!(devices && devices.length > 0)) {
-                        if (typeof(beacons[0].BeaconWelcome) != 'undefined' && beacons[0].BeaconWelcome) {
-                            sendpushnotification('', [DeviceID], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
-                        }
+                        //if (typeof(beacons[0].BeaconWelcome) != 'undefined' && beacons[0].BeaconWelcome) {
+                        sendpushnotification('', [DeviceID], beacons[0].BeaconKey +' ('+ beacons[0].BeaconID +') Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
+                        //}
                     }
                     callback(null, devices);
                 });
