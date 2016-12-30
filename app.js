@@ -318,7 +318,7 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
                         resObj.message = "Invalid Beacon ID";
                         res.send(resObj);
                     }
-                    return 0;
+                    return;
                 }
 
                 currdate = getCurrentTime();
@@ -339,11 +339,9 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
                     }
                 }).toArray(function(err, devices) {
                     if (!(devices && devices.length > 0)) {
-                    	console.log('sending notifications to device ' + beacons[0].BeaconKey + ' (' + beacons[0].BeaconID + ')' );
-                        //if (typeof(beacons[0].BeaconWelcome) != 'undefined' && beacons[0].BeaconWelcome) {
-                        sendpushnotification('', [DeviceID], 
-                        	beacons[0].BeaconKey + ' (' + beacons[0].BeaconID + ') Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
-                        //}
+                        if (typeof(beacons[0].BeaconWelcome) != 'undefined' && beacons[0].BeaconWelcome) {
+                            sendpushnotification('', [DeviceID], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
+                        }
                     }
                     callback(null, devices);
                 });
@@ -705,7 +703,7 @@ devicecron.schedule('* * * * *', function() {
     ]);
 });
 
-app.post('/getDeviceHistorydata', function(req, res) {
+app.post('/getdata', function(req, res) {
     console.log(JSON.stringify(req.body));
     BeaconID = req.body.BeaconID;
     StoreID = req.body.StoreID;
@@ -1590,4 +1588,3 @@ app.post('/getdeviceidentity', function(req, res) {
         })
     res.send();
 });
-
