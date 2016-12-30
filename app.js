@@ -1588,3 +1588,4 @@ app.post('/getdeviceidentity', function(req, res) {
         })
     res.send();
 });
+
