@@ -340,7 +340,7 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
                 }).toArray(function(err, devices) {
                     if (!(devices && devices.length > 0)) {
                         if (typeof(beacons[0].BeaconWelcome) != 'undefined' && beacons[0].BeaconWelcome) {
-                            sendpushnotification('', [DeviceID], 'Welcome to Lotus Electronics. Look out for latest deals for the products you are shopping for');
+                            sendpushnotification('', [DeviceID], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
                         }
                     }
                     callback(null, devices);
