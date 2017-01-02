@@ -886,17 +886,8 @@ app.post('/getDeviceHistorydata', function(req, res) {
     fromDate = 0;
     toDate = 0;
     seldate = new Date(req.body.Date);
-    //seldate.setDate(seldate.getDate() + 1);
-    console.log(seldate);
-    SelectedDate = new Date(seldate.getFullYear() + '/' + (seldate.getMonth() + 1) + '/' + (seldate.getDate()) ).toISOString();
-    fromDate = new Date(SelectedDate).getTime();
-    SelectedDate = new Date(seldate.getFullYear() + '/' + (seldate.getMonth() + 1) + '/' + (seldate.getDate()) + ' 23:59:59').toISOString();
-    toDate = new Date(SelectedDate).getTime();
-
-    console.log('=============From Date=============');
-    console.log(fromDate);
-    console.log('===============To Date=============');
-    console.log(toDate);
+    fromDate = new Date(seldate.getFullYear() + '/' + (seldate.getMonth() + 1) + '/' + (seldate.getDate())).getTime();
+    toDate = new Date(seldate.getFullYear() + '/' + (seldate.getMonth() + 1) + '/' + (seldate.getDate()) + ' 23:59:59').getTime();
 
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
@@ -943,9 +934,6 @@ app.post('/getDeviceHistorydata', function(req, res) {
                 }
 
                 if (beacons && beacons.length > 0) {
-                    console.log(fromDate);
-                    console.log('......')
-                    console.log(toDate);
                     devicecollection = collection.find({
                         'BeaconID': {
                             $in: beacons,
@@ -961,10 +949,7 @@ app.post('/getDeviceHistorydata', function(req, res) {
                             devices[dvc].StayTime = convertSecondsToStringTime(devices[dvc].StayTime);
                             devicelist.push(devices[dvc]);
                         }
-                        console.log('=================Device history 904===============');
-                        console.log(devicelist);
 
-                        //res.send(devicelist);
                         callback(null, devicelist);
                     })
                 } else {
