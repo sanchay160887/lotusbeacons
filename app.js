@@ -968,7 +968,7 @@ app.post('/getDeviceHistorydata', function(req, res) {
                         callback(null, devicelist);
                     })
                 } else {
-                    collection.find().toArray(function(err, devices) {
+                    /*collection.find().toArray(function(err, devices) {
                         for (var dvc in devices) {
                             devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
                             devicelist.push(devices[dvc]);
@@ -977,7 +977,8 @@ app.post('/getDeviceHistorydata', function(req, res) {
                         console.log(devicelist);
                         //res.send(devicelist);
                         callback(null, devicelist);
-                    })
+                    })*/
+                    callback(null, []);
                 }
             },
             function(devicelist, callback) {

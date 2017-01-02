@@ -107,9 +107,11 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         console.log(selectedDate);
         
         selectedDate = Date.parse(selectedDate);
+        /*console.log('=========');
         selectedDate.setDate(selectedDate.getDate() + 1);
 
-        console.log(selectedDate);
+        console.log('=========');
+        console.log(selectedDate);*/
         if (isNaN(selectedDate)) {
             $scope.InvalidInputs = true;
             return;
