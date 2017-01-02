@@ -886,7 +886,7 @@ app.post('/getDeviceHistorydata', function(req, res) {
     fromDate = 0;
     toDate = 0;
     seldate = new Date(req.body.Date);
-    //seldate.setDate(seldate.getDate() + 1)
+    seldate.setDate(seldate.getDate() + 1)
     console.log(seldate);
     SelectedDate = new Date(seldate.getFullYear() + '/' + (seldate.getMonth() + 1) + '/' + (seldate.getDate()) ).toISOString();
     fromDate = new Date(SelectedDate).getTime();
