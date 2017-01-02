@@ -893,7 +893,9 @@ app.post('/getDeviceHistorydata', function(req, res) {
     SelectedDate = new Date(seldate.getFullYear() + '/' + (seldate.getMonth() + 1) + '/' + (seldate.getDate()) + ' 23:59:59').toISOString();
     toDate = new Date(SelectedDate).getTime();
 
+    console.log('=============From Date=============');
     console.log(fromDate);
+    console.log('===============To Date=============');
     console.log(toDate);
 
     MongoClient.connect(mongourl, function(err, db) {
