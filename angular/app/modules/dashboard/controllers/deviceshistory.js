@@ -16,6 +16,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.GM_ImageFilePath = '';
     $scope.baseUrl = apiService.base_url;
     $scope.InvalidInputs = false;
+    $scope.buttonHitted = false;
 
     $scope.Initialized = false;
     $scope.BeaconInitialized = true;
@@ -69,6 +70,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     });
 
     $scope.loadData = function() {
+        $scope.buttonHitted = true;
         $location.search({ 'store': $scope.selectedStore, 'beacon': $scope.selectedBeacon, 'date': $scope.selectedDate });
         $scope.getAllDevicesHistory();
     }

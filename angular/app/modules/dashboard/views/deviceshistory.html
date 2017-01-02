@@ -109,7 +109,7 @@ Date: 05 Jan 2016
 -->
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1> Devices </h1>
+    <h1> Device History </h1>
     <ol class="breadcrumb">
         <li><a><i class="fa fa-dashboard"></i> Dashboard</a></li>
         <li class="active">Devices History</li>
@@ -204,7 +204,7 @@ Date: 05 Jan 2016
                         <td>{{ device.StayTime}}</td>
                         <td>{{ device.BeaconKey }}</td>
                     </tr>
-                    <tr ng-if="!(deviceData.length > 0)">
+                    <tr ng-if="!(deviceData.length > 0) && buttonHitted">
                         <td colspan="5">
                             No records available
                         </td>

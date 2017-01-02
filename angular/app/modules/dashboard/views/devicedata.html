@@ -169,6 +169,11 @@
                                 <!-- <td>{{ device.Distance | numberEx:2 }} meter</td> -->
                                 <td>{{ device.BeaconKey }} ({{ device.BeaconID }})</td>
                     </tr>
+                    <tr ng-if="!(deviceData.length > 0) && buttonHitted">
+                        <td colspan="4">
+                            No Devices available
+                        </td>
+                    </tr>
                 </tbody>
             </table>
             <!-- <div class="col-md-1">
