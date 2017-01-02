@@ -1642,3 +1642,74 @@ app.post('/getdeviceidentity', function(req, res) {
         })
     res.send();
 });
+
+
+
+
+app.post('/addUsers', function(req, res) {
+    FirstName = req.body.FirstName;
+    LastName = req.body.LastName;
+    Email = req.body.Email;
+    Password = req.body.Password;
+    var resObj = {};
+
+    if (!FirstName) {
+        console.log(FirstName);
+        resObj.IsSuccess = false;
+        resObj.message = "Please enter First Name";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+
+        var collection = db.collection('Users');
+
+        async.waterfall([
+            function(callback) {
+                collection.find({
+                    'FirstName': FirstName
+                }).toArray(function(err, Users) {
+                    callback(null, Users);
+                });
+
+            },
+            function(Users, callback) {
+                if (stores && stores.length > 0) {
+                    resObj.IsSuccess = false;
+                    resObj.message = "First Name already exists";
+                    res.send(resObj);
+                    return;
+                }
+
+                collection.insert({
+                    'FirstName': FirstName,
+                    'LastName': LastName,
+                    'Email': Email,
+                    'Password': Password
+                });
+                console.log('User inserted');
+
+                callback(null, 'inserted');
+            },
+            function(response, callback) {
+                console.log('coming to last callback');
+                db.close();
+                resObj.IsSuccess = true;
+                resObj.message = "User added successfully.";
+                res.send(resObj);
+                callback(null, response);
+            }
+        ]);
+    });
+});
+
+app.post('/testDatetime', function(req, res) {
+    SelectedDate = req.body.Date;
+    console.log(SelectedDate);
+
+});

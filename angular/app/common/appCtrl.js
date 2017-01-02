@@ -135,7 +135,13 @@ function ($rootScope, $scope, $state, $location, Flash,appSettings) {
             title: "Devices History",
             icon: "gears",
             state: "deviceshistory"
+        },
+		 {
+            title: "Add User",
+            icon: "gears",
+            state: "adduser"
         }
+
 
     ];
 
