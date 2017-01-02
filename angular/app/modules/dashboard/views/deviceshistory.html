@@ -204,7 +204,7 @@ Date: 05 Jan 2016
                         <td>{{ device.StayTime}}</td>
                         <td>{{ device.BeaconKey }}</td>
                     </tr>
-                    <tr ng-if="!(deviceData.length > 0) && buttonHitted">
+                    <tr ng-if="!(deviceData.length > 0) && buttonHitted && !InvalidInputs">
                         <td colspan="5">
                             No records available
                         </td>
