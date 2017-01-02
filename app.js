@@ -187,6 +187,22 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
             },
             function(devicedata, callback) {
                 if (devicedata && devicedata.length > 0 && BeaconID != '') {
+                    currdate = getCurrentTime();
+                    previoustime = devicedata[0].connectiontime;
+
+                    timegap = (currdate - previoustime)/1000;
+
+                    staytime = convertSecondsToStringTime2(timegap);
+
+                    //BeaconID, DeviceID, StayTime
+                    updateDeviceHistory(devicedata[0].BeaconID, devicedata[0].DeviceID, staytime);
+                    callback(null, devicedata);
+                } else {
+                    callback(null, devicedata);
+                }
+            },
+            function(devicedata, callback) {
+                if (devicedata && devicedata.length > 0 && BeaconID != '') {
                     collection.update({
                         'DeviceID': DeviceID
                     }, {
@@ -275,6 +291,34 @@ function convertSecondsToStringTime(seconds) {
     return timestring;
 }
 
+function convertSecondsToStringTime2(seconds) {
+    if (seconds && !isNumeric(seconds)) {
+        return 0;
+    }
+    seconds = parseInt(seconds);
+    var timestring = '';
+    hours = Math.floor(seconds / 3600);
+    seconds %= 3600;
+    minutes = Math.floor(seconds / 60);
+    seconds = seconds % 60;
+    if (hours > 0) {
+        timestring = hours + ':';
+    } else {
+        timestring = '00:';
+    }
+    if (minutes > 0) {
+        timestring = timestring + minutes + ':';
+    } else {
+        timestring = timestring + '00:';
+    }
+    if (seconds > 0) {
+        timestring = timestring + seconds;
+    } else {
+        timestring = timestring + '00';
+    }
+    return timestring;
+}
+
 function getCurrentTime() {
     return new Date().getTime();
 }
@@ -349,6 +393,9 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
             function(devicedata, callback) {
                 if (devicedata && devicedata.length > 0) {
                     console.log(devicedata);
+
+                    currdate = getCurrentTime();                    
+
                     var oldstaytime = 0;
                     oldstaytime = parseInt(devicedata[0].StayTime);
                     if (!isNaN(oldstaytime)) {
@@ -356,7 +403,7 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
                     }
 
                     StayTime = oldstaytime + StayTime;
-                    currdate = getCurrentTime();
+                    
 
                     fromDate = 0;
                     seldate = new Date(currdate);
@@ -425,7 +472,7 @@ io.on('connection', function(socket) {
 
     socket.on('updateDevice', function(data) {
         updateDevice(data.BeaconID, data.DeviceID, data.Distance);
-        updateDeviceHistory(data.BeaconID, data.DeviceID, data.stayTime);
+        //updateDeviceHistory(data.BeaconID, data.DeviceID, data.stayTime);
         sendDevices();
     });
 
@@ -479,7 +526,7 @@ app.post('/updateDevice', function(req, res) {
         if (req.body.stayTime) {
             staytime = req.body.stayTime;
         }
-        updateDeviceHistory(req.body.BeaconID, req.body.DeviceID, staytime);
+        //updateDeviceHistory(req.body.BeaconID, req.body.DeviceID, staytime);
     }
 
 });
@@ -557,7 +604,7 @@ app.post('/beaconConnected', function(req, res) {
                     if (req.body.stayTime) {
                         staytime = req.body.stayTime;
                     }
-                    updateDeviceHistory(BeaconID, DeviceID, staytime);
+                    //updateDeviceHistory(BeaconID, DeviceID, staytime);
                 }
             }
         ]);
@@ -839,9 +886,11 @@ app.post('/getDeviceHistorydata', function(req, res) {
     fromDate = 0;
     toDate = 0;
     seldate = new Date(req.body.Date);
-    SelectedDate = new Date(seldate.getFullYear() + '/' + (seldate.getMonth() + 1) + '/' + (seldate.getDate()+1) ).toISOString();
+    //seldate.setDate(seldate.getDate() + 1)
+    console.log(seldate);
+    SelectedDate = new Date(seldate.getFullYear() + '/' + (seldate.getMonth() + 1) + '/' + (seldate.getDate()) ).toISOString();
     fromDate = new Date(SelectedDate).getTime();
-    SelectedDate = new Date(seldate.getFullYear() + '/' + (seldate.getMonth() + 1) + '/' + (seldate.getDate() +1) + ' 23:59:59').toISOString();
+    SelectedDate = new Date(seldate.getFullYear() + '/' + (seldate.getMonth() + 1) + '/' + (seldate.getDate()) + ' 23:59:59').toISOString();
     toDate = new Date(SelectedDate).getTime();
 
     MongoClient.connect(mongourl, function(err, db) {
