@@ -194,7 +194,7 @@ Date: 05 Jan 2016
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="device in deviceData | orderBy:Distance ">
+                    <tr ng-repeat="device in deviceData | orderBy:Distance " ng-if="deviceData.length > 0">
                         <td>
                             <input type="checkbox" value="{{ device.DeviceID }}" ng-click="ShowSelectedTokens()" ng-model="device.checked">
                         </td>
@@ -203,6 +203,11 @@ Date: 05 Jan 2016
                         <td>{{ device.DevicePhone }}</td>
                         <td>{{ device.StayTime}}</td>
                         <td>{{ device.BeaconKey }}</td>
+                    </tr>
+                    <tr ng-if="!(deviceData.length > 0)">
+                        <td colspan="5">
+                            No records available
+                        </td>
                     </tr>
                 </tbody>
             </table>

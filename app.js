@@ -190,12 +190,14 @@ function updateDevice(BeaconID, DeviceID, Distance, resObj) {
                     currdate = getCurrentTime();
                     previoustime = devicedata[0].connectiontime;
 
-                    timegap = (currdate - previoustime)/1000;
+                    timegap = (currdate - previoustime) / 1000;
 
                     staytime = convertSecondsToStringTime2(timegap);
 
                     //BeaconID, DeviceID, StayTime
-                    updateDeviceHistory(devicedata[0].BeaconID, devicedata[0].DeviceID, staytime);
+                    if (staytime > 0) {
+                        updateDeviceHistory(devicedata[0].BeaconID, devicedata[0].DeviceID, staytime);
+                    }
                     callback(null, devicedata);
                 } else {
                     callback(null, devicedata);
@@ -394,7 +396,7 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
                 if (devicedata && devicedata.length > 0) {
                     console.log(devicedata);
 
-                    currdate = getCurrentTime();                    
+                    currdate = getCurrentTime();
 
                     var oldstaytime = 0;
                     oldstaytime = parseInt(devicedata[0].StayTime);
@@ -403,7 +405,7 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, resObj) {
                     }
 
                     StayTime = oldstaytime + StayTime;
-                    
+
 
                     fromDate = 0;
                     seldate = new Date(currdate);
@@ -999,6 +1001,14 @@ app.post('/getDeviceHistorydata', function(req, res) {
                             }
                         }
 
+                        var i;
+                        i = devicelist.length;
+                        while (i--) {
+                            if (!devicelist[i].DeviceName){
+                                devicelist.splice(i, 1);
+                            }
+                        }
+                        
                         //console.log(devicelist);
                         res.send(devicelist);
                         callback(null, devicelist);
