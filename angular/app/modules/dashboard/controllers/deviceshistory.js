@@ -104,19 +104,19 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             return;
         }
         selectedDate = dateelemarray[2] + '/' + dateelemarray[1] + '/' + dateelemarray[0];
-        console.log(selectedDate);
         
         selectedDate = Date.parse(selectedDate);
-        /*console.log('=========');
-        selectedDate.setDate(selectedDate.getDate() + 1);
-
-        console.log('=========');
-        console.log(selectedDate);*/
         if (isNaN(selectedDate)) {
             $scope.InvalidInputs = true;
             return;
+        } else {
+            selectedDate = new Date(selectedDate);
         }
 
+        selectedDate.setDate(selectedDate.getDate() + 1);
+
+        console.log(selectedDate);
+        
         if ((beaconlist && beaconlist.length > 0) || selectedStore) {
             $scope.Initialized = false;
             apiService.deviceHistoryData(beaconlist, selectedStore, selectedDate).then(function(res) {
