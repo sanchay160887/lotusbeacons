@@ -909,17 +909,19 @@ app.post('/getDeviceHistorydata', function(req, res) {
                 var beaconcollection = [];
                 if (BeaconID && BeaconID.length > 0) {
                     //beaconcollection = collection.find({'BeaconID' : BeaconID });
+                    console.log('coming to beacon list');
                     beaconcollection = collection.find({
                         'BeaconID': {
                             $in: BeaconID
                         }
                     });
                 } else if (StoreID) {
-                    //console.log('coming here');
+                    console.log('coming to store');
                     beaconcollection = collection.find({
                         'BeaconStore': ObjectId(StoreID)
                     });
                 } else {
+                    console.log('coming to all part');
                     beaconcollection = collection.find();
                 }
 
