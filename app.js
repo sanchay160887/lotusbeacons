@@ -886,12 +886,15 @@ app.post('/getDeviceHistorydata', function(req, res) {
     fromDate = 0;
     toDate = 0;
     seldate = new Date(req.body.Date);
-    seldate.setDate(seldate.getDate() + 1)
+    seldate.setDate(seldate.getDate() + 1);
     console.log(seldate);
     SelectedDate = new Date(seldate.getFullYear() + '/' + (seldate.getMonth() + 1) + '/' + (seldate.getDate()) ).toISOString();
     fromDate = new Date(SelectedDate).getTime();
     SelectedDate = new Date(seldate.getFullYear() + '/' + (seldate.getMonth() + 1) + '/' + (seldate.getDate()) + ' 23:59:59').toISOString();
     toDate = new Date(SelectedDate).getTime();
+
+    console.log(fromDate);
+    console.log(toDate);
 
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
