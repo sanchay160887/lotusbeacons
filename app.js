@@ -1710,6 +1710,6 @@ app.post('/addUsers', function(req, res) {
 
 app.post('/testDatetime', function(req, res) {
     SelectedDate = req.body.Date;
-    console.log(SelectedDate);
-
+    console.log(req.body);
+    res.send(SelectedDate);
 });

@@ -17,11 +17,6 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.baseUrl = apiService.base_url;
     $scope.InvalidInputs = false;
 
-    $scope.maxDate = new Date(
-        currdate.getFullYear(),
-        currdate.getMonth() + 1,
-        currdate.getDate())
-
     $scope.Initialized = false;
     $scope.BeaconInitialized = true;
 
@@ -32,7 +27,6 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             }, 5000);
         }
     });
-
 
 
     setTimeout(function() {
@@ -110,8 +104,12 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             return;
         }
         selectedDate = dateelemarray[2] + '/' + dateelemarray[1] + '/' + dateelemarray[0];
+        console.log(selectedDate);
         
         selectedDate = Date.parse(selectedDate);
+        selectedDate.setDate(selectedDate.getDate() + 1);
+
+        console.log(selectedDate);
         if (isNaN(selectedDate)) {
             $scope.InvalidInputs = true;
             return;
@@ -169,7 +167,6 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         } else {
             $scope.beaconData = [];
         }
-
     }
 
 
