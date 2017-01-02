@@ -16,7 +16,6 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
     $scope.orderbyfield = 'Distance';
     $scope.Initialized = false;
     $scope.BeaconInitialized = true;
-    $scope.buttonHitted = false;
 
     var queriedUrl = $location.search();
 
@@ -62,7 +61,6 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
     }
 
     $scope.loadData = function() {
-        $scope.buttonHitted = true;
         $location.search({ 'store': $scope.selectedStore, 'beacon': $scope.selectedBeacon });
         $scope.getAllDevices();
     }
