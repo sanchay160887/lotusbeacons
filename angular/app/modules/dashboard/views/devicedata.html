@@ -166,11 +166,11 @@
                         <td>{{ device.DevicePhone }}</td>
                         <td>{{ (device.Distance
                             < 0) && ( "Out of range") || (device.Distance | numberEx:2) + ' meter' }}</td>
-                                <!-- <td>{{ device.Distance | numberEx:2 }} meter</td> -->
-                                <td>{{ device.BeaconKey }} ({{ device.BeaconID }})</td>
+                        <!-- <td>{{ device.Distance | numberEx:2 }} meter</td> -->
+                        <td>{{ device.BeaconKey }} ({{ device.BeaconID }})</td>
                     </tr>
                     <tr ng-if="!(deviceData.length > 0)">
-                        <td colspan="4">
+                        <td colspan="5">
                             No records available
                         </td>
                     </tr>
