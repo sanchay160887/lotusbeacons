@@ -136,11 +136,11 @@ function ($rootScope, $scope, $state, $location, Flash,appSettings) {
             icon: "gears",
             state: "deviceshistory"
         },
-		 {
+		 /*{
             title: "Add User",
             icon: "gears",
-            state: "adduser"
-        }
+            state: "users"
+        }*/
 
 
     ];

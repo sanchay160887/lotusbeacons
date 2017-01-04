@@ -133,14 +133,15 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
     }
     //End
 	
-	var updateDeviceHistory = function(BeaconID, DeviceID, StayTime){
+	var updateDeviceHistory = function(BeaconID, DeviceID, StayTime, MobileNo){
         $http({
             method: "post",
             url: "/updateDeviceHistory",
             data: {
                 'BeaconID' : BeaconID,
                 'DeviceID' : DeviceID,
-                'stayTime' : StayTime
+                'stayTime' : StayTime,
+                'MobileNo' : MobileNo
             }
         }).success(function(data, status, headers, config) {
             console.log("Success.");

@@ -196,4 +196,14 @@ dashboard.config(["$stateProvider", function($stateProvider) {
         }
     });
 
+    $stateProvider.state('app.users', {
+        url: '/usersdata',
+        templateUrl: 'app/modules/dashboard/views/users.html',
+        controller: 'UserController',
+        controllerAs: 'vm',
+        data: {
+            pageTitle: 'Users List'
+        }
+    });
+
 }]);

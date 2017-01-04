@@ -66,7 +66,7 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
     }
 
     $scope.getAllDevices = function() {
-        var queriedUrl = $location.search()
+        var queriedUrl = $location.search();
 
         var selectedStore = '';
         if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store) {
@@ -133,7 +133,17 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
 
     socket.on('updateDevice_response', function(response) {
         console.log('socket called ==> ' + JSON.stringify(response));
-        $scope.loadData();
+        var queriedUrl = $location.search();
+
+        console.log(response.StoreID == queriedUrl.store);
+
+        var selectedStore = '';
+        if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store) {
+            selectedStore = queriedUrl.store;
+            if (response.IsSuccess && response.StoreID && response.StoreID == queriedUrl.store) {
+                $scope.loadData();
+            }
+        }
     });
 
     function in_array(needle, haystack) {
