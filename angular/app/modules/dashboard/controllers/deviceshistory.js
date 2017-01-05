@@ -131,7 +131,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             //selectedDate = new Date(selectedDate).getTime();
         }
 
-        //selectedDate.setDate(selectedDate.getDate() + 1);
+        selectedDate.setDate(selectedDate.getDate() + 1);
 
         //console.log(selectedDate);
 
