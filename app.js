@@ -212,12 +212,15 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, resObj) {
             function(devicedata, callback) {
                 if (devicedata && devicedata.length > 0 && BeaconID != '') {
                     collection.update({
-                        'DeviceID': DeviceID
+                        /*'DeviceID': DeviceID,*/
+                        'MobileNo': MobileNo
                     }, {
-                        'BeaconID': BeaconID,
-                        'DeviceID': DeviceID,
-                        'Distance': Distance,
-                        'connectiontime': getCurrentTime(),
+                        '$set': {
+                            'BeaconID': BeaconID,
+                            'DeviceID': DeviceID,
+                            'Distance': Distance,
+                            'connectiontime': getCurrentTime(),
+                        }
                     }, function(err, result) {
                         callback(null, 'updated');
                     });
@@ -227,6 +230,7 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, resObj) {
                         collection.insert({
                             'BeaconID': BeaconID,
                             'DeviceID': DeviceID,
+                            'MobileNo': MobileNo,
                             'Distance': Distance,
                             'connectiontime': getCurrentTime(),
                         }, function(err, result) {
@@ -239,8 +243,8 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, resObj) {
             function(response, callback) {
                 io.emit('updateDevice_response', {
                     'IsSuccess': true,
-                    'BeaconID' : BeaconID,
-                    'StoreID'  : BeaconStoreID,
+                    'BeaconID': BeaconID,
+                    'StoreID': BeaconStoreID,
                     'message': 'Data inserted successfully'
                 });
                 //sendDevices();
@@ -510,8 +514,8 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, MobileNo, resObj) {
             function(response, callback) {
                 io.emit('updateDeviceHistory_response', {
                     'IsSuccess': true,
-                    'BeaconID' : BeaconID,
-                    'StoreID'  : BeaconStore,
+                    'BeaconID': BeaconID,
+                    'StoreID': BeaconStore,
                     'message': 'Data updated successfully'
                 });
                 //sendDevices();
@@ -625,7 +629,8 @@ function beaconDisconnect(BeaconID, DeviceID, MobileNo) {
             async.waterfall([
                 function(callback) {
                     collection.find({
-                        'DeviceID': DeviceID
+                        'DeviceID': DeviceID,
+                        "Distance": { "$lte": -1 }
                     }).toArray(function(err, devices) {
                         callback(null, devices);
                     });
