@@ -497,7 +497,7 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, MobileNo, resObj) {
                                 callback(null, 'updated');
                             }
                         });
-                    console.log('Device History updated');
+                    console.log('Device History updated Mobile No:' + MobileNo + ' StayTime: ' + StayTime);
                 } else {
                     collection.insert({
                         'BeaconID': BeaconID,
@@ -507,7 +507,7 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, MobileNo, resObj) {
                         'Date': currdate,
                     }, function(err, records) {
                         callback(null, 'inserted');
-                        console.log('Device History inserted');
+                        console.log('Device History inserted Mobile No:' + MobileNo + ' StayTime: ' + StayTime);
                     });
                 }
             },
