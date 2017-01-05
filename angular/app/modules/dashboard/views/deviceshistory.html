@@ -202,7 +202,7 @@ Date: 05 Jan 2016
                         <td>{{ device.DeviceName }}</td>
                         <td>{{ device.DevicePhone }}</td>
                         <td>{{ device.StayTime}}</td>
-                        <td>{{ device.BeaconKey }}</td>
+                        <td>{{ device.BeaconKey + '(' + device.BeaconID + ')' }}</td>
                     </tr>
                     <tr ng-if="!(deviceData.length > 0)">
                         <td colspan="5">
