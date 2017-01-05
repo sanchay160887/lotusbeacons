@@ -685,7 +685,7 @@ devicecron.schedule('* * * * *', function() {
                 var devicelist = new Array();
                 var outofrangelimit = getCurrentTime();
                 outofrangelimit = outofrangelimit - (60 * 3 * 1000);
-                //console.log(outofrangelimit);
+                console.log('Device Cron executed on ' + outofrangelimit);
                 collection.find({
                     "connectiontime": { "$lte": outofrangelimit },
                     "Distance": { "$lte": -1 }
