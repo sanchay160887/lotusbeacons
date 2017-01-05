@@ -688,7 +688,7 @@ devicecron.schedule('* * * * *', function() {
                 console.log('Device Cron executed on ' + outofrangelimit);
                 collection.find({
                     "connectiontime": { "$lte": outofrangelimit },
-                    "Distance": { "$lte": -1 }
+                    /*"Distance": { "$lte": -1 }*/
                 }).toArray(function(err, devices) {
                     for (var dvc in devices) {
                         devicelist.push(devices[dvc]);
