@@ -210,9 +210,26 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, resObj) {
                 }
             },
             function(devicedata, callback) {
-                if (devicedata && devicedata.length > 0 && BeaconID != '') {
+                if (BeaconID != '') {
                     collection.update({
                         /*'DeviceID': DeviceID,*/
+                        'MobileNo': MobileNo
+                    }, {
+                        'BeaconID': BeaconID,
+                        'DeviceID': DeviceID,
+                        'MobileNo': MobileNo,
+                        'Distance': Distance,
+                        'connectiontime': getCurrentTime(),
+                    }, {
+                        'upsert': true,
+                    }, function(err, result) {
+                        console.log('Device updated or inserted');
+                        callback(null, 'updated or inserted');
+                    });
+                }
+
+                /*if (devicedata && devicedata.length > 0 && BeaconID != '') {
+                    collection.update({
                         'MobileNo': MobileNo
                     }, {
                         '$set': {
@@ -238,7 +255,7 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, resObj) {
                         });
                         console.log('Device inserted');
                     }
-                }
+                }*/
             },
             function(response, callback) {
                 io.emit('updateDevice_response', {
@@ -917,8 +934,8 @@ app.post('/getDeviceHistorydata', function(req, res) {
 
                 if (beacons && beacons.length > 0) {
                     console.log('========================Get Device History=================')
-                    console.log('Beacons: '+beacons);
-                    console.log('fromDate: '+fromDate);
+                    console.log('Beacons: ' + beacons);
+                    console.log('fromDate: ' + fromDate);
                     console.log('toDate: ' + toDate);
                     console.log('========================Get Device History=================')
 
