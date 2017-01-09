@@ -42,7 +42,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         //console.log('Time zone offset: ' + d.getTimezoneOffset());
         var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
         //India Time +5:30
-        utc = utc + 19800000;
+        //utc = utc + 19800000;
         return utc;
     }
 

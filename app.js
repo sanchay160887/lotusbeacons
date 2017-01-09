@@ -642,9 +642,19 @@ function beaconDisconnect(BeaconID, DeviceID, MobileNo) {
             assert.equal(null, err);
 
             var collection = db.collection('device');
+            var BeaconStoreID = '';
 
             async.waterfall([
                 function(callback) {
+                    var bcollection = db.collection('beacons');
+                    bcollection.find({
+                        'BeaconID': BeaconID
+                    }).toArray(function(err, beacons) {
+                        callback(null, beacons);
+                    });
+                },
+                function(beacondata, callback) {
+                    BeaconStoreID = beacondata[0].BeaconStore;
                     collection.find({
                         'DeviceID': DeviceID,
                         "Distance": { "$lte": -1 }
@@ -671,8 +681,14 @@ function beaconDisconnect(BeaconID, DeviceID, MobileNo) {
                         collection.deleteMany({
                             'DeviceID': DeviceID
                         });
+                        /*io.emit('updateDevice_response', {
+                            'IsSuccess': true,
+                            'message': 'Data inserted successfully'
+                        });*/
                         io.emit('updateDevice_response', {
                             'IsSuccess': true,
+                            'BeaconID': BeaconID,
+                            'StoreID': BeaconStoreID,
                             'message': 'Data inserted successfully'
                         });
                     }
@@ -690,7 +706,30 @@ app.post('/beaconDisconnected', function(req, res) {
     BeaconID = req.body.BeaconID;
     DeviceID = req.body.DeviceID;
     MobileNo = req.body.MobileNo;
-    beaconDisconnect(BeaconID, DeviceID, MobileNo);
+    async.waterfall([
+        function(callback) {
+            MongoClient.connect(mongourl, function(err, db) {
+                if (err) {
+                    return console.dir(err);
+                }
+
+                var collection = db.collection('device');
+                
+                collection.find({
+                    "MobileNo": "MobileNo",
+                }).toArray(function(err, devices) {
+                    for (var dvc in devices) {
+                        devicelist.push(devices[dvc]);
+                    }
+                    callback(null, devicelist);
+                })
+                db.close();
+            });
+        },
+        function(devicelist, callback) {
+            beaconDisconnect(devicelist[0].BeaconID, devicelist[0].DeviceID, MobileNo);
+        },
+    ]);
 });
 
 
@@ -730,12 +769,19 @@ devicecron.schedule('* * * * *', function() {
                     //}
                 }
             }
-
-            io.emit('showDevices', devicelist);
+            //io.emit('showDevices', devicelist);
             callback(null, devicelist);
         }
     ]);
 });
+
+function parse_JSON(responsecontent) {
+    try {
+        return JSON.parse(responsecontent);
+    } catch (ex) {
+        return null;
+    }
+}
 
 app.post('/getdata', function(req, res) {
     console.log(JSON.stringify(req.body));
@@ -837,9 +883,10 @@ app.post('/getdata', function(req, res) {
                     },
                     function(res2, err, body) {
                         device_detail = [];
-                        var reqbody = JSON.parse(body);
-                        reqbody = reqbody.data;
+                        //var reqbody = JSON.parse(body);
+                        var reqbody = parse_JSON(body);
                         if (reqbody) {
+                            reqbody = reqbody.data;
                             for (var r in reqbody) {
                                 if (reqbody[r] != false) {
                                     for (var d in devicelist) {
