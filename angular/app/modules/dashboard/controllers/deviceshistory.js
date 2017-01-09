@@ -7,7 +7,8 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.selectedStore = '';
     $scope.deviceData = [];
     var currdate = new Date();
-    $scope.selectedDate = (currdate.getDate() + '/' + (currdate.getMonth() + 1) + '/' + currdate.getFullYear());
+    $scope.selectedDateFrom = (pad0(currdate.getDate(), 2) + '/' + pad0((currdate.getMonth() + 1), 2) + '/' + currdate.getFullYear());
+    $scope.selectedDateTo = (pad0(currdate.getDate(), 2) + '/' + pad0((currdate.getMonth() + 1), 2) + '/' + currdate.getFullYear());
     $scope.selectedTokens = {};
     $scope.TM_title = '';
     $scope.TM_descr = '';
@@ -28,6 +29,14 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         }
     });
 
+    function pad0(value, count) {
+        var result = value.toString();
+        for (; result.length < count; --count) {
+            result = '0' + result;
+        }
+        return result;
+    }
+
     function getIndiaTime(timestamp) {
         var d;
         if (timestamp) {
@@ -42,12 +51,49 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         //console.log('Time zone offset: ' + d.getTimezoneOffset());
         var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
         //India Time +5:30
-        //utc = utc + 19800000;
+        utc = utc + 19800000;
         return utc;
     }
 
+    function convertDateToTimestamp(datevalue) {
+        if (!datevalue) return false;
+        dateelemarray = datevalue.split('/');
+        if (dateelemarray.length < 3) {
+            return false;
+        }
+        dateymd = dateelemarray[2] + '/' + dateelemarray[1] + '/' + dateelemarray[0];
+
+        timestamp = getIndiaTime(dateymd);
+        return timestamp;
+    }
+
+    /*var indiatime = getIndiaTime();
+    console.log(indiatime);*/
+
     setTimeout(function() {
         jQuery(".datepicker").datepicker({ 'dateFormat': 'dd/mm/yy', 'maxDate': '0' });
+        /*jQuery("#datepickerFrom").datepicker({
+            //numberOfMonths: 2,
+            'maxDate': '0',
+            'dateFormat': 'dd/mm/yy',
+            onSelect: function(selected) {
+                var dt = new Date(selected);
+                dt.setDate(dt.getDate() + 1);
+                jQuery("#datepickerTo").datepicker("option", "minDate", dt);
+            }
+        });
+        jQuery("#datepickerTo").datepicker({
+            //numberOfMonths: 2,
+            'maxDate': '0',
+            'dateFormat': 'dd/mm/yy',
+            onSelect: function(selected) {
+                var dt = new Date(selected);
+                dt.setDate(dt.getDate() - 1);
+                jQuery("#datepickerFrom").datepicker("option", "maxDate", dt);
+            }
+        });*/
+
+
     }, 1000);
 
     var queriedUrl = $location.search();
@@ -86,7 +132,8 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     });
 
     $scope.loadData = function() {
-        $location.search({ 'store': $scope.selectedStore, 'beacon': $scope.selectedBeacon, 'date': $scope.selectedDate });
+        console.log({ 'store': $scope.selectedStore, 'beacon': $scope.selectedBeacon, 'dateFrom': $scope.selectedDateFrom, 'dateTo': $scope.selectedDateTo });
+        $location.search({ 'store': $scope.selectedStore, 'beacon': $scope.selectedBeacon, 'dateFrom': $scope.selectedDateFrom, 'dateTo': $scope.selectedDateTo });
         $scope.getAllDevicesHistory();
     }
 
@@ -105,9 +152,14 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             selectedBeacon = queriedUrl.beacon;
         }
 
-        var selectedDate = '';
-        if (typeof(queriedUrl.date) != 'undefined' && queriedUrl.date) {
-            selectedDate = queriedUrl.date;
+        var selectedDateFrom = '';
+        if (typeof(queriedUrl.dateFrom) != 'undefined' && queriedUrl.dateFrom) {
+            selectedDateFrom = queriedUrl.dateFrom;
+        }
+
+        var selectedDateTo = '';
+        if (typeof(queriedUrl.dateTo) != 'undefined' && queriedUrl.dateTo) {
+            selectedDateTo = queriedUrl.dateTo;
         }
 
         beaconlist = [];
@@ -115,30 +167,28 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             beaconlist.push(selectedBeacon);
         }
 
-        dateelemarray = selectedDate.split('/');
-        if (dateelemarray.length < 3) {
+        selectedDateFrom = convertDateToTimestamp(selectedDateFrom);
+
+        if (!selectedDateFrom) {
             $scope.InvalidInputs = true;
             return;
         }
-        selectedDate = dateelemarray[2] + '/' + dateelemarray[1] + '/' + dateelemarray[0];
 
-        selectedDate = getIndiaTime(selectedDate);
-        if (isNaN(selectedDate)) {
+        selectedDateTo = convertDateToTimestamp(selectedDateTo);
+
+        if (!selectedDateTo) {
             $scope.InvalidInputs = true;
             return;
-        } else {
-            console.log(selectedDate);
-            //selectedDate = new Date(selectedDate).getTime();
         }
 
-        //selectedDate.setDate(selectedDate.getDate() + 1);
-        selectedDate = selectedDate + 86400000;
-
-        //console.log(selectedDate);
+        if (!(selectedDateFrom < selectedDateTo)) {
+            $scope.InvalidInputs = true;
+            return;
+        }
 
         if ((beaconlist && beaconlist.length > 0) || selectedStore) {
             $scope.Initialized = false;
-            apiService.deviceHistoryData(beaconlist, selectedStore, selectedDate).then(function(res) {
+            apiService.deviceHistoryData(beaconlist, selectedStore, selectedDateFrom, selectedDateTo).then(function(res) {
                 var checkedlist = [];
                 for (var dd in $scope.deviceData) {
                     if ($scope.deviceData[dd].checked) {

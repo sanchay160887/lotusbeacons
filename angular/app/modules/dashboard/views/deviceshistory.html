@@ -158,10 +158,16 @@ Date: 05 Jan 2016
                     <div class="bcon_selection_left_3 col-md-4">
                         <div class="form-group">
                             <div class="col-md-4 no-pad">
-                                <label class="bcon-slect-title">Select Date</label>
+                                <label class="bcon-slect-title">Date From</label>
                             </div>
                             <div class="col-md-6 no-pad">
-                                <input type="text" ng-model="selectedDate" class="datepicker form-control">
+                                <input type="text" ng-model="selectedDateFrom" id="datepickerFrom" class="datepicker form-control">
+                            </div>
+                            <div class="col-md-4 no-pad">
+                                <label class="bcon-slect-title">Date To</label>
+                            </div>
+                            <div class="col-md-6 no-pad">
+                                <input type="text" ng-model="selectedDateTo" id="datepickerTo" class="datepicker form-control">
                             </div>
                             <div class="col-md-2 no-pad">
                                 <button type="button" class="btn btn-info" ng-click="loadData()">Show</button>

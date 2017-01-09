@@ -714,7 +714,7 @@ app.post('/beaconDisconnected', function(req, res) {
                 }
 
                 var collection = db.collection('device');
-                
+
                 collection.find({
                     "MobileNo": "MobileNo",
                 }).toArray(function(err, devices) {
@@ -923,13 +923,15 @@ app.post('/getdata', function(req, res) {
 app.post('/getDeviceHistorydata', function(req, res) {
     BeaconID = req.body.BeaconID;
     StoreID = req.body.StoreID;
-    SelectedDate = req.body.Date;
-    console.log('date:' + SelectedDate);
+    SelectedDateFrom = req.body.DateFrom;
+    SelectedDateTo = req.body.DateTo;
+    console.log('dateFrom:' + SelectedDateFrom + ' dateTo:' + SelectedDateTo);
 
     fromDate = 0;
     toDate = 0;
-    seldate = new Date(req.body.Date);
+    seldate = new Date(req.body.DateFrom);
     fromDate = new Date(seldate.getFullYear() + '/' + (seldate.getMonth() + 1) + '/' + (seldate.getDate())).getTime();
+    seldate = new Date(req.body.DateTo);
     toDate = new Date(seldate.getFullYear() + '/' + (seldate.getMonth() + 1) + '/' + (seldate.getDate()) + ' 23:59:59').getTime();
 
     console.log('fromDate: ' + fromDate);
@@ -986,7 +988,7 @@ app.post('/getDeviceHistorydata', function(req, res) {
                     console.log('toDate: ' + toDate);
                     console.log('========================Get Device History=================')
 
-                    devicecollection = collection.find({
+                    /*devicecollection = collection.find({
                         'BeaconID': {
                             $in: beacons,
                         },
@@ -994,10 +996,30 @@ app.post('/getDeviceHistorydata', function(req, res) {
                             $gte: fromDate,
                             $lte: toDate,
                         }
-                    });
-                    devicecollection.toArray(function(err, devices) {
+                    });*/
+
+                    collection.aggregate(
+                        [{
+                            $match: {
+                                'Date': {
+                                    '$gte': fromDate,
+                                    '$lte': toDate
+                                },
+                                'BeaconID': {
+                                    $in: beacons,
+                                }
+                            }
+                        }, {
+                            $group: {
+                                _id: { BeaconID: '$BeaconID', DeviceID: '$DeviceID' },
+                                StayTime: { $sum: "$StayTime" }
+                            }
+                        }]
+                    ).toArray(function(err, devices) {
                         for (var dvc in devices) {
+                            devices[dvc].BeaconID = devices[dvc]._id.BeaconID;
                             devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
+                            devices[dvc].DeviceID = devices[dvc]._id.DeviceID;
                             devices[dvc].StayTime = convertSecondsToStringTime(devices[dvc].StayTime);
                             devicelist.push(devices[dvc]);
                         }
@@ -1009,15 +1031,12 @@ app.post('/getDeviceHistorydata', function(req, res) {
                 }
             },
             function(devicelist, callback) {
-                console.log(devicelist);
                 var devices = [];
                 for (var d in devicelist) {
                     devices.push(devicelist[d].DeviceID);
                 }
                 var request = require('request');
                 var data = JSON.stringify(devices);
-
-                console.log(data);
 
                 request.post('http://lampdemos.com/lotus15/v2/user/get_user_name', {
                         form: {
