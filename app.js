@@ -1045,26 +1045,29 @@ app.post('/getDeviceHistorydata', function(req, res) {
                     },
                     function(res2, err, body) {
                         device_detail = [];
-                        var reqbody = JSON.parse(body);
-                        reqbody = reqbody.data;
+                        //var reqbody = JSON.parse(body);
+                        var reqbody = parse_JSON(body);
                         if (reqbody) {
-                            for (var r in reqbody) {
-                                if (reqbody[r] != false) {
-                                    for (var d in devicelist) {
-                                        if (devicelist[d].DeviceID == reqbody[r].device_token) {
-                                            devicelist[d].DeviceName = reqbody[r].name;
-                                            devicelist[d].DevicePhone = reqbody[r].mobile_no;
+                            reqbody = reqbody.data;
+                            if (reqbody) {
+                                for (var r in reqbody) {
+                                    if (reqbody[r] != false) {
+                                        for (var d in devicelist) {
+                                            if (devicelist[d].DeviceID == reqbody[r].device_token) {
+                                                devicelist[d].DeviceName = reqbody[r].name;
+                                                devicelist[d].DevicePhone = reqbody[r].mobile_no;
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
 
-                        var i;
-                        i = devicelist.length;
-                        while (i--) {
-                            if (!devicelist[i].DeviceName) {
-                                devicelist.splice(i, 1);
+                            var i;
+                            i = devicelist.length;
+                            while (i--) {
+                                if (!devicelist[i].DeviceName) {
+                                    devicelist.splice(i, 1);
+                                }
                             }
                         }
 
