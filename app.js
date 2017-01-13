@@ -62,11 +62,9 @@ app.all("/*", function(req, res, next) {
     return next();
 });
 
-
 var server = app.listen(process.env.PORT || 3000, function() {
     console.log("App started with Mongodb");
 });
-
 
 // Socket.io server listens to our app
 var io = require('socket.io').listen(server);
@@ -82,198 +80,10 @@ io.on('receiveTime', function(data) {
     console.log('Data coming from client :: ');
 })
 
-function sendDevices() {
-    async.waterfall([
 
-        function(callback) {
-            MongoClient.connect(mongourl, function(err, db) {
-                if (err) {
-                    return console.dir(err);
-                }
-
-                var collection = db.collection('device');
-                var devicelist = new Array();
-                collection.find().toArray(function(err, devices) {
-                    for (var dvc in devices) {
-                        devicelist.push(devices[dvc]);
-                    }
-                    callback(null, devicelist);
-                })
-                db.close();
-            });
-        },
-        function(devicelist, callback) {
-            io.emit('showDevices', devicelist);
-            callback(null, devicelist);
-        }
-    ]);
-}
-
+/* General Supportive Function start -->> */
 function isNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
-}
-
-function updateDevice(BeaconID, DeviceID, Distance, MobileNo, resObj) {
-    console.log('Beacon ID ' + BeaconID);
-    console.log('Device ID ' + DeviceID);
-    console.log('Distance ' + Distance);
-    console.log('Mobile No ' + MobileNo);
-    var BeaconStoreID = '';
-
-    var resObjVal = {};
-    if (!(DeviceID && Distance)) {
-        console.log('Invalid data passing');
-        io.emit('updateDevice_response', {
-            'IsSuccess': false,
-            'message': 'Invalid data passing'
-        });
-
-        if (resObj) {
-            resObjVal.IsSuccess = false;
-            resObjVal.message = "Invalid data passing";
-            resObj.send(resObjVal);
-        }
-        return;
-    }
-
-    if (!isNumeric(Distance)) {
-        if (resObj) {
-            resObjVal.IsSuccess = false;
-            resObjVal.message = "Distance should be in numbers";
-            resObj.send(resObjVal);
-        }
-        return;
-    }
-
-    console.log('Update device called');
-
-    var comingFromLatLong = false;
-    if (!BeaconID) {
-        BeaconID = '';
-        comingFromLatLong = true;
-    }
-
-    MongoClient.connect(mongourl, function(err, db) {
-        if (err) {
-            return console.dir(err);
-        }
-        assert.equal(null, err);
-
-        var collection = db.collection('device');
-
-        async.waterfall([
-            function(callback) {
-                var bcollection = db.collection('beacons');
-                bcollection.find({
-                    'BeaconID': BeaconID
-                }).toArray(function(err, beacons) {
-                    callback(null, beacons);
-                });
-            },
-            function(beacons, callback) {
-                if (!(beacons && beacons.length > 0)) {
-                    if (resObj) {
-                        resObjVal.IsSuccess = false;
-                        resObjVal.message = "Invalid Beacon ID";
-                        resObj.send(resObjVal);
-                    }
-                    return 0;
-                } else {
-                    BeaconStoreID = beacons[0].BeaconStore;
-                }
-
-                collection.find({
-                    'DeviceID': DeviceID
-                }).toArray(function(err, devices) {
-                    callback(null, devices);
-                });
-
-            },
-            function(devicedata, callback) {
-                if (devicedata && devicedata.length > 0 && BeaconID != '') {
-                    currdate = getCurrentTime();
-                    previoustime = devicedata[0].connectiontime;
-
-                    timegap = (currdate - previoustime) / 1000;
-
-                    staytime = convertSecondsToStringTime2(timegap);
-                    console.log('Line 197 ' + staytime + ' timegap ' + timegap);
-
-                    //BeaconID, DeviceID, StayTime
-                    if (timegap > 0) {
-                        console.log('Line 200 ' + MobileNo);
-                        updateDeviceHistory(devicedata[0].BeaconID, devicedata[0].DeviceID, staytime, MobileNo);
-                    }
-                    callback(null, devicedata);
-                } else {
-                    callback(null, devicedata);
-                }
-            },
-            function(devicedata, callback) {
-                if (BeaconID != '') {
-                    collection.update({
-                        /*'DeviceID': DeviceID,*/
-                        'MobileNo': MobileNo
-                    }, {
-                        'BeaconID': BeaconID,
-                        'DeviceID': DeviceID,
-                        'MobileNo': MobileNo,
-                        'Distance': Distance,
-                        'connectiontime': getCurrentTime(),
-                    }, {
-                        'upsert': true,
-                    }, function(err, result) {
-                        console.log('Device updated or inserted');
-                        callback(null, 'updated or inserted');
-                    });
-                }
-
-                /*if (devicedata && devicedata.length > 0 && BeaconID != '') {
-                    collection.update({
-                        'MobileNo': MobileNo
-                    }, {
-                        '$set': {
-                            'BeaconID': BeaconID,
-                            'DeviceID': DeviceID,
-                            'Distance': Distance,
-                            'connectiontime': getCurrentTime(),
-                        }
-                    }, function(err, result) {
-                        callback(null, 'updated');
-                    });
-                    console.log('Device updated');
-                } else {
-                    if (BeaconID != '') {
-                        collection.insert({
-                            'BeaconID': BeaconID,
-                            'DeviceID': DeviceID,
-                            'MobileNo': MobileNo,
-                            'Distance': Distance,
-                            'connectiontime': getCurrentTime(),
-                        }, function(err, result) {
-                            callback(null, 'inserted');
-                        });
-                        console.log('Device inserted');
-                    }
-                }*/
-            },
-            function(response, callback) {
-                io.emit('updateDevice_response', {
-                    'IsSuccess': true,
-                    'BeaconID': BeaconID,
-                    'StoreID': BeaconStoreID,
-                    'message': 'Data inserted successfully'
-                });
-                //sendDevices();
-                console.log('coming to last callback');
-                db.close();
-                if (resObj) {
-                    resObj.send();
-                }
-                callback(null, response);
-            }
-        ]);
-    });
 }
 
 function convertToMinutes(timeValue) {
@@ -361,21 +171,149 @@ function getCurrentTime() {
     return utc;
 }
 
-function updateDeviceHistory(BeaconID, DeviceID, StayTime, MobileNo, resObj) {
-    console.log('------------Updating device History--------------');
+function parse_JSON(responsecontent) {
+    try {
+        return JSON.parse(responsecontent);
+    } catch (ex) {
+        return null;
+    }
+}
+
+/* General Supportive Function End <<-- */
+
+function updateDevice(BeaconID, DeviceID, Distance, MobileNo, resObj) {
     console.log('Beacon ID ' + BeaconID);
     console.log('Device ID ' + DeviceID);
-    console.log('Stay Time ' + StayTime);
+    console.log('Distance ' + Distance);
     console.log('Mobile No ' + MobileNo);
-    console.log('------------Updating device History--------------');
+    var BeaconStoreID = '';
+
     var resObjVal = {};
-    if (!(BeaconID && DeviceID && StayTime && MobileNo)) {
+    if (!(DeviceID && Distance)) {
+        console.log('Invalid data passing');
+        io.emit('updateDevice_response', {
+            'IsSuccess': false,
+            'message': 'Invalid data passing'
+        });
+
+        if (resObj) {
+            resObjVal.IsSuccess = false;
+            resObjVal.message = "Invalid data passing";
+            resObj.send(resObjVal);
+        }
         return;
     }
 
-    var StayTime = convertStringTimeToSeconds(StayTime); // your input string
+    if (!isNumeric(Distance)) {
+        if (resObj) {
+            resObjVal.IsSuccess = false;
+            resObjVal.message = "Distance should be in numbers";
+            resObj.send(resObjVal);
+        }
+        return;
+    }
+
+    console.log('Update device called');
+
+    var comingFromLatLong = false;
+    if (!BeaconID) {
+        BeaconID = '';
+        comingFromLatLong = true;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+
+        var collection = db.collection('device');
+
+        async.waterfall([
+            function(callback) {
+                var bcollection = db.collection('beacons');
+                bcollection.find({
+                    'BeaconID': BeaconID
+                }).toArray(function(err, beacons) {
+                    callback(null, beacons);
+                });
+            },
+            function(beacons, callback) {
+                if (!(beacons && beacons.length > 0)) {
+                    if (resObj) {
+                        resObjVal.IsSuccess = false;
+                        resObjVal.message = "Invalid Beacon ID";
+                        resObj.send(resObjVal);
+                    }
+                    return 0;
+                } else {
+                    BeaconStoreID = beacons[0].BeaconStore;
+                }
+
+                collection.find({
+                    'DeviceID': DeviceID
+                }).toArray(function(err, devices) {
+                    if (devices && devices.length > 0 && BeaconID != '') {
+                        updateDeviceHistory(devices[0].BeaconID, devices[0].DeviceID, MobileNo);
+                    }
+                    callback(null, devices);
+                });
+            },
+            function(devicedata, callback) {
+                if (BeaconID != '') {
+                    collection.update({
+                        'MobileNo': MobileNo
+                    }, {
+                        'BeaconID': BeaconID,
+                        'DeviceID': DeviceID,
+                        'MobileNo': MobileNo,
+                        'Distance': Distance,
+                        'connectiontime': getCurrentTime(),
+                    }, {
+                        'upsert': true,
+                    }, function(err, result) {
+                        console.log('Device updated or inserted');
+                        callback(null, 'updated or inserted');
+                    });
+                }
+            },
+            function(response, callback) {
+                io.emit('updateDevice_response', {
+                    'IsSuccess': true,
+                    'BeaconID': BeaconID,
+                    'StoreID': BeaconStoreID,
+                    'message': 'Data inserted successfully'
+                });
+                console.log('coming to last callback');
+                db.close();
+                if (resObj) {
+                    resObj.send();
+                }
+                callback(null, response);
+            }
+        ]);
+    });
+}
+
+
+function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
+    console.log('------------Updating device History--------------');
+    console.log('Beacon ID ' + BeaconID);
+    console.log('Device ID ' + DeviceID);
+    console.log('Mobile No ' + MobileNo);
+    console.log('------------Updating device History--------------');
+    var resObjVal = {};
+    if (!(BeaconID && DeviceID && MobileNo)) {
+        return;
+    }
 
     var BeaconStore = '';
+
+    todaysdate = getCurrentTime();
+    seldate = new Date(todaysdate);
+    datestring = seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate();
+    fromDate = new Date(datestring).getTime();
+    toDate = new Date(datestring + ' 23:59:59').getTime();
 
     console.log('Update device history called');
 
@@ -385,6 +323,7 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, MobileNo, resObj) {
         }
         assert.equal(null, err);
 
+        //var collection = db.collection('test_device_history');
         var collection = db.collection('device_history');
         var beacons = [];
 
@@ -399,7 +338,6 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, MobileNo, resObj) {
             },
             function(beaconsdata, callback) {
                 if (!(beaconsdata && beaconsdata.length > 0)) {
-                    console.log('Beacon not declared');
                     if (typeof(resObj) != 'undefined') {
                         resObjVal.IsSuccess = false;
                         resObjVal.message = "Invalid Beacon ID";
@@ -408,8 +346,6 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, MobileNo, resObj) {
                     return;
                 } else {
                     beacons = beaconsdata;
-                    console.log('390');
-                    console.log(beacons);
                     BeaconStore = beaconsdata[0].BeaconStore;
                     callback(null, 'next callback');
                 }
@@ -432,10 +368,9 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, MobileNo, resObj) {
                                         throw err;
                                     } else {
                                         console.log(result);
-                                        callback(null, 'next callback');
+                                        callback(null, 'DeviceID is different');
                                     }
                                 });
-                            //callback(null, 'next callback');
                         } else {
                             callback(null, 'next callback');
                         }
@@ -446,85 +381,87 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, MobileNo, resObj) {
                 });
             },
             function(data, callback) {
-                currdate = getCurrentTime();
-                fromDate = 0;
-                seldate = new Date(currdate);
-                SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate()).toISOString();
-                fromDate = new Date(SelectedDate).getTime();
-                seldate = new Date(currdate);
-                SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate() + ' 23:59:59').toISOString();
-                toDate = new Date(SelectedDate).getTime();
                 collection.find({
-                    /*'DeviceID': DeviceID,*/
-                    'BeaconID': BeaconID,
                     'MobileNo': MobileNo,
                     'Date': {
                         $gte: fromDate,
                         $lte: toDate,
                     }
-                }).toArray(function(err, devices) {
-                    if (!(devices && devices.length > 0)) {
-                        if (typeof(beacons[0].BeaconWelcome) != 'undefined' && beacons[0].BeaconWelcome) {
-                            sendpushnotification('', [DeviceID], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
-                        }
-                    }
-                    callback(null, devices);
-                });
+                }).sort({ 'Date': -1 }).toArray(function(err, devicelist) {
+                    callback(null, devicelist);
+                })
             },
-            function(devicedata, callback) {
-                if (devicedata && devicedata.length > 0) {
-                    console.log(devicedata);
-
-                    currdate = getCurrentTime();
-
-                    var oldstaytime = 0;
-                    oldstaytime = parseInt(devicedata[0].StayTime);
-                    if (isNaN(oldstaytime)) {
-                        oldstaytime = 0;
+            function(devicelist, callback) {
+                if (!(devicelist && devicelist.length > 0)) {
+                    if (typeof(beacons[0].BeaconWelcome) != 'undefined' && beacons[0].BeaconWelcome) {
+                        sendpushnotification('', [DeviceID], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
                     }
+                }
+                console.log('Sending notification');
+                callback(null, devicelist);
+            },
+            function(devices, callback) {
+                console.log('Inserting records over device history');
+                var IsInsertRecord = false;
+                currtime = getCurrentTime();
 
-                    StayTime = oldstaytime + StayTime;
-
-                    fromDate = 0;
-                    seldate = new Date(currdate);
-                    SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate());
-                    fromDate = SelectedDate.getTime();
-                    seldate = new Date(currdate);
-                    SelectedDate = new Date(seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate() + ' 23:59:59');
-                    toDate = SelectedDate.getTime();
-
-                    collection.update({
-                            /*'DeviceID': DeviceID,*/
-                            'BeaconID': BeaconID,
-                            'MobileNo': MobileNo,
-                            'Date': {
-                                $gte: fromDate,
-                                $lte: toDate,
-                            }
-                        }, {
-                            '$set': {
-                                'DeviceID': DeviceID,
-                                'StayTime': StayTime,
-                            }
-                        },
-                        function(err, result) {
-                            if (err) {
-                                throw err;
-                            } else {
-                                callback(null, 'updated');
-                            }
-                        });
-                    console.log('Device History updated Mobile No:' + MobileNo + ' StayTime: ' + StayTime);
+                if (devices && devices.length > 0 && 
+                    !(typeof(devices[0].freeze) != 'undefined' && devices[0].freeze)) {
+                    //When user stayed to same beacon and socket calling update service again and again
+                    if (devices[0].BeaconID == BeaconID) {
+                        StayTime = Math.max(((todaysdate - devices[0].Date) / 1000), 0);
+                        if (StayTime >= 1) {
+                            collection.update({
+                                    _id: ObjectId(devices[0]._id)
+                                }, {
+                                    '$set': {
+                                        'DateTo': todaysdate,
+                                        'StayTime': StayTime,
+                                    }
+                                },
+                                function(err, result) {
+                                    if (err) {
+                                        throw err;
+                                    } else {
+                                        callback(null, 'updated');
+                                        return 0;
+                                    }
+                                });
+                        }
+                    } else {
+                        //When user move to another beacon from previous beacon
+                        StayTime = Math.max(((todaysdate - devices[0].Date) / 1000) - 1, 0);
+                        if (StayTime >= 1) {
+                            collection.update({
+                                    _id: ObjectId(devices[0]._id)
+                                }, {
+                                    '$set': {
+                                        'DateTo': todaysdate,
+                                        'StayTime': StayTime,
+                                    }
+                                },
+                                function(err, result) {
+                                    if (err) {
+                                        throw err;
+                                    }
+                                });
+                        }
+                        IsInsertRecord = true;
+                    }
                 } else {
+                    IsInsertRecord = true;
+                }
+                if (IsInsertRecord) {
                     collection.insert({
                         'BeaconID': BeaconID,
                         'DeviceID': DeviceID,
-                        'StayTime': StayTime,
+                        'StayTime': 1,
                         'MobileNo': MobileNo,
-                        'Date': currdate,
+                        'Date': todaysdate,
+                        'DateTo': todaysdate
                     }, function(err, records) {
                         callback(null, 'inserted');
-                        console.log('Device History inserted Mobile No:' + MobileNo + ' StayTime: ' + StayTime);
+                        console.log('Device History inserted Mobile No:' + MobileNo);
                     });
                 }
             },
@@ -535,7 +472,6 @@ function updateDeviceHistory(BeaconID, DeviceID, StayTime, MobileNo, resObj) {
                     'StoreID': BeaconStore,
                     'message': 'Data updated successfully'
                 });
-                //sendDevices();
                 console.log('coming to last callback');
                 db.close();
                 if (resObj) {
@@ -564,11 +500,9 @@ io.on('connection', function(socket) {
 
     socket.on('updateDevice', function(data) {
         updateDevice(data.BeaconID, data.DeviceID, data.Distance, data.MobileNo);
-        //updateDeviceHistory(data.BeaconID, data.DeviceID, data.stayTime);
-        sendDevices();
+        //sendDevices();
     });
 
-    //setInterval(sendDevices, 5000);
 });
 
 app.post('/user/loggedinUser', function(req, res) {
@@ -618,14 +552,13 @@ app.post('/updateDevice', function(req, res) {
         if (req.body.stayTime) {
             staytime = req.body.stayTime;
         }
-        //updateDeviceHistory(req.body.BeaconID, req.body.DeviceID, staytime);
     }
 
 });
 
 app.post('/updateDeviceHistory', function(req, res) {
     console.log('service calling');
-    updateDeviceHistory(req.body.BeaconID, req.body.DeviceID, req.body.stayTime, req.body.MobileNo, res);
+    updateDeviceHistory(req.body.BeaconID, req.body.DeviceID, req.body.MobileNo, res);
 });
 
 
@@ -662,7 +595,6 @@ function beaconDisconnect(BeaconID, DeviceID, MobileNo) {
                         callback(null, devices);
                     });
                 },
-
                 function(devices, callback) {
                     var DeleteMe = false;
                     if (devices && devices.length > 0) {
@@ -681,16 +613,33 @@ function beaconDisconnect(BeaconID, DeviceID, MobileNo) {
                         collection.deleteMany({
                             'DeviceID': DeviceID
                         });
-                        /*io.emit('updateDevice_response', {
-                            'IsSuccess': true,
-                            'message': 'Data inserted successfully'
-                        });*/
+
+                        //var dhcollection = db.collection('test_device_history');
+                        var dhcollection = db.collection('device_history');
+                        dhcollection.updateMany({
+                                'BeaconID': BeaconID,
+                                'MobileNo': MobileNo
+                            }, {
+                                '$set': {
+                                    'freeze': 1,
+                                }
+                            },
+                            function(err, result) {
+                                if (err) {
+                                    throw err;
+                                } else {
+
+                                }
+                            }
+                        );
+
                         io.emit('updateDevice_response', {
                             'IsSuccess': true,
                             'BeaconID': BeaconID,
                             'StoreID': BeaconStoreID,
                             'message': 'Data inserted successfully'
                         });
+                        callback(null, 'updated');
                     }
                 },
                 function(acknowledge, callback) {
@@ -702,10 +651,14 @@ function beaconDisconnect(BeaconID, DeviceID, MobileNo) {
 }
 
 app.post('/beaconDisconnected', function(req, res) {
-    console.log('-------------------Beacon disconnected------------- ')
+    console.log('-------------------Beacon disconnected------------- ');
     BeaconID = req.body.BeaconID;
     DeviceID = req.body.DeviceID;
     MobileNo = req.body.MobileNo;
+    console.log('Beacon ID ' + BeaconID);
+    console.log('Device ID ' + DeviceID);
+    console.log('Mobile No ' + MobileNo);
+    console.log('------------Beacon disconnected--------------');
     async.waterfall([
         function(callback) {
             MongoClient.connect(mongourl, function(err, db) {
@@ -716,8 +669,10 @@ app.post('/beaconDisconnected', function(req, res) {
                 var collection = db.collection('device');
 
                 collection.find({
-                    "MobileNo": "MobileNo",
+                    /*"MobileNo": MobileNo,*/
+                    "DeviceID" : DeviceID,
                 }).toArray(function(err, devices) {
+                    devicelist = [];
                     for (var dvc in devices) {
                         devicelist.push(devices[dvc]);
                     }
@@ -727,7 +682,9 @@ app.post('/beaconDisconnected', function(req, res) {
             });
         },
         function(devicelist, callback) {
-            beaconDisconnect(devicelist[0].BeaconID, devicelist[0].DeviceID, MobileNo);
+            if (devicelist && devicelist.length > 0){
+                beaconDisconnect(devicelist[0].BeaconID, devicelist[0].DeviceID, MobileNo);
+            }
         },
     ]);
 });
@@ -749,7 +706,6 @@ devicecron.schedule('* * * * *', function() {
                 console.log('Device Cron executed on ' + outofrangelimit);
                 collection.find({
                     "connectiontime": { "$lte": outofrangelimit },
-                    /*"Distance": { "$lte": -1 }*/
                 }).toArray(function(err, devices) {
                     for (var dvc in devices) {
                         devicelist.push(devices[dvc]);
@@ -760,28 +716,16 @@ devicecron.schedule('* * * * *', function() {
             });
         },
         function(devicelist, callback) {
-            //console.log(devicelist);
             if (devicelist.length > 0) {
                 for (var dvc in devicelist) {
-                    //if (devicelist[dvc].Distance != "-1") {
                     beaconDisconnect(devicelist[dvc].BeaconID, devicelist[dvc].DeviceID,
                         devicelist[dvc].MobileNo);
-                    //}
                 }
             }
-            //io.emit('showDevices', devicelist);
             callback(null, devicelist);
         }
     ]);
 });
-
-function parse_JSON(responsecontent) {
-    try {
-        return JSON.parse(responsecontent);
-    } catch (ex) {
-        return null;
-    }
-}
 
 app.post('/getdata', function(req, res) {
     console.log(JSON.stringify(req.body));
@@ -803,7 +747,6 @@ app.post('/getdata', function(req, res) {
                 var collection = db.collection('beacons');
                 var beaconcollection = [];
                 if (BeaconID && BeaconID.length > 0) {
-                    //beaconcollection = collection.find({'BeaconID' : BeaconID });
                     beaconcollection = collection.find({
                         'BeaconID': {
                             $in: BeaconID
@@ -823,12 +766,6 @@ app.post('/getdata', function(req, res) {
                     for (var b in beacons) {
                         beaconslist[beacons[b].BeaconID] = beacons[b].BeaconKey;
                     }
-
-                    console.log('Get Data Webservice');
-                    console.log(beaconslist);
-                    console.log('Beacon Parameter');
-                    console.log(BeaconID);
-
 
                     callback(null, beaconslist);
                 });
@@ -853,9 +790,7 @@ app.post('/getdata', function(req, res) {
                             devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
                             devicelist.push(devices[dvc]);
                         }
-                        //res.send(devicelist);
                         callback(null, devicelist);
-                        //return;
                     })
                 } else {
                     collection.find().toArray(function(err, devices) {
@@ -863,7 +798,6 @@ app.post('/getdata', function(req, res) {
                             devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
                             devicelist.push(devices[dvc]);
                         }
-                        //res.send(devicelist);
                         callback(null, devicelist);
                     })
                 }
@@ -907,7 +841,6 @@ app.post('/getdata', function(req, res) {
                             }
                         }
 
-                        //console.log(devicelist);
                         res.send(devicelist);
                         callback(null, devicelist);
                     })
@@ -923,9 +856,6 @@ app.post('/getdata', function(req, res) {
 app.post('/getDeviceHistorydata', function(req, res) {
     BeaconID = req.body.BeaconID;
     StoreID = req.body.StoreID;
-    SelectedDateFrom = req.body.DateFrom;
-    SelectedDateTo = req.body.DateTo;
-    console.log('dateFrom:' + SelectedDateFrom + ' dateTo:' + SelectedDateTo);
 
     fromDate = 0;
     toDate = 0;
@@ -947,7 +877,6 @@ app.post('/getDeviceHistorydata', function(req, res) {
                 var collection = db.collection('beacons');
                 var beaconcollection = [];
                 if (BeaconID && BeaconID.length > 0) {
-                    //beaconcollection = collection.find({'BeaconID' : BeaconID });
                     console.log('coming to beacon list');
                     beaconcollection = collection.find({
                         'BeaconID': {
@@ -960,8 +889,9 @@ app.post('/getDeviceHistorydata', function(req, res) {
                         'BeaconStore': ObjectId(StoreID)
                     });
                 } else {
-                    console.log('coming to all part');
-                    beaconcollection = collection.find();
+                    /*console.log('coming to all part');
+                    beaconcollection = collection.find();*/
+                    beaconcollection = [];
                 }
 
                 beaconcollection.toArray(function(err, beacons) {
@@ -973,6 +903,7 @@ app.post('/getDeviceHistorydata', function(req, res) {
                 });
             },
             function(beaconlist, callback) {
+                //var collection = db.collection('test_device_history');
                 var collection = db.collection('device_history');
                 var devicelist = new Array();
 
@@ -980,24 +911,9 @@ app.post('/getDeviceHistorydata', function(req, res) {
                 for (var b in beaconlist) {
                     beacons.push(b);
                 }
+                console.log(beacons);
 
                 if (beacons && beacons.length > 0) {
-                    console.log('========================Get Device History=================')
-                    console.log('Beacons: ' + beacons);
-                    console.log('fromDate: ' + fromDate);
-                    console.log('toDate: ' + toDate);
-                    console.log('========================Get Device History=================')
-
-                    /*devicecollection = collection.find({
-                        'BeaconID': {
-                            $in: beacons,
-                        },
-                        'Date': {
-                            $gte: fromDate,
-                            $lte: toDate,
-                        }
-                    });*/
-
                     collection.aggregate(
                         [{
                             $match: {
@@ -1083,8 +999,99 @@ app.post('/getDeviceHistorydata', function(req, res) {
 
     });
 });
-/*Beacon Services start*/
 
+app.post('/getDeviceHistoryDetailsdata', function(req, res) {
+    BeaconID = req.body.BeaconID;
+    MobileNo = req.body.MobileNo;
+
+    fromDate = 0;
+    toDate = 0;
+    seldate = new Date(req.body.DateFrom);
+    fromDate = new Date(seldate.getFullYear() + '/' + (seldate.getMonth() + 1) + '/' + (seldate.getDate())).getTime();
+    seldate = new Date(req.body.DateTo);
+    toDate = new Date(seldate.getFullYear() + '/' + (seldate.getMonth() + 1) + '/' + (seldate.getDate()) + ' 23:59:59').getTime();
+
+    console.log('fromDate: ' + fromDate);
+    console.log('toDate: ' + toDate);
+    console.log('BeaconID : ' + BeaconID);
+    console.log('MobileNo : ' + MobileNo);
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        async.waterfall([
+            function(callback) {
+                var collection = db.collection('beacons');
+                var beaconcollection = [];
+                if (BeaconID && BeaconID.length > 0) {
+                    beaconcollection = collection.find({'BeaconID' : BeaconID });
+                }
+
+                beaconcollection.toArray(function(err, beacons) {
+                    var beaconslist = [];
+                    for (var b in beacons) {
+                        beaconslist[beacons[b].BeaconID] = beacons[b].BeaconKey;
+                    }
+                    callback(null, beaconslist);
+                });
+            },
+            function(beaconlist, callback) {
+                //var collection = db.collection('test_device_history');
+                var collection = db.collection('device_history');
+                var devicelist = new Array();
+
+                var beacons = []
+                for (var b in beaconlist) {
+                    beacons.push(b);
+                }
+
+                console.log(beacons);
+
+                if (beacons && beacons.length > 0) {
+                    devicecollection = collection.find({
+                        'BeaconID': BeaconID,
+                        'MobileNo': MobileNo,
+                        'Date': {
+                            $gte: fromDate,
+                            $lte: toDate,
+                        }                        
+                    }).toArray(function(err, devices) {
+                        console.log(devices);
+                        devicedetaillist = [];
+                        for (var dvc in devices) {
+                            devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
+                            if (typeof(devices[dvc].DateTo) == 'undefined' || !devices[dvc].DateTo){
+                                devices[dvc].DateTo = devices[dvc].Date + (devices[dvc].StayTime * 1000);
+                            }
+                            devices[dvc].StayTime = convertSecondsToStringTime(devices[dvc].StayTime);
+                            devicedetaillist.push(devices[dvc]);
+                        }
+
+                        res.send(devicedetaillist);
+                        callback(null, 'records found');
+                    })
+                } else {
+                    res.send([]);
+                    callback(null, []);
+                }
+            },
+            function(beaconlist, callback) {
+                db.close();
+            }
+        ]);
+
+    });
+});
+
+
+
+
+
+
+
+/*Beacon Services start*/
 app.post('/getbeacondata', function(req, res) {
     BeaconStore = req.body.BeaconStore;
     var resObj = {};
@@ -1578,7 +1585,6 @@ app.post('/sendpushnotification_plain', function(req, res) {
     not_descr = req.body.description;
     not_device_token = req.body.gcmTokens;
     sendpushnotification(res, not_device_token, not_title, not_descr);
-    //res.send();
 });
 
 
@@ -1589,7 +1595,6 @@ app.post('/sendpushnotification_image', function(req, res) {
     not_device_token = req.body.gcmTokens;
 
     sendpushnotification(res, not_device_token, not_title, not_descr, not_image);
-    //res.send();
 });
 
 function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
@@ -1597,10 +1602,6 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
     if (!image_url) {
         image_url = '';
     }
-    /*console.log(gcmToken);
-    console.log(title);
-    console.log(message);
-    console.log(image_url);*/
 
     // initialize new androidGcm object
     var message = new gcm.Message({
@@ -1615,10 +1616,10 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
         }
     });
 
-    console.log(message);
+    //console.log(message);
 
     gcmObject.send(message, function(err, response) {
-        console.log(response);
+        //console.log(response);
         if (err) {
             console.log('Something went wrong :: ' + err);
         } else {
@@ -1626,7 +1627,6 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
             if (response.success == '1') {
                 var request = require('request');
                 var gcmdata = JSON.stringify(gcmToken);
-                //console.log(gcmdata);
                 request.post('http://lampdemos.com/lotus15/v2/user/get_notification_entry', {
                         form: {
                             'android_device_token': gcmdata,
@@ -1814,16 +1814,23 @@ app.post('/updateservice_for_updatingmobilenumberwithdeviceid', function(req, re
     });
 });
 
+app.post('/testdevicehistory', function(req, res) {
 
-app.post('/testDatetime', function(req, res) {
-    console.log((new Date()).getTime());
-
-    var d = new Date();
-    var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
-    utc = utc + 19800000;
-
-    console.log(d.getTimezoneOffset());
-    console.log(utc);
-
-    res.send(time);
+    fromDate = 1483183628981;
+    toDate = 1483193628981;
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        var collection = db.collection('device_history');
+        devicecollection = collection.find({
+            'Date': {
+                $gte: fromDate,
+                $lte: toDate,
+            }
+        }).toArray(function(err, dvc) {
+            console.log(dvc[0]._id)
+        })
+    });
+    res.send('');
 });

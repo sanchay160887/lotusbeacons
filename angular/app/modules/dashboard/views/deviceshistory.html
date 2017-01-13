@@ -197,6 +197,7 @@ Date: 05 Jan 2016
                         <th>Person's Number</th>
                         <th>Stay Time</th>
                         <th>Beacon</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -209,9 +210,12 @@ Date: 05 Jan 2016
                         <td>{{ device.DevicePhone }}</td>
                         <td>{{ device.StayTime}}</td>
                         <td>{{ device.BeaconKey + '(' + device.BeaconID + ')' }}</td>
+                        <td>
+                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#device-history-detail" ng-click="getDeviceHistoryDetails(device.DeviceName, device.BeaconKey, device.DevicePhone, device.BeaconID)">View Details</button>
+                        </td>
                     </tr>
                     <tr ng-if="!(deviceData.length > 0)">
-                        <td colspan="5">
+                        <td colspan="6">
                             No records available
                         </td>
                     </tr>
@@ -298,6 +302,44 @@ Date: 05 Jan 2016
                 <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="sendImageMessage()"> Send</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal"> Close </button>
                 <!-- <input type="submit" value="Submit"> -->
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div id="device-history-detail" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">History of <strong>{{ toProperCase(HistoryPersonName) }}</strong> at <em>{{ HistoryOfPlace }}</em></h4>
+            </div>
+            <div class="modal-body" ng-show="!InitializingHistoryDetails">
+                <div class="form-group clearfix">
+                    <table class="table table-striped">
+                        <thead>
+                            <th>Date</th>
+                            <th>In Time</th>
+                            <th>Out Time</th>
+                            <th>Stay Time</th>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="hdd in HistoryDetailsData | orderBy:Date ">
+                                <td>{{ hdd.Date | date }}</td>
+                                <td>{{ hdd.Date | date:'hh:mm a' }}</td>
+                                <td>{{ hdd.DateTo | date:'hh:mm a' }}</td>
+                                <td>{{ hdd.StayTime }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-body" ng-show="InitializingHistoryDetails">
+                <h1>Loading History, Please wait...</h1>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"> Close </button>
             </div>
         </div>
     </div>

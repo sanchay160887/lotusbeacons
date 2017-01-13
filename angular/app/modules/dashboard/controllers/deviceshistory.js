@@ -21,6 +21,11 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.Initialized = false;
     $scope.BeaconInitialized = true;
 
+    $scope.InitializingHistoryDetails = false;
+    $scope.HistoryDetailsData = [];
+    $scope.HistoryPersonName = '';
+    $scope.HistoryOfPlace = '';
+
     $scope.$watchCollection('[InvalidInputs]', function() {
         if ($scope.InvalidInputs) {
             setTimeout(function() {
@@ -67,9 +72,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         return timestamp;
     }
 
-    /*var indiatime = getIndiaTime();
-    console.log(indiatime);*/
-
+    
     setTimeout(function() {
         jQuery(".datepicker").datepicker({ 'dateFormat': 'dd/mm/yy', 'maxDate': '0' });
         /*jQuery("#datepickerFrom").datepicker({
@@ -181,7 +184,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             return;
         }
 
-        if (!(selectedDateFrom < selectedDateTo)) {
+        if (!(selectedDateFrom <= selectedDateTo)) {
             $scope.InvalidInputs = true;
             return;
         }
@@ -208,6 +211,64 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
                 $scope.Initialized = true;
             });
         }
+
+    }
+
+    $scope.toProperCase = function (strval) {
+        return strval.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    };
+
+    $scope.getDeviceHistoryDetails = function(PersonName, BeaconKey, MobileNo, BeaconID) {
+        $scope.HistoryPersonName = PersonName;
+        $scope.HistoryOfPlace = BeaconKey;
+
+        $scope.InitializingHistoryDetails = true;
+        if (MobileNo.length > 10){
+            MobileNo = MobileNo.substring(2);
+        }
+
+        console.log(queriedUrl.dateFrom);
+        console.log(queriedUrl.dateTo);
+
+        var selectedDateFrom = '';
+        if (typeof(queriedUrl.dateFrom) != 'undefined' && queriedUrl.dateFrom) {
+            selectedDateFrom = queriedUrl.dateFrom;
+        }
+
+        var selectedDateTo = '';
+        if (typeof(queriedUrl.dateTo) != 'undefined' && queriedUrl.dateTo) {
+            selectedDateTo = queriedUrl.dateTo;
+        }
+
+        selectedDateFrom = convertDateToTimestamp(selectedDateFrom);
+
+        if (!selectedDateFrom) {
+            $scope.InvalidInputs = true;
+            return;
+        }
+
+        selectedDateTo = convertDateToTimestamp(selectedDateTo);
+
+        if (!selectedDateTo) {
+            $scope.InvalidInputs = true;
+            return;
+        }
+
+        if (!(selectedDateFrom <= selectedDateTo)) {
+            $scope.InvalidInputs = true;
+            return;
+        }
+
+        
+
+
+        apiService.deviceHistoryDetailsData(MobileNo, BeaconID, selectedDateFrom, selectedDateTo)
+            .then(function(res) {
+                $scope.HistoryDetailsData = [];
+                console.log(res);
+                $scope.HistoryDetailsData = res.data;
+                $scope.InitializingHistoryDetails = false;
+            });
 
     }
 

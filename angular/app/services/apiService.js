@@ -104,6 +104,19 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
         });
     }
 
+    var deviceHistoryDetailsData = function(selectedMobileNo, selectedBeacon, selectedDateFrom, selectedDateTo){
+        return $http({
+            method: "post",
+            url: '/getDeviceHistoryDetailsdata',
+            data: {
+                'MobileNo' : selectedMobileNo,
+                'BeaconID' : selectedBeacon,
+                'DateFrom' : selectedDateFrom,
+                'DateTo' : selectedDateTo
+            }
+        });
+    }    
+
     var sendNotification = function(){
         return $http({
             method: "post",
@@ -318,6 +331,7 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
     apiService.delet = delet;
     apiService.deviceData = deviceData;
 	apiService.deviceHistoryData = deviceHistoryData;
+    apiService.deviceHistoryDetailsData = deviceHistoryDetailsData;
     apiService.sendNotification = sendNotification;
     apiService.sendNotification_plain = sendNotification_plain;
     apiService.sendNotification_image = sendNotification_image;
