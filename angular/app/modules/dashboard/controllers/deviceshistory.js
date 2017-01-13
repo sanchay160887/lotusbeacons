@@ -6,6 +6,8 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.storeData = [];
     $scope.selectedStore = '';
     $scope.deviceData = [];
+    $scope.deviceDataCount = 0;
+    $scope.deviceDataPageCount = 0;
     var currdate = new Date();
     $scope.selectedDateFrom = (pad0(currdate.getDate(), 2) + '/' + pad0((currdate.getMonth() + 1), 2) + '/' + currdate.getFullYear());
     $scope.selectedDateTo = (pad0(currdate.getDate(), 2) + '/' + pad0((currdate.getMonth() + 1), 2) + '/' + currdate.getFullYear());
@@ -14,6 +16,8 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.TM_descr = '';
     $scope.GM_title = '';
     $scope.GM_descr = '';
+    $scope.currPage = 1;
+    $scope.pageLimit = 10;
     $scope.GM_ImageFilePath = '';
     $scope.baseUrl = apiService.base_url;
     $scope.InvalidInputs = false;
@@ -33,6 +37,27 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             }, 5000);
         }
     });
+
+    $scope.loadPage = function(page) {
+        $scope.currPage = page;
+        $scope.loadData();
+    }
+
+    $scope.prevPage = function() {
+        $scope.loadPage($scope.currPage - 1);
+    }
+
+    $scope.nextPage = function() {
+        $scope.loadPage($scope.currPage + 1);
+    }
+
+    $scope.firstPage = function() {
+        $scope.loadPage(1);
+    }
+
+    $scope.lastPage = function() {
+        $scope.loadPage($scope.deviceDataPageCount);
+    }
 
     function pad0(value, count) {
         var result = value.toString();
@@ -72,7 +97,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         return timestamp;
     }
 
-    
+
     setTimeout(function() {
         jQuery(".datepicker").datepicker({ 'dateFormat': 'dd/mm/yy', 'maxDate': '0' });
         /*jQuery("#datepickerFrom").datepicker({
@@ -135,10 +160,18 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     });
 
     $scope.loadData = function() {
-        console.log({ 'store': $scope.selectedStore, 'beacon': $scope.selectedBeacon, 'dateFrom': $scope.selectedDateFrom, 'dateTo': $scope.selectedDateTo });
-        $location.search({ 'store': $scope.selectedStore, 'beacon': $scope.selectedBeacon, 'dateFrom': $scope.selectedDateFrom, 'dateTo': $scope.selectedDateTo });
+        $location.search({ 'store': $scope.selectedStore, 'beacon': $scope.selectedBeacon, 'dateFrom': $scope.selectedDateFrom, 'dateTo': $scope.selectedDateTo, 'page': $scope.currPage });
         $scope.getAllDevicesHistory();
     }
+
+    $scope.range = function(min, max, step) {
+        step = step || 1;
+        var input = [];
+        for (var i = min; i <= max; i += step) {
+            input.push(i);
+        }
+        return input;
+    };
 
     $scope.getAllDevicesHistory = function() {
         var queriedUrl = $location.search()
@@ -163,6 +196,11 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         var selectedDateTo = '';
         if (typeof(queriedUrl.dateTo) != 'undefined' && queriedUrl.dateTo) {
             selectedDateTo = queriedUrl.dateTo;
+        }
+
+        var currentPage = 1;
+        if (typeof(queriedUrl.page) != 'undefined' && queriedUrl.page) {
+            currentPage = queriedUrl.page;
         }
 
         beaconlist = [];
@@ -191,7 +229,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
         if ((beaconlist && beaconlist.length > 0) || selectedStore) {
             $scope.Initialized = false;
-            apiService.deviceHistoryData(beaconlist, selectedStore, selectedDateFrom, selectedDateTo).then(function(res) {
+            apiService.deviceHistoryData(beaconlist, selectedStore, selectedDateFrom, selectedDateTo, currentPage, $scope.pageLimit).then(function(res) {
                 var checkedlist = [];
                 for (var dd in $scope.deviceData) {
                     if ($scope.deviceData[dd].checked) {
@@ -199,23 +237,30 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
                     }
                 }
 
-                for (var dd in res.data) {
-                    if (in_array(res.data[dd].DeviceID, checkedlist)) {
-                        res.data[dd].checked = true;
+                records = res.data.Records;
+                recordcount = res.data.NoOfRecords;
+
+                for (var dd in records) {
+                    if (in_array(records[dd].DeviceID, checkedlist)) {
+                        records[dd].checked = true;
                     } else {
-                        res.data[dd].checked = false;
+                        records[dd].checked = false;
                     }
                 }
 
-                $scope.deviceData = res.data;
+                $scope.deviceData = records;
+                $scope.deviceDataCount = recordcount;
+                $scope.deviceDataPageCount = Math.ceil(recordcount / $scope.pageLimit, 2)
                 $scope.Initialized = true;
             });
         }
 
     }
 
-    $scope.toProperCase = function (strval) {
-        return strval.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    $scope.toProperCase = function(strval) {
+        return strval.replace(/\w\S*/g, function(txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        });
     };
 
     $scope.getDeviceHistoryDetails = function(PersonName, BeaconKey, MobileNo, BeaconID) {
@@ -225,7 +270,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         var queriedUrl = $location.search();
 
         $scope.InitializingHistoryDetails = true;
-        if (MobileNo.length > 10){
+        if (MobileNo.length > 10) {
             MobileNo = MobileNo.substring(2);
         }
 
@@ -261,7 +306,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             return;
         }
 
-        
+
 
 
         apiService.deviceHistoryDetailsData(MobileNo, BeaconID, selectedDateFrom, selectedDateTo)

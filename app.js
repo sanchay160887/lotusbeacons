@@ -856,6 +856,21 @@ app.post('/getdata', function(req, res) {
 app.post('/getDeviceHistorydata', function(req, res) {
     BeaconID = req.body.BeaconID;
     StoreID = req.body.StoreID;
+    if (typeof(req.body.PageNo) != 'undefined' && req.body.PageNo){
+        PageNo = req.body.PageNo;
+    } else {
+        PageNo = 1;
+    }
+    RecordsPerPage = 10;
+    if (typeof(req.body.RecordsPerPage) != 'undefined' && req.body.RecordsPerPage){
+        RecordsPerPage = req.body.RecordsPerPage;
+    }
+
+    recordsToSkip = Math.max((PageNo - 1) * RecordsPerPage, 0);
+
+    resObjVal = {};
+    /*resObjVal.IsSuccess = false;
+    resObjVal.message = "Invalid data passing";*/
 
     fromDate = 0;
     toDate = 0;
@@ -903,6 +918,7 @@ app.post('/getDeviceHistorydata', function(req, res) {
                 });
             },
             function(beaconlist, callback) {
+
                 //var collection = db.collection('test_device_history');
                 var collection = db.collection('device_history');
                 var devicelist = new Array();
@@ -912,6 +928,38 @@ app.post('/getDeviceHistorydata', function(req, res) {
                     beacons.push(b);
                 }
                 console.log(beacons);
+
+                if (beacons && beacons.length > 0) {
+                    reccount = collection.aggregate(
+                        [{
+                            $match: {
+                                'Date': {
+                                    '$gte': fromDate,
+                                    '$lte': toDate
+                                },
+                                'BeaconID': {
+                                    $in: beacons,
+                                }
+                            }
+                        }, {
+                            $group: {
+                                _id: { BeaconID: '$BeaconID', DeviceID: '$DeviceID' },
+                                StayTime: { $sum: "$StayTime" }
+                            }
+                        }]
+                    ).toArray(function(err, devices) {
+                        resObjVal.NoOfRecords = devices.length;
+                        callback(null, beacons);
+                    })
+                } else {
+                    resObjVal.NoOfRecords = 0;
+                    callback(null, []);
+                }               
+            },
+            function(beacons, callback) {
+                //var collection = db.collection('test_device_history');
+                var collection = db.collection('device_history');
+                var devicelist = new Array();
 
                 if (beacons && beacons.length > 0) {
                     collection.aggregate(
@@ -931,10 +979,13 @@ app.post('/getDeviceHistorydata', function(req, res) {
                                 StayTime: { $sum: "$StayTime" }
                             }
                         }]
-                    ).toArray(function(err, devices) {
+                    )
+                    .skip(recordsToSkip)
+                    .limit(RecordsPerPage)
+                    .toArray(function(err, devices) {
                         for (var dvc in devices) {
                             devices[dvc].BeaconID = devices[dvc]._id.BeaconID;
-                            devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
+                            devices[dvc].BeaconKey = beacons[devices[dvc].BeaconID];
                             devices[dvc].DeviceID = devices[dvc]._id.DeviceID;
                             devices[dvc].StayTime = convertSecondsToStringTime(devices[dvc].StayTime);
                             devicelist.push(devices[dvc]);
@@ -988,7 +1039,8 @@ app.post('/getDeviceHistorydata', function(req, res) {
                         }
 
                         //console.log(devicelist);
-                        res.send(devicelist);
+                        resObjVal.Records = devicelist;
+                        res.send(resObjVal);
                         callback(null, devicelist);
                     })
             },
@@ -1823,13 +1875,13 @@ app.post('/testdevicehistory', function(req, res) {
             return console.dir(err);
         }
         var collection = db.collection('device_history');
-        devicecollection = collection.find({
+        devicecollection = collection.find(/*{
             'Date': {
                 $gte: fromDate,
                 $lte: toDate,
             }
-        }).toArray(function(err, dvc) {
-            console.log(dvc[0]._id)
+        }*/).count(function(err, cnt) {
+            console.log(cnt)
         })
     });
     res.send('');

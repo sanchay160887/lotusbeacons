@@ -221,6 +221,16 @@ Date: 05 Jan 2016
                     </tr>
                 </tbody>
             </table>
+            <ul>
+                <!-- <li ng-if="deviceDataPageCount > 1"><a ng-click="firstPage()"><<</a></li> -->
+                <li ng-if="deviceDataPageCount > 1"><a ng-click="prevPage()">&ltPrev</a></li>
+                <li ng-repeat="n in range(1,deviceDataPageCount)">
+                    <a ng-click="loadPage(n)" ng-if="n!=currPage">{{n}}</a>
+                    <span ng-if="n==currPage">{{n}}</span>
+                </li>
+                <li ng-if="deviceDataPageCount > 1"><a ng-click="nextPage()">Next&gt</a></li>
+                <!-- <li ng-if="deviceDataPageCount > 1"><a ng-click="lastPage()">>></a></li> -->
+            </ul>
         </div>
     </div>
 </div>
@@ -325,11 +335,16 @@ Date: 05 Jan 2016
                             <th>Stay Time</th>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="hdd in HistoryDetailsData | orderBy:Date ">
+                            <tr ng-repeat="hdd in HistoryDetailsData | orderBy:Date" ng-if="HistoryDetailsData.length > 0">
                                 <td>{{ hdd.Date | date }}</td>
                                 <td>{{ hdd.Date | date:'hh:mm a' }}</td>
                                 <td>{{ hdd.DateTo | date:'hh:mm a' }}</td>
                                 <td>{{ hdd.StayTime }}</td>
+                            </tr>
+                            <tr ng-if="HistoryDetailsData.length <= 0">
+                                <td colspan="4">
+                                    <h4>No Details Found</h4>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
