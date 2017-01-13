@@ -222,6 +222,8 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         $scope.HistoryPersonName = PersonName;
         $scope.HistoryOfPlace = BeaconKey;
 
+        var queriedUrl = $location.search();
+
         $scope.InitializingHistoryDetails = true;
         if (MobileNo.length > 10){
             MobileNo = MobileNo.substring(2);
