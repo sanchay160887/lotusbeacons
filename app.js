@@ -18,7 +18,6 @@ var request = require('request');
 querystring = require('querystring');
 require('timers');
 var devicecron = require('node-cron');
-var _ = require('underscore');
 var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon';
 //var mongourl = 'mongodb://localhost:27017/lotusbeacon';
 MongoClient.connect(mongourl, function(err, db) {
