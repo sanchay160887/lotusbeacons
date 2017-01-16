@@ -221,20 +221,24 @@ Date: 05 Jan 2016
                     </tr>
                 </tbody>
             </table>
-            <ul>
-                <!-- <li ng-if="deviceDataPageCount > 1"><a ng-click="firstPage()"><<</a></li> -->
-                <li ng-if="deviceDataPageCount > 1" ng-show="currPage != 1">
-                    <a ng-click="prevPage()">&ltPrev</a>
-                </li>
-                <li ng-repeat="n in range(1,deviceDataPageCount)" ng-if="deviceDataPageCount > 1">
-                    <a ng-click="loadPage(n)" ng-if="n!=currPage">{{n}}</a>
-                    <span ng-if="n==currPage">{{n}}</span>
-                </li>
-                <li ng-if="deviceDataPageCount > 1" ng-show="currPage != deviceDataPageCount">
-                    <a ng-click="nextPage()">Next&gt</a>
-                </li>
-                <!-- <li ng-if="deviceDataPageCount > 1"><a ng-click="lastPage()">>></a></li> -->
-            </ul>
+            <div class="container">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <!-- <li ng-if="deviceDataPageCount > 1"><a ng-click="firstPage()"><<</a></li> -->
+                        <li ng-if="deviceDataPageCount > 1" ng-show="currPage != 1">
+                            <a ng-click="prevPage()" aria-label="Previous" href="#"><span aria-hidden="true">&laquo;</span></a>
+                        </li>
+                        <li ng-repeat="n in range(1,deviceDataPageCount)" ng-if="deviceDataPageCount > 1">
+                            <a ng-click="loadPage(n)" ng-if="n!=currPage">{{n}}</a>
+                            <span ng-if="n==currPage">{{n}}</span>
+                        </li>
+                        <li ng-if="deviceDataPageCount > 1" ng-show="currPage != deviceDataPageCount">
+                            <a ng-click="nextPage()" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+                        </li>
+                        <!-- <li ng-if="deviceDataPageCount > 1"><a ng-click="lastPage()">>></a></li> -->
+                    </ul>
+                </nav>
+            </div>
         </div>
     </div>
 </div>
@@ -352,7 +356,7 @@ Date: 05 Jan 2016
                             </tr>
                         </tbody>
                     </table>
-                    <ul>
+                    <!-- <ul>
                         <li ng-if="deviceDetailsDataPageCount > 1" ng-show="viewDetailsCurrPage != 1"><a ng-click="prevDetailPage()">&ltPrev</a></li>
                         <li ng-repeat="n in range(1,deviceDetailsDataPageCount)" ng-if="deviceDetailsDataPageCount > 1">
                             <a ng-click="loadDetailPage(n)" ng-if="n!=viewDetailsCurrPage">{{n}}</a>
@@ -360,7 +364,26 @@ Date: 05 Jan 2016
                         </li>
                         <li ng-if="deviceDetailsDataPageCount > 1" ng-show="viewDetailsCurrPage != deviceDetailsDataPageCount">
                             <a ng-click="nextDetailPage()">Next&gt</a></li>
-                    </ul>
+                    </ul> -->
+                    <div class="container">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination">
+                                <!-- <li ng-if="deviceDataPageCount > 1"><a ng-click="firstPage()"><<</a></li> -->
+                                <li ng-if="deviceDetailsDataPageCount > 1" ng-show="viewDetailsCurrPage != 1">
+                                    <a ng-click="prevDetailPage()" aria-label="Previous" href="#"><span aria-hidden="true">&laquo;</span></a>
+                                </li>
+                                <li ng-repeat="n in range(1,deviceDetailsDataPageCount)" 
+                                    ng-if="deviceDetailsDataPageCount > 1">
+                                    <a ng-click="loadDetailPage(n)" ng-if="n!=viewDetailsCurrPage">{{n}}</a>
+                            <span ng-if="n==viewDetailsCurrPage">{{n}}</span>
+                                </li>
+                                <li ng-if="deviceDetailsDataPageCount > 1" ng-show="viewDetailsCurrPage != deviceDetailsDataPageCount">
+                                    <a ng-click="nextDetailPage()" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+                                </li>
+                                <!-- <li ng-if="deviceDataPageCount > 1"><a ng-click="lastPage()">>></a></li> -->
+                            </ul>
+                        </nav>
+                    </div>
                 </div>
             </div>
             <div class="modal-body" ng-show="InitializingHistoryDetails">

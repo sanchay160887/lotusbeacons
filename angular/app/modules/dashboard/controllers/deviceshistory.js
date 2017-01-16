@@ -275,6 +275,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
                 $scope.deviceData = records;
                 $scope.deviceDataCount = recordcount;
                 $scope.deviceDataPageCount = Math.ceil(recordcount / $scope.pageLimit, 2)
+                $scope.currPage = 1;
                 $scope.Initialized = true;
             });
         }
