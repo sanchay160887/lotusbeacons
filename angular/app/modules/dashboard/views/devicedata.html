@@ -79,6 +79,61 @@
 .bcon_selection_section {
     padding: 0 0 24px 12px;
 }
+
+.push_btnn_block {
+    text-align: right;
+}
+
+.pad_box {
+    padding-top: 20px;
+}
+
+/*.btn-info {
+    width: 100%;
+}*/
+
+.btn_set {
+    margin-top: 20px;
+    width: 200px !important;
+}
+
+.error_text {
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    color: #a94442;
+}
+
+#graphic-message .modal-footer {
+    text-align: center;
+}
+
+#graphic-message .modal-header {
+    background: #2E96F2;
+    color: #fff;
+}
+
+#graphic-message .modal-title {
+    font-weight: bold;
+}
+
+.input-icon.right textarea,
+.input-icon.right:input[type="text"] {
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    resize: none;
+}
+
+#graphic-message .modal-body > small {
+    font-weight: bold;
+    font-size: 14px;
+    color: #1D8DF1;
+}
+
+#graphic-message .close {
+    color: #fff;
+    font-size: 34px;
+    opacity: 1;
+}
 </style>
 <!-- Content Header (Page header) -->
 <section class="content-header">
@@ -243,7 +298,7 @@
                     <div class="col-sm-8">
                         <form id="uploadForm" enctype="multipart/form-data" action="/api/photo" method="post">
                             <input type="file" name="userPhoto" />
-                            <input type="submit" value="Upload Image" name="submit">
+                            <input type="submit" value="Upload Image" name="submit" class="btn btn-info btn_set">
                             <img src="#" width="50px" height="50px" id="imagepreview">
                             <span id="status"></span>
                         </form>
@@ -254,8 +309,8 @@
         </small>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="sendImageMessage()"> Send</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal"> Close </button>
+                <button type="button" class="btn btn-info btn_set" data-dismiss="modal" ng-click="sendImageMessage()"> Send</button>
+                <button type="button" class="btn btn-info btn_set" data-dismiss="modal"> Close </button>
                 <!-- <input type="submit" value="Submit"> -->
             </div>
         </div>
