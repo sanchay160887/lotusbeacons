@@ -106,7 +106,7 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
         });
     }
 
-    var deviceHistoryDetailsData = function(selectedMobileNo, selectedBeacon, selectedDateFrom, selectedDateTo){
+    var deviceHistoryDetailsData = function(selectedMobileNo, selectedBeacon, selectedDateFrom, selectedDateTo, pageLimit){
         return $http({
             method: "post",
             url: '/getDeviceHistoryDetailsdata',
@@ -114,7 +114,8 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
                 'MobileNo' : selectedMobileNo,
                 'BeaconID' : selectedBeacon,
                 'DateFrom' : selectedDateFrom,
-                'DateTo' : selectedDateTo
+                'DateTo' : selectedDateTo,
+                'PageLimit' : pageLimit
             }
         });
     }    

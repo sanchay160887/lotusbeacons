@@ -8,6 +8,8 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.deviceData = [];
     $scope.deviceDataCount = 0;
     $scope.deviceDataPageCount = 0;
+    $scope.deviceDetailsDataCount = 0;
+    $scope.deviceDetailsDataPageCount = 0;
     var currdate = new Date();
     $scope.selectedDateFrom = (pad0(currdate.getDate(), 2) + '/' + pad0((currdate.getMonth() + 1), 2) + '/' + currdate.getFullYear());
     $scope.selectedDateTo = (pad0(currdate.getDate(), 2) + '/' + pad0((currdate.getMonth() + 1), 2) + '/' + currdate.getFullYear());
@@ -17,7 +19,9 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.GM_title = '';
     $scope.GM_descr = '';
     $scope.currPage = 1;
+    $scope.viewDetailsCurrPage = 1;
     $scope.pageLimit = 10;
+    $scope.detailPageLimit = 15;
     $scope.GM_ImageFilePath = '';
     $scope.baseUrl = apiService.base_url;
     $scope.InvalidInputs = false;
@@ -53,6 +57,26 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
     $scope.firstPage = function() {
         $scope.loadPage(1);
+    }
+
+    $scope.lastPage = function() {
+        $scope.loadPage($scope.deviceDataPageCount);
+    }
+
+    $scope.loadDetailPage = function(page) {
+        $scope.viewDetailsCurrPage = page;
+    }
+
+    $scope.prevDetailPage = function() {
+        $scope.viewDetailsCurrPage = $scope.viewDetailsCurrPage - 1;
+    }
+
+    $scope.nextDetailPage = function() {
+        $scope.viewDetailsCurrPage = $scope.viewDetailsCurrPage + 1;
+    }
+
+    $scope.firstDetailPage = function() {
+        $scope.viewDetailsCurrPage = 1;
     }
 
     $scope.lastPage = function() {
@@ -306,14 +330,14 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             return;
         }
 
-
-
-
-        apiService.deviceHistoryDetailsData(MobileNo, BeaconID, selectedDateFrom, selectedDateTo)
+        apiService.deviceHistoryDetailsData(MobileNo, BeaconID, selectedDateFrom, selectedDateTo, $scope.detailPageLimit)
             .then(function(res) {
                 $scope.HistoryDetailsData = [];
                 console.log(res);
                 $scope.HistoryDetailsData = res.data;
+                $scope.deviceDetailsDataCount = res.data.length;
+                $scope.deviceDetailsDataPageCount = Math.ceil(res.data.length / $scope.detailPageLimit, 2);
+                $scope.viewDetailsCurrPage = 1;
                 $scope.InitializingHistoryDetails = false;
             });
 
