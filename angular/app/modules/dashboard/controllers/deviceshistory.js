@@ -33,6 +33,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.HistoryDetailsData = [];
     $scope.HistoryPersonName = '';
     $scope.HistoryOfPlace = '';
+    $scope.HitFromPagination = false;
 
     $scope.$watchCollection('[InvalidInputs]', function() {
         if ($scope.InvalidInputs) {
@@ -43,6 +44,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     });
 
     $scope.loadPage = function(page) {
+        $scope.HitFromPagination = true;
         $scope.currPage = page;
         $scope.loadData();
     }
@@ -251,6 +253,8 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             return;
         }
 
+        $scope.InvalidInputs = false;
+
         if ((beaconlist && beaconlist.length > 0) || selectedStore) {
             $scope.Initialized = false;
             apiService.deviceHistoryData(beaconlist, selectedStore, selectedDateFrom, selectedDateTo, currentPage, $scope.pageLimit).then(function(res) {
@@ -275,7 +279,10 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
                 $scope.deviceData = records;
                 $scope.deviceDataCount = recordcount;
                 $scope.deviceDataPageCount = Math.ceil(recordcount / $scope.pageLimit, 2)
-                $scope.currPage = 1;
+                if (!$scope.HitFromPagination) {
+                    $scope.currPage = 1;
+                }
+                $scope.HitFromPagination = false;                
                 $scope.Initialized = true;
             });
         }
@@ -293,6 +300,9 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         $scope.HistoryOfPlace = BeaconKey;
 
         var queriedUrl = $location.search();
+        if (!(typeof(queriedUrl.dateFrom) != 'undefined' && queriedUrl.dateFrom)) {
+            $location.search({ 'store': $scope.selectedStore, 'beacon': $scope.selectedBeacon, 'dateFrom': $scope.selectedDateFrom, 'dateTo': $scope.selectedDateTo, 'page': $scope.currPage });
+        }
 
         $scope.InitializingHistoryDetails = true;
         if (MobileNo.length > 10) {

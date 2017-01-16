@@ -34,7 +34,7 @@
 
 .bcon-slect-title {
     margin-bottom: 0;
-    padding: 7% 0;
+    /* padding: 7%   0;*/
 }
 
 .error_text {
@@ -61,34 +61,17 @@
 
 .bcon_selection_block_left {
     border-radius: 3px;
-    width: 80%;
-    display: inline-block;
+    /*width: 80%;*/
+    /*display: inline-block;*/
     vertical-align: top;
 }
 
 .bcon_selection_block_right {
     border-radius: 3px;
-    width: 19.5%;
+    width: 100%;
     display: inline-block;
     vertical-align: top;
 }
-
-
-/*
-.bcon_selection_left_1 {
-    display: inline-block;
-    width: 34%;
-}
-
-.bcon_selection_left_2 {
-    display: inline-block;
-    width: 23%;
-}
-
-.bcon_selection_left_3 {
-    display: inline-block;
-    width: 25%;
-}*/
 
 .no-pad {
     padding: 0 2px;
@@ -100,6 +83,25 @@
 
 .push_btnn_block {
     text-align: right;
+}
+
+.pad_box {
+    padding-top: 20px;
+}
+
+.btn-info {
+    width: 100%;
+}
+
+.btn_set {
+    margin-top: 20px;
+    width: 200px !important;
+}
+
+.error_text {
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    color: #a94442;
 }
 </style>
 <!--
@@ -126,12 +128,10 @@ Date: 05 Jan 2016
         <div class="bcon_selection_section">
             <div class="bcon_selection_block_left">
                 <div class="bcon_selection row">
-                    <div class="bcon_selection_left_1 col-md-4 no-pad">
+                    <div class="bcon_selection_left_1 col-md-3 no-pad">
                         <div class="form-group">
-                            <div class="col-md-4 no-pad">
+                            <div class="col-md-12 no-pad">
                                 <label class="bcon-slect-title">Select Store</label>
-                            </div>
-                            <div class="col-md-8 no-pad">
                                 <select class="form-control col-md-4" ng-model="selectedStore">
                                     <option value="">Select Store</option>
                                     <option ng-repeat="device in storeData" value="{{device._id}}">{{device.StoreName}}</option>
@@ -139,12 +139,10 @@ Date: 05 Jan 2016
                             </div>
                         </div>
                     </div>
-                    <div class="bcon_selection_left_2 col-md-4">
+                    <div class="bcon_selection_left_2 col-md-3">
                         <div class="form-group">
-                            <div class="col-md-5 no-pad">
+                            <div class="col-md-12 no-pad">
                                 <label class="bcon-slect-title">Select Beacon</label>
-                            </div>
-                            <div class="col-md-7 no-pad">
                                 <select class="form-control col-md-4" ng-show="!BeaconInitialized">
                                     <option value="">Please wait..</option>
                                 </select>
@@ -155,31 +153,22 @@ Date: 05 Jan 2016
                             </div>
                         </div>
                     </div>
-                    <div class="bcon_selection_left_3 col-md-4">
+                    <div class="bcon_selection_left_3 col-md-6">
                         <div class="form-group">
-                            <div class="col-md-4 no-pad">
+                            <div class="col-md-5 no-pad">
                                 <label class="bcon-slect-title">Date From</label>
-                            </div>
-                            <div class="col-md-6 no-pad">
                                 <input type="text" ng-model="selectedDateFrom" id="datepickerFrom" class="datepicker form-control">
                             </div>
-                            <div class="col-md-4 no-pad">
+                            <div class="col-md-5 no-pad">
                                 <label class="bcon-slect-title">Date To</label>
-                            </div>
-                            <div class="col-md-6 no-pad">
                                 <input type="text" ng-model="selectedDateTo" id="datepickerTo" class="datepicker form-control">
                             </div>
                             <div class="col-md-2 no-pad">
-                                <button type="button" class="btn btn-info" ng-click="loadData()">Show</button>
+                                <div class="pad_box">
+                                    <button type="button" class="btn btn-info" ng-click="loadData()">Show</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="bcon_selection_block_right">
-                <div class="bcon_selection push_btnn_block row">
-                    <div class="col-md-12">
-                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#graphic-message">Send Push Notification</button>
                     </div>
                 </div>
             </div>
@@ -188,8 +177,17 @@ Date: 05 Jan 2016
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th colspan="5"><small><a href="javascript:;" ng-click="selectRecords()">Select All</a>/
+                        <th colspan="3"><small><a href="javascript:;" ng-click="selectRecords()">Select All</a>/
             <a href="javascript:;" ng-click="unselectRecords()">Unselect All</a></small></th>
+                        <th colspan="3">
+                            <div class="bcon_selection_block_right">
+                                <div class="bcon_selection push_btnn_block row">
+                                    <div class="col-md-12">
+                                        <button type="button" class="btn btn-info btn_set" data-toggle="modal" data-target="#graphic-message">Send Push Notification</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </th>
                     </tr>
                     <tr>
                         <th>Select</th>
@@ -221,11 +219,11 @@ Date: 05 Jan 2016
                     </tr>
                 </tbody>
             </table>
-            <div class="container">
+            <div class="col-md-12 text-right">
                 <nav aria-label="Page navigation">
                     <ul class="pagination">
                         <!-- <li ng-if="deviceDataPageCount > 1"><a ng-click="firstPage()"><<</a></li> -->
-                        <li ng-if="deviceDataPageCount > 1" ng-show="currPage != 1">
+                        <li ng-if="deviceDataPageCount > 1" ng-show="currPage > 1">
                             <a ng-click="prevPage()" aria-label="Previous" href="#"><span aria-hidden="true">&laquo;</span></a>
                         </li>
                         <li ng-repeat="n in range(1,deviceDataPageCount)" ng-if="deviceDataPageCount > 1">
@@ -372,10 +370,9 @@ Date: 05 Jan 2016
                                 <li ng-if="deviceDetailsDataPageCount > 1" ng-show="viewDetailsCurrPage != 1">
                                     <a ng-click="prevDetailPage()" aria-label="Previous" href="#"><span aria-hidden="true">&laquo;</span></a>
                                 </li>
-                                <li ng-repeat="n in range(1,deviceDetailsDataPageCount)" 
-                                    ng-if="deviceDetailsDataPageCount > 1">
+                                <li ng-repeat="n in range(1,deviceDetailsDataPageCount)" ng-if="deviceDetailsDataPageCount > 1">
                                     <a ng-click="loadDetailPage(n)" ng-if="n!=viewDetailsCurrPage">{{n}}</a>
-                            <span ng-if="n==viewDetailsCurrPage">{{n}}</span>
+                                    <span ng-if="n==viewDetailsCurrPage">{{n}}</span>
                                 </li>
                                 <li ng-if="deviceDetailsDataPageCount > 1" ng-show="viewDetailsCurrPage != deviceDetailsDataPageCount">
                                     <a ng-click="nextDetailPage()" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>

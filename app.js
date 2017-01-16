@@ -1077,7 +1077,7 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
         async.waterfall([
             function(callback) {
                 var collection = db.collection('beacons');
-                var beaconcollection = [];
+                var beaconcollection = {};
                 if (BeaconID && BeaconID.length > 0) {
                     beaconcollection = collection.find({ 'BeaconID': BeaconID });
                 }
