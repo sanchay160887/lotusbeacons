@@ -224,7 +224,7 @@ Date: 05 Jan 2016
             <ul>
                 <!-- <li ng-if="deviceDataPageCount > 1"><a ng-click="firstPage()"><<</a></li> -->
                 <li ng-if="deviceDataPageCount > 1"><a ng-click="prevPage()">&ltPrev</a></li>
-                <li ng-repeat="n in range(1,deviceDataPageCount)">
+                <li ng-repeat="n in range(1,deviceDataPageCount)" ng-if="deviceDataPageCount > 1">
                     <a ng-click="loadPage(n)" ng-if="n!=currPage">{{n}}</a>
                     <span ng-if="n==currPage">{{n}}</span>
                 </li>
