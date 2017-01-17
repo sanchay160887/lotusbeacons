@@ -826,6 +826,7 @@ app.post('/getdata', function(req, res) {
                         var reqbody = parse_JSON(body);
                         if (reqbody) {
                             reqbody = reqbody.data;
+                            var mobileno = '';
                             for (var r in reqbody) {
                                 if (reqbody[r] != false) {
                                     for (var d in devicelist) {
@@ -833,7 +834,13 @@ app.post('/getdata', function(req, res) {
                                             devicelist[d].DeviceName = reqbody[r].name;
                                             devicelist[d].DevicePhone = reqbody[r].mobile_no;
                                         }*/
-                                        if (('91' + devicelist[d].MobileNo) == reqbody[r].mobile_no) {
+                                        if (typeof(devicelist[d].MobileNo) != 'undefined' && devicelist[d].MobileNo){
+                                            mobileno = '91' + devicelist[d].MobileNo;
+                                        } else {
+                                            mobileno = '';
+                                        }
+
+                                        if (mobileno == reqbody[r].mobile_no) {
                                             devicelist[d].DeviceName = reqbody[r].name;
                                             devicelist[d].DevicePhone = reqbody[r].mobile_no;
                                         }
