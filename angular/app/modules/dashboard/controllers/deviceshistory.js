@@ -43,6 +43,22 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         }
     });
 
+    $scope.IsRecordSelected = false;
+
+    $scope.checkClickedRecords = function() {
+        var checkedlist = [];
+        for (var dd in $scope.deviceData) {
+            if ($scope.deviceData[dd].checked) {
+                checkedlist.push($scope.deviceData[dd].DeviceID);
+            }
+        }
+        if (checkedlist && checkedlist.length > 0) {
+            $scope.IsRecordSelected = true;
+        } else {
+            $scope.IsRecordSelected = false;
+        }
+    }
+
     $scope.loadPage = function(page) {
         $scope.HitFromPagination = true;
         $scope.currPage = page;
@@ -282,7 +298,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
                 if (!$scope.HitFromPagination) {
                     $scope.currPage = 1;
                 }
-                $scope.HitFromPagination = false;                
+                $scope.HitFromPagination = false;
                 $scope.Initialized = true;
             });
         }
