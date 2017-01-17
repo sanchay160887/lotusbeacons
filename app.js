@@ -805,14 +805,19 @@ app.post('/getdata', function(req, res) {
             function(devicelist, callback) {
                 var devices = [];
                 for (var d in devicelist) {
-                    devices.push(devicelist[d].DeviceID);
+                    //devices.push(devicelist[d].DeviceID);
+                    devices.push('91' + devicelist[d].MobileNo);
                 }
+
                 var request = require('request');
                 var data = JSON.stringify(devices);
+                console.log(data);
 
-                request.post('http://lampdemos.com/lotus15/v2/user/get_user_name', {
+                //request.post('http://lampdemos.com/lotus15/v2/user/get_user_name', {
+                request.post('http://lampdemos.com/lotus15/v2/user/get_user_name_by_mobileno', {
                         form: {
-                            'android_device_token': data
+                            //'android_device_token': data
+                            'mobile_nos': data
                         }
                     },
                     function(res2, err, body) {
@@ -824,7 +829,11 @@ app.post('/getdata', function(req, res) {
                             for (var r in reqbody) {
                                 if (reqbody[r] != false) {
                                     for (var d in devicelist) {
-                                        if (devicelist[d].DeviceID == reqbody[r].device_token) {
+                                        /*if (devicelist[d].DeviceID == reqbody[r].device_token) {
+                                            devicelist[d].DeviceName = reqbody[r].name;
+                                            devicelist[d].DevicePhone = reqbody[r].mobile_no;
+                                        }*/
+                                        if (('91' + devicelist[d].MobileNo) == reqbody[r].mobile_no) {
                                             devicelist[d].DeviceName = reqbody[r].name;
                                             devicelist[d].DevicePhone = reqbody[r].mobile_no;
                                         }
@@ -833,13 +842,13 @@ app.post('/getdata', function(req, res) {
                             }
                         }
 
-                        /*var i;
+                        var i;
                         i = devicelist.length;
                         while (i--) {
                             if (!devicelist[i].DeviceName) {
                                 devicelist.splice(i, 1);
                             }
-                        }*/
+                        }
 
                         res.send(devicelist);
                         callback(null, devicelist);
