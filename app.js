@@ -833,13 +833,13 @@ app.post('/getdata', function(req, res) {
                             }
                         }
 
-                        var i;
+                        /*var i;
                         i = devicelist.length;
                         while (i--) {
                             if (!devicelist[i].DeviceName) {
                                 devicelist.splice(i, 1);
                             }
-                        }
+                        }*/
 
                         res.send(devicelist);
                         callback(null, devicelist);
