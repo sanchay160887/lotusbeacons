@@ -811,7 +811,7 @@ app.post('/getdata', function(req, res) {
 
                 var request = require('request');
                 var data = JSON.stringify(devices);
-                console.log(data);
+                //console.log(data);
 
                 //request.post('http://lampdemos.com/lotus15/v2/user/get_user_name', {
                 request.post('http://lampdemos.com/lotus15/v2/user/get_user_name_by_mobileno', {
