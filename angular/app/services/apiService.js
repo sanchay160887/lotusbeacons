@@ -118,7 +118,20 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
                 'PageLimit' : pageLimit
             }
         });
-    }    
+    }
+
+    var deviceSearchHistoryDetailsData = function(selectedMobileNo, selectedDateFrom, selectedDateTo, pageLimit){
+        return $http({
+            method: "post",
+            url: '/getDeviceSearchHistoryDetailsdata',
+            data: {
+                'MobileNo' : selectedMobileNo,
+                'DateFrom' : selectedDateFrom,
+                'DateTo' : selectedDateTo,
+                'PageLimit' : pageLimit
+            }
+        });
+    }
 
     var sendNotification = function(){
         return $http({
@@ -335,6 +348,7 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
     apiService.deviceData = deviceData;
 	apiService.deviceHistoryData = deviceHistoryData;
     apiService.deviceHistoryDetailsData = deviceHistoryDetailsData;
+    apiService.deviceSearchHistoryDetailsData = deviceSearchHistoryDetailsData;
     apiService.sendNotification = sendNotification;
     apiService.sendNotification_plain = sendNotification_plain;
     apiService.sendNotification_image = sendNotification_image;

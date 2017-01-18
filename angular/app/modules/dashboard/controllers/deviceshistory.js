@@ -10,6 +10,8 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.deviceDataPageCount = 0;
     $scope.deviceDetailsDataCount = 0;
     $scope.deviceDetailsDataPageCount = 0;
+    $scope.deviceSearchDetailsDataCount = 0;
+    $scope.deviceSearchDetailsDataPageCount = 0;
     var currdate = new Date();
     $scope.selectedDateFrom = (pad0(currdate.getDate(), 2) + '/' + pad0((currdate.getMonth() + 1), 2) + '/' + currdate.getFullYear());
     $scope.selectedDateTo = (pad0(currdate.getDate(), 2) + '/' + pad0((currdate.getMonth() + 1), 2) + '/' + currdate.getFullYear());
@@ -20,6 +22,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.GM_descr = '';
     $scope.currPage = 1;
     $scope.viewDetailsCurrPage = 1;
+    $scope.viewSearchDetailsCurrPage = 1;
     $scope.pageLimit = 10;
     $scope.detailPageLimit = 15;
     $scope.GM_ImageFilePath = '';
@@ -34,6 +37,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.HistoryPersonName = '';
     $scope.HistoryOfPlace = '';
     $scope.HitFromPagination = false;
+    $scope.HistorySearchDetailsData = [];
 
     $scope.$watchCollection('[InvalidInputs]', function() {
         if ($scope.InvalidInputs) {
@@ -97,8 +101,20 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         $scope.viewDetailsCurrPage = 1;
     }
 
-    $scope.lastPage = function() {
-        $scope.loadPage($scope.deviceDataPageCount);
+    $scope.loadSearchDetailPage = function(page) {
+        $scope.viewSearchDetailsCurrPage = page;
+    }
+
+    $scope.prevSearchDetailPage = function() {
+        $scope.viewSearchDetailsCurrPage = $scope.viewSearchDetailsCurrPage - 1;
+    }
+
+    $scope.nextSearchDetailPage = function() {
+        $scope.viewSearchDetailsCurrPage = $scope.viewSearchDetailsCurrPage + 1;
+    }
+
+    $scope.firstSearchDetailPage = function() {
+        $scope.viewSearchDetailsCurrPage = 1;
     }
 
     function pad0(value, count) {
@@ -365,6 +381,69 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
                 $scope.deviceDetailsDataCount = res.data.length;
                 $scope.deviceDetailsDataPageCount = Math.ceil(res.data.length / $scope.detailPageLimit, 2);
                 $scope.viewDetailsCurrPage = 1;
+                $scope.InitializingHistoryDetails = false;
+            });
+
+    }
+
+    $scope.getDeviceSearchHistoryDetails = function(PersonName, MobileNo) {
+        $scope.HistoryPersonName = PersonName;
+
+        var queriedUrl = $location.search();
+        if (!(typeof(queriedUrl.dateFrom) != 'undefined' && queriedUrl.dateFrom)) {
+            $location.search({ 'store': $scope.selectedStore, 'beacon': $scope.selectedBeacon, 'dateFrom': $scope.selectedDateFrom, 'dateTo': $scope.selectedDateTo, 'page': $scope.currPage });
+        }
+
+        $scope.InitializingHistoryDetails = true;
+        /*if (MobileNo.length > 10) {
+            MobileNo = MobileNo.substring(2);
+        }*/
+
+        console.log(queriedUrl.dateFrom);
+        console.log(queriedUrl.dateTo);
+
+        var selectedDateFrom = '';
+        if (typeof(queriedUrl.dateFrom) != 'undefined' && queriedUrl.dateFrom) {
+            selectedDateFrom = queriedUrl.dateFrom;
+        }
+
+        var selectedDateTo = '';
+        if (typeof(queriedUrl.dateTo) != 'undefined' && queriedUrl.dateTo) {
+            selectedDateTo = queriedUrl.dateTo;
+        }
+
+        selectedDateFrom = convertDateToTimestamp(selectedDateFrom);
+
+        console.log(selectedDateFrom);
+
+        if (!selectedDateFrom) {
+            $scope.InvalidInputs = true;
+            return;
+        }
+
+        selectedDateTo = convertDateToTimestamp(selectedDateTo);
+
+        console.log(selectedDateTo);
+
+        if (!selectedDateTo) {
+            $scope.InvalidInputs = true;
+            return;
+        }
+
+        if (!(selectedDateFrom <= selectedDateTo)) {
+            $scope.InvalidInputs = true;
+            return;
+        }
+
+        apiService.deviceSearchHistoryDetailsData('919926037416', selectedDateFrom, selectedDateTo, $scope.detailPageLimit)
+            .then(function(res) {
+                console.log(res);
+                $scope.HistorySearchDetailsData = [];
+                $scope.HistorySearchDetailsData = res.data;
+                $scope.deviceSearchDetailsDataCount = res.data.length;
+                $scope.deviceSearchDetailsDataPageCount = Math.ceil(res.data.length / $scope.detailPageLimit, 2);
+                console.log($scope.deviceSearchDetailsDataPageCount);
+                $scope.viewSearchDetailsCurrPage = 1;
                 $scope.InitializingHistoryDetails = false;
             });
 

@@ -246,6 +246,7 @@ Date: 05 Jan 2016
                         <td>{{ device.StayTime}}</td>
                         <td>{{ device.BeaconKey + '(' + device.BeaconID + ')' }}</td>
                         <td>
+                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#search-history-detail" ng-click="getDeviceSearchHistoryDetails(device.DeviceName, device.DevicePhone)">View Search History</button>
                             <button type="button" class="btn btn-info" data-toggle="modal" data-target="#device-history-detail" ng-click="getDeviceHistoryDetails(device.DeviceName, device.BeaconKey, device.DevicePhone, device.BeaconID)">View Details</button>
                         </td>
                     </tr>
@@ -383,8 +384,8 @@ Date: 05 Jan 2016
                         <tbody>
                             <tr ng-repeat="hdd in HistoryDetailsData | orderBy:Date" ng-if="HistoryDetailsData.length > 0" ng-show="hdd.page==viewDetailsCurrPage">
                                 <td>{{ hdd.Date | date }}</td>
-                                <td>{{ hdd.Date | date:'hh:mm a' }}</td>
-                                <td>{{ hdd.DateTo | date:'hh:mm a' }}</td>
+                                <td>{{ hdd.Date | date:'hh:mm:ss a' }}</td>
+                                <td>{{ hdd.DateTo | date:'hh:mm:ss a' }}</td>
                                 <td>{{ hdd.StayTime }}</td>
                             </tr>
                             <tr ng-if="HistoryDetailsData.length <= 0">
@@ -418,6 +419,61 @@ Date: 05 Jan 2016
                                     <a ng-click="nextDetailPage()" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
                                 </li>
                                 <!-- <li ng-if="deviceDataPageCount > 1"><a ng-click="lastPage()">>></a></li> -->
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body" ng-show="InitializingHistoryDetails">
+                <h1>Loading History, Please wait...</h1>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"> Close </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div id="search-history-detail" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Search History of <strong>{{ toProperCase(HistoryPersonName) }}</strong></h4>
+            </div>
+            <div class="modal-body" ng-show="!InitializingHistoryDetails">
+                <div class="form-group clearfix">
+                    <table class="table table-striped">
+                        <thead>
+                            <th>Date</th>
+                            <th>Searched Keyword</th>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="hdd in HistorySearchDetailsData | orderBy:date_added" ng-if="HistorySearchDetailsData.length > 0" ng-show="hdd.page==viewSearchDetailsCurrPage">
+                                <td>{{ hdd.date_added }}</td>
+                                <td>{{ hdd.search_keyword }}</td>
+                            </tr>
+                            <tr ng-if="HistorySearchDetailsData.length <= 0">
+                                <td colspan="4">
+                                    <h4>No Details Found</h4>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div>
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination">
+                                <li ng-if="deviceSearchDetailsDataPageCount > 1" ng-show="viewSearchDetailsCurrPage != 1">
+                                    <a ng-click="prevSearchDetailPage()" aria-label="Previous" href="#"><span aria-hidden="true">&laquo;</span></a>
+                                </li>
+                                <li ng-repeat="n in range(1,deviceDetailsDataPageCount)" ng-if="deviceDetailsDataPageCount > 1">
+                                    <a ng-click="loadDetailPage(n)" ng-if="n!=viewSearchDetailsCurrPage">{{n}}</a>
+                                    <span ng-if="n==viewSearchDetailsCurrPage">{{n}}</span>
+                                </li>
+                                <li ng-if="deviceSearchDetailsDataPageCount > 1" ng-show="viewSearchDetailsCurrPage != deviceSearchDetailsDataPageCount">
+                                    <a ng-click="nextSearchDetailPage()" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+                                </li>
                             </ul>
                         </nav>
                     </div>

@@ -1070,7 +1070,6 @@ app.post('/getDeviceHistorydata', function(req, res) {
 });
 
 app.post('/getDeviceHistoryDetailsdata', function(req, res) {
-    BeaconID = req.body.BeaconID;
     MobileNo = req.body.MobileNo;
     PageLimit = req.body.PageLimit;
 
@@ -1093,22 +1092,6 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
 
         async.waterfall([
             function(callback) {
-                var collection = db.collection('beacons');
-                var beaconcollection = {};
-                if (BeaconID && BeaconID.length > 0) {
-                    beaconcollection = collection.find({ 'BeaconID': BeaconID });
-                }
-
-                beaconcollection.toArray(function(err, beacons) {
-                    var beaconslist = [];
-                    for (var b in beacons) {
-                        beaconslist[beacons[b].BeaconID] = beacons[b].BeaconKey;
-                    }
-                    callback(null, beaconslist);
-                });
-            },
-            function(beaconlist, callback) {
-                //var collection = db.collection('test_device_history');
                 var collection = db.collection('device_history');
                 var devicelist = new Array();
 
@@ -1159,11 +1142,66 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
     });
 });
 
+app.post('/getDeviceSearchHistoryDetailsdata', function(req, res) {
+    BeaconID = req.body.BeaconID;
+    MobileNo = req.body.MobileNo;
+    PageLimit = req.body.PageLimit;
 
+    fromDate = 0;
+    toDate = 0;
+    seldate = new Date(req.body.DateFrom);
+    fromDate = seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate();
+    seldate = new Date(req.body.DateTo);
+    toDate = seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate();
 
+    console.log('fromDate: ' + fromDate);
+    console.log('toDate: ' + toDate);
+    console.log('MobileNo : ' + MobileNo);
 
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
 
+        async.waterfall([
+            function(callback) {
+                var request = require('request');
 
+                request.post('http://lampdemos.com/lotus15/v2/user/get_search_result', {
+                        form: {
+                            'mobile_no': MobileNo,
+                            'from' : fromDate,
+                            'to' : toDate
+                        }
+                    },
+                    function(res2, err, body) {
+                        search_detail = [];
+                        //var reqbody = JSON.parse(body);
+                        var reqbody = parse_JSON(body);
+                        if (reqbody) {
+                            reqbody = reqbody.data;
+                            if (reqbody) {
+                                var sa = [];
+                                var cnt = 1;
+                                for (var r in reqbody) {
+                                    reqbody[r].srno = cnt;
+                                    reqbody[r].page = Math.ceil(cnt / PageLimit, 2);
+                                    search_detail.push(reqbody[r]);
+                                }
+                            }
+                        }
+
+                        res.send(search_detail);
+                        callback(null, search_detail);
+                    })
+            },
+            function(search_detail, callback) {
+                db.close();
+            }
+        ]);
+
+    });
+});
 
 /*Beacon Services start*/
 app.post('/getbeacondata', function(req, res) {
