@@ -834,7 +834,7 @@ app.post('/getdata', function(req, res) {
                                             devicelist[d].DeviceName = reqbody[r].name;
                                             devicelist[d].DevicePhone = reqbody[r].mobile_no;
                                         }*/
-                                        if (typeof(devicelist[d].MobileNo) != 'undefined' && devicelist[d].MobileNo){
+                                        if (typeof(devicelist[d].MobileNo) != 'undefined' && devicelist[d].MobileNo) {
                                             mobileno = '91' + devicelist[d].MobileNo;
                                         } else {
                                             mobileno = '';
@@ -962,7 +962,6 @@ app.post('/getDeviceHistorydata', function(req, res) {
                             }
                         }]
                     ).toArray(function(err, devices) {
-                        console.log('Coming at 954');
                         resObjVal.NoOfRecords = devices.length;
                         callback(null, beaconlist);
                     })
@@ -1006,7 +1005,6 @@ app.post('/getDeviceHistorydata', function(req, res) {
                                 devices[dvc].StayTime = convertSecondsToStringTime(devices[dvc].StayTime);
                                 devicelist.push(devices[dvc]);
                             }
-                            console.log(devicelist);
 
                             callback(null, devicelist);
                         })
@@ -1072,6 +1070,7 @@ app.post('/getDeviceHistorydata', function(req, res) {
 app.post('/getDeviceHistoryDetailsdata', function(req, res) {
     MobileNo = req.body.MobileNo;
     PageLimit = req.body.PageLimit;
+    BeaconID = req.body.BeaconID;
 
     fromDate = 0;
     toDate = 0;
@@ -1090,8 +1089,27 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
             return console.dir(err);
         }
 
+        beaconsIDs = [];
+
         async.waterfall([
             function(callback) {
+                var collection = db.collection('beacons');
+                var beaconcollection = {};
+
+                beaconcollection = collection.find({
+                    'BeaconID': BeaconID
+                });
+
+                beaconcollection.toArray(function(err, beacons) {
+                    var beaconslist = [];
+                    for (var b in beacons) {
+                        beaconslist[beacons[b].BeaconID] = beacons[b].BeaconKey;
+                        beaconsIDs.push(beacons[b].BeaconID);
+                    }
+                    callback(null, beaconsIDs);
+                });
+            },
+            function(beaconlist, callback) {
                 var collection = db.collection('device_history');
                 var devicelist = new Array();
 
@@ -1100,10 +1118,8 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
                     beacons.push(b);
                 }
 
-                console.log(beacons);
-
                 if (beacons && beacons.length > 0) {
-                    devicecollection = collection.find({
+                    /*devicecollection = collection.find({
                         'BeaconID': BeaconID,
                         'MobileNo': MobileNo,
                         'Date': {
@@ -1112,6 +1128,48 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
                         }
                     }).sort({ 'Date': -1 }).toArray(function(err, devices) {
                         console.log(devices);
+                        devicedetaillist = [];
+                        var cnt = 1;
+                        for (var dvc in devices) {
+                            devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
+                            if (typeof(devices[dvc].DateTo) == 'undefined' || !devices[dvc].DateTo) {
+                                devices[dvc].DateTo = devices[dvc].Date + (devices[dvc].StayTime * 1000);
+                            }
+                            devices[dvc].StayTime = convertSecondsToStringTime(devices[dvc].StayTime);
+                            devices[dvc].srno = cnt;
+                            devices[dvc].page = Math.ceil(cnt / PageLimit, 2);
+                            cnt++;
+                            devicedetaillist.push(devices[dvc]);
+                        }
+
+                        res.send(devicedetaillist);
+                        callback(null, 'records found');
+                    })*/
+
+                    devicecollection = collection.aggregate(
+                        [{
+                            $match: {
+                                'Date': {
+                                    '$gte': fromDate,
+                                    '$lte': toDate
+                                },
+                                'BeaconID': BeaconID,
+                                'MobileNo': MobileNo,
+                            }
+                        }, {
+                            $group: {
+                                _id: {
+                                    BeaconID: '$BeaconID',
+                                    DeviceID: '$DeviceID',
+                                    startDate: { $floor: { $divide: ["$Date", 120000] } },
+                                    //endDate: { $floor: { $divide: ["$DateTo", 60000] } }
+                                },
+                                Date: { $min: "$Date" },
+                                DateTo: { $max: "$DateTo" },
+                                StayTime: { $sum: "$StayTime" }
+                            }
+                        }]
+                    ).sort({ 'Date': -1 }).toArray(function(err, devices) {
                         devicedetaillist = [];
                         var cnt = 1;
                         for (var dvc in devices) {
@@ -1170,8 +1228,8 @@ app.post('/getDeviceSearchHistoryDetailsdata', function(req, res) {
                 request.post('http://lampdemos.com/lotus15/v2/user/get_search_result', {
                         form: {
                             'mobile_no': MobileNo,
-                            'from' : fromDate,
-                            'to' : toDate
+                            'from': fromDate,
+                            'to': toDate
                         }
                     },
                     function(res2, err, body) {
@@ -1185,6 +1243,7 @@ app.post('/getDeviceSearchHistoryDetailsdata', function(req, res) {
                                 var cnt = 1;
                                 for (var r in reqbody) {
                                     reqbody[r].srno = cnt;
+                                    reqbody[r].datetimestamp = new Date(reqbody[r].date_added).getTime();
                                     reqbody[r].page = Math.ceil(cnt / PageLimit, 2);
                                     search_detail.push(reqbody[r]);
                                 }
@@ -1779,6 +1838,7 @@ app.post('/api/photo', function(req, res) {
             console.log(err);
             return res.end("Error uploading file.");
         }
+        //console.log(req);
         var filename = '';
         if (req.file) {
             filename = req.file.destination + req.file.filename;

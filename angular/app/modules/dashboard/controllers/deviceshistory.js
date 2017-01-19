@@ -435,7 +435,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             return;
         }
 
-        apiService.deviceSearchHistoryDetailsData('919926037416', selectedDateFrom, selectedDateTo, $scope.detailPageLimit)
+        apiService.deviceSearchHistoryDetailsData(MobileNo, selectedDateFrom, selectedDateTo, $scope.detailPageLimit)
             .then(function(res) {
                 console.log(res);
                 $scope.HistorySearchDetailsData = [];
@@ -531,10 +531,12 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             }
         }
 
-        var ImageFilePath = $scope.baseUrl + $scope.GM_ImageFilePath;
+        var ImageFilePath = document.getElementById('imagepreview').src;
+        var title = document.getElementById('push-title').value;
+        var description = document.getElementById('push-description').value;       
 
         if (checkedlist && checkedlist.length > 0) {
-            apiService.sendNotification_image(checkedlist, $scope.GM_title, $scope.GM_descr, ImageFilePath).then(function(res) {
+            apiService.sendNotification_image(checkedlist, title, description, ImageFilePath).then(function(res) {
                 console.log(res);
             });
         } else {

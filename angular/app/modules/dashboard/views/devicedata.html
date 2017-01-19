@@ -88,6 +88,7 @@
     padding-top: 20px;
 }
 
+
 /*.btn-info {
     width: 100%;
 }*/
@@ -191,7 +192,7 @@
                         <!-- <button type="button" class="btn btn-info" data-toggle="modal" data-target="#text-message">Send Notification</button> -->
                     </div>
                     <div class="col-md-7">
-                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#graphic-message">Send Push Notification</button>
+                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#graphic-message" ng-click="checkClickedRecords()">Send Push Notification</button>
                     </div>
                 </div>
             </div>
@@ -281,7 +282,7 @@
                     <label for="inputEmail3" class="col-sm-4 control-label">Title</label>
                     <div class="col-sm-8">
                         <div class="input-icon right">
-                            <input class="form-control tag-inpt" ng-model="GM_title" />
+                            <input class="form-control tag-inpt" id="push-title" ng-model="GM_title" />
                         </div>
                     </div>
                 </div>
@@ -289,7 +290,7 @@
                     <label for="inputEmail3" class="col-sm-4 control-label">Description</label>
                     <div class="col-sm-8">
                         <div class="input-icon right">
-                            <textarea ng-model="GM_descr" style="width:100%"></textarea>
+                            <textarea ng-model="GM_descr" id="push-description" style="width:100%"></textarea>
                         </div>
                     </div>
                 </div>
@@ -298,7 +299,7 @@
                     <div class="col-sm-8">
                         <form id="uploadForm" enctype="multipart/form-data" action="/api/photo" method="post">
                             <input type="file" name="userPhoto" />
-                            <input type="submit" value="Upload Image" name="submit" class="btn btn-info btn_set">
+                            <input type="submit" value="Upload Image" name="submit" class="btn btn-info btn_set" onclick="return uploadimage(this)">
                             <img src="#" width="50px" height="50px" id="imagepreview">
                             <span id="status"></span>
                         </form>
@@ -312,7 +313,8 @@
                 <h1>Sorry!!! No device selected</h1>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-info btn_set" data-dismiss="modal" ng-click="sendImageMessage()" ng-if="IsRecordSelected"> Send</button>
+                <button type="button" class="btn btn-info btn_set" data-dismiss="modal" 
+                    ng-click="sendImageMessage()" ng-if="IsRecordSelected"> Send</button>
                 <button type="button" class="btn btn-info btn_set" data-dismiss="modal"> Close </button>
                 <!-- <input type="submit" value="Submit"> -->
             </div>
@@ -322,7 +324,7 @@
 <script type="text/javascript">
 $(document).ready(function() {
     $("#imagepreview").hide();
-    $('#uploadForm').submit(function() {
+    /*$('#uploadForm').submit(function() {
         $("#status").empty().text("Image is uploading...");
         $(this).ajaxSubmit({
 
@@ -349,6 +351,34 @@ $(document).ready(function() {
         });
         //Very important line, it disable the page refresh.
         return false;
-    });
+    });*/
 });
+
+function uploadimage(object) {
+    $("#status").empty().text("Image is uploading...");
+    $('#uploadForm').ajaxSubmit({
+
+        error: function(xhr) {
+            status('Error: ' + xhr.status);
+        },
+
+        success: function(response) {
+            if (response != 'Error uploading file.') {
+                $("#status").empty();
+                $("#imagepreview").attr('src', response);
+                $("#imagepreview").show();
+                var scope = angular.element($("#imagepreview")).scope();
+                scope.$apply(function() {
+                    scope.GM_ImageFilePath = response;
+                });
+            } else {
+                $("#status").empty().text(response);
+                $("#imagepreview").hide();
+            }
+            console.log(response);
+        }
+    });
+    //Very important line, it disable the page refresh.
+    return false;
+}
 </script>

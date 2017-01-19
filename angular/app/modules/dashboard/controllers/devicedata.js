@@ -201,13 +201,12 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
             }
         }
 
-        var ImageFilePath = '';
-        if ($scope.GM_ImageFilePath) {
-            var ImageFilePath = $scope.baseUrl + $scope.GM_ImageFilePath;
-        }
+        var ImageFilePath = document.getElementById('imagepreview').src;
+        var title = document.getElementById('push-title').value;
+        var description = document.getElementById('push-description').value;       
 
         if (checkedlist && checkedlist.length > 0) {
-            apiService.sendNotification_image(checkedlist, $scope.GM_title, $scope.GM_descr, ImageFilePath).then(function(res) {
+            apiService.sendNotification_image(checkedlist, title, description, ImageFilePath).then(function(res) {
                 console.log(res);
             });
         } else {
