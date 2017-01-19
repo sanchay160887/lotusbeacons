@@ -214,6 +214,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         if ($scope.Initialized) {
             $location.search({ 'store': $scope.selectedStore });
             $scope.getAllBeacon();
+            $scope.selectedBeacon = '';            
         }
     });
 

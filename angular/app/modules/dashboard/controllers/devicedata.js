@@ -57,6 +57,7 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         if ($scope.Initialized) {
             $location.search({ 'store': $scope.selectedStore });
             $scope.getAllBeacon();
+            $scope.selectedBeacon = '';
         }
     });
 
