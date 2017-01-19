@@ -758,7 +758,8 @@ app.post('/getdata', function(req, res) {
                         'BeaconStore': ObjectId(StoreID)
                     });
                 } else {
-                    beaconcollection = collection.find();
+                    //beaconcollection = collection.find();
+                    beaconcollection = {};
                 }
 
                 beaconcollection.toArray(function(err, beacons) {
@@ -924,7 +925,7 @@ app.post('/getDeviceHistorydata', function(req, res) {
                 } else {
                     /*console.log('coming to all part');
                     beaconcollection = collection.find();*/
-                    beaconcollection = [];
+                    beaconcollection = {};
                 }
 
                 beaconcollection.toArray(function(err, beacons) {
@@ -1311,9 +1312,16 @@ app.post('/addbeacon', function(req, res) {
     BeaconStore = req.body.BeaconStore;
     var resObj = {};
 
-    if (!(BeaconID && BeaconKey && BeaconStore)) {
+    if (!(BeaconID && BeaconKey)) {
         resObj.IsSuccess = false;
         resObj.message = "Please enter BeaconID and BeaconKey";
+        res.send(resObj);
+        return;
+    }
+
+    if (!BeaconStore) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please select Store";
         res.send(resObj);
         return;
     }
@@ -1396,16 +1404,23 @@ app.post('/updatebeacon', function(req, res) {
 
     var resObj = {};
 
-    if (!(BeaconID && BeaconKey && BeaconStore)) {
+    if (!(BeaconID && BeaconKey)) {
         resObj.IsSuccess = false;
         resObj.message = "Please enter BeaconID and BeaconKey";
         res.send(resObj);
         return;
     }
 
+    if (!BeaconStore) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please select Store";
+        res.send(resObj);
+        return;
+    }
+
     if (BeaconStore.length != 24) {
         resObj.IsSuccess = false;
-        resObj.message = "Invalid store selected";
+        resObj.message = "Invalid Store selected";
         res.send(resObj);
         return;
     }
@@ -1558,6 +1573,14 @@ app.post('/addstore', function(req, res) {
         return;
     }
 
+    if (!StoreLat || !isNumeric(StoreLat) || !StoreLong || !isNumeric(StoreLong)) {
+        console.log(StoreName);
+        resObj.IsSuccess = false;
+        resObj.message = "Please fill appropriate lattitude and longitude";
+        res.send(resObj);
+        return;
+    }
+
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
             return console.dir(err);
@@ -1616,6 +1639,14 @@ app.post('/updatestore', function(req, res) {
     if (!StoreName) {
         resObj.IsSuccess = false;
         resObj.message = "Please enter proper Store name";
+        res.send(resObj);
+        return;
+    }
+
+    if (!StoreLat || !isNumeric(StoreLat) || !StoreLong || !isNumeric(StoreLong)) {
+        console.log(StoreName);
+        resObj.IsSuccess = false;
+        resObj.message = "Please fill appropriate lattitude and longitude";
         res.send(resObj);
         return;
     }

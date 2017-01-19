@@ -1,5 +1,4 @@
 <style>
-
 .register_block_1 {
     border: 1px solid #ccc;
     border-radius: 3px;
@@ -10,7 +9,6 @@
     width: 34%;
 }
 
-
 .register_block_2 {
     border: 1px solid #ccc;
     border-radius: 3px;
@@ -20,7 +18,6 @@
     vertical-align: top;
     width: 58%;
 }
-
 
 .content-header {
     padding: 6% 15px 0;
@@ -35,14 +32,9 @@
     font-weight: 500;
     padding: 8px 10px;
     font-style: italic;
-    border:1px solid #bce8f1;
+    border: 1px solid #bce8f1;
 }
-
-
 </style>
-
-
-
 <!--
 Author: Ranjithprabhu K
 Page Description: Dashboard Home page
@@ -55,47 +47,61 @@ Date: 05 Jan 2016
             Register Stores
         </h1>
         <ol class="breadcrumb">
-            <li><a><i class="fa fa-dashboard"></i> Dashboard</a></li>
+            <li><a ui-sref="app.dashboard"><i class="fa fa-dashboard"></i> Dashboard</a></li>
             <li class="active">Stores</li>
         </ol>
     </section>
     <section class="content-body register_block_1">
         <div class="wait_block" ng-if="!FormInitialized">
-          <p class="wait_text">Please Wait...</p>
+            <p class="wait_text">Please Wait...</p>
         </div>
-        <h4 ng-if="button_name!='update'">Add Stores</h4>
-        <h4 ng-if="button_name=='update'">Update Stores</h4>
+        <h4 ng-if="button_name!='Update'">Add Stores</h4>
+        <h4 ng-if="button_name=='Update'">Update Stores</h4>
         <label>Store Name</label>
-        <input class="form-control" type="text" name="store_name" ng-model="Store_Name" /><br>
+        <input class="form-control" type="text" name="store_name" ng-model="Store_Name" />
+        <br>
         <label>Description</label>
-        <textarea class="form-control" name="store_descr" ng-model="Store_Descr"></textarea><br>
-        
+        <textarea class="form-control" name="store_descr" ng-model="Store_Descr"></textarea>
+        <br>
         <label>Lat</label>
-        <input class="form-control" type="text" name="store_lat" ng-model="Store_Lat" /><br>
-        
-         <label>Long</label>
-        <input class="form-control" type="text" name="store_long" ng-model="Store_Long" /><br>
-        
+        <input class="form-control" type="text" name="store_lat" ng-model="Store_Lat" />
+        <br>
+        <label>Long</label>
+        <input class="form-control" type="text" name="store_long" ng-model="Store_Long" />
+        <br>
         <button class="btn btn-primary" ng-bind="button_name" ng-click="processStore()">Add</button>
-        <button class="btn btn-primary" ng-if="button_name=='update'" ng-click="deleteStore()">Delete</button>
+        <button class="btn btn-primary" ng-if="button_name=='Update'" ng-click="deleteStore()">Delete</button>
+        <button class="btn btn-primary" ng-if="button_name=='Update'" ng-click="resetControls()">Cancel</button>
     </section>
     <section class="content-body register_block_2">
         <div class="wait_block" ng-if="!ListInitialized">
-          <p class="wait_text">Please Wait...</p>
+            <p class="wait_text">Please Wait...</p>
         </div>
         <!-- Main content -->
         <table class="table">
-            <th>Store Name</th>
-            <th>Description</th>
-            <th>Store Lat</th>
-            <th>Store Long</th>
-            <tr ng-repeat= "device in storeData | orderBy:BeaconKey ">
-                <td><input class="form-control" type='text' ng-model="device.StoreName" readonly /></td>
-                <td><input class="form-control"  type='text' ng-model="device.StoreDescr" readonly /></td>
-                <td><input class="form-control"  type='text' ng-model="device.StoreLat" readonly /></td>
-                 <td><input class="form-control"  type='text' ng-model="device.StoreLong" readonly /></td>
-                <td ng-click="getStore(device._id)"><span class="btn btn-primary">View</span></td>
+            <tr>
+                <th>Store Name</th>
+                <th>Description</th>
+                <th>Store Lat</th>
+                <th>Store Long</th>
+                <th>Action</th>
+            </tr>
+            <tr ng-repeat="device in storeData | orderBy:StoreName ">
+                <td>
+                    <input class="form-control" type='text' ng-model="device.StoreName" readonly />
+                </td>
+                <td>
+                    <input class="form-control" type='text' ng-model="device.StoreDescr" readonly />
+                </td>
+                <td>
+                    <input class="form-control" type='text' ng-model="device.StoreLat" readonly />
+                </td>
+                <td>
+                    <input class="form-control" type='text' ng-model="device.StoreLong" readonly />
+                </td>
+                <td ng-click="getStore(device._id)"><span class="btn btn-primary">Edit</span></td>
             </tr>
         </table>
-    </section><!-- /.content -->
+    </section>
+    <!-- /.content -->
 </section>

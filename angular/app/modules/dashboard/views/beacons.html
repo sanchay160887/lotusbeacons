@@ -1,7 +1,4 @@
-
-
 <style>
-
 .register_block_1 {
     border: 1px solid #ccc;
     border-radius: 3px;
@@ -12,7 +9,6 @@
     width: 25%;
 }
 
-
 .register_block_2 {
     border: 1px solid #ccc;
     border-radius: 3px;
@@ -22,7 +18,6 @@
     vertical-align: top;
     width: 58%;
 }
-
 
 .content-header {
     padding: 6% 15px 0;
@@ -37,13 +32,9 @@
     font-weight: 500;
     padding: 8px 10px;
     font-style: italic;
-    border:1px solid #bce8f1;
+    border: 1px solid #bce8f1;
 }
-
 </style>
-
-
-
 <!--
 Author: Ranjithprabhu K
 Page Description: Dashboard Home page
@@ -56,50 +47,58 @@ Date: 05 Jan 2016
             Register Beacons
         </h1>
         <ol class="breadcrumb">
-            <li><a><i class="fa fa-dashboard"></i> Dashboard</a></li>
+            <li><a ui-sref="app.dashboard"><i class="fa fa-dashboard"></i> Dashboard</a></li>
             <li class="active">Beacons</li>
         </ol>
     </section>
     <section class="content-body register_block_1">
         <div class="wait_block" ng-if="!FormInitialized">
-          <p class="wait_text">Please Wait...</p>
+            <p class="wait_text">Please Wait...</p>
         </div>
-        <h4 ng-if="button_name!='update'">Add Beacons</h4>
-        <h4 ng-if="button_name=='update'">Update Beacons</h4>
+        <h4 ng-if="button_name!='Update'">Add Beacons</h4>
+        <h4 ng-if="button_name=='Update'">Update Beacons</h4>
         <label>Beacon ID</label>
-        <input class="form-control" type="text" name="beacon_id" ng-model="Beacon_ID" ng-readonly="button_name=='update'" /><br>
+        <input class="form-control" type="text" name="beacon_id" ng-model="Beacon_ID" ng-readonly="button_name=='Update'" />
+        <br>
         <label>Beacon Key</label>
-        <input class="form-control" type="text" name="beacon_key" ng-model="Beacon_Key" /><br>
+        <input class="form-control" type="text" name="beacon_key" ng-model="Beacon_Key" />
+        <br>
         <label>Select Store</label>
         <select class="form-control col-md-4" ng-model="Beacon_Store">
-            <option ng-repeat="device in storeData | orderBy:BeaconKey" 
-                value="{{device._id}}">{{device.StoreName}}</option>
-        </select><br>
+            <option ng-repeat="device in storeData | orderBy:BeaconKey" value="{{device._id}}">{{device.StoreName}}</option>
+        </select>
+        <br>
         <label>Description</label>
-        <textarea class="form-control" name="beacon_description" ng-model="Beacon_Descr"></textarea><br>
-        
-
+        <textarea class="form-control" name="beacon_description" ng-model="Beacon_Descr"></textarea>
+        <br>
         <input class="" type="checkbox" name="beacon_welcome" ng-model="Beacon_Welcome" />
         <label>Is Welcome</label>
         <br>
-     
         <button class="btn btn-primary" ng-bind="button_name" ng-click="processBeacon()">Add</button>
-        <button class="btn btn-primary" ng-if="button_name=='update'" ng-click="deleteBeacon()">Delete</button>
+        <button class="btn btn-primary" ng-if="button_name=='Update'" ng-click="deleteBeacon()">Delete</button>
+        <button class="btn btn-primary" ng-if="button_name=='Update'" ng-click="resetControls()">Cancel</button>
     </section>
     <section class="content-body register_block_2">
         <div class="wait_block" ng-if="!ListInitialized">
-          <p class="wait_text">Please Wait...</p>
+            <p class="wait_text">Please Wait...</p>
         </div>
         <!-- Main content -->
         <table class="table">
-            <th>Beacon ID</th>
-            <th>Key</th>
-            <th>Action</th>
-            <tr ng-repeat= "device in beaconData | orderBy:BeaconKey ">
-                <td><input class="form-control" type='text' ng-model="device.BeaconID" readonly /></td>
-                <td><input class="form-control"  type='text' ng-model="device.BeaconKey" readonly /></td>
-                <td ng-click="getBeacon(device.BeaconID)"><span class="btn btn-primary">View</span></td>
+            <tr>
+                <th>Beacon ID</th>
+                <th>Beacon Key</th>
+                <th>Action</th>
+            </tr>
+            <tr ng-repeat="device in beaconData | orderBy:BeaconKey ">
+                <td>
+                    <input class="form-control" type='text' ng-model="device.BeaconID" readonly />
+                </td>
+                <td>
+                    <input class="form-control" type='text' ng-model="device.BeaconKey" readonly />
+                </td>
+                <td ng-click="getBeacon(device.BeaconID)"><span class="btn btn-primary">Edit</span></td>
             </tr>
         </table>
-    </section><!-- /.content -->
+    </section>
+    <!-- /.content -->
 </section>

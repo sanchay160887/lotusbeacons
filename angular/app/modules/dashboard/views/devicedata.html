@@ -140,7 +140,7 @@
 <section class="content-header">
     <h1> Devices </h1>
     <ol class="breadcrumb">
-        <li><a><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li><a ui-sref="app.dashboard"><i class="fa fa-dashboard"></i> Dashboard</a></li>
         <li class="active">Devices</li>
     </ol>
 </section>
@@ -221,7 +221,7 @@
                         <td>{{ device.DeviceName }}</td>
                         <td>{{ device.DevicePhone }}</td>
                         <td>{{ (device.Distance
-                            < 0) && ( "Out of range") || (device.Distance | numberEx:2) + ' meter' }}</td>
+                            < 0) && ( "Out of range") || (device.Distance | numberEx:2) + ' meter(s)' }}</td>
                                 <!-- <td>{{ device.Distance | numberEx:2 }} meter</td> -->
                                 <td>{{ device.BeaconKey }} ({{ device.BeaconID }})</td>
                     </tr>

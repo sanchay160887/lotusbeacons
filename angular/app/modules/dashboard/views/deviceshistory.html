@@ -154,14 +154,15 @@ Date: 05 Jan 2016
 <section class="content-header">
     <h1> Device History </h1>
     <ol class="breadcrumb">
-        <li><a><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li><a ui-sref="app.dashboard"><i class="fa fa-dashboard"></i> Dashboard</a></li>
         <li class="active">Devices History</li>
     </ol>
 </section>
 <div class="content-device_block">
     <div class="container-fluid">
         <div class="wait_block" ng-if="InvalidInputs">
-            <p class="error_text">Please select Store and Date for getting list of device history..</p>
+            <p class="error_text" ng-show="!InvalidDateInputs">Please select Store and Date for getting list of device history.</p>
+            <p class="error_text" ng-show="InvalidDateInputs">End date must be greater or equal to start date.</p>
         </div>
         <div class="wait_block" ng-if="!Initialized">
             <p class="wait_text">Please Wait...</p>
@@ -198,11 +199,11 @@ Date: 05 Jan 2016
                         <div class="form-group">
                             <div class="col-md-5 no-pad">
                                 <label class="bcon-slect-title">Date From</label>
-                                <input type="text" ng-model="selectedDateFrom" id="datepickerFrom" class="datepicker form-control">
+                                <input type="text" ng-model="selectedDateFrom" id="datepickerFrom" class="datepicker form-control" readonly="readonly">
                             </div>
                             <div class="col-md-5 no-pad">
                                 <label class="bcon-slect-title">Date To</label>
-                                <input type="text" ng-model="selectedDateTo" id="datepickerTo" class="datepicker form-control">
+                                <input type="text" ng-model="selectedDateTo" id="datepickerTo" class="datepicker form-control" readonly="readonly">
                             </div>
                             <div class="col-md-2 no-pad">
                                 <div class="pad_box">
@@ -232,7 +233,7 @@ Date: 05 Jan 2016
                     </tr>
                     <tr>
                         <th>Select</th>
-                        <th>Device ID</th>
+                        <th>Device Name</th>
                         <th>Person's Number</th>
                         <th>Stay Time</th>
                         <th>Beacon</th>
@@ -434,7 +435,7 @@ Date: 05 Jan 2016
                 <h1>Loading History, Please wait...</h1>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal"> Close </button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal"> Close </button>
             </div>
         </div>
     </div>
@@ -489,7 +490,7 @@ Date: 05 Jan 2016
                 <h1>Loading History, Please wait...</h1>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal"> Close </button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal"> Close </button>
             </div>
         </div>
     </div>

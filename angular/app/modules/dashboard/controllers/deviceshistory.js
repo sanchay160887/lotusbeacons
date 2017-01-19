@@ -28,6 +28,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.GM_ImageFilePath = '';
     $scope.baseUrl = apiService.base_url;
     $scope.InvalidInputs = false;
+    $scope.InvalidDateInputs = false;
 
     $scope.Initialized = false;
     $scope.BeaconInitialized = true;
@@ -43,6 +44,14 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         if ($scope.InvalidInputs) {
             setTimeout(function() {
                 $scope.InvalidInputs = false;
+            }, 5000);
+        }
+    });
+
+    $scope.$watchCollection('[InvalidDateInputs]', function() {
+        if ($scope.InvalidDateInputs) {
+            setTimeout(function() {
+                $scope.InvalidDateInputs = false;
             }, 5000);
         }
     });
@@ -240,6 +249,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             selectedStore = queriedUrl.store;
         } else {
             $scope.InvalidInputs = true;
+            return;
         }
 
         var selectedBeacon = '';
@@ -283,10 +293,12 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
         if (!(selectedDateFrom <= selectedDateTo)) {
             $scope.InvalidInputs = true;
+            $scope.InvalidDateInputs = true;
             return;
         }
 
         $scope.InvalidInputs = false;
+        $scope.InvalidDateInputs = false;
 
         if ((beaconlist && beaconlist.length > 0) || selectedStore) {
             $scope.Initialized = false;
