@@ -1790,12 +1790,11 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
     //console.log(message);
 
     gcmObject.send(message, function(err, response) {
-        //console.log(response);
+        console.log(response);
         if (err) {
             console.log('Something went wrong :: ' + err);
         } else {
-            console.log(response.success);
-            if (response.success == '1') {
+            if (response.success) {
                 var request = require('request');
                 var gcmdata = JSON.stringify(gcmToken);
                 request.post('http://lampdemos.com/lotus15/v2/user/get_notification_entry', {
