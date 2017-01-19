@@ -282,7 +282,7 @@
                     <label for="inputEmail3" class="col-sm-4 control-label">Title</label>
                     <div class="col-sm-8">
                         <div class="input-icon right">
-                            <input class="form-control tag-inpt" id="push-title" ng-model="GM_title" />
+                            <input class="form-control tag-inpt" id="push-title" ng-model="GM_title" ng-change="checkPushNotificationValidition()" />
                         </div>
                     </div>
                 </div>
@@ -290,7 +290,7 @@
                     <label for="inputEmail3" class="col-sm-4 control-label">Description</label>
                     <div class="col-sm-8">
                         <div class="input-icon right">
-                            <textarea ng-model="GM_descr" id="push-description" style="width:100%"></textarea>
+                            <textarea ng-model="GM_descr" id="push-description" style="width:100%" ng-change="checkPushNotificationValidition()"></textarea>
                         </div>
                     </div>
                 </div>
@@ -298,7 +298,7 @@
                     <label for="inputEmail3" class="col-sm-4 control-label">Upload Image</label>
                     <div class="col-sm-8">
                         <form id="uploadForm" enctype="multipart/form-data" action="/api/photo" method="post">
-                            <input type="file" name="userPhoto" />
+                            <input type="file" id="uploadfileinput" name="userPhoto" />
                             <input type="submit" value="Upload Image" name="submit" class="btn btn-info btn_set" onclick="return uploadimage(this)">
                             <img src="#" width="50px" height="50px" id="imagepreview">
                             <span id="status"></span>
@@ -313,8 +313,8 @@
                 <h1>Sorry!!! No device selected</h1>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-info btn_set" data-dismiss="modal" 
-                    ng-click="sendImageMessage()" ng-if="IsRecordSelected"> Send</button>
+                <button type="button" id="sendpushnotification" class="btn btn-info btn_set" data-dismiss="modal" 
+                    ng-click="sendImageMessage()" ng-if="IsRecordSelected" disabled="disabled"> Send</button>
                 <button type="button" class="btn btn-info btn_set" data-dismiss="modal"> Close </button>
                 <!-- <input type="submit" value="Submit"> -->
             </div>
@@ -355,6 +355,11 @@ $(document).ready(function() {
 });
 
 function uploadimage(object) {
+    var uploadedfile = $('#uploadfileinput').val();
+    if (!uploadedfile){
+        alert('No file selected.');
+        return false;
+    }
     $("#status").empty().text("Image is uploading...");
     $('#uploadForm').ajaxSubmit({
 

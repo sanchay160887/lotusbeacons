@@ -65,6 +65,16 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         $location.search({ 'store': $scope.selectedStore, 'beacon': $scope.selectedBeacon });
     });
 
+    $scope.checkPushNotificationValidition = function(){
+        var PNtitle = document.getElementById('push-title').value;
+        var PNdescr = document.getElementById('push-description').value;
+        if (!PNtitle || !PNdescr){
+            document.getElementById('sendpushnotification').disabled = true;
+        } else {
+            document.getElementById('sendpushnotification').disabled = false;
+        }
+    }
+
     $scope.selectRecords = function() {
         for (var dd in $scope.deviceData) {
             $scope.deviceData[dd].checked = true;

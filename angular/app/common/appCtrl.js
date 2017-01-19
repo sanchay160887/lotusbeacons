@@ -118,23 +118,23 @@ function ($rootScope, $scope, $state, $location, Flash,appSettings) {
         },
         {
             title: "Devices",
-            icon: "gears",
+            icon: "tablet",
             state: "devices"
         },
         {
+            title: "Devices History",
+            icon: "list-ul",
+            state: "deviceshistory"
+        },
+        {
             title: "Beacons",
-            icon: "gears",
+            icon: "bluetooth",
             state: "beacons"
         },
         {
             title: "Stores",
-            icon: "gears",
+            icon: "empire ",
             state: "stores"
-        },
-        {
-            title: "Devices History",
-            icon: "gears",
-            state: "deviceshistory"
         },
 		 /*{
             title: "Add User",

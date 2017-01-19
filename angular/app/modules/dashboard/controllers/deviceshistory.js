@@ -56,6 +56,16 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         }
     });
 
+    $scope.checkPushNotificationValidition = function(){
+        var PNtitle = document.getElementById('push-title').value;
+        var PNdescr = document.getElementById('push-description').value;
+        if (!PNtitle || !PNdescr){
+            document.getElementById('sendpushnotification').disabled = true;
+        } else {
+            document.getElementById('sendpushnotification').disabled = false;
+        }
+    }
+
     $scope.IsRecordSelected = false;
 
     $scope.checkClickedRecords = function() {
