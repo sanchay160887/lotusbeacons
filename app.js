@@ -992,7 +992,8 @@ app.post('/getDeviceHistorydata', function(req, res) {
                             }, {
                                 $group: {
                                     _id: { BeaconID: '$BeaconID', DeviceID: '$DeviceID' },
-                                    StayTime: { $sum: "$StayTime" }
+                                    StayTime: { $sum: "$StayTime" },
+                                    MobileNo: { $max: "$MobileNo" }
                                 }
                             }]
                         )
@@ -1003,6 +1004,7 @@ app.post('/getDeviceHistorydata', function(req, res) {
                                 devices[dvc].BeaconID = devices[dvc]._id.BeaconID;
                                 devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
                                 devices[dvc].DeviceID = devices[dvc]._id.DeviceID;
+                                //devices[dvc].MobileNo = devices[dvc].MobileNo;
                                 devices[dvc].StayTime = convertSecondsToStringTime(devices[dvc].StayTime);
                                 devicelist.push(devices[dvc]);
                             }
@@ -1016,14 +1018,17 @@ app.post('/getDeviceHistorydata', function(req, res) {
             function(devicelist, callback) {
                 var devices = [];
                 for (var d in devicelist) {
-                    devices.push(devicelist[d].DeviceID);
+                    //devices.push(devicelist[d].DeviceID);
+                    devices.push('91' + devicelist[d].MobileNo);
                 }
                 var request = require('request');
                 var data = JSON.stringify(devices);
 
-                request.post('http://lampdemos.com/lotus15/v2/user/get_user_name', {
+                //request.post('http://lampdemos.com/lotus15/v2/user/get_user_name', {
+                request.post('http://lampdemos.com/lotus15/v2/user/get_user_name_by_mobileno', {
                         form: {
-                            'android_device_token': data
+                            //'android_device_token': data
+                            'mobile_nos': data
                         }
                     },
                     function(res2, err, body) {
@@ -1036,7 +1041,17 @@ app.post('/getDeviceHistorydata', function(req, res) {
                                 for (var r in reqbody) {
                                     if (reqbody[r] != false) {
                                         for (var d in devicelist) {
-                                            if (devicelist[d].DeviceID == reqbody[r].device_token) {
+                                            /*if (devicelist[d].DeviceID == reqbody[r].device_token) {
+                                                devicelist[d].DeviceName = reqbody[r].name;
+                                                devicelist[d].DevicePhone = reqbody[r].mobile_no;
+                                            }*/
+                                            if (typeof(devicelist[d].MobileNo) != 'undefined' && devicelist[d].MobileNo) {
+                                                mobileno = '91' + devicelist[d].MobileNo;
+                                            } else {
+                                                mobileno = '';
+                                            }
+
+                                            if (mobileno == reqbody[r].mobile_no) {
                                                 devicelist[d].DeviceName = reqbody[r].name;
                                                 devicelist[d].DevicePhone = reqbody[r].mobile_no;
                                             }
@@ -1325,7 +1340,7 @@ app.post('/getbeacondata', function(req, res) {
                     }
                 });
             },
-            function(beaconlist, callback){
+            function(beaconlist, callback) {
                 db.close();
             }
         ]);
