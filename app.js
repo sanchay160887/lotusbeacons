@@ -1272,35 +1272,64 @@ app.post('/getbeacondata', function(req, res) {
             return console.dir(err);
         }
 
-        var collection = db.collection('beacons');
-        var devicelist = new Array();
+        async.waterfall([
+            function(callback) {
+                var collection = db.collection('stores');
 
-        beaconcollection = '';
-        if (BeaconStore) {
-            beaconcollection = collection.find({
-                'BeaconStore': ObjectId(BeaconStore)
-            })
-        } else {
-            beaconcollection = collection.find();
-        }
-
-        beaconcollection.toArray(function(err, devices) {
-            if (devices && devices.length > 0) {
-                for (var dvc in devices) {
-                    devicelist.push(devices[dvc]);
+                var storecollection = {};
+                if (BeaconStore) {
+                    storecollection = collection.find({
+                        'BeaconStore': ObjectId(BeaconStore)
+                    })
+                } else {
+                    storecollection = collection.find();
                 }
-                resObj.IsSuccess = true;
-                resObj.message = "Success";
-                resObj.data = devicelist;
-                res.send(resObj);
-            } else {
-                resObj.IsSuccess = false;
-                resObj.message = "No record found.";
-                resObj.data = '';
-                res.send(resObj);
+                storecollection.toArray(function(err, stores) {
+                    var storelist = [];
+                    for (var b in stores) {
+                        storelist[stores[b]._id] = stores[b].StoreName;
+                    }
+                    callback(null, storelist);
+                });
+            },
+            function(storelist, callback) {
+                var collection = db.collection('beacons');
+                var devicelist = new Array();
+
+                beaconcollection = '';
+                if (BeaconStore) {
+                    beaconcollection = collection.find({
+                        'BeaconStore': ObjectId(BeaconStore)
+                    })
+                } else {
+                    beaconcollection = collection.find();
+                }
+
+                beaconcollection.toArray(function(err, beacons) {
+                    var beaconlist = [];
+                    if (beacons && beacons.length > 0) {
+                        for (var b in beacons) {
+                            beacons[b].StoreName = storelist[ObjectId(beacons[b].BeaconStore)];
+                            beaconlist.push(beacons[b]);
+                        }
+                        resObj.IsSuccess = true;
+                        resObj.message = "Success";
+                        resObj.data = beaconlist;
+
+                        res.send(resObj);
+                    } else {
+                        resObj.IsSuccess = false;
+                        resObj.message = "No record found.";
+                        resObj.data = '';
+                        res.send(resObj);
+                    }
+                });
+            },
+            function(beaconlist, callback){
+                db.close();
             }
-        });
-        db.close();
+        ]);
+
     });
 });
 

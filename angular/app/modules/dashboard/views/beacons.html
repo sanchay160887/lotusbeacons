@@ -87,6 +87,7 @@ Date: 05 Jan 2016
             <tr>
                 <th>Beacon ID</th>
                 <th>Beacon Key</th>
+                <th>Store Name</th>
                 <th>Action</th>
             </tr>
             <tr ng-repeat="device in beaconData | orderBy:BeaconKey ">
@@ -95,6 +96,9 @@ Date: 05 Jan 2016
                 </td>
                 <td>
                     <input class="form-control" type='text' ng-model="device.BeaconKey" readonly />
+                </td>
+                <td>
+                    <input class="form-control" type='text' ng-model="device.StoreName" readonly />
                 </td>
                 <td ng-click="getBeacon(device.BeaconID)"><span class="btn btn-primary">Edit</span></td>
             </tr>
