@@ -1179,8 +1179,8 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
                                     '$gte': fromDate,
                                     '$lte': toDate
                                 },
-                                'StayTime':{
-                                    $gte : 2
+                                'StayTime': {
+                                    $gte: 2
                                 },
                                 'BeaconID': BeaconID,
                                 'MobileNo': MobileNo,
@@ -1846,12 +1846,109 @@ app.post('/sendpushnotification_plain', function(req, res) {
     sendpushnotification(res, not_device_token, not_title, not_descr);
 });
 
+app.post('/sendpushnotification_image_everyone', function(req, res) {
+    not_title = req.body.title;
+    not_descr = req.body.description;
+    not_image = req.body.image_url;
+
+    BeaconID = req.body.BeaconID;
+    StoreID = req.body.StoreID;
+    fromDate = 0;
+    toDate = 0;
+    seldate = new Date(req.body.DateFrom);
+    fromDate = new Date(seldate.getFullYear() + '/' + (seldate.getMonth() + 1) + '/' + (seldate.getDate())).getTime();
+    seldate = new Date(req.body.DateTo);
+    toDate = new Date(seldate.getFullYear() + '/' + (seldate.getMonth() + 1) + '/' + (seldate.getDate()) + ' 23:59:59').getTime();
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+
+        async.waterfall([
+            function(callback) {
+                var collection = db.collection('beacons');
+                var beaconcollection = [];
+                if (BeaconID) {
+                    beaconcollection = collection.find({
+                        'BeaconID': ObjectId(BeaconID)
+                    });
+                } else if (StoreID) {
+                    beaconcollection = collection.find({
+                        'BeaconStore': ObjectId(StoreID)
+                    });
+                } else {
+                    beaconcollection = {};
+                }
+
+                beaconcollection.toArray(function(err, beacons) {
+                    beaconsIDs = [];
+                    for (var b in beacons) {
+                        beaconsIDs.push(beacons[b].BeaconID);
+                    }
+                    callback(null, beaconsIDs);
+                });
+            },
+            function(beaconsIDs, callback) {
+                if (beaconsIDs && beaconsIDs.length > 0) {
+                    var collection = db.collection('device_history');
+
+                    reccount = collection.aggregate(
+                        [{
+                            $match: {
+                                'Date': {
+                                    '$gte': fromDate,
+                                    '$lte': toDate
+                                },
+                                'BeaconID': {
+                                    $in: beaconsIDs,
+                                },
+                                'StayTime': {
+                                    $gte: 2
+                                }
+                            }
+                        }, {
+                            $group: {
+                                _id: { MobileNo: '$MobileNo' },
+                            }
+                        }]
+                    ).toArray(function(err, devices) {
+                        console.log(devices)
+                        callback(null, devices);
+                    })
+                } else {
+                    resObjVal.NoOfRecords = 0;
+                    callback(null, []);
+                }
+            },
+            function(deviceMobileNos, callback) {
+                var MobileNos = [];
+                for (var i in deviceMobileNos){
+                    MobileNos.push(deviceMobileNos[i]._id.MobileNo);
+                }
+                sendpushnotification_mobileno(res, MobileNos, not_title, not_descr, not_image);
+            }
+        ]);
+    });
+
+});
+
 
 app.post('/sendpushnotification_image', function(req, res) {
     not_title = req.body.title;
     not_descr = req.body.description;
     not_image = req.body.image_url;
-    not_device_token = req.body.gcmTokens;
+    not_MobileNo = req.body.gcmTokens;
+    sendpushnotification_mobileno(res, not_MobileNo, not_title, not_descr, not_image);
+});
+
+
+function sendpushnotification_mobileno(res, gcmMobiles, title, description, image_url) {
+    not_title = title;
+    not_descr = description;
+    not_image = image_url;
+    not_device_token = gcmMobiles;
 
     async.waterfall([
         function(callback) {
@@ -1898,7 +1995,7 @@ app.post('/sendpushnotification_image', function(req, res) {
             sendpushnotification(res, devicetokens, not_title, not_descr, not_image);
         }
     ]);
-});
+}
 
 function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
     var gcmObject = new gcm.AndroidGcm(GcmGoogleKey);

@@ -219,8 +219,9 @@ Date: 05 Jan 2016
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th colspan="3"><small><a href="javascript:;" ng-click="selectRecords()">Select All</a>/
-            <a href="javascript:;" ng-click="unselectRecords()">Unselect All</a></small></th>
+                        <th colspan="1"><small><a href="javascript:;" ng-click="selectRecords()">Select</a>/
+            <a href="javascript:;" ng-click="unselectRecords()">Unselect</a></small></th>
+                        <th colspan="2"><small ng-if="deviceDataPageCount>1"><a href="javascript:;" ng-click="processSelectAllRecords()">{{ selectAllCaption }}</a></small></th>
                         <th colspan="3">
                             <div class="bcon_selection_block_right">
                                 <div class="bcon_selection push_btnn_block row">
@@ -330,9 +331,7 @@ Date: 05 Jan 2016
                     <label for="inputEmail3" class="col-sm-3 control-label">Title</label>
                     <div class="col-sm-9">
                         <div class="input-icon right">
-                            <input class="form-control tag-inpt" id="push-title" ng-model="GM_title" 
-                                ng-change="checkPushNotificationValidition()"
-                            />
+                            <input class="form-control tag-inpt" id="push-title" ng-model="GM_title" ng-change="checkPushNotificationValidition()" />
                         </div>
                     </div>
                 </div>
@@ -340,8 +339,7 @@ Date: 05 Jan 2016
                     <label for="inputEmail3" class="col-sm-3 control-label">Description</label>
                     <div class="col-sm-9">
                         <div class="input-icon right">
-                            <textarea ng-model="GM_descr" id="push-description" style="width:100%"
-                            ng-change="checkPushNotificationValidition()"></textarea>
+                            <textarea ng-model="GM_descr" id="push-description" style="width:100%" ng-change="checkPushNotificationValidition()"></textarea>
                         </div>
                     </div>
                 </div>
@@ -533,7 +531,7 @@ $(document).ready(function() {
 
 function uploadimage(object) {
     var uploadedfile = $('#uploadfileinput').val();
-    if (!uploadedfile){
+    if (!uploadedfile) {
         alert('No file selected.');
         return false;
     }

@@ -325,6 +325,22 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
         });
     }
 
+    var sendNotification_image_everyone = function(selectedBeacon, selectedStore, selectedDateFrom, selectedDateTo, title, description, image_url){
+        return $http({
+            method: "post",
+            url: "/sendpushnotification_image_everyone",
+            data: {
+                'BeaconID' : selectedBeacon,
+                'StoreID' : selectedStore,
+                'DateFrom' : selectedDateFrom,
+                'DateTo' : selectedDateTo,
+                'description' : description,
+                'title' : title,
+                'image_url' : image_url
+            }
+        });
+    }
+
     var test_Timeout = function(gcmTokens, title, description){
         return $http({
             method: "post",
@@ -352,6 +368,7 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
     apiService.sendNotification = sendNotification;
     apiService.sendNotification_plain = sendNotification_plain;
     apiService.sendNotification_image = sendNotification_image;
+    apiService.sendNotification_image_everyone = sendNotification_image_everyone;
     apiService.updateDevice = updateDevice;
 	apiService.updateDeviceHistory = updateDeviceHistory;
 

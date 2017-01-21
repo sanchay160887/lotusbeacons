@@ -186,6 +186,13 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         });
     }
 
+    $scope.resetNotificationDialogue = function() {
+        document.getElementById('imagepreview').src = "";
+        document.getElementById('push-title').value = "";
+        document.getElementById('push-description').value = "";
+        document.getElementById('uploadfileinput').value = "";
+    }
+
     $scope.sendTextMessage = function() {
         var checkedlist = [];
         for (var dd in $scope.deviceData) {
@@ -219,6 +226,7 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         if (checkedlist && checkedlist.length > 0) {
             apiService.sendNotification_image(checkedlist, title, description, ImageFilePath).then(function(res) {
                 console.log(res);
+                $scope.resetNotificationDialogue();
             });
         } else {
             alert('No device selected');

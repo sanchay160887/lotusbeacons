@@ -56,10 +56,10 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         }
     });
 
-    $scope.checkPushNotificationValidition = function(){
+    $scope.checkPushNotificationValidition = function() {
         var PNtitle = document.getElementById('push-title').value;
         var PNdescr = document.getElementById('push-description').value;
-        if (!PNtitle || !PNdescr){
+        if (!PNtitle || !PNdescr) {
             document.getElementById('sendpushnotification').disabled = true;
         } else {
             document.getElementById('sendpushnotification').disabled = false;
@@ -177,28 +177,6 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
     setTimeout(function() {
         jQuery(".datepicker").datepicker({ 'dateFormat': 'dd/mm/yy', 'maxDate': '0' });
-        /*jQuery("#datepickerFrom").datepicker({
-            //numberOfMonths: 2,
-            'maxDate': '0',
-            'dateFormat': 'dd/mm/yy',
-            onSelect: function(selected) {
-                var dt = new Date(selected);
-                dt.setDate(dt.getDate() + 1);
-                jQuery("#datepickerTo").datepicker("option", "minDate", dt);
-            }
-        });
-        jQuery("#datepickerTo").datepicker({
-            //numberOfMonths: 2,
-            'maxDate': '0',
-            'dateFormat': 'dd/mm/yy',
-            onSelect: function(selected) {
-                var dt = new Date(selected);
-                dt.setDate(dt.getDate() - 1);
-                jQuery("#datepickerFrom").datepicker("option", "maxDate", dt);
-            }
-        });*/
-
-
     }, 1000);
 
     var queriedUrl = $location.search();
@@ -206,10 +184,6 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     apiService.storeData().then(function(res) {
         $scope.Initialized = false;
         $scope.storeData = res.data.data;
-        if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store) {
-            $scope.selectedStore = queriedUrl.store;
-        }
-        $scope.getAllBeacon();
         $scope.Initialized = true;
     });
 
@@ -232,7 +206,6 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.$watchCollection('[selectedStore]', function() {
         if ($scope.Initialized) {
             $scope.currPage = 1;
-            $location.search({ 'store': $scope.selectedStore });
             $scope.getAllBeacon();
             $scope.selectedBeacon = '';
         }
@@ -244,8 +217,27 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         }
     });
 
-    $scope.loadData = function() {
+    $scope.selectAllRecord = false;
+    $scope.selectAllCaption = 'Select Everything';
+
+    $scope.processSelectAllRecords = function() {
+        if (!$scope.selectAllRecord) {
+            $scope.selectAllCaption = 'Clear All Selection';
+            $scope.selectRecords();
+            $scope.selectAllRecord = true;
+        } else {
+            $scope.selectAllCaption = 'Select Everything';
+            $scope.unselectRecords();
+            $scope.selectAllRecord = false;
+        }
+    }
+
+    $scope.loadValueInURL = function(){
         $location.search({ 'store': $scope.selectedStore, 'beacon': $scope.selectedBeacon, 'dateFrom': $scope.selectedDateFrom, 'dateTo': $scope.selectedDateTo, 'page': $scope.currPage });
+    }
+
+    $scope.loadData = function() {
+        $scope.loadValueInURL();
         $scope.getAllDevicesHistory();
     }
 
@@ -259,7 +251,8 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     };
 
     $scope.getAllDevicesHistory = function() {
-        var queriedUrl = $location.search()
+
+        var queriedUrl = $location.search();
 
         var selectedStore = '';
         if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store) {
@@ -346,6 +339,9 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
                 }
                 $scope.HitFromPagination = false;
                 $scope.Initialized = true;
+
+                $scope.selectAllRecord = true;
+                $scope.processSelectAllRecords();
             });
         }
 
@@ -516,15 +512,9 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             return;
         }
 
-        /*if (!(typeof(queriedUrl.beacon) != 'undefined' && queriedUrl.beacon)) {
-            return;
-        }*/
-
         if (!(typeof(queriedUrl.date) != 'undefined' && queriedUrl.date)) {
             return;
         }
-
-        //console.log(response.StoreID == queriedUrl.store);
 
         if (response.IsSuccess && response.StoreID && response.StoreID == queriedUrl.store) {
             $scope.getAllDevicesHistory();
@@ -553,7 +543,19 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         }
     }
 
+    $scope.resetNotificationDialogue = function() {
+        document.getElementById('imagepreview').src = "";
+        document.getElementById('push-title').value = "";
+        document.getElementById('push-description').value = "";
+        document.getElementById('uploadfileinput').value = "";
+    }
+
     $scope.sendImageMessage = function() {
+        if ($scope.selectAllRecord) {
+            $scope.sendImageMessageToEveryone();
+            return;
+        }
+
         var checkedlist = [];
         for (var dd in $scope.deviceData) {
             if ($scope.deviceData[dd].checked) {
@@ -563,15 +565,55 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
         var ImageFilePath = document.getElementById('imagepreview').src;
         var title = document.getElementById('push-title').value;
-        var description = document.getElementById('push-description').value;       
+        var description = document.getElementById('push-description').value;
 
         if (checkedlist && checkedlist.length > 0) {
             apiService.sendNotification_image(checkedlist, title, description, ImageFilePath).then(function(res) {
                 console.log(res);
+                $scope.resetNotificationDialogue();
             });
         } else {
             alert('No device selected');
         }
+    }
+
+    $scope.sendImageMessageToEveryone = function() {
+        if (!$scope.selectedStore || !$scope.selectedDateFrom || !$scope.selectedDateTo) {
+            $scope.InvalidInputs = true;
+            return;
+        }
+
+        selectedDateFrom = convertDateToTimestamp($scope.selectedDateFrom);
+
+        if (!selectedDateFrom) {
+            $scope.InvalidInputs = true;
+            return;
+        }
+
+        selectedDateTo = convertDateToTimestamp($scope.selectedDateTo);
+
+        if (!selectedDateTo) {
+            $scope.InvalidInputs = true;
+            return;
+        }
+
+        if (!(selectedDateFrom <= selectedDateTo)) {
+            $scope.InvalidInputs = true;
+            $scope.InvalidDateInputs = true;
+            return;
+        }
+
+        $scope.InvalidInputs = false;
+        $scope.InvalidDateInputs = false;
+
+        var ImageFilePath = document.getElementById('imagepreview').src;
+        var title = document.getElementById('push-title').value;
+        var description = document.getElementById('push-description').value;
+
+        apiService.sendNotification_image_everyone($scope.selectedBeacon, $scope.selectedStore, selectedDateFrom, selectedDateTo, title, description, ImageFilePath).then(function(res) {
+            console.log(res);
+            $scope.resetNotificationDialogue();
+        });
     }
 
     /*apiService.updateDeviceHistory('00:A0:50:0E:0E:10',
