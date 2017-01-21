@@ -957,6 +957,9 @@ app.post('/getDeviceHistorydata', function(req, res) {
                                 },
                                 'BeaconID': {
                                     $in: beaconsIDs,
+                                },
+                                'StayTime': {
+                                    $gte: 2
                                 }
                             }
                         }, {
@@ -990,6 +993,9 @@ app.post('/getDeviceHistorydata', function(req, res) {
                                     },
                                     'BeaconID': {
                                         $in: beaconsIDs,
+                                    },
+                                    'StayTime': {
+                                        $gte: 2
                                     }
                                 }
                             }, {
@@ -1172,6 +1178,9 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
                                 'Date': {
                                     '$gte': fromDate,
                                     '$lte': toDate
+                                },
+                                'StayTime':{
+                                    $gte : 2
                                 },
                                 'BeaconID': BeaconID,
                                 'MobileNo': MobileNo,
@@ -1848,11 +1857,11 @@ app.post('/sendpushnotification_image', function(req, res) {
         function(callback) {
             var mobilenos = [];
             var mobileno = '';
-            for(var i in not_device_token){
+            for (var i in not_device_token) {
                 mobileno = not_device_token[i];
                 mobileno = mobileno.split('‖');
                 mobileno = mobileno[0];
-                if (mobileno){
+                if (mobileno) {
                     mobileno = '91' + mobileno;
                     mobilenos.push(mobileno);
                 }
@@ -1885,7 +1894,7 @@ app.post('/sendpushnotification_image', function(req, res) {
                     callback(null, device_tokens);
                 })
         },
-        function(devicetokens, callback){
+        function(devicetokens, callback) {
             sendpushnotification(res, devicetokens, not_title, not_descr, not_image);
         }
     ]);
