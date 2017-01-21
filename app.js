@@ -790,6 +790,7 @@ app.post('/getdata', function(req, res) {
                     devicecollection.toArray(function(err, devices) {
                         for (var dvc in devices) {
                             devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
+                            devices[dvc].UniqueKey = devices[dvc].MobileNo + '‖' + devices[dvc].BeaconID;
                             devicelist.push(devices[dvc]);
                         }
                         callback(null, devicelist);
@@ -1007,6 +1008,7 @@ app.post('/getDeviceHistorydata', function(req, res) {
                                 devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
                                 devices[dvc].DeviceID = devices[dvc]._id.DeviceID;
                                 //devices[dvc].MobileNo = devices[dvc].MobileNo;
+                                devices[dvc].UniqueKey = devices[dvc].MobileNo + '‖' + devices[dvc].BeaconID;
                                 devices[dvc].StayTime = convertSecondsToStringTime(devices[dvc].StayTime);
                                 devicelist.push(devices[dvc]);
                             }
@@ -1179,7 +1181,7 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
                                 _id: {
                                     BeaconID: '$BeaconID',
                                     DeviceID: '$DeviceID',
-                                    startDate: { $floor: { $divide: ["$Date", 300000] } },
+                                    startDate: { $floor: { $divide: ["$Date", 360000] } },
                                     //endDate: { $floor: { $divide: ["$DateTo", 60000] } }
                                 },
                                 Date: { $min: "$Date" },
@@ -1842,7 +1844,51 @@ app.post('/sendpushnotification_image', function(req, res) {
     not_image = req.body.image_url;
     not_device_token = req.body.gcmTokens;
 
-    sendpushnotification(res, not_device_token, not_title, not_descr, not_image);
+    async.waterfall([
+        function(callback) {
+            var mobilenos = [];
+            var mobileno = '';
+            for(var i in not_device_token){
+                mobileno = not_device_token[i];
+                mobileno = mobileno.split('‖');
+                mobileno = mobileno[0];
+                if (mobileno){
+                    mobileno = '91' + mobileno;
+                    mobilenos.push(mobileno);
+                }
+            }
+            callback(null, mobilenos);
+        },
+        function(mobilenos, callback) {
+            var request = require('request');
+            var data = JSON.stringify(mobilenos);
+
+            request.post('http://lampdemos.com/lotus15/v2/user/get_user_name_by_mobileno', {
+                    form: {
+                        'mobile_nos': data
+                    }
+                },
+                function(res2, err, body) {
+                    device_tokens = [];
+                    var reqbody = parse_JSON(body);
+                    if (reqbody) {
+                        reqbody = reqbody.data;
+                        if (reqbody) {
+                            for (var r in reqbody) {
+                                if (reqbody[r] != false) {
+                                    device_tokens.push(reqbody[r].device_token);
+                                }
+                            }
+                        }
+                    }
+
+                    callback(null, device_tokens);
+                })
+        },
+        function(devicetokens, callback){
+            sendpushnotification(res, devicetokens, not_title, not_descr, not_image);
+        }
+    ]);
 });
 
 function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {

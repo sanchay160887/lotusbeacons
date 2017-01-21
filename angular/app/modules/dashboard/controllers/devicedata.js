@@ -116,12 +116,12 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
                 var checkedlist = [];
                 for (var dd in $scope.deviceData) {
                     if ($scope.deviceData[dd].checked) {
-                        checkedlist.push($scope.deviceData[dd].DeviceID);
+                        checkedlist.push($scope.deviceData[dd].UniqueKey);
                     }
                 }
 
                 for (var dd in res.data) {
-                    if (in_array(res.data[dd].DeviceID, checkedlist)) {
+                    if (in_array(res.data[dd].UniqueKey, checkedlist)) {
                         res.data[dd].checked = true;
                     } else {
                         res.data[dd].checked = false;
@@ -208,7 +208,7 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         var checkedlist = [];
         for (var dd in $scope.deviceData) {
             if ($scope.deviceData[dd].checked) {
-                checkedlist.push($scope.deviceData[dd].DeviceID);
+                checkedlist.push($scope.deviceData[dd].UniqueKey);
             }
         }
 

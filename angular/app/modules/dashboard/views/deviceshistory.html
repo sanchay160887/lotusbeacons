@@ -243,7 +243,7 @@ Date: 05 Jan 2016
                 <tbody>
                     <tr ng-repeat="device in deviceData | orderBy:Distance " ng-if="deviceData.length > 0">
                         <td>
-                            <input type="checkbox" value="{{ device.DeviceID }}" ng-click="ShowSelectedTokens()" ng-model="device.checked">
+                            <input type="checkbox" value="{{ device.UniqueKey }}" ng-click="ShowSelectedTokens()" ng-model="device.checked">
                         </td>
                         <!-- <td>{{ device.DeviceID }}</td> -->
                         <td>{{ device.DeviceName }}</td>

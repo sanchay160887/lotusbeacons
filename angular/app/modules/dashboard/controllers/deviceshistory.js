@@ -323,7 +323,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
                 var checkedlist = [];
                 for (var dd in $scope.deviceData) {
                     if ($scope.deviceData[dd].checked) {
-                        checkedlist.push($scope.deviceData[dd].DeviceID);
+                        checkedlist.push($scope.deviceData[dd].UniqueKey);
                     }
                 }
 
@@ -331,7 +331,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
                 recordcount = res.data.NoOfRecords;
 
                 for (var dd in records) {
-                    if (in_array(records[dd].DeviceID, checkedlist)) {
+                    if (in_array(records[dd].UniqueKey, checkedlist)) {
                         records[dd].checked = true;
                     } else {
                         records[dd].checked = false;
@@ -557,7 +557,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         var checkedlist = [];
         for (var dd in $scope.deviceData) {
             if ($scope.deviceData[dd].checked) {
-                checkedlist.push($scope.deviceData[dd].DeviceID);
+                checkedlist.push($scope.deviceData[dd].UniqueKey);
             }
         }
 
