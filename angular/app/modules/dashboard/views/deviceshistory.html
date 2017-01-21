@@ -477,7 +477,7 @@ Date: 05 Jan 2016
                                 <li ng-if="deviceSearchDetailsDataPageCount > 1" ng-show="viewSearchDetailsCurrPage != 1">
                                     <a ng-click="prevSearchDetailPage()" aria-label="Previous" href="#"><span aria-hidden="true">&laquo;</span></a>
                                 </li>
-                                <li ng-repeat="n in range(1,deviceDetailsDataPageCount)" ng-if="deviceDetailsDataPageCount > 1">
+                                <li ng-repeat="n in range(1,deviceSearchDetailsDataPageCount)" ng-if="deviceSearchDetailsDataPageCount > 1">
                                     <a ng-click="loadDetailPage(n)" ng-if="n!=viewSearchDetailsCurrPage">{{n}}</a>
                                     <span ng-if="n==viewSearchDetailsCurrPage">{{n}}</span>
                                 </li>
