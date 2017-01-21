@@ -298,7 +298,7 @@
                     <label for="inputEmail3" class="col-sm-4 control-label">Upload Image</label>
                     <div class="col-sm-8">
                         <form id="uploadForm" enctype="multipart/form-data" action="/api/photo" method="post">
-                            <input type="file" id="uploadfileinput" name="userPhoto" />
+                            <input type="file" id="uploadfileinput" name="userPhoto" accept="image/*" />
                             <input type="submit" value="Upload Image" name="submit" class="btn btn-info btn_set" onclick="return uploadimage(this)">
                             <img src="#" width="50px" height="50px" id="imagepreview">
                             <span id="status"></span>

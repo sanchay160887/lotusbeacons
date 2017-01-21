@@ -188,6 +188,7 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
 
     $scope.resetNotificationDialogue = function() {
         document.getElementById('imagepreview').src = "";
+        document.getElementById('imagepreview').style.display = 'none'
         document.getElementById('push-title').value = "";
         document.getElementById('push-description').value = "";
         document.getElementById('uploadfileinput').value = "";

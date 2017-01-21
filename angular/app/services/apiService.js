@@ -91,7 +91,7 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
         });
     }
 	
-	var deviceHistoryData = function(selectedBeacon, selectedStore, selectedDateFrom, selectedDateTo, currpage, limit){
+	var deviceHistoryData = function(selectedBeacon, selectedStore, selectedDateFrom, selectedDateTo, currpage, limit, search = ''){
         return $http({
             method: "post",
             url: '/getDeviceHistorydata',
@@ -102,6 +102,7 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
                 'DateTo' : selectedDateTo,
                 'PageNo' : currpage,
                 'RecordsPerPage' : limit,
+                'Search' : search
             }
         });
     }

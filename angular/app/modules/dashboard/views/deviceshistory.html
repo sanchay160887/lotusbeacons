@@ -216,12 +216,41 @@ Date: 05 Jan 2016
             </div>
         </div>
         <div class="row">
+            <div class="form-group">
+                <div class="col-md-3" style="padding-right: 0;">
+                    <label class="bcon-slect-title">Search</label>
+                    <input type="text" ng-model="searchNameNumber" class="form-control" placeholder="Enter Name / Number" ng-enter="loadDataWithSearch()">
+                </div>
+                <div class="col-md-1" style="padding-left: 0px; padding-top: 20px;">
+                    <label class="bcon-slect-title"></label>
+                    <button type="button" class="btn btn-info" style="width: auto;" ng-click="loadDataWithSearch()"><i class="fa fa-search"></i></button>
+                </div>
+                <div class="col-md-7"></div>
+                <div class="col-md-1">
+                    <label class="bcon-slect-title"><small>Records/Page</small></label>
+                    <select ng-model="pageLimit" class="form-control">
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="30">30</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+            </div>
+        </div>
+        <div class="row">
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th colspan="1"><small><a href="javascript:;" ng-click="selectRecords()">Select</a>/
-            <a href="javascript:;" ng-click="unselectRecords()">Unselect</a></small></th>
-                        <th colspan="2"><small ng-if="deviceDataPageCount>1"><a href="javascript:;" ng-click="processSelectAllRecords()">{{ selectAllCaption }}</a></small></th>
+                        <th>
+                            <span ng-if="deviceDataCount>0">{{ deviceDataCount }} Records</span>
+                        </th>
+                        <th colspan="2"><small ng-if="deviceDataPageCount>1"><a href="javascript:;" ng-click="processSelectAllRecords()">
+                        <span ng-if="!selectAllRecord">Select All {{deviceDataCount }} records</span>
+                        <span ng-if="selectAllRecord">
+                            All {{deviceDataCount }} records are selected, Clear Selection
+                        </span>                        
+                        </a></small></th>
                         <th colspan="3">
                             <div class="bcon_selection_block_right">
                                 <div class="bcon_selection push_btnn_block row">
@@ -233,7 +262,8 @@ Date: 05 Jan 2016
                         </th>
                     </tr>
                     <tr>
-                        <th>Select</th>
+                        <th><small><a href="javascript:;" ng-click="selectRecords()">Select</a>/
+            <a href="javascript:;" ng-click="unselectRecords()">Unselect</a></small></th>
                         <th>Device Name</th>
                         <th>Person's Number</th>
                         <th>Stay Time</th>
@@ -347,7 +377,7 @@ Date: 05 Jan 2016
                     <label for="inputEmail3" class="col-sm-3 control-label">Upload Image</label>
                     <div class="col-sm-9">
                         <form id="uploadForm" enctype="multipart/form-data" action="/api/photo" method="post">
-                            <input type="file" id="uploadfileinput" name="userPhoto" />
+                            <input type="file" id="uploadfileinput" name="userPhoto" accept="image/*" />
                             <input type="submit" value="Upload Image" name="submit" class="btn btn-info btn_set" onclick="return uploadimage(this)">
                             <img src="#" width="50px" height="50px" id="imagepreview">
                             <span id="status"></span>

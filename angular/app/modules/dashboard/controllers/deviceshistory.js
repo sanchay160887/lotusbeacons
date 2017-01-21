@@ -1,3 +1,16 @@
+dashboard.directive('ngEnter', function() {
+    return function(scope, element, attrs) {
+        element.bind("keydown keypress", function(event) {
+            if (event.which === 13) {
+                scope.$apply(function() {
+                    scope.$eval(attrs.ngEnter, { 'event': event });
+                });
+
+                event.preventDefault();
+            }
+        });
+    };
+});
 dashboard.controller("DeviceHistoryController", function($rootScope, $scope, apiService, socket, $http, $location) { //
     var vm = this;
     $scope.BeaconID = '';
@@ -20,6 +33,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.TM_descr = '';
     $scope.GM_title = '';
     $scope.GM_descr = '';
+    $scope.searchNameNumber = '';
     $scope.currPage = 1;
     $scope.viewDetailsCurrPage = 1;
     $scope.viewSearchDetailsCurrPage = 1;
@@ -201,6 +215,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         for (var dd in $scope.deviceData) {
             $scope.deviceData[dd].checked = false;
         }
+        $scope.selectAllRecord = false;
     }
 
     $scope.$watchCollection('[selectedStore]', function() {
@@ -217,29 +232,56 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         }
     });
 
+    $scope.$watchCollection('[pageLimit]', function() {
+        if ($scope.Initialized) {
+            $scope.loadDataWithSearch();
+        }
+    });
+
     $scope.selectAllRecord = false;
     $scope.selectAllCaption = 'Select Everything';
 
     $scope.processSelectAllRecords = function() {
         if (!$scope.selectAllRecord) {
-            $scope.selectAllCaption = 'Clear All Selection';
             $scope.selectRecords();
             $scope.selectAllRecord = true;
         } else {
-            $scope.selectAllCaption = 'Select Everything';
             $scope.unselectRecords();
             $scope.selectAllRecord = false;
         }
     }
 
-    $scope.loadValueInURL = function(){
-        $location.search({ 'store': $scope.selectedStore, 'beacon': $scope.selectedBeacon, 'dateFrom': $scope.selectedDateFrom, 'dateTo': $scope.selectedDateTo, 'page': $scope.currPage });
+    $scope.loadValueInURL = function() {
+        $scope.pageLimit = 10;
+        $scope.searchNameNumber = '';
+        $location.search({
+            'store': $scope.selectedStore,
+            'beacon': $scope.selectedBeacon,
+            'dateFrom': $scope.selectedDateFrom,
+            'dateTo': $scope.selectedDateTo,
+            'page': $scope.currPage,
+            'limit': $scope.pageLimit
+        });
     }
 
     $scope.loadData = function() {
         $scope.loadValueInURL();
         $scope.getAllDevicesHistory();
     }
+
+    $scope.loadDataWithSearch = function() {
+        $location.search({
+            'store': $scope.selectedStore,
+            'beacon': $scope.selectedBeacon,
+            'dateFrom': $scope.selectedDateFrom,
+            'dateTo': $scope.selectedDateTo,
+            'page': $scope.currPage,
+            'limit': $scope.pageLimit,
+            'search': $scope.searchNameNumber
+        });
+        $scope.getAllDevicesHistory();
+    }
+
 
     $scope.range = function(min, max, step) {
         step = step || 1;
@@ -307,12 +349,26 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             return;
         }
 
+        var pageLimit = 10;
+        if (typeof(queriedUrl.limit) != 'undefined' && queriedUrl.limit) {
+            pageLimit = queriedUrl.limit;
+        } else {
+            pageLimit = $scope.pageLimit;
+        }
+
+        var searchNameNumber = 1;
+        if (typeof(queriedUrl.search) != 'undefined' && queriedUrl.search) {
+            searchNameNumber = queriedUrl.search;
+        } else {
+            searchNameNumber = $scope.searchNameNumber;
+        }
+
         $scope.InvalidInputs = false;
         $scope.InvalidDateInputs = false;
 
         if ((beaconlist && beaconlist.length > 0) || selectedStore) {
             $scope.Initialized = false;
-            apiService.deviceHistoryData(beaconlist, selectedStore, selectedDateFrom, selectedDateTo, currentPage, $scope.pageLimit).then(function(res) {
+            apiService.deviceHistoryData(beaconlist, selectedStore, selectedDateFrom, selectedDateTo, currentPage, pageLimit, searchNameNumber).then(function(res) {
                 var checkedlist = [];
                 for (var dd in $scope.deviceData) {
                     if ($scope.deviceData[dd].checked) {
@@ -340,8 +396,9 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
                 $scope.HitFromPagination = false;
                 $scope.Initialized = true;
 
-                $scope.selectAllRecord = true;
-                $scope.processSelectAllRecords();
+                if ($scope.selectAllRecord) {
+                    $scope.selectRecords()
+                }
             });
         }
 
@@ -545,6 +602,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
     $scope.resetNotificationDialogue = function() {
         document.getElementById('imagepreview').src = "";
+        document.getElementById('imagepreview').style.display = 'none'
         document.getElementById('push-title').value = "";
         document.getElementById('push-description').value = "";
         document.getElementById('uploadfileinput').value = "";
