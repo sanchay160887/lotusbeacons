@@ -65,7 +65,7 @@ Date: 05 Jan 2016
         <br>
         <label>Select Store</label>
         <select class="form-control col-md-4" ng-model="Beacon_Store">
-            <option ng-repeat="device in storeData | orderBy:BeaconKey" value="{{device._id}}">{{device.StoreName}}</option>
+            <option ng-repeat="device in storeData | orderBy:StoreName" value="{{device._id}}">{{device.StoreName}}</option>
         </select>
         <br>
         <label>Description</label>

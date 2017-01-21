@@ -231,9 +231,16 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
     $scope.$watchCollection('[selectedStore]', function() {
         if ($scope.Initialized) {
+            $scope.currPage = 1;
             $location.search({ 'store': $scope.selectedStore });
             $scope.getAllBeacon();
-            $scope.selectedBeacon = '';            
+            $scope.selectedBeacon = '';
+        }
+    });
+
+    $scope.$watchCollection('[selectedBeacon]', function() {
+        if ($scope.Initialized) {
+            $scope.currPage = 1;
         }
     });
 

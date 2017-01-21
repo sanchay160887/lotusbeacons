@@ -1177,7 +1177,7 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
                                 _id: {
                                     BeaconID: '$BeaconID',
                                     DeviceID: '$DeviceID',
-                                    startDate: { $floor: { $divide: ["$Date", 120000] } },
+                                    startDate: { $floor: { $divide: ["$Date", 300000] } },
                                     //endDate: { $floor: { $divide: ["$DateTo", 60000] } }
                                 },
                                 Date: { $min: "$Date" },
@@ -1962,7 +1962,7 @@ app.post('/addUsers', function(req, res) {
         }
         assert.equal(null, err);
 
-        var collection = db.collection('Users');
+        var collection = db.collection('users');
 
         async.waterfall([
             function(callback) {
@@ -2003,82 +2003,65 @@ app.post('/addUsers', function(req, res) {
     });
 });
 
-app.post('/updateservice_for_updatingmobilenumberwithdeviceid', function(req, res) {
-    console.log('service calling 2');
+
+app.post('/editUsers', function(req, res) {
+    FirstName = req.body.FirstName;
+    LastName = req.body.LastName;
+    Email = req.body.Email;
+    Password = req.body.Password;
+    var resObj = {};
+
+    if (!FirstName) {
+        console.log(FirstName);
+        resObj.IsSuccess = false;
+        resObj.message = "Please enter First Name";
+        res.send(resObj);
+        return;
+    }
+
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
             return console.dir(err);
         }
         assert.equal(null, err);
 
-        var collection = db.collection('device_history');
+        var collection = db.collection('users');
 
         async.waterfall([
             function(callback) {
-                collection.updateMany({
-                    'MobileNo': null
-                }, {
-                    '$set': {
-                        'MobileNo': '8982044994',
-                    }
-                });
-                callback(null, 'process 1 finished');
-            },
-            function(data, callback) {
-                var device_mobile = [];
-                device_mobile.push(['APA91bFEQR18a30z05XYe6Mnx57Vu0JQrPJXDv_K9fZAyP3wxCDpu2cMdMmVOfskoH1zwp9-qK6ZZgCjXTp6kvbgrs2RW_g2cpBk-zMf8AxG7C5BmTZy-kI', '7389910451']);
-                device_mobile.push(['APA91bE75bIjS5CAiGmOJiGRd7xAqHu-HJP1VmRWzw2gMT5M6KhJJ6UuHOO3vx0D0evwDhRlIgM62_iDQwlaI1NwCdoQMhbl2q_9F4BllqfKe00k1si389I', '9977112818']);
-                device_mobile.push(['APA91bFXVEpJ2cOxTK1cA5mXwWWtw3yBW5f2UvgohFtRzDPFA7lCSdMTYkXZmTktCCkIy4Uv983CD69ZHUf7oolZGRNpWfBL75w2nTyE8sgT-l8KHGaXx-s', '9907777890']);
-                device_mobile.push(['APA91bFXVEpJ2cOxTK1cA5mXwWWtw3yBW5f2UvgohFtRzDPFA7lCSdMTYkXZmTktCCkIy4Uv983CD69ZHUf7oolZGRNpWfBL75w2nTyE8sgT-l8KHGaXx-s', '9584010456']);
-                device_mobile.push(['APA91bEUv2EwRtNYoXwg90m10jA6fdI1nMrZDCKYlEHcJ4LdfVzt8YVVFkhuMdaKPaQN5vSbbwZrjgoMOI3dHAd52jy8YPCQ428PfsJJUx7GKOqEt2Dc_zQ', '9584010456']);
-                device_mobile.push(['APA91bGwYOTmTCYcS3F4L3n8HKrK0nJzNM-uJbIYFrdG6l7-49vJ2MHiXYNcpMMibY1ISU38-lLp8ONw3ZRPW2ioQdIAjMm5ycfMolCOSc6kM5S6NwMFu88', '9589220777']);
-                device_mobile.push(['APA91bFdLNYG8v_ZI0OpxnY5RMekJdCcw4z43jy7P29Fg-DM1AdlUiYuFQctN780_vPRzYMJNPYMsJJ5k9G44s413OSAoXyW2kJ_C_ajZm4UCqL535LfKlg', '7389910439']);
-                device_mobile.push(['APA91bG9ZbKEsBNvFaBuW4urIcUSDG7zLwxNFbHg04_XgeksZW3QXJOGlH8_3sGoqEW5Z-MtNnBbaY2JMw-NuLHS4zDszfd6wSvWkcsef2-tXSsokfDmGKE', '7389910438']);
-
-                device_mobile.forEach(function(element) {
-                    console.log('Device ID: ' + element[0]);
-                    console.log('Mobile No: ' + element[1]);
-                    collection.updateMany({
-                        'DeviceID': element[0]
-                    }, {
-                        '$set': {
-                            'MobileNo': element[1],
-                        }
-                    });
+                collection.find({
+                    'FirstName': FirstName
+                }).toArray(function(err, Users) {
+                    callback(null, Users);
                 });
 
-                callback(null, 'process 2 finished');
             },
-            function(data1, callback) {
-                collection.deleteMany({
-                    'MobileNo': '8982044994',
+            function(Users, callback) {
+                if (stores && stores.length > 0) {
+                    resObj.IsSuccess = false;
+                    resObj.message = "First Name already exists";
+                    res.send(resObj);
+                    return;
+                }
+
+                collection.insert({
+                    'FirstName': FirstName,
+                    'LastName': LastName,
+                    'Email': Email,
+                    'Password': Password
                 });
-                res.send('test');
-                callback(null, 'process delete null finished');
+                console.log('User inserted');
+
+                callback(null, 'inserted');
+            },
+            function(response, callback) {
+                console.log('coming to last callback');
+                db.close();
+                resObj.IsSuccess = true;
+                resObj.message = "User added successfully.";
+                res.send(resObj);
+                callback(null, response);
             }
         ]);
     });
-});
-
-app.post('/testdevicehistory', function(req, res) {
-
-    fromDate = 1483183628981;
-    toDate = 1483193628981;
-    MongoClient.connect(mongourl, function(err, db) {
-        if (err) {
-            return console.dir(err);
-        }
-        var collection = db.collection('device_history');
-        devicecollection = collection.find(
-            /*{
-                        'Date': {
-                            $gte: fromDate,
-                            $lte: toDate,
-                        }
-                    }*/
-        ).count(function(err, cnt) {
-            console.log(cnt)
-        })
-    });
-    res.send('');
 });

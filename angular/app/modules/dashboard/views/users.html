@@ -1,5 +1,4 @@
 <style>
-
 .register_block_1 {
     border: 1px solid #ccc;
     border-radius: 3px;
@@ -10,7 +9,6 @@
     width: 34%;
 }
 
-
 .register_block_2 {
     border: 1px solid #ccc;
     border-radius: 3px;
@@ -20,7 +18,6 @@
     vertical-align: top;
     width: 58%;
 }
-
 
 .content-header {
     padding: 6% 15px 0;
@@ -35,14 +32,9 @@
     font-weight: 500;
     padding: 8px 10px;
     font-style: italic;
-    border:1px solid #bce8f1;
+    border: 1px solid #bce8f1;
 }
-
-
 </style>
-
-
-
 <!--
 Author: Ranjithprabhu K
 Page Description: Dashboard Home page
@@ -61,27 +53,32 @@ Date: 05 Jan 2016
     </section>
     <section class="content-body register_block_1">
         <div class="wait_block" ng-if="!FormInitialized">
-          <p class="wait_text">Please Wait...</p>
+            <p class="wait_text">Please Wait...</p>
         </div>
         <h4 ng-if="button_name!='update'">Add User</h4>
         <h4 ng-if="button_name=='update'">Update User</h4>
+        <label>Assign Store</label>
+        <select class="form-control col-md-4" ng-model="Beacon_Store">
+            <option ng-repeat="device in storeData | orderBy:StoreName" value="{{device._id}}">{{device.StoreName}}</option>
+        </select>
         <label>First Name</label>
-        <input class="form-control" type="text" name="first_name" ng-model="First_Name" /><br>
+        <input class="form-control" type="text" name="first_name" ng-model="First_Name" />
+        <br>
         <label>Last Name</label>
-      <input class="form-control" type="text" name="last_name" ng-model="Last_Name" /><br>
-        
+        <input class="form-control" type="text" name="last_name" ng-model="Last_Name" />
+        <br>
         <label>Email</label>
-        <input class="form-control" type="text" name="email" ng-model="Email" /><br>
-        
-         <label>Password</label>
-        <input class="form-control" type="text" name="password" ng-model="Password" /><br>
-        
+        <input class="form-control" type="text" name="email" ng-model="Email" />
+        <br>
+        <label>Password</label>
+        <input class="form-control" type="text" name="password" ng-model="Password" />
+        <br>
         <button class="btn btn-primary" ng-bind="button_name" ng-click="processUser()">Add</button>
         <button class="btn btn-primary" ng-if="button_name=='update'" ng-click="deleteUser()">Delete</button>
     </section>
     <section class="content-body register_block_2">
         <div class="wait_block" ng-if="!ListInitialized">
-          <p class="wait_text">Please Wait...</p>
+            <p class="wait_text">Please Wait...</p>
         </div>
         <!-- Main content -->
         <table class="table">
@@ -89,13 +86,22 @@ Date: 05 Jan 2016
             <th>Last Name</th>
             <th>Email</th>
             <th>Password</th>
-            <tr ng-repeat= "device in storeData | orderBy:BeaconKey ">
-                <td><input class="form-control" type='text' ng-model="device.First_Name" readonly /></td>
-                <td><input class="form-control"  type='text' ng-model="device.Last_Name" readonly /></td>
-                <td><input class="form-control"  type='text' ng-model="device.Email" readonly /></td>
-                 <td><input class="form-control"  type='text' ng-model="device.Password" readonly /></td>
-                <td ng-click="getUser(device._id)"><span class="btn btn-primary">View</span></td>
+            <tr ng-repeat="u in userData | orderBy:BeaconKey ">
+                <td>
+                    <input class="form-control" type='text' ng-model="u.First_Name" readonly />
+                </td>
+                <td>
+                    <input class="form-control" type='text' ng-model="u.Last_Name" readonly />
+                </td>
+                <td>
+                    <input class="form-control" type='text' ng-model="u.Email" readonly />
+                </td>
+                <td>
+                    <input class="form-control" type='text' ng-model="u.Password" readonly />
+                </td>
+                <td ng-click="getUser(u._id)"><span class="btn btn-primary">View</span></td>
             </tr>
         </table>
-    </section><!-- /.content -->
+    </section>
+    <!-- /.content -->
 </section>
