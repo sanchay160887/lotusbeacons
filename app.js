@@ -1094,10 +1094,9 @@ app.post('/getDeviceHistorydata', function(req, res) {
                                 i = devicelist.length;
                                 while (i--) {
                                     if (!(
-                                        devicelist[i].DeviceName.toLowerCase().search(SearchNameNumber) >= 0 
-                                        ||
-                                        devicelist[i].DevicePhone.toLowerCase().search(SearchNameNumber) >= 0
-                                    )) {
+                                            devicelist[i].DeviceName.toLowerCase().search(SearchNameNumber) >= 0 ||
+                                            devicelist[i].DevicePhone.toLowerCase().search(SearchNameNumber) >= 0
+                                        )) {
                                         devicelist.splice(i, 1);
                                     }
                                 }
@@ -2101,12 +2100,22 @@ var storage = multer.diskStorage({
 });
 
 var upload = multer({
+    fileFilter: function(req, file, cb) {
+        var imagetype = file.mimetype.split('/');
+        if(!(imagetype[0] == 'image')) {
+            console.log('not image');
+            return cb(new Error('Only Images are allowed.'))
+        }
+        cb(null, true)
+    },
     storage: storage
 }).single('userPhoto');
 
 app.post('/api/photo', function(req, res) {
     upload(req, res, function(err) {
-        if (err) {
+        if (err == 'Only Images are allowed'){
+            return res.end(err);
+        } else if (err) {
             console.log(err);
             return res.end("Error uploading file.");
         }
