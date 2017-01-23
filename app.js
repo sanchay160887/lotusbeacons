@@ -691,6 +691,7 @@ app.post('/beaconDisconnected', function(req, res) {
                     callback(null, devicelist);
                 })
                 db.close();
+                
             });
         },
         function(devicelist, callback) {
