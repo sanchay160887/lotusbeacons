@@ -691,7 +691,7 @@ app.post('/beaconDisconnected', function(req, res) {
                     callback(null, devicelist);
                 })
                 db.close();
-                
+
             });
         },
         function(devicelist, callback) {
@@ -1229,53 +1229,53 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
                     })*/
 
                     devicecollection = collection.aggregate(
-                        [{
-                            $match: {
-                                'Date': {
-                                    '$gte': fromDate,
-                                    '$lte': toDate
-                                },
-                                'StayTime': {
-                                    $gte: 2
-                                },
-                                'BeaconID': BeaconID,
-                                'MobileNo': MobileNo,
+                            [{
+                                $match: {
+                                    'Date': {
+                                        '$gte': fromDate,
+                                        '$lte': toDate
+                                    },
+                                    'StayTime': {
+                                        $gte: 2
+                                    },
+                                    'BeaconID': BeaconID,
+                                    'MobileNo': MobileNo,
+                                }
+                            }, {
+                                $group: {
+                                    _id: {
+                                        BeaconID: '$BeaconID',
+                                        DeviceID: '$DeviceID',
+                                        startDate: { $ceil: { $divide: ["$Date", 3600000] } },
+                                        //endDate: { $floor: { $divide: ["$DateTo", 60000] } }
+                                    },
+                                    Date: { $min: "$Date" },
+                                    DateTo: { $max: "$DateTo" },
+                                    StayTime: { $sum: "$StayTime" }
+                                }
+                            }, {
+                                $sort: {
+                                    'Date': -1
+                                }
+                            }]
+                        ).sort({ 'Date': -1 }).toArray(function(err, devices) {
+                            devicedetaillist = [];
+                            var cnt = 1;
+                            for (var dvc in devices) {
+                                devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
+                                if (typeof(devices[dvc].DateTo) == 'undefined' || !devices[dvc].DateTo) {
+                                    devices[dvc].DateTo = devices[dvc].Date + (devices[dvc].StayTime * 1000);
+                                }
+                                devices[dvc].StayTime = convertSecondsToStringTime(devices[dvc].StayTime);
+                                devices[dvc].srno = cnt;
+                                devices[dvc].page = Math.ceil(cnt / PageLimit, 2);
+                                cnt++;
+                                devicedetaillist.push(devices[dvc]);
                             }
-                        }, {
-                            $group: {
-                                _id: {
-                                    BeaconID: '$BeaconID',
-                                    DeviceID: '$DeviceID',
-                                    startDate: { $ceil: { $divide: ["$Date", 360000] } },
-                                    //endDate: { $floor: { $divide: ["$DateTo", 60000] } }
-                                },
-                                Date: { $min: "$Date" },
-                                DateTo: { $max: "$DateTo" },
-                                StayTime: { $sum: "$StayTime" }
-                            }
-                        }, {
-                            $sort: {
-                                'Date': -1
-                            }
-                        }]
-                    ).sort({ 'Date': -1 }).toArray(function(err, devices) {
-                        devicedetaillist = [];
-                        var cnt = 1;
-                        for (var dvc in devices) {
-                            devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
-                            if (typeof(devices[dvc].DateTo) == 'undefined' || !devices[dvc].DateTo) {
-                                devices[dvc].DateTo = devices[dvc].Date + (devices[dvc].StayTime * 1000);
-                            }
-                            devices[dvc].StayTime = convertSecondsToStringTime(devices[dvc].StayTime);
-                            devices[dvc].srno = cnt;
-                            devices[dvc].page = Math.ceil(cnt / PageLimit, 2);
-                            cnt++;
-                            devicedetaillist.push(devices[dvc]);
-                        }
 
-                        res.send(devicedetaillist);
-                        callback(null, 'records found');
-                    })
+                            res.send(devicedetaillist);
+                            callback(null, 'records found');
+                        })
                 } else {
                     res.send([]);
                     callback(null, []);
