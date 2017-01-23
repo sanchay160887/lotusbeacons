@@ -252,7 +252,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     }
 
     $scope.loadValueInURL = function() {
-        $scope.pageLimit = 10;
+        //$scope.pageLimit = 10;
         $scope.searchNameNumber = '';
         $location.search({
             'store': $scope.selectedStore,
@@ -415,8 +415,13 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         $scope.HistoryOfPlace = BeaconKey;
 
         var queriedUrl = $location.search();
-        if (!(typeof(queriedUrl.dateFrom) != 'undefined' && queriedUrl.dateFrom)) {
-            $location.search({ 'store': $scope.selectedStore, 'beacon': $scope.selectedBeacon, 'dateFrom': $scope.selectedDateFrom, 'dateTo': $scope.selectedDateTo, 'page': $scope.currPage });
+        if (!(typeof(queriedUrl.dateFrom) != 'undefined' && queriedUrl.dateFrom)
+            && 
+            (typeof(queriedUrl.dateTo) != 'undefined' && queriedUrl.dateTo)) {
+            /*$location.search({ 'store': $scope.selectedStore, 'beacon': $scope.selectedBeacon, 
+                'dateFrom': $scope.selectedDateFrom, 'dateTo': $scope.selectedDateTo, 'page': $scope.currPage });*/
+            $scope.loadValueInURL();
+            queriedUrl = $location.search();
         }
 
         $scope.InitializingHistoryDetails = true;
