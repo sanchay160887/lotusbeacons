@@ -561,6 +561,8 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         var queriedUrl = $location.search();
         if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store) {
             selectedStore = queriedUrl.store;
+        } else {
+            selectedStore = $scope.selectedStore;
         }
         console.log(selectedStore);
         if (selectedStore) {
