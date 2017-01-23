@@ -690,11 +690,8 @@ app.post('/beaconDisconnected', function(req, res) {
                     }
                     callback(null, devicelist);
                 })
+                db.close();
             });
-        },
-        function(devicelist, callback) {
-            db.close();
-            callback(null, devicelist);
         },
         function(devicelist, callback) {
             if (devicelist && devicelist.length > 0) {
@@ -703,6 +700,7 @@ app.post('/beaconDisconnected', function(req, res) {
         },
     ]);
 });
+
 
 devicecron.schedule('* * * * *', function() {
     async.waterfall([
