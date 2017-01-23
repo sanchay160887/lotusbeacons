@@ -1233,7 +1233,7 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
                                 _id: {
                                     BeaconID: '$BeaconID',
                                     DeviceID: '$DeviceID',
-                                    startDate: { $floor: { $divide: ["$Date", 360000] } },
+                                    startDate: { $ceil: { $divide: ["$Date", 360000] } },
                                     //endDate: { $floor: { $divide: ["$DateTo", 60000] } }
                                 },
                                 Date: { $min: "$Date" },

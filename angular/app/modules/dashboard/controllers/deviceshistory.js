@@ -227,7 +227,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     });
 
     $scope.$watchCollection('[selectedBeacon]', function() {
-        if ($scope.Initialized) {
+        if ($scope.Initialized && $scope.BeaconInitialized) {
             $scope.currPage = 1;
         }
     });
