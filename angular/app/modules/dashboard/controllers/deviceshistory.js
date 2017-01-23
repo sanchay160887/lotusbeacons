@@ -234,6 +234,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
     $scope.$watchCollection('[pageLimit]', function() {
         if ($scope.Initialized) {
+            $scope.currPage = 1;
             $scope.loadDataWithSearch();
         }
     });
@@ -280,6 +281,13 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             'search': $scope.searchNameNumber
         });
         $scope.getAllDevicesHistory();
+    }
+
+    $scope.showData = function(){
+        $scope.selectAllRecord = false;
+        $scope.pageLimit = 10;
+        $scope.currPage = 1;
+        $scope.loadData();
     }
 
 
