@@ -418,7 +418,7 @@ Date: 05 Jan 2016
                             <th>Stay Time</th>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="hdd in HistoryDetailsData | orderBy:Date" ng-if="HistoryDetailsData.length > 0" ng-show="hdd.page==viewDetailsCurrPage">
+                            <tr ng-repeat="hdd in HistoryDetailsData | orderBy:Date:true" ng-if="HistoryDetailsData.length > 0" ng-show="hdd.page==viewDetailsCurrPage">
                                 <td>{{ hdd.Date | date }}</td>
                                 <td>{{ hdd.Date | date:'hh:mm a' }}</td>
                                 <td>{{ hdd.DateTo | date:'hh:mm a' }}</td>

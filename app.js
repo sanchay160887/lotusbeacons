@@ -1240,6 +1240,10 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
                                 DateTo: { $max: "$DateTo" },
                                 StayTime: { $sum: "$StayTime" }
                             }
+                        }, {
+                            $sort: {
+                                'Date': -1
+                            }
                         }]
                     ).sort({ 'Date': -1 }).toArray(function(err, devices) {
                         devicedetaillist = [];
@@ -2102,7 +2106,7 @@ var storage = multer.diskStorage({
 var upload = multer({
     fileFilter: function(req, file, cb) {
         var imagetype = file.mimetype.split('/');
-        if(!(imagetype[0] == 'image')) {
+        if (!(imagetype[0] == 'image')) {
             console.log('not image');
             return cb(new Error('Only Images are allowed.'))
         }
@@ -2113,7 +2117,7 @@ var upload = multer({
 
 app.post('/api/photo', function(req, res) {
     upload(req, res, function(err) {
-        if (err == 'Only Images are allowed'){
+        if (err == 'Only Images are allowed') {
             return res.end(err);
         } else if (err) {
             console.log(err);
