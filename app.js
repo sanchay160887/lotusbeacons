@@ -188,7 +188,7 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, resObj) {
     var BeaconStoreID = '';
 
     var resObjVal = {};
-    if (!(DeviceID && Distance)) {
+    if (!(DeviceID && Distance && MobileNo)) {
         console.log('Invalid data passing');
         io.emit('updateDevice_response', {
             'IsSuccess': false,
@@ -668,18 +668,33 @@ app.post('/beaconDisconnected', function(req, res) {
 
                 var collection = db.collection('device');
 
-                collection.find({
-                    /*"MobileNo": MobileNo,*/
-                    "DeviceID": DeviceID,
-                }).toArray(function(err, devices) {
+                var filteredcollection = {};
+                if (MobileNo) {
+                    filteredcollection = collection.find({
+                        "MobileNo": MobileNo,
+                    })
+                } else {
+                    filteredcollection = collection.find({
+                        "DeviceID": DeviceID,
+                    })
+                }
+
+                /*collection.find({
+                    "MobileNo": MobileNo,
+                    /*"DeviceID": DeviceID,*/
+                /*})*/
+                filteredcollection.toArray(function(err, devices) {
                     devicelist = [];
                     for (var dvc in devices) {
                         devicelist.push(devices[dvc]);
                     }
                     callback(null, devicelist);
                 })
-                db.close();
             });
+        },
+        function(devicelist, callback) {
+            db.close();
+            callback(null, devicelist);
         },
         function(devicelist, callback) {
             if (devicelist && devicelist.length > 0) {
@@ -688,7 +703,6 @@ app.post('/beaconDisconnected', function(req, res) {
         },
     ]);
 });
-
 
 devicecron.schedule('* * * * *', function() {
     async.waterfall([
