@@ -558,12 +558,13 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
     $scope.getAllBeacon = function() {
         selectedStore = '';
-        var queriedUrl = $location.search();
+        /*var queriedUrl = $location.search();
         if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store) {
             selectedStore = queriedUrl.store;
         } else {
             selectedStore = $scope.selectedStore;
-        }
+        }*/
+        selectedStore = $scope.selectedStore;
         console.log(selectedStore);
         if (selectedStore) {
             $scope.BeaconInitialized = false;
