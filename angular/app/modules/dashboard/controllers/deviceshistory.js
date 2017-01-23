@@ -235,6 +235,8 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.$watchCollection('[pageLimit]', function() {
         if ($scope.Initialized) {
             $scope.currPage = 1;
+            $scope.selectAllRecord = false;
+            $scope.unselectRecords();
             $scope.loadDataWithSearch();
         }
     });
@@ -284,6 +286,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     }
 
     $scope.showData = function(){
+        $scope.unselectRecords();
         $scope.selectAllRecord = false;
         $scope.pageLimit = 10;
         $scope.currPage = 1;
