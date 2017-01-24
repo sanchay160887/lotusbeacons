@@ -411,21 +411,41 @@ Date: 05 Jan 2016
                 <h4 class="modal-title">History of <strong>{{ toProperCase(HistoryPersonName) }}</strong> at <em>{{ HistoryOfPlace }}</em></h4>
             </div>
             <div class="modal-body" ng-show="!InitializingHistoryDetails">
+                <div class="row">
+                    <div class="col-xs-4">
+                        <label for="search">Search:</label>
+                        <input ng-model="q" id="search" class="form-control" placeholder="Filter text">
+                    </div>
+                    <div class="col-xs-4">
+                        <label for="search">items per page:</label>
+                        <select ng-model="deviceHistoryDetailPageSize" class="form-control">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="form-group clearfix">
                     <table class="table table-striped">
                         <thead>
-                            <th>Date</th>
-                            <th>In Time</th>
-                            <th>Out Time</th>
-                            <th>Stay Time</th>
+                            <th ng-click="O=(O=='Date' && '-Date' || 'Date' )">Date
+                                <span ng-show="O=='Date'">▲</span><span ng-show="O=='-Date'">▼</span>
+                            </th>
+                            <th ng-click="O=(O=='DateIn' && '-DateIn' || 'DateIn' )">In Time
+                                <span ng-show="O=='DateIn'">▲</span><span ng-show="O=='-DateIn'">▼</span>
+                            </th>
+                            <th ng-click="O=(O=='DateTo' && '-DateTo' || 'DateTo' )">Out Time
+                                <span ng-show="O=='DateTo'">▲</span><span ng-show="O=='-DateTo'">▼</span>
+                            </th>
+                            <th ng-click="O=(O=='StayTime2' && '-StayTime2' || 'StayTime2' )">Stay Time
+                                <span ng-show="O=='StayTime2'">▲</span><span ng-show="O=='-StayTime2'">▼</span>
+                            </th>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="hdd in HistoryDetailsData | orderBy:Date:true" ng-if="HistoryDetailsData.length > 0" ng-show="hdd.page==viewDetailsCurrPage">
+                            <tr ng-if="HistoryDetailsData.length > 0" dir-paginate="hdd in HistoryDetailsData | filter:q | orderBy : O | itemsPerPage: deviceHistoryDetailPageSize " current-page="searchHistoryCurrentPage " ng-if="HistorySearchDetailsData.length> 0">
                                 <td>{{ hdd.Date | date }}</td>
-                                <td>{{ hdd.Date | date:'hh:mm a' }}</td>
+                                <td>{{ hdd.DateIn | date:'hh:mm a' }}</td>
                                 <td>{{ hdd.DateTo | date:'hh:mm a' }}</td>
-                                <!-- <td>{{ hdd.Date }}</td>
-                                <td>{{ hdd.DateTo }}</td> -->
                                 <td>{{ hdd.StayTime }}</td>
                             </tr>
                             <tr ng-if="HistoryDetailsData.length <= 0">
@@ -435,31 +455,11 @@ Date: 05 Jan 2016
                             </tr>
                         </tbody>
                     </table>
-                    <!-- <ul>
-                        <li ng-if="deviceDetailsDataPageCount > 1" ng-show="viewDetailsCurrPage != 1"><a ng-click="prevDetailPage()">&ltPrev</a></li>
-                        <li ng-repeat="n in range(1,deviceDetailsDataPageCount)" ng-if="deviceDetailsDataPageCount > 1">
-                            <a ng-click="loadDetailPage(n)" ng-if="n!=viewDetailsCurrPage">{{n}}</a>
-                            <span ng-if="n==viewDetailsCurrPage">{{n}}</span>
-                        </li>
-                        <li ng-if="deviceDetailsDataPageCount > 1" ng-show="viewDetailsCurrPage != deviceDetailsDataPageCount">
-                            <a ng-click="nextDetailPage()">Next&gt</a></li>
-                    </ul> -->
                     <div>
                         <nav aria-label="Page navigation">
-                            <ul class="pagination">
-                                <!-- <li ng-if="deviceDataPageCount > 1"><a ng-click="firstPage()"><<</a></li> -->
-                                <li ng-if="deviceDetailsDataPageCount > 1" ng-show="viewDetailsCurrPage != 1">
-                                    <a ng-click="prevDetailPage()" aria-label="Previous" href="#"><span aria-hidden="true">&laquo;</span></a>
-                                </li>
-                                <li ng-repeat="n in range(1,deviceDetailsDataPageCount)" ng-if="deviceDetailsDataPageCount > 1">
-                                    <a ng-click="loadDetailPage(n)" ng-if="n!=viewDetailsCurrPage">{{n}}</a>
-                                    <span ng-if="n==viewDetailsCurrPage">{{n}}</span>
-                                </li>
-                                <li ng-if="deviceDetailsDataPageCount > 1" ng-show="viewDetailsCurrPage != deviceDetailsDataPageCount">
-                                    <a ng-click="nextDetailPage()" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
-                                </li>
-                                <!-- <li ng-if="deviceDataPageCount > 1"><a ng-click="lastPage()">>></a></li> -->
-                            </ul>
+                            <div class="text-center">
+                                <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler2(newPageNumber)" template-url="app/modules/dashboard/views/dirPagination.tpl.html"></dir-pagination-controls>
+                            </div>
                         </nav>
                     </div>
                 </div>
@@ -483,39 +483,46 @@ Date: 05 Jan 2016
                 <h4 class="modal-title">Search History of <strong>{{ toProperCase(HistoryPersonName) }}</strong></h4>
             </div>
             <div class="modal-body" ng-show="!InitializingHistoryDetails">
+                <div class="row">
+                    <div class="col-xs-4">
+                        <label for="search">Search:</label>
+                        <input ng-model="q" id="search" class="form-control" placeholder="Filter text">
+                    </div>
+                    <div class="col-xs-4">
+                        <label for="search">items per page:</label>
+                        <select ng-model="searchHistoryPageSize" class="form-control">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="form-group clearfix">
                     <table class="table table-striped">
                         <thead>
-                            <th>Date</th>
-                            <th>Searched Keyword</th>
+                            <th ng-click="O=(O=='datetimestamp' && '-datetimestamp' || 'datetimestamp' )">Date
+                                <span ng-show="O=='datetimestamp'">▲</span>
+                                <span ng-show="O=='-datetimestamp'">▼</span>
+                            </th>
+                            <th ng-click="O=(O=='search_keyword' && '-search_keyword' || 'search_keyword' )" ">Searched Keyword
+                            <span ng-show="O=='search_keyword' ">▲</span>
+                            <span ng-show="O=='-search_keyword' ">▼</span>
+                            </th>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="hdd in HistorySearchDetailsData | orderBy:date_added" ng-if="HistorySearchDetailsData.length > 0" ng-show="hdd.page==viewSearchDetailsCurrPage">
+                            <tr dir-paginate="hdd in HistorySearchDetailsData | filter:q | orderBy : O | itemsPerPage: searchHistoryPageSize " current-page="searchHistoryCurrentPage " ng-if="HistorySearchDetailsData.length> 0">
                                 <td>{{ hdd.datetimestamp | date }}</td>
                                 <td>{{ hdd.search_keyword }}</td>
-                            </tr>
-                            <tr ng-if="HistorySearchDetailsData.length <= 0">
-                                <td colspan="4">
-                                    <h4>No Details Found</h4>
-                                </td>
-                            </tr>
-                        </tbody>
+                                </tr>
+                                <tr ng-if="HistorySearchDetailsData.length <= 0">
+                                    <td colspan="4">
+                                        <h4>No Details Found</h4>
+                                    </td>
+                                </tr>
+                                </tbody>
                     </table>
-                    <div>
-                        <nav aria-label="Page navigation">
-                            <ul class="pagination">
-                                <li ng-if="deviceSearchDetailsDataPageCount > 1" ng-show="viewSearchDetailsCurrPage != 1">
-                                    <a ng-click="prevSearchDetailPage()" aria-label="Previous" href="#"><span aria-hidden="true">&laquo;</span></a>
-                                </li>
-                                <li ng-repeat="n in range(1,deviceSearchDetailsDataPageCount)" ng-if="deviceSearchDetailsDataPageCount > 1">
-                                    <a ng-click="loadDetailPage(n)" ng-if="n!=viewSearchDetailsCurrPage">{{n}}</a>
-                                    <span ng-if="n==viewSearchDetailsCurrPage">{{n}}</span>
-                                </li>
-                                <li ng-if="deviceSearchDetailsDataPageCount > 1" ng-show="viewSearchDetailsCurrPage != deviceSearchDetailsDataPageCount">
-                                    <a ng-click="nextSearchDetailPage()" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
-                                </li>
-                            </ul>
-                        </nav>
+                    <div class="text-center">
+                        <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)" template-url="app/modules/dashboard/views/dirPagination.tpl.html"></dir-pagination-controls>
                     </div>
                 </div>
             </div>

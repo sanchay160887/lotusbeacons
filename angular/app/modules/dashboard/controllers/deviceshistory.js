@@ -11,6 +11,7 @@ dashboard.directive('ngEnter', function() {
         });
     };
 });
+
 dashboard.controller("DeviceHistoryController", function($rootScope, $scope, apiService, socket, $http, $location, $interval) { //
     var vm = this;
     $scope.BeaconID = '';
@@ -21,10 +22,6 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.deviceData = [];
     $scope.deviceDataCount = 0;
     $scope.deviceDataPageCount = 0;
-    $scope.deviceDetailsDataCount = 0;
-    $scope.deviceDetailsDataPageCount = 0;
-    $scope.deviceSearchDetailsDataCount = 0;
-    $scope.deviceSearchDetailsDataPageCount = 0;
     var currdate = new Date();
     $scope.selectedDateFrom = (pad0(currdate.getDate(), 2) + '/' + pad0((currdate.getMonth() + 1), 2) + '/' + currdate.getFullYear());
     $scope.selectedDateTo = (pad0(currdate.getDate(), 2) + '/' + pad0((currdate.getMonth() + 1), 2) + '/' + currdate.getFullYear());
@@ -35,10 +32,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.GM_descr = '';
     $scope.searchNameNumber = '';
     $scope.currPage = 1;
-    $scope.viewDetailsCurrPage = 1;
-    $scope.viewSearchDetailsCurrPage = 1;
     $scope.pageLimit = 10;
-    $scope.detailPageLimit = 15;
     $scope.GM_ImageFilePath = '';
     $scope.baseUrl = apiService.base_url;
     $scope.InvalidInputs = false;
@@ -54,7 +48,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.HitFromPagination = false;
     $scope.HistorySearchDetailsData = [];
 
-    $scope.connection = true;    
+    $scope.connection = true;
     $scope.connection_msg = false;
     $interval(function() {
         if (Offline.state == 'down') {
@@ -68,7 +62,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     }, 2000)
 
     $scope.$watchCollection('[connection_msg]', function() {
-        if ($scope.connection_msg){
+        if ($scope.connection_msg) {
             setTimeout(function() {
                 $scope.connection_msg = false;
             }, 5000);
@@ -137,38 +131,6 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
     $scope.lastPage = function() {
         $scope.loadPage($scope.deviceDataPageCount);
-    }
-
-    $scope.loadDetailPage = function(page) {
-        $scope.viewDetailsCurrPage = page;
-    }
-
-    $scope.prevDetailPage = function() {
-        $scope.viewDetailsCurrPage = $scope.viewDetailsCurrPage - 1;
-    }
-
-    $scope.nextDetailPage = function() {
-        $scope.viewDetailsCurrPage = $scope.viewDetailsCurrPage + 1;
-    }
-
-    $scope.firstDetailPage = function() {
-        $scope.viewDetailsCurrPage = 1;
-    }
-
-    $scope.loadSearchDetailPage = function(page) {
-        $scope.viewSearchDetailsCurrPage = page;
-    }
-
-    $scope.prevSearchDetailPage = function() {
-        $scope.viewSearchDetailsCurrPage = $scope.viewSearchDetailsCurrPage - 1;
-    }
-
-    $scope.nextSearchDetailPage = function() {
-        $scope.viewSearchDetailsCurrPage = $scope.viewSearchDetailsCurrPage + 1;
-    }
-
-    $scope.firstSearchDetailPage = function() {
-        $scope.viewSearchDetailsCurrPage = 1;
     }
 
     function pad0(value, count) {
@@ -456,6 +418,12 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         });
     };
 
+    $scope.deviceHistoryDetailCurrentPage = 1;
+    $scope.deviceHistoryDetailPageSize = 10;
+    $scope.pageChangeHandler2 = function(num) {
+        console.log('going to page ' + num);
+    };
+
     $scope.getDeviceHistoryDetails = function(PersonName, BeaconKey, MobileNo, BeaconID) {
         $scope.HistoryPersonName = PersonName;
         $scope.HistoryOfPlace = BeaconKey;
@@ -510,18 +478,22 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             return;
         }
 
-        apiService.deviceHistoryDetailsData(MobileNo, BeaconID, selectedDateFrom, selectedDateTo, $scope.detailPageLimit)
+        apiService.deviceHistoryDetailsData(MobileNo, BeaconID, selectedDateFrom, selectedDateTo)
             .then(function(res) {
                 $scope.HistoryDetailsData = [];
-                console.log(res);
                 $scope.HistoryDetailsData = res.data;
-                $scope.deviceDetailsDataCount = res.data.length;
-                $scope.deviceDetailsDataPageCount = Math.ceil(res.data.length / $scope.detailPageLimit, 2);
-                $scope.viewDetailsCurrPage = 1;
+                $scope.deviceHistoryDetailCurrentPage = 1
                 $scope.InitializingHistoryDetails = false;
             });
 
     }
+
+    $scope.searchHistoryCurrentPage = 1;
+    $scope.searchHistoryPageSize = 10;
+
+    $scope.pageChangeHandler = function(num) {
+        console.log('going to page ' + num);
+    };
 
     $scope.getDeviceSearchHistoryDetails = function(PersonName, MobileNo) {
         $scope.HistoryPersonName = PersonName;
@@ -584,10 +556,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
                 console.log(res);
                 $scope.HistorySearchDetailsData = [];
                 $scope.HistorySearchDetailsData = res.data;
-                $scope.deviceSearchDetailsDataCount = res.data.length;
-                $scope.deviceSearchDetailsDataPageCount = Math.ceil(res.data.length / $scope.detailPageLimit, 2);
-                console.log($scope.deviceSearchDetailsDataPageCount);
-                $scope.viewSearchDetailsCurrPage = 1;
+                $scope.searchHistoryCurrentPage = 1;
                 $scope.InitializingHistoryDetails = false;
             });
 
@@ -602,14 +571,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
 
     $scope.getAllBeacon = function() {
-        selectedStore = '';
-        /*var queriedUrl = $location.search();
-        if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store) {
-            selectedStore = queriedUrl.store;
-        } else {
-            selectedStore = $scope.selectedStore;
-        }*/
-        selectedStore = $scope.selectedStore;
+        var selectedStore = $scope.selectedStore;
         console.log(selectedStore);
         if (selectedStore) {
             $scope.BeaconInitialized = false;

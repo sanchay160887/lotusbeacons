@@ -107,7 +107,7 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
         });
     }
 
-    var deviceHistoryDetailsData = function(selectedMobileNo, selectedBeacon, selectedDateFrom, selectedDateTo, pageLimit){
+    var deviceHistoryDetailsData = function(selectedMobileNo, selectedBeacon, selectedDateFrom, selectedDateTo){
         return $http({
             method: "post",
             url: '/getDeviceHistoryDetailsdata',
@@ -115,21 +115,19 @@ app.service('apiService', ['$http', '$q', 'appSettings', function ($http, $q, ap
                 'MobileNo' : selectedMobileNo,
                 'BeaconID' : selectedBeacon,
                 'DateFrom' : selectedDateFrom,
-                'DateTo' : selectedDateTo,
-                'PageLimit' : pageLimit
+                'DateTo' : selectedDateTo
             }
         });
     }
 
-    var deviceSearchHistoryDetailsData = function(selectedMobileNo, selectedDateFrom, selectedDateTo, pageLimit){
+    var deviceSearchHistoryDetailsData = function(selectedMobileNo, selectedDateFrom, selectedDateTo){
         return $http({
             method: "post",
             url: '/getDeviceSearchHistoryDetailsdata',
             data: {
                 'MobileNo' : selectedMobileNo,
                 'DateFrom' : selectedDateFrom,
-                'DateTo' : selectedDateTo,
-                'PageLimit' : pageLimit
+                'DateTo' : selectedDateTo
             }
         });
     }

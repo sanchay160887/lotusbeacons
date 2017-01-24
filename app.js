@@ -1152,7 +1152,6 @@ app.post('/getDeviceHistorydata', function(req, res) {
 
 app.post('/getDeviceHistoryDetailsdata', function(req, res) {
     MobileNo = req.body.MobileNo;
-    PageLimit = req.body.PageLimit;
     BeaconID = req.body.BeaconID;
 
     fromDate = 0;
@@ -1290,16 +1289,14 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
                             }
                         }
 
-                        cnt = 1;
                         for (var dvc in devices) {
                             devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
                             if (typeof(devices[dvc].DateTo) == 'undefined' || !devices[dvc].DateTo) {
                                 devices[dvc].DateTo = devices[dvc].Date + (devices[dvc].StayTime * 1000);
                             }
+                            devices[dvc].DateIn = devices[dvc].Date;
+                            devices[dvc].StayTime2 = devices[dvc].StayTime;
                             devices[dvc].StayTime = convertSecondsToStringTime(devices[dvc].StayTime);
-                            devices[dvc].srno = cnt;
-                            devices[dvc].page = Math.ceil(cnt / PageLimit, 2);
-                            cnt++;
                             devicedetaillist.push(devices[dvc]);
                         }
 
@@ -1324,8 +1321,7 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
 app.post('/getDeviceSearchHistoryDetailsdata', function(req, res) {
     BeaconID = req.body.BeaconID;
     MobileNo = req.body.MobileNo;
-    PageLimit = req.body.PageLimit;
-
+    
     fromDate = 0;
     toDate = 0;
     seldate = new Date(req.body.DateFrom);
@@ -1361,11 +1357,9 @@ app.post('/getDeviceSearchHistoryDetailsdata', function(req, res) {
                             reqbody = reqbody.data;
                             if (reqbody) {
                                 var sa = [];
-                                var cnt = 1;
                                 for (var r in reqbody) {
                                     reqbody[r].srno = cnt;
                                     reqbody[r].datetimestamp = new Date(reqbody[r].date_added).getTime();
-                                    reqbody[r].page = Math.ceil(cnt / PageLimit, 2);
                                     search_detail.push(reqbody[r]);
                                 }
                             }
