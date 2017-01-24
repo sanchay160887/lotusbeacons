@@ -281,6 +281,7 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, resObj) {
                     'IsSuccess': true,
                     'BeaconID': BeaconID,
                     'StoreID': BeaconStoreID,
+                    'MobileNo' : MobileNo,
                     'message': 'Data inserted successfully'
                 });
                 console.log('coming to last callback');
@@ -469,6 +470,7 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                     'IsSuccess': true,
                     'BeaconID': BeaconID,
                     'StoreID': BeaconStore,
+                    'MobileNo': MobileNo,
                     'message': 'Data updated successfully'
                 });
                 console.log('coming to last callback');
@@ -637,6 +639,7 @@ function beaconDisconnect(BeaconID, DeviceID, MobileNo) {
                             'IsSuccess': true,
                             'BeaconID': BeaconID,
                             'StoreID': BeaconStoreID,
+                            'MobileNo': MobileNo,
                             'message': 'Data inserted successfully'
                         });
                         callback(null, 'updated');
