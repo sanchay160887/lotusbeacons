@@ -65,7 +65,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         if ($scope.connection_msg) {
             setTimeout(function() {
                 $scope.connection_msg = false;
-            }, 5000);
+            }, 2000);
         }
     });
 

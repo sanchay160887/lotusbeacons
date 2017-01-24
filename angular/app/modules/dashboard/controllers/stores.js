@@ -29,7 +29,7 @@ dashboard.controller("StoresController", function($rootScope, $scope, apiService
         if ($scope.connection_msg){
             setTimeout(function() {
                 $scope.connection_msg = false;
-            }, 5000);
+            }, 2000);
         }
     });
 

@@ -30,7 +30,7 @@ dashboard.controller("BeaconsController", function($rootScope, $scope, apiServic
         if ($scope.connection_msg){
             setTimeout(function() {
                 $scope.connection_msg = false;
-            }, 5000);
+            }, 2000);
         }
     });
 
