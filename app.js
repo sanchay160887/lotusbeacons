@@ -181,10 +181,12 @@ function parse_JSON(responsecontent) {
 /* General Supportive Function End <<-- */
 
 function updateDevice(BeaconID, DeviceID, Distance, MobileNo, resObj) {
-    console.log('Beacon ID ' + BeaconID);
-    console.log('Device ID ' + DeviceID);
-    console.log('Distance ' + Distance);
-    console.log('Mobile No ' + MobileNo);
+    if (MobileNo && MobileNo == '9584010456') {
+        console.log('Beacon ID ' + BeaconID);
+        console.log('Device ID ' + DeviceID);
+        console.log('Distance ' + Distance);
+        console.log('Mobile No ' + MobileNo);
+    }
     var BeaconStoreID = '';
 
     var resObjVal = {};
@@ -281,10 +283,9 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, resObj) {
                     'IsSuccess': true,
                     'BeaconID': BeaconID,
                     'StoreID': BeaconStoreID,
-                    'MobileNo' : MobileNo,
+                    'MobileNo': MobileNo,
                     'message': 'Data inserted successfully'
                 });
-                console.log('coming to last callback');
                 db.close();
                 if (resObj) {
                     resObj.send();
@@ -297,11 +298,13 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, resObj) {
 
 
 function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
-    console.log('------------Updating device History--------------');
-    console.log('Beacon ID ' + BeaconID);
-    console.log('Device ID ' + DeviceID);
-    console.log('Mobile No ' + MobileNo);
-    console.log('------------Updating device History--------------');
+    if (MobileNo && MobileNo == '9584010456') {
+        console.log('------------Updating device History--------------');
+        console.log('Beacon ID ' + BeaconID);
+        console.log('Device ID ' + DeviceID);
+        console.log('Mobile No ' + MobileNo);
+        console.log('------------Updating device History--------------');
+    }
     var resObjVal = {};
     if (!(BeaconID && DeviceID && MobileNo)) {
         return;
@@ -1321,7 +1324,7 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
 app.post('/getDeviceSearchHistoryDetailsdata', function(req, res) {
     BeaconID = req.body.BeaconID;
     MobileNo = req.body.MobileNo;
-    
+
     fromDate = 0;
     toDate = 0;
     seldate = new Date(req.body.DateFrom);
