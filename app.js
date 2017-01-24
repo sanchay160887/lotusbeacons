@@ -499,7 +499,7 @@ io.on('connection', function(socket) {
 
     socket.on('updateDevice', function(data) {
         updateDevice(data.BeaconID, data.DeviceID, data.Distance, data.MobileNo);
-        return "Update device called";
+        return "Update device called : " + data.BeaconID + ' Mobile No : ' + data.MobileNo;
         //sendDevices();
     });
 

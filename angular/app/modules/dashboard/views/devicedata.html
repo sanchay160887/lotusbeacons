@@ -137,6 +137,8 @@
 }
 </style>
 <!-- Content Header (Page header) -->
+<div ng-show="!connection" class="alert alert-danger">You're offline now. Please check your internet connection</div>
+<div ng-show="connection_msg" class="alert alert-success">Re-connected successfully</div>
 <section class="content-header">
     <h1> Devices </h1>
     <ol class="breadcrumb">

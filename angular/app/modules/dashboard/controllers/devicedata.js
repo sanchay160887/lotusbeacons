@@ -1,4 +1,4 @@
-dashboard.controller("DeviceDataController", function($rootScope, $scope, apiService, socket, $http, $location) { //
+dashboard.controller("DeviceDataController", function($rootScope, $scope, apiService, socket, $http, $location, $interval) { //
     var vm = this;
     $scope.BeaconID = '';
     $scope.beaconData = [];
@@ -18,6 +18,28 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
     $scope.BeaconInitialized = true;
 
     var queriedUrl = $location.search();
+
+    $scope.connection = true;
+    $scope.connection_msg = false;
+    $interval(function() {
+        console.log(Offline.state);
+        if (Offline.state == 'down') {
+            $scope.connection = false;
+        } else {
+            if (!$scope.connection) {
+                $scope.connection = true;
+                $scope.connection_msg = true;
+            }
+        }
+    }, 2000)
+
+    $scope.$watchCollection('[connection_msg]', function() {
+        if ($scope.connection_msg) {
+            setTimeout(function() {
+                $scope.connection_msg = false;
+            }, 2000);
+        }
+    });
 
     $scope.sortDevicedata = function(fieldname) {
         console.log('sortDevicedata');
@@ -65,10 +87,10 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         $location.search({ 'store': $scope.selectedStore, 'beacon': $scope.selectedBeacon });
     });
 
-    $scope.checkPushNotificationValidition = function(){
+    $scope.checkPushNotificationValidition = function() {
         var PNtitle = document.getElementById('push-title').value;
         var PNdescr = document.getElementById('push-description').value;
-        if (!PNtitle || !PNdescr){
+        if (!PNtitle || !PNdescr) {
             document.getElementById('sendpushnotification').disabled = true;
         } else {
             document.getElementById('sendpushnotification').disabled = false;
@@ -222,7 +244,7 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
 
         var ImageFilePath = document.getElementById('imagepreview').src;
         var title = document.getElementById('push-title').value;
-        var description = document.getElementById('push-description').value;       
+        var description = document.getElementById('push-description').value;
 
         if (checkedlist && checkedlist.length > 0) {
             apiService.sendNotification_image(checkedlist, title, description, ImageFilePath).then(function(res) {

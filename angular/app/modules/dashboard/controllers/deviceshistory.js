@@ -11,7 +11,7 @@ dashboard.directive('ngEnter', function() {
         });
     };
 });
-dashboard.controller("DeviceHistoryController", function($rootScope, $scope, apiService, socket, $http, $location) { //
+dashboard.controller("DeviceHistoryController", function($rootScope, $scope, apiService, socket, $http, $location, $interval) { //
     var vm = this;
     $scope.BeaconID = '';
     $scope.beaconData = [];
@@ -53,6 +53,28 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.HistoryOfPlace = '';
     $scope.HitFromPagination = false;
     $scope.HistorySearchDetailsData = [];
+
+    $scope.connection = true;    
+    $scope.connection_msg = false;
+    $interval(function() {
+        console.log(Offline.state);
+        if (Offline.state == 'down') {
+            $scope.connection = false;
+        } else {
+            if (!$scope.connection) {
+                $scope.connection = true;
+                $scope.connection_msg = true;
+            }
+        }
+    }, 2000)
+
+    $scope.$watchCollection('[connection_msg]', function() {
+        if ($scope.connection_msg){
+            setTimeout(function() {
+                $scope.connection_msg = false;
+            }, 5000);
+        }
+    });
 
     $scope.$watchCollection('[InvalidInputs]', function() {
         if ($scope.InvalidInputs) {
@@ -285,7 +307,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         $scope.getAllDevicesHistory();
     }
 
-    $scope.showData = function(){
+    $scope.showData = function() {
         $scope.unselectRecords();
         $scope.selectAllRecord = false;
         $scope.pageLimit = 10;
@@ -308,7 +330,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         var queriedUrl = $location.search();
 
         var selectedStore = '';
-        if ($scope.selectedStore){
+        if ($scope.selectedStore) {
             selectedStore = $scope.selectedStore;
         } else if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store) {
             selectedStore = queriedUrl.store;
@@ -318,28 +340,28 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         }
 
         var selectedBeacon = '';
-        if ($scope.selectedBeacon){
+        if ($scope.selectedBeacon) {
             selectedBeacon = $scope.selectedBeacon;
         } else if (typeof(queriedUrl.beacon) != 'undefined' && queriedUrl.beacon) {
             selectedBeacon = queriedUrl.beacon;
         }
 
         var selectedDateFrom = '';
-        if ($scope.selectedDateFrom){
+        if ($scope.selectedDateFrom) {
             selectedDateFrom = $scope.selectedDateFrom;
         } else if (typeof(queriedUrl.dateFrom) != 'undefined' && queriedUrl.dateFrom) {
             selectedDateFrom = queriedUrl.dateFrom;
         }
 
         var selectedDateTo = '';
-        if ($scope.selectedDateTo){
+        if ($scope.selectedDateTo) {
             selectedDateTo = $scope.selectedDateTo;
         } else if (typeof(queriedUrl.dateTo) != 'undefined' && queriedUrl.dateTo) {
             selectedDateTo = queriedUrl.dateTo;
         }
 
         var currentPage = 1;
-        if ($scope.currPage){
+        if ($scope.currPage) {
             currentPage = $scope.currPage;
         } else if (typeof(queriedUrl.page) != 'undefined' && queriedUrl.page) {
             currentPage = queriedUrl.page;
@@ -371,7 +393,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         }
 
         var pageLimit = 10;
-        if ($scope.pageLimit){
+        if ($scope.pageLimit) {
             pageLimit = $scope.pageLimit;
         } else if (typeof(queriedUrl.limit) != 'undefined' && queriedUrl.limit) {
             pageLimit = queriedUrl.limit;
@@ -380,7 +402,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         }
 
         var searchNameNumber = 1;
-        if ($scope.searchNameNumber){
+        if ($scope.searchNameNumber) {
             searchNameNumber = $scope.searchNameNumber;
         } else if (typeof(queriedUrl.search) != 'undefined' && queriedUrl.search) {
             searchNameNumber = queriedUrl.search;
@@ -440,8 +462,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         $scope.HistoryOfPlace = BeaconKey;
 
         var queriedUrl = $location.search();
-        if (!(typeof(queriedUrl.dateFrom) != 'undefined' && queriedUrl.dateFrom)
-            && 
+        if (!(typeof(queriedUrl.dateFrom) != 'undefined' && queriedUrl.dateFrom) &&
             (typeof(queriedUrl.dateTo) != 'undefined' && queriedUrl.dateTo)) {
             /*$location.search({ 'store': $scope.selectedStore, 'beacon': $scope.selectedBeacon, 
                 'dateFrom': $scope.selectedDateFrom, 'dateTo': $scope.selectedDateTo, 'page': $scope.currPage });*/
@@ -458,14 +479,14 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         console.log(queriedUrl.dateTo);
 
         var selectedDateFrom = '';
-        if ($scope.selectedDateFrom){
+        if ($scope.selectedDateFrom) {
             selectedDateFrom = $scope.selectedDateFrom;
         } else if (typeof(queriedUrl.dateFrom) != 'undefined' && queriedUrl.dateFrom) {
             selectedDateFrom = queriedUrl.dateFrom;
         }
 
         var selectedDateTo = '';
-        if ($scope.selectedDateTo){
+        if ($scope.selectedDateTo) {
             selectedDateTo = $scope.selectedDateTo;
         } else if (typeof(queriedUrl.dateTo) != 'undefined' && queriedUrl.dateTo) {
             selectedDateTo = queriedUrl.dateTo;
@@ -523,14 +544,14 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         console.log(queriedUrl.dateTo);
 
         var selectedDateFrom = '';
-        if ($scope.selectedDateFrom){
+        if ($scope.selectedDateFrom) {
             selectedDateFrom = $scope.selectedDateFrom;
         } else if (typeof(queriedUrl.dateFrom) != 'undefined' && queriedUrl.dateFrom) {
             selectedDateFrom = queriedUrl.dateFrom;
         }
 
         var selectedDateTo = '';
-        if ($scope.selectedDateTo){
+        if ($scope.selectedDateTo) {
             selectedDateTo = $scope.selectedDateTo;
         } else if (typeof(queriedUrl.dateTo) != 'undefined' && queriedUrl.dateTo) {
             selectedDateTo = queriedUrl.dateTo;

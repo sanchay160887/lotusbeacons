@@ -41,6 +41,8 @@ Page Description: Dashboard Home page
 Date: 05 Jan 2016
 -->
 <!-- Content Header (Page header) -->
+<div ng-show="!connection" class="alert alert-danger">You're offline now. Please check your internet connection</div>
+<div ng-show="connection_msg" class="alert alert-danger">Re-connected successfully</div>
 <section class="content-blocks">
     <section class="content-header">
         <h1>

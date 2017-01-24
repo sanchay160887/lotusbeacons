@@ -12,6 +12,28 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
     $scope.ListInitialized = false;
     $scope.FormInitialized = true;
 
+    $scope.connection = true;    
+    $scope.connection_msg = false;
+    $interval(function() {
+        console.log(Offline.state);
+        if (Offline.state == 'down') {
+            $scope.connection = false;
+        } else {
+            if (!$scope.connection) {
+                $scope.connection = true;
+                $scope.connection_msg = true;
+            }
+        }
+    }, 2000)
+
+    $scope.$watchCollection('[connection_msg]', function() {
+        if ($scope.connection_msg){
+            setTimeout(function() {
+                $scope.connection_msg = false;
+            }, 5000);
+        }
+    });
+
     var vm = this;
 
 

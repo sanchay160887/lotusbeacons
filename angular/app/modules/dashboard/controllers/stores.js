@@ -2,7 +2,7 @@
 //http://www.html5rocks.com/en/tutorials/frameworks/angular-websockets/
 //
 
-dashboard.controller("StoresController", function($rootScope, $scope, apiService, $http) { //
+dashboard.controller("StoresController", function($rootScope, $scope, apiService, $http, $interval) { //
     $scope.Store_Id = '';
     $scope.Store_Name = '';
     $scope.Store_Descr = '';
@@ -11,6 +11,26 @@ dashboard.controller("StoresController", function($rootScope, $scope, apiService
     $scope.button_name = 'Add';
     $scope.ListInitialized = false;
     $scope.FormInitialized = true;
+
+    $scope.connection = true;    
+    $scope.connection_msg = false;
+    $interval(function(){
+        console.log(Offline.state);
+        if (Offline.state == 'down'){
+            $scope.connection = false;
+        } else {
+            $scope.connection = true;
+            $scope.connection_msg = true;
+        }
+    }, 2000)
+
+    $scope.$watchCollection('[connection_msg]', function() {
+        if ($scope.connection_msg){
+            setTimeout(function() {
+                $scope.connection_msg = false;
+            }, 5000);
+        }
+    });
 
     var vm = this;
 
