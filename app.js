@@ -286,9 +286,17 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, resObj) {
                     'MobileNo': MobileNo,
                     'message': 'Data inserted successfully'
                 });
+
+                var obj = {
+                    'IsSuccess': true,
+                    'BeaconID': BeaconID,
+                    'StoreID': BeaconStoreID,
+                    'MobileNo': MobileNo,
+                    'message': 'Data inserted successfully'
+                };
                 db.close();
                 if (resObj) {
-                    resObj.send();
+                    resObj.send(obj);
                 }
                 callback(null, response);
             }
@@ -1504,7 +1512,8 @@ app.post('/addbeacon', function(req, res) {
                     return;
                 }
                 collection.find({
-                    'BeaconKey': BeaconKey
+                    'BeaconKey': BeaconKey,
+                    'BeaconStore': ObjectId(BeaconStore)
                 }).toArray(function(err, devices) {
                     callback(null, devices);
                 });
@@ -1577,21 +1586,47 @@ app.post('/updatebeacon', function(req, res) {
         }
 
         var collection = db.collection('beacons');
-        collection.update({
-            'BeaconID': BeaconID
-        }, {
-            'BeaconID': BeaconID,
-            'BeaconKey': BeaconKey,
-            'BeaconWelcome': BeaconWelcome,
-            'BeaconDescr': BeaconDescr,
-            'BeaconStore': ObjectId(BeaconStore)
-        });
-        db.close();
 
-        resObj.IsSuccess = true;
-        resObj.message = "Beacon updated successfully.";
-        res.send(resObj);
+        async.waterfall([
+            function(callback) {
+                collection.find({
+                    'BeaconKey': BeaconKey,
+                    'BeaconStore': ObjectId(BeaconStore),
+                    'BeaconID': { $ne: BeaconID }
+                }).toArray(function(err, devices) {
+                    callback(null, devices);
+                });
+            },
+            function(beacondata, callback) {
+                if (beacondata && beacondata.length > 0) {
+                    resObj.IsSuccess = false;
+                    resObj.message = "Beacon Key already exists in this store";
+                    res.send(resObj);
+                    return;
+                }
 
+                collection.update({
+                    'BeaconID': BeaconID
+                }, {
+                    'BeaconID': BeaconID,
+                    'BeaconKey': BeaconKey,
+                    'BeaconWelcome': BeaconWelcome,
+                    'BeaconDescr': BeaconDescr,
+                    'BeaconStore': ObjectId(BeaconStore)
+                });
+                console.log('Beacon updated');
+
+                callback(null, 'updated');
+            },
+            function(response, callback) {
+                console.log('coming to last callback');
+                db.close();
+                resObj.IsSuccess = true;
+                resObj.message = "Beacon updated successfully.";
+                res.send(resObj);
+                callback(null, response);
+            }
+        ]);
     });
 });
 
@@ -1624,7 +1659,6 @@ app.post('/deletebeacon', function(req, res) {
         db.close();
 
     });
-
 });
 
 app.post('/getbeacon', function(req, res) {
@@ -2191,130 +2225,4 @@ app.post('/getdeviceidentity', function(req, res) {
             console.log(body);
         })
     res.send();
-});
-
-
-app.post('/addUsers', function(req, res) {
-    FirstName = req.body.FirstName;
-    LastName = req.body.LastName;
-    Email = req.body.Email;
-    Password = req.body.Password;
-    var resObj = {};
-
-    if (!FirstName) {
-        console.log(FirstName);
-        resObj.IsSuccess = false;
-        resObj.message = "Please enter First Name";
-        res.send(resObj);
-        return;
-    }
-
-    MongoClient.connect(mongourl, function(err, db) {
-        if (err) {
-            return console.dir(err);
-        }
-        assert.equal(null, err);
-
-        var collection = db.collection('users');
-
-        async.waterfall([
-            function(callback) {
-                collection.find({
-                    'FirstName': FirstName
-                }).toArray(function(err, Users) {
-                    callback(null, Users);
-                });
-
-            },
-            function(Users, callback) {
-                if (stores && stores.length > 0) {
-                    resObj.IsSuccess = false;
-                    resObj.message = "First Name already exists";
-                    res.send(resObj);
-                    return;
-                }
-
-                collection.insert({
-                    'FirstName': FirstName,
-                    'LastName': LastName,
-                    'Email': Email,
-                    'Password': Password
-                });
-                console.log('User inserted');
-
-                callback(null, 'inserted');
-            },
-            function(response, callback) {
-                console.log('coming to last callback');
-                db.close();
-                resObj.IsSuccess = true;
-                resObj.message = "User added successfully.";
-                res.send(resObj);
-                callback(null, response);
-            }
-        ]);
-    });
-});
-
-
-app.post('/editUsers', function(req, res) {
-    FirstName = req.body.FirstName;
-    LastName = req.body.LastName;
-    Email = req.body.Email;
-    Password = req.body.Password;
-    var resObj = {};
-
-    if (!FirstName) {
-        console.log(FirstName);
-        resObj.IsSuccess = false;
-        resObj.message = "Please enter First Name";
-        res.send(resObj);
-        return;
-    }
-
-    MongoClient.connect(mongourl, function(err, db) {
-        if (err) {
-            return console.dir(err);
-        }
-        assert.equal(null, err);
-
-        var collection = db.collection('users');
-
-        async.waterfall([
-            function(callback) {
-                collection.find({
-                    'FirstName': FirstName
-                }).toArray(function(err, Users) {
-                    callback(null, Users);
-                });
-
-            },
-            function(Users, callback) {
-                if (stores && stores.length > 0) {
-                    resObj.IsSuccess = false;
-                    resObj.message = "First Name already exists";
-                    res.send(resObj);
-                    return;
-                }
-
-                collection.insert({
-                    'FirstName': FirstName,
-                    'LastName': LastName,
-                    'Email': Email,
-                    'Password': Password
-                });
-                console.log('User inserted');
-
-                callback(null, 'inserted');
-            },
-            function(response, callback) {
-                console.log('coming to last callback');
-                db.close();
-                resObj.IsSuccess = true;
-                resObj.message = "User added successfully.";
-                res.send(resObj);
-                callback(null, response);
-            }
-        ]);
-    });
 });
