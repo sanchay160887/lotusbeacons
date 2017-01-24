@@ -1101,14 +1101,12 @@ app.post('/getDeviceHistorydata', function(req, res) {
 
 
                             if (SearchNameNumber) {
-
-                                console.log('coming 1093');
                                 var i;
                                 i = devicelist.length;
                                 while (i--) {
                                     if (!(
-                                            devicelist[i].DeviceName.toLowerCase().search(SearchNameNumber) >= 0 ||
-                                            devicelist[i].DevicePhone.toLowerCase().search(SearchNameNumber) >= 0
+                                            devicelist[i].DeviceName.toLowerCase().search(SearchNameNumber.toLowerCase()) >= 0 ||
+                                            devicelist[i].DevicePhone.toLowerCase().search(SearchNameNumber.toLowerCase()) >= 0
                                         )) {
                                         devicelist.splice(i, 1);
                                     }
