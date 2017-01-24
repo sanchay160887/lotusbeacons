@@ -57,7 +57,6 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.connection = true;    
     $scope.connection_msg = false;
     $interval(function() {
-        console.log(Offline.state);
         if (Offline.state == 'down') {
             $scope.connection = false;
         } else {

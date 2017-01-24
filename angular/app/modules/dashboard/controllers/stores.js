@@ -14,13 +14,14 @@ dashboard.controller("StoresController", function($rootScope, $scope, apiService
 
     $scope.connection = true;    
     $scope.connection_msg = false;
-    $interval(function(){
-        console.log(Offline.state);
-        if (Offline.state == 'down'){
+    $interval(function() {
+        if (Offline.state == 'down') {
             $scope.connection = false;
         } else {
-            $scope.connection = true;
-            $scope.connection_msg = true;
+            if (!$scope.connection) {
+                $scope.connection = true;
+                $scope.connection_msg = true;
+            }
         }
     }, 2000)
 
