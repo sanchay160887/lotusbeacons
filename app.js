@@ -287,15 +287,16 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, resObj) {
                     'message': 'Data inserted successfully'
                 });
 
-                var obj = {
-                    'IsSuccess': true,
-                    'BeaconID': BeaconID,
-                    'StoreID': BeaconStoreID,
-                    'MobileNo': MobileNo,
-                    'message': 'Data inserted successfully'
-                };
                 db.close();
                 if (resObj) {
+                    var obj = {
+                        'IsSuccess': true,
+                        'BeaconID': BeaconID,
+                        'StoreID': BeaconStoreID,
+                        'MobileNo': MobileNo,
+                        'message': 'Data inserted successfully'
+                    };
+
                     resObj.send(obj);
                 }
                 callback(null, response);
@@ -487,15 +488,21 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                 console.log('coming to last callback');
                 db.close();
                 if (resObj) {
-                    resObjVal.data = 'History updated upto last callback';
-                    resObj.send(resObjVal);
+                    var obj = {
+                        'IsSuccess': true,
+                        'BeaconID': BeaconID,
+                        'StoreID': BeaconStore,
+                        'MobileNo': MobileNo,
+                        'message': 'Data updated successfully'
+                    }
+                    //resObjVal.data = 'History updated upto last callback';
+                    resObj.send(obj);
                 }
                 callback(null, response);
             }
         ]);
     });
 }
-
 
 // Emit welcome message on connection
 io.on('connection', function(socket) {
