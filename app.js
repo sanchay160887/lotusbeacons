@@ -15,6 +15,8 @@ var methodOverride = require('method-override');
 var GcmGoogleKey = 'AIzaSyAUxc6EwlgRP6MITCynw3_vsYatPI4iZuw';
 var gcm = require('android-gcm');
 var request = require('request');
+var session = require('express-session');
+var bcrypt = require('bcrypt');
 querystring = require('querystring');
 require('timers');
 var devicecron = require('node-cron');
@@ -36,14 +38,12 @@ var server = http.createServer(function(req, res) {
 
 var app = express();
 
-/*var server = app.listen(3000);
-server.listen(process.env.PORT || 3000, function() {
-    console.log("Socket started");
-});*/
-
-
 app.use('/', express.static(__dirname + '/angular/'));
-
+app.use(session({
+    secret: '2C44-4D44-WppQ38S',
+    resave: true,
+    saveUninitialized: true
+}));
 app.use(bodyParser.json()); // parse application/json
 app.use(bodyParser.json({
     type: 'application/vnd.api+json'
@@ -489,13 +489,13 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                 db.close();
                 if (resObj) {
                     var obj = {
-                        'IsSuccess': true,
-                        'BeaconID': BeaconID,
-                        'StoreID': BeaconStore,
-                        'MobileNo': MobileNo,
-                        'message': 'Data updated successfully'
-                    }
-                    //resObjVal.data = 'History updated upto last callback';
+                            'IsSuccess': true,
+                            'BeaconID': BeaconID,
+                            'StoreID': BeaconStore,
+                            'MobileNo': MobileNo,
+                            'message': 'Data updated successfully'
+                        }
+                        //resObjVal.data = 'History updated upto last callback';
                     resObj.send(obj);
                 }
                 callback(null, response);
@@ -523,46 +523,6 @@ io.on('connection', function(socket) {
         //sendDevices();
     });
 
-});
-
-app.post('/user/loggedinUser', function(req, res) {
-    var resObj = {};
-    if (req.session.loggedInUser) {
-        var userObjLocal = {};
-        userObjLocal.userid = 101;
-        userObjLocal.firstname = 'admin';
-
-        resObj.user = userObjLocal;
-        resObj.isSuccess = true;
-        res.send(resObj);
-    } else {
-        resObj.isSuccess = false;
-        res.send(resObj);
-    }
-});
-
-app.post('/user/login', function(req, res) {
-    var resObj = {};
-
-    if (req.body.username == 'admin' && req.body.password == 'remote@123') {
-        req.session.loggedInUser
-        resObj.message = "Successfully loggedin!"
-        resObj.isSuccess = true;
-        user.password = '';
-        var userObjLocal = {};
-
-        userObjLocal.userid = 101;
-        userObjLocal.firstname = 'admin';
-
-        resObj.user = userObjLocal;
-        req.session.loggedInUser = userObjLocal;
-    } else {
-        req.session.loggedInUser = null;
-        resObj.message = "Invalid password"
-        resObj.isSuccess = false;
-    }
-
-    res.send(resObj);
 });
 
 app.post('/updateDevice', function(req, res) {
@@ -761,10 +721,36 @@ devicecron.schedule('* * * * *', function() {
     ]);
 });
 
+
+function getUserAllotedStore(req) {
+    if (req.session.loggedInUser) {
+        return ObjectId(req.session.loggedInUser.AssignedStore);
+    } else {
+        return false;
+    }
+}
+
 app.post('/getdata', function(req, res) {
     console.log(JSON.stringify(req.body));
     BeaconID = req.body.BeaconID;
-    StoreID = req.body.StoreID;
+
+    if (!req.session.loggedInUser) {
+        var resObj = {};
+        resObj.IsSuccess = false;
+        resObj.message = "You are not logged in.";
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    if (req.session.loggedInUser.UserType == 2) {
+        StoreID = getUserAllotedStore(req);
+    } else {
+        StoreID = req.body.StoreID;
+    }
+    if (!StoreID) {
+        res.send({});
+    }
 
     console.log('Beacon Parameter on start');
     console.log(BeaconID);
@@ -907,6 +893,24 @@ app.post('/getdata', function(req, res) {
 app.post('/getDeviceHistorydata', function(req, res) {
     BeaconID = req.body.BeaconID;
     StoreID = req.body.StoreID;
+
+    if (!req.session.loggedInUser) {
+        var resObj = {};
+        resObj.IsSuccess = false;
+        resObj.message = "You are not logged in.";
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+    if (req.session.loggedInUser.UserType == 2) {
+        StoreID = getUserAllotedStore(req);
+    } else {
+        StoreID = req.body.StoreID;
+    }
+    if (!StoreID) {
+        res.send({});
+    }
+
     if (typeof(req.body.PageNo) != 'undefined' && req.body.PageNo) {
         PageNo = req.body.PageNo;
     } else {
@@ -1398,7 +1402,19 @@ app.post('/getDeviceSearchHistoryDetailsdata', function(req, res) {
 /*Beacon Services start*/
 app.post('/getbeacondata', function(req, res) {
     BeaconStore = req.body.BeaconStore;
+
     var resObj = {};
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not logged in.";
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    UserStore = getUserAllotedStore(req);
+
+
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
             return console.dir(err);
@@ -1414,7 +1430,11 @@ app.post('/getbeacondata', function(req, res) {
                         'BeaconStore': ObjectId(BeaconStore)
                     })
                 } else {
-                    storecollection = collection.find();
+                    if (req.session.loggedInUser.UserType == 2) {
+                        storecollection = collection.find(ObjectId(UserStore));
+                    } else {
+                        storecollection = collection.find();
+                    }
                 }
                 storecollection.toArray(function(err, stores) {
                     var storelist = [];
@@ -1434,7 +1454,13 @@ app.post('/getbeacondata', function(req, res) {
                         'BeaconStore': ObjectId(BeaconStore)
                     })
                 } else {
-                    beaconcollection = collection.find();
+                    if (req.session.loggedInUser.UserType == 2) {
+                        beaconcollection = collection.find({
+                            'BeaconStore': ObjectId(UserStore)
+                        });
+                    } else {
+                        beaconcollection = collection.find();
+                    }
                 }
 
                 beaconcollection.toArray(function(err, beacons) {
@@ -1471,7 +1497,22 @@ app.post('/addbeacon', function(req, res) {
     BeaconWelcome = req.body.BeaconWelcome;
     BeaconDescr = req.body.BeaconDescr;
     BeaconStore = req.body.BeaconStore;
+
     var resObj = {};
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not logged in.";
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
 
     if (!(BeaconID && BeaconKey)) {
         resObj.IsSuccess = false;
@@ -1565,6 +1606,20 @@ app.post('/updatebeacon', function(req, res) {
     BeaconStore = req.body.BeaconStore;
 
     var resObj = {};
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not logged in.";
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
 
     if (!(BeaconID && BeaconKey)) {
         resObj.IsSuccess = false;
@@ -1639,7 +1694,23 @@ app.post('/updatebeacon', function(req, res) {
 
 app.post('/deletebeacon', function(req, res) {
     BeaconID = req.body.BeaconID;
+
     var resObj = {};
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not logged in.";
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
 
     if (!BeaconID) {
         resObj.IsSuccess = false;
@@ -1716,15 +1787,40 @@ app.post('/getbeacon', function(req, res) {
 
 /*Store Services start*/
 app.post('/getstoredata', function(req, res) {
+
     var resObj = {};
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not logged in.";
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    UserStore = getUserAllotedStore(req);
+
+
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = "No record found.";
+        resObj.data = '';
+        res.send(resObj);
+    }
+
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
             return console.dir(err);
         }
 
-        var collection = db.collection('stores');
         var devicelist = new Array();
-        collection.find().toArray(function(err, devices) {
+        var collection = db.collection('stores');
+        if (req.session.loggedInUser.UserType == 2) {
+            collection = collection.find(ObjectId(UserStore));
+        } else {
+            collection = collection.find();
+        }
+
+        collection.toArray(function(err, devices) {
             if (devices && devices.length > 0) {
                 for (var dvc in devices) {
                     devicelist.push(devices[dvc]);
@@ -1751,6 +1847,21 @@ app.post('/addstore', function(req, res) {
     StoreLat = req.body.StoreLat;
     StoreLong = req.body.StoreLong;
     var resObj = {};
+
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not logged in.";
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
 
     if (!StoreName) {
         console.log(StoreName);
@@ -1821,7 +1932,23 @@ app.post('/updatestore', function(req, res) {
     StoreDescr = req.body.StoreDescr;
     StoreLat = req.body.StoreLat;
     StoreLong = req.body.StoreLong;
+
     var resObj = {};
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not logged in.";
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
 
     if (!StoreName) {
         resObj.IsSuccess = false;
@@ -1863,7 +1990,22 @@ app.post('/updatestore', function(req, res) {
 
 app.post('/deletestore', function(req, res) {
     StoreID = req.body.StoreID;
+
     var resObj = {};
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not logged in.";
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
 
     if (!StoreID) {
         resObj.IsSuccess = false;
@@ -2232,4 +2374,526 @@ app.post('/getdeviceidentity', function(req, res) {
             console.log(body);
         })
     res.send();
+});
+
+
+/*User Services start*/
+app.post('/getUserdata', function(req, res) {
+    var resObj = {};
+
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not logged in.";
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        async.waterfall([
+            function(callback) {
+                var collection = db.collection('stores');
+
+                var storecollection = {};
+                storecollection = collection.find();
+                storecollection.toArray(function(err, stores) {
+                    var storelist = [];
+                    for (var b in stores) {
+                        storelist[stores[b]._id] = stores[b].StoreName;
+                    }
+                    callback(null, storelist);
+                });
+            },
+            function(storelist, callback) {
+                var collection = db.collection('users');
+
+                collection.find({ "UserType": 2 }).toArray(function(err, users) {
+                    var userlist = [];
+                    if (users && users.length > 0) {
+                        for (var u in users) {
+                            users[u].StoreName = storelist[ObjectId(users[u].AssignedStore)];
+                            userlist.push(users[u]);
+                        }
+                        resObj.IsSuccess = true;
+                        resObj.message = "Success";
+                        resObj.data = userlist;
+                        res.send(resObj);
+                    } else {
+                        resObj.IsSuccess = false;
+                        resObj.message = "No record found.";
+                        resObj.data = '';
+                        res.send(resObj);
+                    }
+                    callback(null, userlist);
+                });
+            },
+            function(userlist, callback) {
+                db.close();
+            }
+        ]);
+
+    });
+});
+
+app.post('/addUser', function(req, res) {
+    UserID = req.body.UserID;
+    Password = req.body.Password;
+    Email = req.body.Email;
+    Name = req.body.Name;
+    Designation = req.body.Designation;
+    MobileNo = req.body.MobileNo;
+    AssignedStore = req.body.AssignedStore;
+
+    UserID = UserID.toLowerCase();
+    Email = Email.toLowerCase();
+    Name = Name.toLowerCase();
+    Designation = Designation.toLowerCase();
+    MobileNo = MobileNo.toLowerCase();
+
+    var resObj = {};
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not logged in.";
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
+
+    if (!(UserID && Password && Name && Email)) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please enter appropriate informations";
+        res.send(resObj);
+        return;
+    }
+
+    if (!AssignedStore) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please select Store";
+        res.send(resObj);
+        return;
+    }
+
+    if (AssignedStore.length != 24) {
+        resObj.IsSuccess = false;
+        resObj.message = "Invalid store selected";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        assert.equal(null, err);
+
+        var collection = db.collection('users');
+
+        async.waterfall([
+            function(callback) {
+                collection.find().toArray(function(err, users) {
+                    var cnt = users.length;
+                    for (var u in users) {
+                        if (users[u].UserID == UserID) {
+                            resObj.IsSuccess = false;
+                            resObj.message = "User ID already exists";
+                            res.send(resObj);
+                            return 0;
+                        } else if (users[u].Email == Email) {
+                            resObj.IsSuccess = false;
+                            resObj.message = "Email ID already exists";
+                            res.send(resObj);
+                            return 0;
+                        } else if (users[u].Name == Name) {
+                            resObj.IsSuccess = false;
+                            resObj.message = "Name already exists";
+                            res.send(resObj);
+                            return 0;
+                        } else if (users[u].MobileNo == MobileNo) {
+                            resObj.IsSuccess = false;
+                            resObj.message = "Mobile No already exists";
+                            res.send(resObj);
+                            return 0;
+                        }
+                    }
+                    callback(null, users);
+                });
+            },
+            function(userdata, callback) {
+                bcrypt.genSalt(10, function(err, salt) {
+                    if (err)
+                        return callback(err);
+
+                    bcrypt.hash(Password, salt, function(err, hash) {
+                        return callback(null, hash);
+                    });
+
+                });
+            },
+            function(hashedpassword, callback) {
+                collection.insert({
+                    'UserID': UserID,
+                    'Email': Email,
+                    'Name': Name,
+                    'Designation': Designation,
+                    'Password': hashedpassword,
+                    'MobileNo': MobileNo,
+                    'AssignedStore': ObjectId(AssignedStore),
+                    'UserType': 2
+                });
+                console.log('User inserted');
+
+                callback(null, 'inserted');
+            },
+            function(response, callback) {
+                db.close();
+                resObj.IsSuccess = true;
+                resObj.message = "User registered successfully.";
+                res.send(resObj);
+                callback(null, response);
+            }
+        ]);
+    });
+});
+
+app.post('/updateUser', function(req, res) {
+    UserID = req.body.UserID;
+    ResetPassword = req.body.ResetPassword;
+    Password = req.body.Password;
+    Email = req.body.Email;
+    Name = req.body.Name;
+    Designation = req.body.Designation;
+    MobileNo = req.body.MobileNo;
+    AssignedStore = req.body.AssignedStore;
+    UserObjectID = req.body.UserObjectID;
+
+    UserID = UserID.toLowerCase();
+    Email = Email.toLowerCase();
+    Name = Name.toLowerCase();
+    Designation = Designation.toLowerCase();
+    MobileNo = MobileNo.toLowerCase();
+
+    var resObj = {};
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not logged in.";
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
+
+    if (!(UserID && Name && Email && UserObjectID)) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please enter appropriate informations";
+        res.send(resObj);
+        return;
+    }
+
+    if (!AssignedStore) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please select User";
+        res.send(resObj);
+        return;
+    }
+
+    if (AssignedStore.length != 24) {
+        resObj.IsSuccess = false;
+        resObj.message = "Invalid User selected";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        assert.equal(null, err);
+
+        var collection = db.collection('users');
+
+        async.waterfall([
+            function(callback) {
+                collection.find({
+                    '_id': { $ne: ObjectId(UserObjectID) }
+                }).toArray(function(err, users) {
+                    var cnt = users.length;
+                    for (var u in users) {
+                        if (users[u].UserID == UserID) {
+                            resObj.IsSuccess = false;
+                            resObj.message = "User ID already exists";
+                            res.send(resObj);
+                            return 0;
+                        } else if (users[u].Email == Email) {
+                            resObj.IsSuccess = false;
+                            resObj.message = "Email ID already exists";
+                            res.send(resObj);
+                            return 0;
+                        } else if (users[u].Name == Name) {
+                            resObj.IsSuccess = false;
+                            resObj.message = "Name already exists";
+                            res.send(resObj);
+                            return 0;
+                        } else if (users[u].MobileNo == MobileNo) {
+                            resObj.IsSuccess = false;
+                            resObj.message = "Mobile No already exists";
+                            res.send(resObj);
+                            return 0;
+                        }
+                    }
+                    callback(null, users);
+                });
+            },
+            function(userdata, callback) {
+                bcrypt.genSalt(10, function(err, salt) {
+                    if (err)
+                        return callback(err);
+
+                    bcrypt.hash(Password, salt, function(err, hash) {
+                        return callback(null, hash);
+                    });
+
+                });
+            },
+            function(hashedpassword, callback) {
+                if (ResetPassword) {
+                    collection.update({
+                        '_id': ObjectId(UserObjectID)
+                    }, {
+                        '$set': {
+                            'UserID': UserID,
+                            'Email': Email,
+                            'Name': Name,
+                            'Designation': Designation,
+                            'Password': hashedpassword,
+                            'MobileNo': MobileNo,
+                            'AssignedStore': ObjectId(AssignedStore),
+                        }
+                    });
+
+                } else {
+                    console.log(ObjectId(UserObjectID));
+                    collection.update({
+                        '_id': ObjectId(UserObjectID)
+                    }, {
+                        '$set': {
+                            'UserID': UserID,
+                            'Email': Email,
+                            'Name': Name,
+                            'Designation': Designation,
+                            'MobileNo': MobileNo,
+                            'AssignedStore': ObjectId(AssignedStore),
+                        }
+                    });
+                }
+
+                console.log('User updated');
+
+                callback(null, 'updated');
+            },
+            function(response, callback) {
+                db.close();
+                resObj.IsSuccess = true;
+                resObj.message = "User updated successfully.";
+                res.send(resObj);
+                callback(null, response);
+            }
+        ]);
+    });
+});
+
+app.post('/deleteUser', function(req, res) {
+    UserObjectID = req.body.UserObjectID;
+
+    var resObj = {};
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not logged in.";
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
+
+    if (!UserObjectID) {
+        resObj.IsSuccess = false;
+        resObj.message = "Invalid User Selected";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+
+        var collection = db.collection('users');
+
+        collection.deleteMany({
+            '_id': ObjectId(UserObjectID),
+            'UserType': 2
+        });
+        resObj.IsSuccess = true;
+        resObj.message = "User deleted successfully";
+        res.send(resObj);
+
+        db.close();
+
+    });
+});
+
+app.post('/getUser', function(req, res) {
+    UserObjectID = req.body.UserObjectID;
+    var resObj = {};
+
+    if (!(UserObjectID)) {
+        resObj.IsSuccess = false;
+        resObj.message = "Invalid User selected";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+
+        var collection = db.collection('users');
+
+        async.waterfall([
+            function(callback) {
+                collection.find({
+                        '_id': ObjectId(UserObjectID)
+                    }).toArray(function(err, devices) {
+                    callback(null, devices);
+                });
+
+            },
+            function(devices, callback) {
+                if (devices && devices.length > 0) {
+                    resObj.IsSuccess = true;
+                    resObj.message = "success";
+                    resObj.data = devices;
+                } else {
+                    resObj.IsSuccess = false;
+                    resObj.message = "Store not found";
+                }
+                db.close();
+                res.send(resObj);
+            }
+        ]);
+    });
+});
+/*User services end*/
+
+
+app.post('/getLoggedinUser', function(req, res) {
+    var resObj = {};
+    if (req.session.loggedInUser) {
+        var userObjLocal = {};
+        resObj.user = req.session.loggedInUser;
+        resObj.isSuccess = true;
+        res.send(resObj);
+    } else {
+        resObj.isError = false;
+        res.send(resObj);
+    }
+});
+
+app.post('/userLogout', function(req, res) {
+    console.log("Logging out user.");
+    req.session.destroy(function() {
+        res.redirect('/');
+    });
+});
+
+app.post('/userLogin', function(req, res) {
+    var resObj = {};
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+
+        var resObj = {};
+        var collection = db.collection('users');
+        var userRecord = {};
+
+        async.waterfall([
+            function(callback) {
+                collection.find({
+                    "UserID": req.body.username,
+                }).toArray(function(err, users) {
+                    if (users && users.length) {
+                        var dbpassword = users[0].Password;
+                        users[0].Password = "";
+                        userRecord = users[0];
+                        bcrypt.compare(dbpassword, req.body.password, function(err, isPasswordMatch) {
+                            if (err)
+                                return false;
+                            callback(null, true);
+                            return true;
+                        });
+
+                        req.session.loggedInUser = users[0];
+                    } else {
+                        resObj.message = "Invalid Username."
+                        resObj.isSuccess = false;
+                        res.send(resObj);
+                        //callback(null, false);
+                        return 0;
+                    }
+                });
+            },
+            function(passwordmatched, callback) {
+                if (passwordmatched) {
+                    resObj.message = "Successfully loggedin."
+                    resObj.user = userRecord;
+                    resObj.isSuccess = true;
+                } else {
+                    resObj.message = "Wrong Password."
+                    resObj.isSuccess = false;
+                }
+                res.send(resObj);
+                callback(null, passwordmatched);
+            },
+            function(user, callback) {
+                db.close();
+            }
+        ]);
+    });
 });

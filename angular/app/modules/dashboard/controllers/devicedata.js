@@ -17,6 +17,16 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
     $scope.Initialized = false;
     $scope.BeaconInitialized = true;
 
+    if (!$rootScope.loggedInUser) {
+        apiService.checkloginUser().then(function(res) {
+            if (typeof(res.data.user) != undefined && res.data.user){
+                $rootScope.loggedInUser = res.data.user;
+            } else {
+                $location.path("/");                
+            }
+        });
+    }
+
     var queriedUrl = $location.search();
 
     $scope.connection = true;

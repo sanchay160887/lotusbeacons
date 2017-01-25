@@ -7,13 +7,26 @@
     s.no      date    author     description     
  ===========================================================*/
 
-app.controller("appCtrl", ['$rootScope', '$scope', '$state', '$location', 'Flash', 'appSettings',
-    function($rootScope, $scope, $state, $location, Flash, appSettings) {
+app.controller("appCtrl", ['$rootScope', '$scope', '$state', '$location', 'Flash', 'appSettings', 'apiService',
+    function($rootScope, $scope, $state, $location, Flash, appSettings, apiService) {
 
         $rootScope.theme = appSettings.theme;
         $rootScope.layout = appSettings.layout;
 
+        $scope.loggedInUser = $rootScope.loggedInUser;
+
         var vm = this;
+
+        if (!$rootScope.loggedInUser) {
+            apiService.checkloginUser().then(function(res) {
+                if (typeof(res.data.user) != undefined && res.data.user) {
+                    $rootScope.loggedInUser = res.data.user;
+                    $scope.loggedInUser = $rootScope.loggedInUser;
+                } else {
+                    $location.path("/");
+                }
+            });
+        }
 
 
         //avalilable themes
@@ -93,32 +106,32 @@ app.controller("appCtrl", ['$rootScope', '$scope', '$state', '$location', 'Flash
 
 
         //Main menu items of the dashboard
+
         vm.menuItems = [{
-                title: "Dashboard",
-                icon: "dashboard",
-                state: "dashboard"
-            }, {
-                title: "Devices",
-                icon: "tablet",
-                state: "devices"
-            }, {
-                title: "Devices History",
-                icon: "list-ul",
-                state: "deviceshistory"
-            }, {
-                title: "Beacons",
-                icon: "bluetooth",
-                state: "beacons"
-            }, {
-                title: "Stores",
-                icon: "empire ",
-                state: "stores"
-            }/*, {
-                title: "Users",
-                icon: "user",
-                state: "users"
-            }*/
-        ];
+            title: "Dashboard",
+            icon: "dashboard",
+            state: "dashboard"
+        }, {
+            title: "Devices",
+            icon: "tablet",
+            state: "devices"
+        }, {
+            title: "Devices History",
+            icon: "list-ul",
+            state: "deviceshistory"
+        }, {
+            title: "Beacons",
+            icon: "bluetooth",
+            state: "beacons"
+        }, {
+            title: "Stores",
+            icon: "empire ",
+            state: "stores"
+        }, {
+            title: "Users",
+            icon: "user",
+            state: "users"
+        }];
 
         //set the theme selected
         vm.setTheme = function(value) {

@@ -34,6 +34,9 @@
     font-style: italic;
     border: 1px solid #bce8f1;
 }
+.error {
+    color: red;
+}
 </style>
 <!--
 Author: Ranjithprabhu K
@@ -59,24 +62,55 @@ Date: 05 Jan 2016
         </div>
         <h4 ng-if="button_name!='update'">Add User</h4>
         <h4 ng-if="button_name=='update'">Update User</h4>
-        <label>Assign Store</label>
-        <select class="form-control col-md-4" ng-model="Beacon_Store">
-            <option ng-repeat="device in storeData | orderBy:StoreName" value="{{device._id}}">{{device.StoreName}}</option>
-        </select>
-        <label>First Name</label>
-        <input class="form-control" type="text" name="first_name" ng-model="First_Name" />
-        <br>
-        <label>Last Name</label>
-        <input class="form-control" type="text" name="last_name" ng-model="Last_Name" />
-        <br>
-        <label>Email</label>
-        <input class="form-control" type="text" name="email" ng-model="Email" />
-        <br>
-        <label>Password</label>
-        <input class="form-control" type="text" name="password" ng-model="Password" />
-        <br>
-        <button class="btn btn-primary" ng-bind="button_name" ng-click="processUser()">Add</button>
-        <button class="btn btn-primary" ng-if="button_name=='update'" ng-click="deleteUser()">Delete</button>
+        <ng-form name="userForm" id="userForm">
+            <label>Name<span>*</span></label>
+            <input class="form-control" type="text" name="Name" id="Name" ng-model="Name" required="required" />
+            <span class="error" ng-show="userForm.Name.$touched && userForm.Name.$invalid">Name required</span>
+            <br>
+            <label>Email<span>*</span></label>
+            <input class="form-control" type="text" id="Email" name="Email" ng-model="Email" ng-pattern="emailregex" required="required" />
+            <span class="error" ng-show="userForm.Email.$touched && userForm.Email.$invalid">Please enter a valid Email address</span>
+            <br>
+            <label>Mobile Number<span>*</span></label>
+            <input class="form-control" type="text" id="MobileNo" name="MobileNo" ng-model="MobileNo" 
+                ng-pattern="phoneregex" required="required" />
+            <span class="error" ng-show="userForm.MobileNo.$touched && userForm.MobileNo.$invalid">Please enter a valid Mobile Number</span>
+            <br>
+            <label>Designation</label>
+            <input class="form-control" type="text" name="Designation" ng-model="Designation" />
+            <br>
+            <label>Assign Store<span>*</span></label>
+            <select class="form-control col-md-4" ng-model="AssignedStore" id="AssignedStore" name="AssignedStore">
+                <option value="">Select Store</option>
+                <option ng-repeat="device in storeData | orderBy:StoreName" value="{{device._id}}">
+                    {{device.StoreName}}</option>
+            </select>
+            <span class="error" ng-show="userForm.AssignedStore.$touched && userForm.AssignedStore.$invalid">Please assign any store</span>
+            <br>
+            <label>User ID<span>*</span></label>
+            <input class="form-control" type="text" name="UserID" id="UserID" ng-model="UserID" 
+                ng-pattern="useridregex" required="required"/>
+            <span class="error" ng-show="userForm.UserID.$touched && userForm.UserID.$error.required">User ID required</span>
+            <span class="error" ng-show="userForm.UserID.$touched && userForm.UserID.$invalid && !userForm.UserID.$error.required">User ID must be lowercase and only alphabets</span>
+            <br>
+            <label>Password</label>
+            <input class="form-control" type="password" id="Password" name="Password" ng-model="Password"  />
+            <span class="error" ng-show="userForm.Password.$touched && userForm.Password.$invalid">Password required</span>
+            <span class="error" ng-show="userForm.Password.$touched && userForm.Password.$invalid && !userForm.Password.$error.required">Password should be atleast 8 characters long
+            and should contain one number,one character and one special
+            character</span>
+            <br>
+             <!-- compare-to="Password" -->
+            <label>Confirm Password</label>
+            <input class="form-control" type="password" id="ConfPassword" name="ConfPassword" ng-model="ConfPassword"  />
+            <span class="error" ng-show="userForm.confPassword.$touched && userForm.confPassword.$invalid">Confirm Password required</span>
+            <span class="error" ng-show="userForm.confPassword.$touched && userForm.confPassword.$invalid && !userForm.confPassword.$error.required">Confirm password doesnot match with password</span>
+            <br>
+            <p class="alert alert-warning" ng-show="button_name=='Update'">Leave password field blank if you donot want to reset password.</p>
+            <br>
+            <button class="btn btn-primary" ng-bind="button_name" ng-click="processUser()">Add</button>
+            <button class="btn btn-primary" ng-if="button_name=='Update'" ng-click="deleteUser()">Delete</button>
+        </ng-form>
     </section>
     <section class="content-body register_block_2">
         <div class="wait_block" ng-if="!ListInitialized">
@@ -84,22 +118,22 @@ Date: 05 Jan 2016
         </div>
         <!-- Main content -->
         <table class="table">
-            <th>First Name</th>
-            <th>Last Name</th>
+            <th>Name</th>
+            <th>Designation</th>
             <th>Email</th>
-            <th>Password</th>
+            <th>Assigned Store</th>
             <tr ng-repeat="u in userData | orderBy:BeaconKey ">
                 <td>
-                    <input class="form-control" type='text' ng-model="u.First_Name" readonly />
+                    <input class="form-control" type='text' ng-model="u.Name" readonly />
                 </td>
                 <td>
-                    <input class="form-control" type='text' ng-model="u.Last_Name" readonly />
+                    <input class="form-control" type='text' ng-model="u.Designation" readonly />
                 </td>
                 <td>
                     <input class="form-control" type='text' ng-model="u.Email" readonly />
                 </td>
                 <td>
-                    <input class="form-control" type='text' ng-model="u.Password" readonly />
+                    <input class="form-control" type='text' ng-model="u.StoreName" readonly />
                 </td>
                 <td ng-click="getUser(u._id)"><span class="btn btn-primary">View</span></td>
             </tr>

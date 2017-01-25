@@ -53,7 +53,7 @@ Date: 05 Jan 2016
             <li class="active">Stores</li>
         </ol>
     </section>
-    <section class="content-body register_block_1">
+    <section class="content-body register_block_1" ng-show="loggedInUser.UserType != 2 || button_name == 'Update'">
         <div class="wait_block" ng-if="!FormInitialized">
             <p class="wait_text">Please Wait...</p>
         </div>
@@ -71,12 +71,16 @@ Date: 05 Jan 2016
         <label>Long</label>
         <input class="form-control" type="text" name="store_long" ng-model="Store_Long" />
         <br>
-        <button class="btn btn-primary" ng-bind="button_name" ng-click="processStore()">Add</button>
-        <button class="btn btn-primary" ng-if="button_name=='Update'" ng-click="deleteStore()">Delete</button>
-        <button class="btn btn-primary" ng-if="button_name=='Update'" ng-click="resetControls()">Cancel</button>
+        <button class="btn btn-primary" ng-bind="button_name" ng-if="loggedInUser.UserType != 2" ng-click="processStore()">Add</button>
+        <button class="btn btn-primary" ng-if="button_name=='Update' && loggedInUser.UserType != 2" ng-click="deleteStore()">Delete</button>
+        <button class="btn btn-primary" ng-if="button_name=='Update' && loggedInUser.UserType != 2" ng-click="resetControls()">Cancel</button>
+        <button class="btn btn-primary" ng-if="loggedInUser.UserType = 2" ng-click="resetControls()">Ok</button>
     </section>
     <section class="content-body register_block_2">
         <div class="wait_block" ng-if="!ListInitialized">
+            <p class="wait_text">Please Wait...</p>
+        </div>
+        <div class="wait_block" ng-if="!FormInitialized && loggedInUser.UserType == 2">
             <p class="wait_text">Please Wait...</p>
         </div>
         <!-- Main content -->
@@ -101,7 +105,10 @@ Date: 05 Jan 2016
                 <td>
                     <input class="form-control" type='text' ng-model="device.StoreLong" readonly />
                 </td>
-                <td ng-click="getStore(device._id)"><span class="btn btn-primary">Edit</span></td>
+                <td ng-click="getStore(device._id)">
+                    <span class="btn btn-primary" ng-if="loggedInUser.UserType == 2">View</span>
+                    <span class="btn btn-primary" ng-if="loggedInUser.UserType != 2">Edit</span>
+                </td>
             </tr>
         </table>
     </section>

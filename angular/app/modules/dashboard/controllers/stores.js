@@ -11,8 +11,20 @@ dashboard.controller("StoresController", function($rootScope, $scope, apiService
     $scope.button_name = 'Add';
     $scope.ListInitialized = false;
     $scope.FormInitialized = true;
+    $scope.loggedInUser = $rootScope.loggedInUser;
 
-    $scope.connection = true;    
+    if (!$rootScope.loggedInUser) {
+        apiService.checkloginUser().then(function(res) {
+            if (typeof(res.data.user) != undefined && res.data.user) {
+                $rootScope.loggedInUser = res.data.user;
+                $scope.loggedInUser = $rootScope.loggedInUser;
+            } else {
+                $location.path("/");
+            }
+        });
+    }
+
+    $scope.connection = true;
     $scope.connection_msg = false;
     $interval(function() {
         if (Offline.state == 'down') {
@@ -26,7 +38,7 @@ dashboard.controller("StoresController", function($rootScope, $scope, apiService
     }, 2000)
 
     $scope.$watchCollection('[connection_msg]', function() {
-        if ($scope.connection_msg){
+        if ($scope.connection_msg) {
             setTimeout(function() {
                 $scope.connection_msg = false;
             }, 2000);
@@ -133,7 +145,7 @@ dashboard.controller("StoresController", function($rootScope, $scope, apiService
         if (!r) {
             return;
         }
-        
+
         $scope.FormInitialized = false;
         apiService.deleteStore($scope.Store_Id).success(function(res) {
             console.log(res);

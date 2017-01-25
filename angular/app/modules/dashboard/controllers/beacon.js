@@ -12,8 +12,23 @@ dashboard.controller("BeaconsController", function($rootScope, $scope, apiServic
     $scope.Beacon_Store = '';
     $scope.ListInitialized = false;
     $scope.FormInitialized = true;
+    $scope.loggedInUser = $rootScope.loggedInUser;
 
-    $scope.connection = true;    
+    if (!$rootScope.loggedInUser) {
+        apiService.checkloginUser().then(function(res) {
+            if (typeof(res.data.user) != undefined && res.data.user) {
+                $rootScope.loggedInUser = res.data.user;
+                $scope.loggedInUser = $rootScope.loggedInUser;
+                if ($rootScope.loggedInUser.UserType == 2){
+                    $location.path("/");    
+                }
+            } else {
+                $location.path("/");
+            }
+        });
+    }
+
+    $scope.connection = true;
     $scope.connection_msg = false;
     $interval(function() {
         if (Offline.state == 'down') {
@@ -27,7 +42,7 @@ dashboard.controller("BeaconsController", function($rootScope, $scope, apiServic
     }, 2000)
 
     $scope.$watchCollection('[connection_msg]', function() {
-        if ($scope.connection_msg){
+        if ($scope.connection_msg) {
             setTimeout(function() {
                 $scope.connection_msg = false;
             }, 2000);
@@ -67,6 +82,7 @@ dashboard.controller("BeaconsController", function($rootScope, $scope, apiServic
         success(function(data, status, headers, config) {
                 if (data.data) {
                     console.log(data.data);
+                    console.log('update');
                     $scope.button_name = 'Update';
                     $scope.Beacon_ID = pbeacon_id;
                     $scope.Beacon_Key = data.data[0].BeaconKey;

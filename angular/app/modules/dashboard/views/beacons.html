@@ -53,12 +53,13 @@ Date: 05 Jan 2016
             <li class="active">Beacons</li>
         </ol>
     </section>
-    <section class="content-body register_block_1">
+    <section class="content-body register_block_1" ng-show="loggedInUser.UserType != 2 || button_name == 'Update'">
         <div class="wait_block" ng-if="!FormInitialized">
             <p class="wait_text">Please Wait...</p>
         </div>
-        <h4 ng-if="button_name!='Update'">Add Beacons</h4>
-        <h4 ng-if="button_name=='Update'">Update Beacons</h4>
+        <h4 ng-if="loggedInUser.UserType = 2">View Beacon</h4>
+        <h4 ng-if="button_name!='Update' && loggedInUser.UserType != 2">Add Beacon</h4>
+        <h4 ng-if="button_name=='Update' && loggedInUser.UserType != 2">Update Beacon</h4>
         <label>Beacon ID</label>
         <input class="form-control" type="text" name="beacon_id" ng-model="Beacon_ID" ng-readonly="button_name=='Update'" />
         <br>
@@ -76,12 +77,16 @@ Date: 05 Jan 2016
         <input class="" type="checkbox" name="beacon_welcome" ng-model="Beacon_Welcome" />
         <label>Is Welcome</label>
         <br>
-        <button class="btn btn-primary" ng-bind="button_name" ng-click="processBeacon()">Add</button>
-        <button class="btn btn-primary" ng-if="button_name=='Update'" ng-click="deleteBeacon()">Delete</button>
-        <button class="btn btn-primary" ng-if="button_name=='Update'" ng-click="resetControls()">Cancel</button>
+        <button class="btn btn-primary" ng-bind="button_name" ng-if="loggedInUser.UserType != 2" ng-click="processBeacon()">Add</button>
+        <button class="btn btn-primary" ng-if="button_name=='Update' && loggedInUser.UserType != 2" ng-click="deleteBeacon()">Delete</button>
+        <button class="btn btn-primary" ng-if="button_name=='Update' && loggedInUser.UserType != 2" ng-click="resetControls()">Cancel</button>
+        <button class="btn btn-primary" ng-if="loggedInUser.UserType = 2" ng-click="resetControls()">Ok</button>
     </section>
     <section class="content-body register_block_2">
         <div class="wait_block" ng-if="!ListInitialized">
+            <p class="wait_text">Please Wait...</p>
+        </div>
+        <div class="wait_block" ng-if="!FormInitialized && loggedInUser.UserType == 2">
             <p class="wait_text">Please Wait...</p>
         </div>
         <!-- Main content -->
@@ -102,7 +107,10 @@ Date: 05 Jan 2016
                 <td>
                     <input class="form-control" type='text' ng-model="device.StoreName" readonly />
                 </td>
-                <td ng-click="getBeacon(device.BeaconID)"><span class="btn btn-primary">Edit</span></td>
+                <td ng-click="getBeacon(device.BeaconID)">
+                    <span class="btn btn-primary" ng-if="loggedInUser.UserType == 2">View</span>
+                    <span class="btn btn-primary" ng-if="loggedInUser.UserType != 2">Edit</span>
+                </td>
             </tr>
         </table>
     </section>
