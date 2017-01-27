@@ -2417,8 +2417,8 @@ app.post('/getUserdata', function(req, res) {
             },
             function(storelist, callback) {
                 var collection = db.collection('users');
-
-                collection.find({ "UserType": 2 }).toArray(function(err, users) {
+                /*{ "UserType": 2 }*/
+                collection.find().toArray(function(err, users) {
                     var userlist = [];
                     if (users && users.length > 0) {
                         for (var u in users) {
@@ -2681,6 +2681,8 @@ app.post('/updateUser', function(req, res) {
                 });
             },
             function(hashedpassword, callback) {
+                /*console.log(ResetPassword);
+                console.log(hashedpassword);*/
                 if (ResetPassword) {
                     collection.update({
                         '_id': ObjectId(UserObjectID)
@@ -2862,11 +2864,14 @@ app.post('/userLogin', function(req, res) {
                         var dbpassword = users[0].Password;
                         users[0].Password = "";
                         userRecord = users[0];
-                        bcrypt.compare(dbpassword, req.body.password, function(err, isPasswordMatch) {
+                        /*console.log('DB Pass : ' + dbpassword);
+                        console.log('User Pass ' + req.body.password);*/
+                        bcrypt.compare(req.body.password, dbpassword, function(err, isPasswordMatch) {
+                            //isPasswordMatch = true;
                             if (err)
                                 return false;
-                            callback(null, true);
-                            return true;
+                            callback(null, isPasswordMatch);
+                            return isPasswordMatch;
                         });
 
                         req.session.loggedInUser = users[0];

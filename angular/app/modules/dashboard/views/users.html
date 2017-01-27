@@ -106,10 +106,13 @@ Date: 05 Jan 2016
             <span class="error" ng-show="userForm.confPassword.$touched && userForm.confPassword.$invalid">Confirm Password required</span>
             <span class="error" ng-show="userForm.confPassword.$touched && userForm.confPassword.$invalid && !userForm.confPassword.$error.required">Confirm password doesnot match with password</span>
             <br>
-            <p class="alert alert-warning" ng-show="button_name=='Update'">Leave password field blank if you donot want to reset password.</p>
+            <p ng-show="button_name=='Update'">Leave password field blank if you donot want to reset password.</p>
             <br>
             <button class="btn btn-primary" ng-bind="button_name" ng-click="processUser()">Add</button>
-            <button class="btn btn-primary" ng-if="button_name=='Update'" ng-click="deleteUser()">Delete</button>
+            <button class="btn btn-primary" ng-if="button_name=='Update' && UserType != 1" ng-click="deleteUser()">
+            Delete</button>
+            <button class="btn btn-primary" ng-if="button_name=='Update'" ng-click="resetControls()">Cancel</button>
+            <p ng-show="UserType == 1">Admin account cannot be deleted, Only updated.</p>
         </ng-form>
     </section>
     <section class="content-body register_block_2">

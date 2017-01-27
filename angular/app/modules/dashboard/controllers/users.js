@@ -31,6 +31,7 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
     $scope.Name = '';
     $scope.Email = '';
     $scope.Designation = '';
+    $scope.UserType = 2;
     $scope.MobileNo = '';
     $scope.AssignedStore = '';
     $scope.ResetPassword = false;
@@ -113,7 +114,6 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
         apiService.getUser(pUserObjectID).
         success(function(data, status, headers, config) {
                 if (data.data) {
-                    console.log(data.data);
                     $scope.button_name = 'Update';
 
                     $scope.UserObjectID = pUserObjectID;
@@ -122,6 +122,7 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
                     $scope.Email = data.data[0].Email;
                     $scope.Designation = data.data[0].Designation;
                     $scope.MobileNo = data.data[0].MobileNo;
+                    $scope.UserType = data.data[0].UserType;
                     $scope.AssignedStore = data.data[0].AssignedStore;
                 } else {
                     $scope.UserObjectID = '';
@@ -183,7 +184,7 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
         } else {
             $scope.FormInitialized = false;
             console.log($scope.Password);
-            apiService.updateUser($scope.UserObjectID, $scope.UserID, $scope.ResetPassword, $scope.Password, $scope.Email, $scope.Name,
+            apiService.updateUser($scope.UserObjectID, $scope.UserID, ($scope.Password && $scope.Password.length > 0), $scope.Password, $scope.Email, $scope.Name,
                     $scope.Designation, $scope.MobileNo, $scope.AssignedStore)
                 .success(function(data, status, headers, config) {
                     if (data.IsSuccess) {
