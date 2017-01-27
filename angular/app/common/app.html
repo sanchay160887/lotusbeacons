@@ -53,13 +53,13 @@
                     <li class="dropdown user user-menu">
                         <a class="dropdown-toggle" data-toggle="dropdown">
                             <img src="../../images/default.png" class="user-image" alt="User Image" />
-                            <span class="hidden-xs">Administrator</span>
+                            <span class="hidden-xs">{{ UCF(loggedInUser.Name) }}</span>
                         </a>
                         <ul class="dropdown-menu">
                             <!-- User image -->
                             <li class="user-header">
                                 <img src="../../images/default.png" class="img-circle" alt="User Image">
-                                    <h3>Administrator</h3>
+                                    <h3>{{ UCF(loggedInUser.Name) }}</h3>
                             </li>
                             <!-- Menu Footer-->
                             <li class="user-footer">
@@ -94,7 +94,7 @@
                     </a>
                 </li>
             </ul> 
-                        
+
         </section>
         <!-- /.sidebar -->
     </aside>

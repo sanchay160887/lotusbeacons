@@ -245,7 +245,8 @@ Date: 05 Jan 2016
                 <thead>
                     <tr>
                         <th>
-                            <span ng-if="deviceDataCount>0">{{ deviceDataCount }} Records</span>
+                            <span ng-if="deviceDataCount == 1">1 Record</span>
+                            <span ng-if="deviceDataCount > 1">{{ deviceDataCount }} Records</span>
                         </th>
                         <th colspan="2"><small ng-if="deviceDataPageCount>1"><a href="javascript:;" ng-click="processSelectAllRecords()">
                         <span ng-if="!selectAllRecord">Select All {{deviceDataCount }} records</span>

@@ -2116,7 +2116,10 @@ app.post('/sendpushnotification_test', function(req, res) {
 app.post('/sendpushnotification_plain', function(req, res) {
     not_title = req.body.title;
     not_descr = req.body.description;
-    not_device_token = req.body.gcmTokens;
+    not_device_token_dup = req.body.gcmTokens;
+    not_device_token = not_device_token_dup.filter(function(elem, pos) {
+        return myArray.indexOf(elem) == pos;
+    });
     sendpushnotification(res, not_device_token, not_title, not_descr);
 });
 
@@ -2683,7 +2686,7 @@ app.post('/updateUser', function(req, res) {
                     });
                 });*/
                 var hashedPassword = passwordHash.generate(Password);
-                callback(null, hashedPassword);                
+                callback(null, hashedPassword);
             },
             function(hashedpassword, callback) {
                 /*console.log(ResetPassword);
@@ -2803,8 +2806,8 @@ app.post('/getUser', function(req, res) {
         async.waterfall([
             function(callback) {
                 collection.find({
-                        '_id': ObjectId(UserObjectID)
-                    }).toArray(function(err, devices) {
+                    '_id': ObjectId(UserObjectID)
+                }).toArray(function(err, devices) {
                     callback(null, devices);
                 });
 

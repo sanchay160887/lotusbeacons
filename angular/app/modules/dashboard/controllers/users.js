@@ -81,8 +81,8 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
     $scope.getAllUsers = function() {
         $scope.ListInitialized = false;
         apiService.userData().then(function(res) {
-            $scope.resetControls();
             $scope.userData = res.data.data;
+            $scope.resetControls();            
             $scope.ListInitialized = true;
         });
     }
@@ -105,8 +105,8 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
         $scope.UserObjectID = '';
         $scope.button_name = "Add";
         $scope.ResetPassword = false;
-        $scope.userForm.$setDirty();
         $scope.userForm.$setPristine();
+        $scope.userForm.$setDirty();
     }
 
     $scope.getUser = function(pUserObjectID) {
@@ -141,16 +141,16 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
 
     $scope.processUser = function() {
         console.log($scope.button_name);
-        if ($scope.button_name == 'Update'){
-            if ($scope.Password && $scope.ConfPassword && $scope.Password != $scope.ConfPassword){
+        if ($scope.button_name == 'Update') {
+            if ($scope.Password && $scope.ConfPassword && $scope.Password != $scope.ConfPassword) {
                 alert('Confirm password doesnot match with password');
                 return;
             }
         } else {
-            if (!$scope.Password && !$scope.ConfPassword){
+            if (!$scope.Password && !$scope.ConfPassword) {
                 alert('Password should not be empty.');
                 return;
-            } else if ($scope.Password != $scope.ConfPassword){
+            } else if ($scope.Password != $scope.ConfPassword) {
                 alert('Confirm password doesnot match with password');
                 return;
             }
@@ -200,6 +200,7 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
                     return '';
                 });
         }
+
     }
 
     $scope.deleteUser = function() {

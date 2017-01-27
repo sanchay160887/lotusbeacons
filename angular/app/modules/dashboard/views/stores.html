@@ -61,16 +61,16 @@ Date: 05 Jan 2016
         <h4 ng-if="button_name!='Update' && loggedInUser.UserType != 2">Add Stores</h4>
         <h4 ng-if="button_name=='Update' && loggedInUser.UserType != 2">Update Stores</h4>
         <label>Store Name</label>
-        <input class="form-control" type="text" name="store_name" ng-model="Store_Name" />
+        <input class="form-control" type="text" name="store_name" ng-model="Store_Name" ng-readonly="loggedInUser.UserType==2" />
         <br>
         <label>Description</label>
-        <textarea class="form-control" name="store_descr" ng-model="Store_Descr"></textarea>
+        <textarea class="form-control" name="store_descr" ng-model="Store_Descr" ng-readonly="loggedInUser.UserType==2"></textarea>
         <br>
         <label>Lat</label>
-        <input class="form-control" type="text" name="store_lat" ng-model="Store_Lat" />
+        <input class="form-control" type="text" name="store_lat" ng-model="Store_Lat" ng-readonly="loggedInUser.UserType==2" />
         <br>
         <label>Long</label>
-        <input class="form-control" type="text" name="store_long" ng-model="Store_Long" />
+        <input class="form-control" type="text" name="store_long" ng-model="Store_Long" ng-readonly="loggedInUser.UserType==2" />
         <br>
         <button class="btn btn-primary" ng-bind="button_name" ng-if="loggedInUser.UserType != 2" ng-click="processStore()">Add</button>
         <button class="btn btn-primary" ng-if="button_name=='Update' && loggedInUser.UserType != 2" ng-click="deleteStore()">Delete</button>

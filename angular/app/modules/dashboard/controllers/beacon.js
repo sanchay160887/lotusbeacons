@@ -74,6 +74,12 @@ dashboard.controller("BeaconsController", function($rootScope, $scope, apiServic
         $scope.button_name = 'Add';
     }
 
+    $scope.beaconCurrentPage = 1;
+    $scope.beaconPageSize = 10;
+    $scope.pageChangeHandler2 = function(num) {
+        console.log('going to page ' + num);
+    };
+
     $scope.getAllBeacon();
 
     $scope.getBeacon = function(pbeacon_id) {
@@ -89,6 +95,9 @@ dashboard.controller("BeaconsController", function($rootScope, $scope, apiServic
                     $scope.Beacon_Welcome = data.data[0].BeaconWelcome;
                     $scope.Beacon_Descr = data.data[0].BeaconDescr;
                     $scope.Beacon_Store = data.data[0].BeaconStore;
+                    $scope.O = 'StoreName';
+                    $scope.beaconCurrentPage = 1;
+                    $scope.beaconPageSize = 10;
                 } else {
                     $scope.Beacon_ID = '';
                     alert('Device not found. Please refresh your page');

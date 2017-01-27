@@ -61,20 +61,20 @@ Date: 05 Jan 2016
         <h4 ng-if="button_name!='Update' && loggedInUser.UserType != 2">Add Beacon</h4>
         <h4 ng-if="button_name=='Update' && loggedInUser.UserType != 2">Update Beacon</h4>
         <label>Beacon ID</label>
-        <input class="form-control" type="text" name="beacon_id" ng-model="Beacon_ID" ng-readonly="button_name=='Update'" />
+        <input class="form-control" type="text" name="beacon_id" ng-model="Beacon_ID" ng-readonly="button_name=='Update'" ng-readonly="loggedInUser.UserType==2" />
         <br>
         <label>Beacon Key</label>
-        <input class="form-control" type="text" name="beacon_key" ng-model="Beacon_Key" />
+        <input class="form-control" type="text" name="beacon_key" ng-model="Beacon_Key" ng-readonly="loggedInUser.UserType==2" />
         <br>
         <label>Select Store</label>
-        <select class="form-control col-md-4" ng-model="Beacon_Store">
+        <select class="form-control col-md-4" ng-model="Beacon_Store" ng-readonly="loggedInUser.UserType==2">
             <option ng-repeat="device in storeData | orderBy:StoreName" value="{{device._id}}">{{device.StoreName}}</option>
         </select>
         <br>
         <label>Description</label>
-        <textarea class="form-control" name="beacon_description" ng-model="Beacon_Descr"></textarea>
+        <textarea class="form-control" name="beacon_description" ng-model="Beacon_Descr" ng-readonly="loggedInUser.UserType==2"></textarea>
         <br>
-        <input class="" type="checkbox" name="beacon_welcome" ng-model="Beacon_Welcome" />
+        <input class="" type="checkbox" name="beacon_welcome" ng-model="Beacon_Welcome" ng-readonly="loggedInUser.UserType==2" />
         <label>Is Welcome</label>
         <br>
         <button class="btn btn-primary" ng-bind="button_name" ng-if="loggedInUser.UserType != 2" ng-click="processBeacon()">Add</button>
@@ -89,15 +89,40 @@ Date: 05 Jan 2016
         <div class="wait_block" ng-if="!FormInitialized && loggedInUser.UserType == 2">
             <p class="wait_text">Please Wait...</p>
         </div>
+        <div class="row">
+            <div class="col-xs-4">
+                <label for="search">Search:</label>
+                <input ng-model="q" id="search" class="form-control" placeholder="Filter text">
+            </div>
+            <div class="col-xs-4">
+                <label for="search">Records/Page:</label>
+                <select ng-model="beaconPageSize" class="form-control">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                </select>
+            </div>
+        </div>
         <!-- Main content -->
         <table class="table">
             <tr>
-                <th>Beacon ID</th>
-                <th>Beacon Key</th>
-                <th>Store Name</th>
+                <th ng-click="O=(O=='BeaconID' && '-BeaconID' || 'BeaconID' )">
+                    Beacon ID
+                    <span ng-show="O=='BeaconID'">▲</span>
+                    <span ng-show="O=='-BeaconID'">▼</span>
+                </th>
+                <th ng-click="O=(O=='BeaconKey' && '-BeaconKey' || 'BeaconKey' )">Beacon Key
+                    <span ng-show="O=='BeaconKey'">▲</span>
+                    <span ng-show="O=='-BeaconKey'">▼</span>
+                </th>
+                <th ng-click="O=(O=='StoreName' && '-StoreName' || 'StoreName' )">Store Name
+                    <span ng-show="O=='StoreName'">▲</span>
+                    <span ng-show="O=='-StoreName'">▼</span>
+                </th>
                 <th>Action</th>
             </tr>
-            <tr ng-repeat="device in beaconData | orderBy:BeaconKey ">
+            <tr dir-paginate="device in beaconData | filter:q | orderBy : O | itemsPerPage:  beaconPageSize" current-page="beaconCurrentPage">
+                <!-- <tr ng-repeat="device in beaconData | orderBy:BeaconKey "> -->
                 <td>
                     <input class="form-control" type='text' ng-model="device.BeaconID" readonly />
                 </td>
@@ -113,6 +138,13 @@ Date: 05 Jan 2016
                 </td>
             </tr>
         </table>
+        <div>
+            <nav aria-label="Page navigation">
+                <div class="text-center">
+                    <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)" template-url="app/modules/dashboard/views/dirPagination.tpl.html"></dir-pagination-controls>
+                </div>
+            </nav>
+        </div>
     </section>
     <!-- /.content -->
 </section>

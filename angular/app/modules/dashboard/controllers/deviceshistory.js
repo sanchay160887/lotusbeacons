@@ -266,6 +266,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     }
 
     $scope.loadDataWithSearch = function() {
+        $scope.currPage = 1;
         $location.search({
             'store': $scope.selectedStore,
             'beacon': $scope.selectedBeacon,
@@ -493,6 +494,8 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
                 $scope.HistoryDetailsData = [];
                 $scope.HistoryDetailsData = res.data;
                 $scope.deviceHistoryDetailCurrentPage = 1
+                $scope.deviceHistoryDetailPageSize = 10;
+                $scope.O = '-Date';
                 $scope.InitializingHistoryDetails = false;
             });
 
@@ -567,6 +570,8 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
                 $scope.HistorySearchDetailsData = [];
                 $scope.HistorySearchDetailsData = res.data;
                 $scope.searchHistoryCurrentPage = 1;
+                $scope.searchHistoryPageSize = 10;
+                $scope.O = '-datetimestamp';
                 $scope.InitializingHistoryDetails = false;
             });
 
