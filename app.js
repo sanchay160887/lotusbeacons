@@ -15,10 +15,9 @@ var methodOverride = require('method-override');
 var GcmGoogleKey = 'AIzaSyAUxc6EwlgRP6MITCynw3_vsYatPI4iZuw';
 var gcm = require('android-gcm');
 var request = require('request');
+//var bcrypt = require('bcrypt');
+var passwordHash = require('password-hash');
 var session = require('express-session');
-var bcrypt = require('bcrypt');
-/*var crypto = require('crypto');
-const secret = 'syscraft';*/
 querystring = require('querystring');
 require('timers');
 var devicecron = require('node-cron');
@@ -46,6 +45,7 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }));
+
 app.use(bodyParser.json()); // parse application/json
 app.use(bodyParser.json({
     type: 'application/vnd.api+json'
@@ -1382,7 +1382,7 @@ app.post('/getDeviceSearchHistoryDetailsdata', function(req, res) {
                             if (reqbody) {
                                 var sa = [];
                                 for (var r in reqbody) {
-                                    reqbody[r].srno = cnt;
+                                    //reqbody[r].srno = cnt;
                                     reqbody[r].datetimestamp = new Date(reqbody[r].date_added).getTime();
                                     search_detail.push(reqbody[r]);
                                 }
@@ -2383,6 +2383,7 @@ app.post('/getdeviceidentity', function(req, res) {
 app.post('/getUserdata', function(req, res) {
     var resObj = {};
 
+    console.log(req.session);
     if (!req.session.loggedInUser) {
         resObj.IsSuccess = false;
         resObj.message = "You are not logged in.";
@@ -2540,14 +2541,16 @@ app.post('/addUser', function(req, res) {
                 });
             },
             function(userdata, callback) {
-                bcrypt.genSalt(10, function(err, salt) {
+                /*bcrypt.genSalt(10, function(err, salt) {
                     if (err)
                         return callback(err);
 
                     bcrypt.hash(Password, salt, function(err, hash) {
                         return callback(null, hash);
                     });
-                });
+                });*/
+                var hashedPassword = passwordHash.generate(Password);
+                callback(null, hashedPassword);
             },
             function(hashedpassword, callback) {
                 collection.insert({
@@ -2671,15 +2674,16 @@ app.post('/updateUser', function(req, res) {
                 });
             },
             function(userdata, callback) {
-                bcrypt.genSalt(10, function(err, salt) {
+                /*bcrypt.genSalt(10, function(err, salt) {
                     if (err)
                         return callback(err);
 
                     bcrypt.hash(Password, salt, function(err, hash) {
                         return callback(null, hash);
                     });
-
-                });
+                });*/
+                var hashedPassword = passwordHash.generate(Password);
+                callback(null, hashedPassword);                
             },
             function(hashedpassword, callback) {
                 /*console.log(ResetPassword);
@@ -2867,15 +2871,18 @@ app.post('/userLogin', function(req, res) {
                         userRecord = users[0];
                         /*console.log('DB Pass : ' + dbpassword);
                         console.log('User Pass ' + req.body.password);*/
-                        bcrypt.compare(req.body.password, dbpassword, function(err, isPasswordMatch) {
+                        var isPasswordMatch = passwordHash.verify(req.body.password, dbpassword);
+                        //isPasswordMatch = true;
+                        req.session.loggedInUser = users[0];
+                        callback(null, isPasswordMatch);
+                        /*bcrypt.compare(req.body.password, dbpassword, function(err, isPasswordMatch) {
                             //isPasswordMatch = true;
                             if (err)
                                 return false;
                             callback(null, isPasswordMatch);
                             return isPasswordMatch;
-                        });
+                        });*/
 
-                        req.session.loggedInUser = users[0];
                     } else {
                         resObj.message = "Invalid Username."
                         resObj.isSuccess = false;
