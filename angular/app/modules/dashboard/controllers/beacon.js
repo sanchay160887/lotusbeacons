@@ -19,9 +19,9 @@ dashboard.controller("BeaconsController", function($rootScope, $scope, apiServic
             if (typeof(res.data.user) != undefined && res.data.user) {
                 $rootScope.loggedInUser = res.data.user;
                 $scope.loggedInUser = $rootScope.loggedInUser;
-                if ($rootScope.loggedInUser.UserType == 2){
+                /*if ($rootScope.loggedInUser.UserType == 2){
                     $location.path("/");    
-                }
+                }*/
             } else {
                 $location.path("/");
             }
