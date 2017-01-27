@@ -1406,13 +1406,13 @@ app.post('/getbeacondata', function(req, res) {
     BeaconStore = req.body.BeaconStore;
 
     var resObj = {};
-    if (!req.session.loggedInUser) {
+    /*if (!req.session.loggedInUser) {
         resObj.IsSuccess = false;
         resObj.message = "You are not logged in.";
         resObj.data = '';
         res.send(resObj);
         return;
-    }
+    }*/
 
     UserStore = getUserAllotedStore(req);
 
@@ -1432,7 +1432,7 @@ app.post('/getbeacondata', function(req, res) {
                         'BeaconStore': ObjectId(BeaconStore)
                     })
                 } else {
-                    if (req.session.loggedInUser.UserType == 2) {
+                    if (req.session.loggedInUser && req.session.loggedInUser.UserType == 2) {
                         storecollection = collection.find(ObjectId(UserStore));
                     } else {
                         storecollection = collection.find();
@@ -1456,7 +1456,7 @@ app.post('/getbeacondata', function(req, res) {
                         'BeaconStore': ObjectId(BeaconStore)
                     })
                 } else {
-                    if (req.session.loggedInUser.UserType == 2) {
+                    if (req.session.loggedInUser && req.session.loggedInUser.UserType == 2) {
                         beaconcollection = collection.find({
                             'BeaconStore': ObjectId(UserStore)
                         });
@@ -1791,23 +1791,22 @@ app.post('/getbeacon', function(req, res) {
 app.post('/getstoredata', function(req, res) {
 
     var resObj = {};
-    if (!req.session.loggedInUser) {
+    /*if (!req.session.loggedInUser) {
         resObj.IsSuccess = false;
         resObj.message = "You are not logged in.";
         resObj.data = '';
         res.send(resObj);
         return;
-    }
+    }*/
 
     UserStore = getUserAllotedStore(req);
 
-
-    if (!req.session.loggedInUser) {
+    /*if (!req.session.loggedInUser) {
         resObj.IsSuccess = false;
         resObj.message = "No record found.";
         resObj.data = '';
         res.send(resObj);
-    }
+    }*/
 
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
@@ -1816,7 +1815,7 @@ app.post('/getstoredata', function(req, res) {
 
         var devicelist = new Array();
         var collection = db.collection('stores');
-        if (req.session.loggedInUser.UserType == 2) {
+        if (req.session.loggedInUser && req.session.loggedInUser.UserType == 2) {
             collection = collection.find(ObjectId(UserStore));
         } else {
             collection = collection.find();
