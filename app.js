@@ -17,6 +17,8 @@ var gcm = require('android-gcm');
 var request = require('request');
 var session = require('express-session');
 var bcrypt = require('bcrypt');
+/*var crypto = require('crypto');
+const secret = 'syscraft';*/
 querystring = require('querystring');
 require('timers');
 var devicecron = require('node-cron');
@@ -2545,7 +2547,6 @@ app.post('/addUser', function(req, res) {
                     bcrypt.hash(Password, salt, function(err, hash) {
                         return callback(null, hash);
                     });
-
                 });
             },
             function(hashedpassword, callback) {

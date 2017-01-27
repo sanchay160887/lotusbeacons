@@ -10,6 +10,7 @@
     "async": "^2.0.1",
     "bcrypt": "^1.0.2",
     "body-parser": "^1.15.2",
+    "crypto": "0.0.3",
     "express-session": "^1.15.0",
     "gcm": "^1.0.1",
     "method-override": "^2.3.6",
