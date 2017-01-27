@@ -142,7 +142,7 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
     $scope.processUser = function() {
         console.log($scope.button_name);
         if ($scope.button_name == 'Update') {
-            if ($scope.Password && $scope.ConfPassword && $scope.Password != $scope.ConfPassword) {
+            if ($scope.Password != $scope.ConfPassword) {
                 alert('Confirm password doesnot match with password');
                 return;
             }

@@ -412,6 +412,7 @@ Date: 05 Jan 2016
                 <h4 class="modal-title">History of <strong>{{ toProperCase(HistoryPersonName) }}</strong> at <em>{{ HistoryOfPlace }}</em></h4>
             </div>
             <div class="modal-body" ng-show="!InitializingHistoryDetails">
+                 <!-- ng-show="HistoryDetailsData.length > 0" -->
                 <div class="row">
                     <!-- <div class="col-xs-4">
                         <label for="search">Search:</label>
@@ -427,7 +428,7 @@ Date: 05 Jan 2016
                     </div>
                 </div>
                 <div class="form-group clearfix">
-                    <table class="table table-striped">
+                    <table class="table table-striped" ng-show="HistoryDetailsData.length > 0">
                         <thead>
                             <th ng-click="O=(O=='Date' && '-Date' || 'Date' )">Date
                                 <span ng-show="O=='Date'">▲</span><span ng-show="O=='-Date'">▼</span>
@@ -443,26 +444,30 @@ Date: 05 Jan 2016
                             </th>
                         </thead>
                         <tbody>
-                            <tr ng-if="HistoryDetailsData.length > 0" dir-paginate="hdd in HistoryDetailsData | filter:q | orderBy : O | itemsPerPage: deviceHistoryDetailPageSize " current-page="searchHistoryCurrentPage " ng-if="HistorySearchDetailsData.length> 0">
+                            <tr dir-paginate="hdd in HistoryDetailsData | filter:q | orderBy : O | itemsPerPage: deviceHistoryDetailPageSize " current-page="searchHistoryCurrentPage" >
                                 <td>{{ hdd.Date | date }}</td>
                                 <td>{{ hdd.DateIn | date:'hh:mm a' }}</td>
                                 <td>{{ hdd.DateTo | date:'hh:mm a' }}</td>
                                 <td>{{ hdd.StayTime }}</td>
-                            </tr>
-                            <tr ng-if="HistoryDetailsData.length <= 0">
-                                <td colspan="4">
-                                    <h4>No Details Found</h4>
-                                </td>
                             </tr>
                         </tbody>
                     </table>
                     <div>
                         <nav aria-label="Page navigation">
                             <div class="text-center">
-                                <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler2(newPageNumber)" template-url="app/modules/dashboard/views/dirPagination.tpl.html"></dir-pagination-controls>
+                                <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler2(newPageNumber)" template-url="app/modules/dashboard/views/dirPagination.tpl.html">
+                                </dir-pagination-controls>
                             </div>
                         </nav>
                     </div>
+                    <table>
+                        <tr ng-show="HistoryDetailsData.length <= 0">
+                            <td colspan="4">
+                                <h4>No Details Found</h4>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>                    
                 </div>
             </div>
             <div class="modal-body" ng-show="InitializingHistoryDetails">
@@ -484,7 +489,7 @@ Date: 05 Jan 2016
                 <h4 class="modal-title">Search History of <strong>{{ toProperCase(HistoryPersonName) }}</strong></h4>
             </div>
             <div class="modal-body" ng-show="!InitializingHistoryDetails">
-                <div class="row">
+                <div class="row" ng-show="HistorySearchDetailsData.length > 0">
                     <div class="col-xs-4">
                         <label for="search">Search:</label>
                         <input ng-model="q" id="search" class="form-control" placeholder="Filter text">
@@ -499,7 +504,7 @@ Date: 05 Jan 2016
                     </div>
                 </div>
                 <div class="form-group clearfix">
-                    <table class="table table-striped">
+                    <table class="table table-striped" ng-show="HistorySearchDetailsData.length> 0">
                         <thead>
                             <th ng-click="O=(O=='datetimestamp' && '-datetimestamp' || 'datetimestamp' )">Date
                                 <span ng-show="O=='datetimestamp'">▲</span>
@@ -511,36 +516,41 @@ Date: 05 Jan 2016
                             </th>
                         </thead>
                         <tbody>
-                            <tr dir-paginate="hdd in HistorySearchDetailsData | filter:q | orderBy : O | itemsPerPage: searchHistoryPageSize " current-page="searchHistoryCurrentPage " ng-if="HistorySearchDetailsData.length> 0">
-                                <td>{{ hdd.datetimestamp | date }}</td>
-                                <td>{{ hdd.search_keyword }}</td>
+                                <tr dir-paginate="hdd in HistorySearchDetailsData | filter:q | orderBy : O | itemsPerPage: searchHistoryPageSize" 
+                                current-page="searchHistoryCurrentPage ">
+                                    <td>{{ hdd.datetimestamp | date }}</td>
+                                    <td>{{ hdd.search_keyword }}</td>
                                 </tr>
-                                <tr ng-if="HistorySearchDetailsData.length <= 0">
-                                    <td colspan="4">
-                                        <h4>No Details Found</h4>
-                                    </td>
-                                </tr>
-                                </tbody>
+                        </tbody>
                     </table>
-                    <div class="text-center">
-                        <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)" template-url="app/modules/dashboard/views/dirPagination.tpl.html"></dir-pagination-controls>
+                    <div class="text-center ">
+                        <dir-pagination-controls boundary-links="true " on-page-change="pageChangeHandler(newPageNumber) " template-url="app/modules/dashboard/views/dirPagination.tpl.html "></dir-pagination-controls>
                     </div>
+                    <table ng-show="HistorySearchDetailsData.length <=0 ">
+                        <tbody>
+                            <tr>
+                                <td colspan="4 ">
+                                    <h4>No Details Found</h4>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <div class="modal-body" ng-show="InitializingHistoryDetails">
+            <div class="modal-body " ng-show="InitializingHistoryDetails ">
                 <h1>Loading Search History, Please wait...</h1>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal"> Close </button>
+            <div class="modal-footer ">
+                <button type="button " class="btn btn-primary " data-dismiss="modal "> Close </button>
             </div>
         </div>
     </div>
 </div>
-<script type="text/javascript">
+<script type="text/javascript ">
 $(document).ready(function() {
-    $("#imagepreview").hide();
+    $("#imagepreview ").hide();
     /*$('#uploadForm').submit(function() {
-        $("#status").empty().text("Image is uploading...");
+        $("#status ").empty().text("Image is uploading... ");
         $(this).ajaxSubmit({
 
             error: function(xhr) {
@@ -549,16 +559,16 @@ $(document).ready(function() {
 
             success: function(response) {
                 if (response != 'Error uploading file.') {
-                    $("#status").empty();
-                    $("#imagepreview").attr('src', response);
-                    $("#imagepreview").show();
-                    var scope = angular.element($("#imagepreview")).scope();
+                    $("#status ").empty();
+                    $("#imagepreview ").attr('src', response);
+                    $("#imagepreview ").show();
+                    var scope = angular.element($("#imagepreview ")).scope();
                     scope.$apply(function() {
                         scope.GM_ImageFilePath = response;
                     });
                 } else {
-                    $("#status").empty().text(response);
-                    $("#imagepreview").hide();
+                    $("#status ").empty().text(response);
+                    $("#imagepreview ").hide();
                 }
                 console.log(response);
 
@@ -575,7 +585,7 @@ function uploadimage(object) {
         alert('No file selected.');
         return false;
     }
-    $("#status").empty().text("Image is uploading...");
+    $("#status ").empty().text("Image is uploading... ");
     $('#uploadForm').ajaxSubmit({
 
         error: function(xhr) {
@@ -584,16 +594,16 @@ function uploadimage(object) {
 
         success: function(response) {
             if (response != 'Error uploading file.') {
-                $("#status").empty();
-                $("#imagepreview").attr('src', response);
-                $("#imagepreview").show();
-                var scope = angular.element($("#imagepreview")).scope();
+                $("#status ").empty();
+                $("#imagepreview ").attr('src', response);
+                $("#imagepreview ").show();
+                var scope = angular.element($("#imagepreview ")).scope();
                 scope.$apply(function() {
                     scope.GM_ImageFilePath = response;
                 });
             } else {
-                $("#status").empty().text(response);
-                $("#imagepreview").hide();
+                $("#status ").empty().text(response);
+                $("#imagepreview ").hide();
             }
             console.log(response);
         }

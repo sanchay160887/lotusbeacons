@@ -12,6 +12,15 @@ dashboard.directive('ngEnter', function() {
     };
 });
 
+dashboard.filter('record', function() {
+    return function(array, property, target) {
+        if (target && property) {
+            target[property] = array;
+        }
+        return array;
+    }
+});
+
 dashboard.controller("DeviceHistoryController", function($rootScope, $scope, apiService, socket, $http, $location, $interval) { //
     var vm = this;
     $scope.BeaconID = '';
@@ -431,6 +440,11 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
     $scope.deviceHistoryDetailCurrentPage = 1;
     $scope.deviceHistoryDetailPageSize = 10;
+
+    $scope.$watchCollection('[deviceHistoryDetailPageSize]', function() {
+        $scope.deviceHistoryDetailCurrentPage = 1;
+    });
+
     $scope.pageChangeHandler2 = function(num) {
         console.log('going to page ' + num);
     };
@@ -493,9 +507,9 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             .then(function(res) {
                 $scope.HistoryDetailsData = [];
                 $scope.HistoryDetailsData = res.data;
+                $scope.O = '-Date';
                 $scope.deviceHistoryDetailCurrentPage = 1
                 $scope.deviceHistoryDetailPageSize = 10;
-                $scope.O = '-Date';
                 $scope.InitializingHistoryDetails = false;
             });
 
@@ -507,6 +521,10 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.pageChangeHandler = function(num) {
         console.log('going to page ' + num);
     };
+
+    $scope.$watchCollection('[searchHistoryPageSize]', function() {
+        $scope.searchHistoryCurrentPage = 1;
+    });
 
     $scope.getDeviceSearchHistoryDetails = function(PersonName, MobileNo) {
         $scope.HistoryPersonName = PersonName;

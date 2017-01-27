@@ -73,8 +73,8 @@ Date: 05 Jan 2016
             <br>
             <label>Mobile Number<span>*</span></label>
             <input class="form-control" type="text" id="MobileNo" name="MobileNo" ng-model="MobileNo" 
-                ng-pattern="phoneregex" required="required" />
-            <span class="error" ng-show="userForm.MobileNo.$touched && userForm.MobileNo.$invalid">Please enter a valid Mobile Number</span>
+                ng-pattern="phoneregex" required="required" minlength="8" maxlength="14" />
+            <span class="error" ng-show="userForm.MobileNo.$touched && userForm.MobileNo.$invalid">Please enter a valid 8- 14 digits Mobile Number</span>
             <br>
             <label>Designation</label>
             <input class="form-control" type="text" name="Designation" ng-model="Designation" />
@@ -94,7 +94,8 @@ Date: 05 Jan 2016
             <span class="error" ng-show="userForm.UserID.$touched && userForm.UserID.$invalid && !userForm.UserID.$error.required">User ID must be lowercase and only alphabets</span>
             <br>
             <label>Password</label>
-            <input class="form-control" type="password" id="Password" name="Password" ng-model="Password"  />
+            <input class="form-control" type="password" id="Password" name="Password" ng-model="Password" 
+                ng-pattern="passwordregex" ng-required="button_name!='Update'" />
             <span class="error" ng-show="userForm.Password.$touched && userForm.Password.$invalid">Password required</span>
             <span class="error" ng-show="userForm.Password.$touched && userForm.Password.$invalid && !userForm.Password.$error.required">Password should be atleast 8 characters long
             and should contain one number,one character and one special
@@ -102,9 +103,11 @@ Date: 05 Jan 2016
             <br>
              <!-- compare-to="Password" -->
             <label>Confirm Password</label>
-            <input class="form-control" type="password" id="ConfPassword" name="ConfPassword" ng-model="ConfPassword"  />
+            <input class="form-control" type="password" id="ConfPassword" name="ConfPassword" 
+                ng-model="ConfPassword" ng-required="(button_name!='Update' || Password != '')" />
             <span class="error" ng-show="userForm.confPassword.$touched && userForm.confPassword.$invalid">Confirm Password required</span>
             <span class="error" ng-show="userForm.confPassword.$touched && userForm.confPassword.$invalid && !userForm.confPassword.$error.required">Confirm password doesnot match with password</span>
+            <span class="error">{{ userForm.confPassword }}</span>
             <br>
             <p ng-show="button_name=='Update'">Leave password field blank if you donot want to reset password.</p>
             <br>

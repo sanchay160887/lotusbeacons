@@ -8,6 +8,7 @@
     "angular-material-datetimepicker": "^1.4.0",
     "assert": "^1.4.1",
     "async": "^2.0.1",
+    "async-foreach": "^0.1.3",
     "body-parser": "^1.15.2",
     "express-session": "^1.15.0",
     "gcm": "^1.0.1",

@@ -15,7 +15,7 @@ var methodOverride = require('method-override');
 var GcmGoogleKey = 'AIzaSyAUxc6EwlgRP6MITCynw3_vsYatPI4iZuw';
 var gcm = require('android-gcm');
 var request = require('request');
-//var bcrypt = require('bcrypt');
+var forEach = require('async-foreach').forEach;
 var passwordHash = require('password-hash');
 var session = require('express-session');
 querystring = require('querystring');
@@ -2527,17 +2527,18 @@ app.post('/addUser', function(req, res) {
                             resObj.message = "Email ID already exists";
                             res.send(resObj);
                             return 0;
-                        } else if (users[u].Name == Name) {
-                            resObj.IsSuccess = false;
-                            resObj.message = "Name already exists";
-                            res.send(resObj);
-                            return 0;
                         } else if (users[u].MobileNo == MobileNo) {
                             resObj.IsSuccess = false;
                             resObj.message = "Mobile No already exists";
                             res.send(resObj);
                             return 0;
                         }
+                        /*else if (users[u].Name == Name) {
+                            resObj.IsSuccess = false;
+                            resObj.message = "Name already exists";
+                            res.send(resObj);
+                            return 0;
+                        }*/
                     }
                     callback(null, users);
                 });
@@ -2660,17 +2661,18 @@ app.post('/updateUser', function(req, res) {
                             resObj.message = "Email ID already exists";
                             res.send(resObj);
                             return 0;
-                        } else if (users[u].Name == Name) {
-                            resObj.IsSuccess = false;
-                            resObj.message = "Name already exists";
-                            res.send(resObj);
-                            return 0;
                         } else if (users[u].MobileNo == MobileNo) {
                             resObj.IsSuccess = false;
                             resObj.message = "Mobile No already exists";
                             res.send(resObj);
                             return 0;
                         }
+                        /*else if (users[u].Name == Name) {
+                            resObj.IsSuccess = false;
+                            resObj.message = "Name already exists";
+                            res.send(resObj);
+                            return 0;
+                        }*/
                     }
                     callback(null, users);
                 });
@@ -2910,5 +2912,60 @@ app.post('/userLogin', function(req, res) {
                 db.close();
             }
         ]);
+    });
+});
+
+
+app.post('/getstoreuserscount', function(req, res) {
+
+    var storeMobileRecords = {};
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+
+        async.waterfall([
+            function(callback) {
+                var collection = db.collection('stores');
+                collection.find().toArray(function(err, stores) {
+                    if (stores && stores.length > 0) {
+                        for (var dvc in stores) {
+                            stores.push(stores[dvc]);
+                        }
+                        callback(null, stores);
+                    }
+                });
+            },
+            function(stores, callback) {
+                forEach(stores, function(item, index) {
+                    var done = this.async();
+                    async.waterfall([
+                        function(callback2) {
+                            var collection = db.collection('stores');
+                            collection.find({
+                                'BeaconStore': ObjectId(item._id)
+                            }).toArray(function(err, beacons) {
+                                if (beacons && beacons.length > 0) {
+                                    for (var dvc in beacons) {
+                                        stores.push(beacons[dvc]);
+                                    }
+                                    callback(null, stores);
+                                }
+                            });
+
+                            callback2(null, '');
+                        }
+                    ]);
+
+                    console.log(item);
+
+                    setTimeout(done, 1000);
+                });
+
+            }
+        ]);
+
     });
 });
