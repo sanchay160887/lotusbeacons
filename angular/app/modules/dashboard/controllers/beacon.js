@@ -126,6 +126,7 @@ dashboard.controller("BeaconsController", function($rootScope, $scope, apiServic
             apiService.addBeacon($scope.Beacon_ID, $scope.Beacon_Key, $scope.Beacon_Welcome, $scope.Beacon_Descr, $scope.Beacon_Store)
                 .success(function(data, status, headers, config) {
                     if (data.IsSuccess) {
+                        alert('Beacon Added Successfully');
                         $scope.getAllBeacon();
                     } else {
                         alert(data.message);
@@ -141,6 +142,7 @@ dashboard.controller("BeaconsController", function($rootScope, $scope, apiServic
             apiService.updateBeacon($scope.Beacon_ID, $scope.Beacon_Key, $scope.Beacon_Welcome, $scope.Beacon_Descr, $scope.Beacon_Store)
                 .success(function(data, status, headers, config) {
                     if (data.IsSuccess) {
+                        alert('Beacon Updated Successfully');
                         $scope.getAllBeacon();
                     } else {
                         alert(data.message);

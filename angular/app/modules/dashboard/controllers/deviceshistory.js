@@ -21,7 +21,7 @@ dashboard.filter('record', function() {
     }
 });
 
-dashboard.controller("DeviceHistoryController", function($rootScope, $scope, apiService, socket, $http, $location, $interval) { //
+dashboard.controller("DeviceHistoryController", function($rootScope, $scope, apiService, socket, $http, $location, $interval, filterFilter) { //
     var vm = this;
     $scope.BeaconID = '';
     $scope.beaconData = [];
@@ -57,6 +57,16 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.HitFromPagination = false;
     $scope.HistorySearchDetailsData = [];
 
+    $scope.checkLoggedInUser = function() {
+        apiService.checkloginUser().then(function(res) {
+            if (typeof(res.data.user) != undefined && res.data.user) {
+                $rootScope.loggedInUser = res.data.user;
+            } else {
+                $location.path("/");
+            }
+        });
+    }
+    
     if (!$rootScope.loggedInUser) {
         $scope.checkLoggedInUser();
         /*apiService.checkloginUser().then(function(res) {
@@ -68,15 +78,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         });*/
     }
 
-    $scope.checkLoggedInUser = function() {
-        apiService.checkloginUser().then(function(res) {
-            if (typeof(res.data.user) != undefined && res.data.user) {
-                $rootScope.loggedInUser = res.data.user;
-            } else {
-                $location.path("/");
-            }
-        });
-    }
+    
 
     $scope.connection = true;
     $scope.connection_msg = false;
@@ -453,14 +455,17 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
     $scope.deviceHistoryDetailCurrentPage = 1;
     $scope.deviceHistoryDetailPageSize = 10;
+    $scope.HistoryDetailsDataCount = 0;
 
     $scope.$watchCollection('[deviceHistoryDetailPageSize]', function() {
         $scope.deviceHistoryDetailCurrentPage = 1;
+        $scope.pageNumber = 1;
     });
 
     $scope.pageChangeHandler2 = function(num) {
         console.log('going to page ' + num);
     };
+
 
     $scope.getDeviceHistoryDetails = function(PersonName, BeaconKey, MobileNo, BeaconID) {
         $scope.HistoryPersonName = PersonName;
@@ -521,6 +526,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
                 $scope.HistoryDetailsData = [];
                 $scope.HistorySearchDetailsData = [];
                 $scope.HistoryDetailsData = res.data;
+                $scope.HistoryDetailsDataCount = res.data.length;
                 $scope.O = '-Date';
                 $scope.deviceHistoryDetailCurrentPage = 1
                 $scope.deviceHistoryDetailPageSize = 10;

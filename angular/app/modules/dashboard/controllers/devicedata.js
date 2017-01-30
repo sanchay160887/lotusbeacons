@@ -17,6 +17,17 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
     $scope.Initialized = false;
     $scope.BeaconInitialized = true;
 
+    $scope.checkLoggedInUser = function() {
+        apiService.checkloginUser().then(function(res) {
+            if (typeof(res.data.user) != undefined && res.data.user) {
+                $rootScope.loggedInUser = res.data.user;
+            } else {
+                $location.path("/");
+            }
+        });
+    }
+    
+
     if (!$rootScope.loggedInUser) {
         $scope.checkLoggedInUser();
         /*apiService.checkloginUser().then(function(res) {
@@ -28,15 +39,7 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         });*/
     }
 
-    $scope.checkLoggedInUser = function() {
-        apiService.checkloginUser().then(function(res) {
-            if (typeof(res.data.user) != undefined && res.data.user) {
-                $rootScope.loggedInUser = res.data.user;
-            } else {
-                $location.path("/");
-            }
-        });
-    }
+    
 
     var queriedUrl = $location.search();
 

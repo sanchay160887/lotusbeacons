@@ -110,6 +110,7 @@ dashboard.controller("StoresController", function($rootScope, $scope, apiService
             apiService.addStores($scope.Store_Name, $scope.Store_Descr, $scope.Store_Lat, $scope.Store_Long)
                 .success(function(data, status, headers, config) {
                     if (data.IsSuccess) {
+                        alert('Store Added Successfully');
                         $scope.getAllStores();
                     } else {
                         alert(data.message);
@@ -126,6 +127,7 @@ dashboard.controller("StoresController", function($rootScope, $scope, apiService
             apiService.updateStore($scope.Store_Id, $scope.Store_Name, $scope.Store_Descr, $scope.Store_Lat, $scope.Store_Long)
                 .success(function(data, status, headers, config) {
                     if (data.IsSuccess) {
+                        alert('Store Updated Successfully');
                         $scope.getAllStores();
                     } else {
                         alert(data.message);
