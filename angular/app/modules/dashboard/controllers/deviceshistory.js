@@ -21,7 +21,7 @@ dashboard.filter('record', function() {
     }
 });
 
-dashboard.controller("DeviceHistoryController", function($rootScope, $scope, apiService, socket, $http, $location, $interval, filterFilter) { //
+dashboard.controller("DeviceHistoryController", function($rootScope, $scope, apiService, socket, $http, $location, $interval) { //
     var vm = this;
     $scope.BeaconID = '';
     $scope.beaconData = [];
