@@ -466,7 +466,7 @@ Date: 05 Jan 2016
                     <div>
                         <nav aria-label="Page navigation">
                             <div class="text-center">
-                                <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler2(newPageNumber)" template-url="app/modules/dashboard/views/dirPagination.tpl.html" pagination-id="devicehistory">
+                                <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler2(newPageNumber)" template-url="app/modules/dashboard/views/dirPagination.tpl.html" pagination-id="devicehistory" current-page="searchHistoryCurrentPage">
                                 </dir-pagination-controls>
                             </div>
                         </nav>
@@ -527,8 +527,9 @@ Date: 05 Jan 2016
                             </th>
                         </thead>
                         <tbody>
-                                <tr dir-paginate="hdd in HistorySearchDetailsData | filter:q | orderBy : O | itemsPerPage: searchHistoryPageSize " 
-                                current-page="searchHistoryCurrentPage " pagination-id="searchhistory ">
+                                <tr dir-paginate="hdd in HistorySearchDetailsData | filter:q | orderBy : O | itemsPerPage: searchHistoryPageSize" 
+                                current-page="searchHistoryCurrentPage" 
+                                pagination-id="searchhistory">
                                     <td>{{ hdd.datetimestamp | date }}</td>
                                     <td>{{ hdd.search_keyword }}</td>
                                 </tr>
@@ -536,7 +537,7 @@ Date: 05 Jan 2016
                     </table>
                     <div class="text-center ">
                         <dir-pagination-controls boundary-links="true " on-page-change="pageChangeHandler(newPageNumber) " template-url="app/modules/dashboard/views/dirPagination.tpl.html "
-                         pagination-id="searchhistory "></dir-pagination-controls>
+                         pagination-id="searchhistory" current-page="searchHistoryCurrentPage"></dir-pagination-controls>
                     </div>
                     <table ng-show="HistorySearchDetailsData.length <=0 ">
                         <tbody>

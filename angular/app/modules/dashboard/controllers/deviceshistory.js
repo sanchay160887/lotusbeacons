@@ -465,7 +465,6 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
     $scope.pageChangeHandler2 = function(num) {
         console.log('going to page ' + num);
-        console.log(pagination);
     };
 
 
@@ -527,11 +526,11 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             .then(function(res) {
                 $scope.HistoryDetailsData = [];
                 $scope.HistorySearchDetailsData = [];
-                $scope.HistoryDetailsData = res.data;
-                $scope.HistoryDetailsDataCount = res.data.length;
-                $scope.O = '-Date';
                 $scope.deviceHistoryDetailCurrentPage = 1
                 $scope.deviceHistoryDetailPageSize = 10;
+                $scope.HistoryDetailsData = res.data;
+                $scope.HistoryDetailsDataCount = res.data.length;
+                $scope.O = '-Date';                
                 $scope.InitializingHistoryDetails = false;
             });
 
@@ -610,9 +609,9 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
                 console.log(res);
                 $scope.HistoryDetailsData = [];
                 $scope.HistorySearchDetailsData = [];
-                $scope.HistorySearchDetailsData = res.data;
                 $scope.searchHistoryCurrentPage = 1;
                 $scope.searchHistoryPageSize = 10;
+                $scope.HistorySearchDetailsData = res.data;                
                 $scope.O = '-datetimestamp';
                 $scope.InitializingHistoryDetails = false;
             });
