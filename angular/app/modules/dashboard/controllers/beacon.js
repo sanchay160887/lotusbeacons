@@ -82,7 +82,7 @@ dashboard.controller("BeaconsController", function($rootScope, $scope, apiServic
 
     $scope.beaconCurrentPage = 1;
     $scope.beaconPageSize = 10;
-    $scope.pageChangeHandler = function(num) {
+    $scope.pageChangeHandler2 = function(num) {
         console.log('going to page ' + num);
     };
 
@@ -167,6 +167,7 @@ dashboard.controller("BeaconsController", function($rootScope, $scope, apiServic
             console.log(res);
             $scope.FormInitialized = true;
             if (res.IsSuccess) {
+                alert('Beacon Deleted Successfully');
                 $scope.getAllBeacon();
             }
         });

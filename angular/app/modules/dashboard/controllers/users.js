@@ -189,7 +189,7 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
                     $scope.Designation, $scope.MobileNo, $scope.AssignedStore)
                 .success(function(data, status, headers, config) {
                     if (data.IsSuccess) {
-                        alert('Store Updated Successfully');
+                        alert('User Updated Successfully');
                         $scope.getAllUsers();
                     } else {
                         alert(data.message);
@@ -215,6 +215,7 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
             console.log(res);
             $scope.FormInitialized = true;
             if (res.IsSuccess) {
+                alert('User Deleted Successfully');
                 $scope.getAllUsers();
             }
         });

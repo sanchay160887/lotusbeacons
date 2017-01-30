@@ -153,6 +153,7 @@ dashboard.controller("StoresController", function($rootScope, $scope, apiService
             console.log(res);
             $scope.FormInitialized = true;
             if (res.IsSuccess) {
+                alert('Store Deleted Successfully');
                 $scope.getAllStores();
             }
         });
