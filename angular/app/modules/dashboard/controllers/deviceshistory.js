@@ -144,6 +144,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     }
 
     $scope.loadPage = function(page) {
+        if ($scope.currPage == page) return;
         $scope.HitFromPagination = true;
         $scope.currPage = page;
         $scope.loadData();
