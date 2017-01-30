@@ -26,16 +26,21 @@ dashboard.controller("HomeController", ['$rootScope', '$scope', '$state', '$loca
             });
         }
 
+        $scope.StoreInitialized = false;
+        $scope.NotifInitialized = false;
+
         $scope.storelist = {};
 
         apiService.getStore_Users().then(function(res) {
             $scope.storelist = res.data;
+            $scope.StoreInitialized = true;
         });
 
         $scope.notiflist = {}
 
         apiService.getLastNotification().then(function(res) {
             $scope.notiflist = res.data;
+            $scope.NotifInitialized = true;
         });
 
         vm.showDetails = true;

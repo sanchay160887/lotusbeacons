@@ -2929,7 +2929,15 @@ app.post('/getstoreuserscount', function(req, res) {
         async.waterfall([
             function(callback) {
                 var collection = db.collection('stores');
-                collection.find().toArray(function(err, records) {
+
+                UserStore = getUserAllotedStore(req);
+                if (req.session.loggedInUser && req.session.loggedInUser.UserType == 2) {
+                    collection = collection.find(ObjectId(UserStore));
+                } else {
+                    collection = collection.find();
+                }
+
+                collection.toArray(function(err, records) {
                     var stores = [];
                     if (records && records.length > 0) {
                         for (var dvc in records) {
@@ -3033,12 +3041,12 @@ app.post('/getBeaconsLastNotifications', function(req, res) {
                                 for (var r in reqbody) {
                                     //reqbody[r].srno = cnt;
                                     reqbody[r].datetimestamp = new Date(reqbody[r].date_added).getTime();
-                                    if (reqbody[r].mobile_no){
+                                    if (reqbody[r].mobile_no) {
                                         reqbody[r].mobile_no = reqbody[r].mobile_no.substr(2);
                                     } else {
                                         reqbody[r].mobile_no = '';
                                     }
-                                    
+
                                     notif_detail.push(reqbody[r]);
                                 }
                             }

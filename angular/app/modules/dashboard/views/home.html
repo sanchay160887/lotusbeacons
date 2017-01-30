@@ -40,10 +40,13 @@ Date: 05 Jan 2016
         <div class="col-md-4">
             <div class="box box-success">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Stores </h3>
+                    <h3 class="box-title">Store </h3>
                 </div>
                 <!-- /.box-header -->
-                <div class="box-body">
+                <div class="box-body" ng-show="!StoreInitialized">
+                    Data Loading...
+                </div>
+                <div class="box-body" ng-show="StoreInitialized">
                     <div ng-repeat="store in storelist">
                         <strong>
                         <span class="pull-right">{{ store.NoOfMobiles }} Users</span>
@@ -62,7 +65,10 @@ Date: 05 Jan 2016
                     <h3 class="box-title">Recent Notifications</h3>
                 </div>
                 <!-- /.box-header -->
-                <div class="box-body table-responsive">
+                <div class="box-body" ng-show="!NotifInitialized">
+                    Data Loading...
+                </div>
+                <div class="box-body table-responsive" ng-show="NotifInitialized">
                     <table class="table table-striped">
                         <thead class="thead-default">
                             <tr>
