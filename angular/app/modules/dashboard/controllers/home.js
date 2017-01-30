@@ -11,6 +11,9 @@
 dashboard.controller("HomeController", ['$rootScope', '$scope', '$state', '$location', 'dashboardService', 'Flash', 'apiService',
     function($rootScope, $scope, $state, $location, dashboardService, Flash, apiService) {
         var vm = this;
+        
+        $scope.baseUrl = apiService.base_url;
+        console.log($scope.baseUrl);
 
         if (!$rootScope.loggedInUser) {
             apiService.checkloginUser().then(function(res) {
@@ -28,6 +31,7 @@ dashboard.controller("HomeController", ['$rootScope', '$scope', '$state', '$loca
 
         $scope.StoreInitialized = false;
         $scope.NotifInitialized = false;
+
 
         $scope.storelist = {};
 

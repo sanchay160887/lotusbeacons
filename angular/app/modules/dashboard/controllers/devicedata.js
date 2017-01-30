@@ -277,6 +277,7 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
             apiService.sendNotification_image(checkedlist, title, description, ImageFilePath).then(function(res) {
                 console.log(res);
                 $scope.resetNotificationDialogue();
+                alert('Notification sent successfully');
             });
         } else {
             alert('No device selected');

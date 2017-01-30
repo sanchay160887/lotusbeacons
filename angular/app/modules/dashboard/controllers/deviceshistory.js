@@ -711,6 +711,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             apiService.sendNotification_image(checkedlist, title, description, ImageFilePath).then(function(res) {
                 console.log(res);
                 $scope.resetNotificationDialogue();
+                alert('Notification sent successfully');
             });
         } else {
             alert('No device selected');
@@ -753,6 +754,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         apiService.sendNotification_image_everyone($scope.selectedBeacon, $scope.selectedStore, selectedDateFrom, selectedDateTo, title, description, ImageFilePath).then(function(res) {
             console.log(res);
             $scope.resetNotificationDialogue();
+            alert('Notification sent successfully');
         });
     }
 

@@ -76,13 +76,16 @@ Date: 05 Jan 2016
                                     Time
                                 </th>
                                 <th>
+                                    Mobile Number
+                                </th>
+                                <th>
                                     Title
                                 </th>
                                 <th>
                                     Description
                                 </th>
                                 <th>
-                                    Mobile Number
+                                    Image
                                 </th>
                             </tr>
                         </thead>
@@ -92,13 +95,19 @@ Date: 05 Jan 2016
                                     {{ notif.notification_date | date:'dd/MM/yyyy hh:mm a' }}
                                 </td>
                                 <td>
+                                    {{ notif.mobile_no }}
+                                </td>
+                                <td>
                                     {{ notif.heading }}
                                 </td>
                                 <td>
                                     {{ notif.notification_message }}
                                 </td>
-                                <td>
-                                    {{ notif.mobile_no }}
+                                <td ng-if="!notif.notification_img || notif.notification_img == '#'">
+                                    No Image
+                                </td>
+                                <td ng-if="notif.notification_img && notif.notification_img != '#'">
+                                    <img src="{{ baseUrl + '/' + notif.notification_img}}" width="100" height="100">
                                 </td>
                             </tr>
                         </tbody>
