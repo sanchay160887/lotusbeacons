@@ -34,6 +34,7 @@
     font-style: italic;
     border: 1px solid #bce8f1;
 }
+
 .error {
     color: red;
 }
@@ -72,8 +73,7 @@ Date: 05 Jan 2016
             <span class="error" ng-show="userForm.Email.$touched && userForm.Email.$invalid">Please enter a valid Email address</span>
             <br>
             <label>Mobile Number<span>*</span></label>
-            <input class="form-control" type="text" id="MobileNo" name="MobileNo" ng-model="MobileNo" 
-                ng-pattern="phoneregex" required="required" minlength="8" maxlength="14" />
+            <input class="form-control" type="text" id="MobileNo" name="MobileNo" ng-model="MobileNo" ng-pattern="phoneregex" required="required" minlength="8" maxlength="14" />
             <span class="error" ng-show="userForm.MobileNo.$touched && userForm.MobileNo.$invalid">Please enter a valid 8- 14 digits Mobile Number</span>
             <br>
             <label>Designation</label>
@@ -88,23 +88,20 @@ Date: 05 Jan 2016
             <span class="error" ng-show="userForm.AssignedStore.$touched && userForm.AssignedStore.$invalid">Please assign any store</span>
             <br>
             <label>User ID<span>*</span></label>
-            <input class="form-control" type="text" name="UserID" id="UserID" ng-model="UserID" 
-                ng-pattern="useridregex" required="required"/>
+            <input class="form-control" type="text" name="UserID" id="UserID" ng-model="UserID" ng-pattern="useridregex" required="required" />
             <span class="error" ng-show="userForm.UserID.$touched && userForm.UserID.$error.required">User ID required</span>
             <span class="error" ng-show="userForm.UserID.$touched && userForm.UserID.$invalid && !userForm.UserID.$error.required">User ID must be lowercase and only alphabets</span>
             <br>
-            <label>Password</label>
-            <input class="form-control" type="password" id="Password" name="Password" ng-model="Password" 
-                ng-pattern="passwordregex" ng-required="button_name!='Update'" />
+            <label>Password<span ng-show="button_name!='Update'">*</span></label>
+            <input class="form-control" type="password" id="Password" name="Password" ng-model="Password" ng-pattern="passwordregex" ng-required="button_name!='Update'" />
             <span class="error" ng-show="userForm.Password.$touched && userForm.Password.$invalid">Password required</span>
             <span class="error" ng-show="userForm.Password.$touched && userForm.Password.$invalid && !userForm.Password.$error.required">Password should be atleast 8 characters long
             and should contain one number,one character and one special
             character</span>
             <br>
-             <!-- compare-to="Password" -->
-            <label>Confirm Password</label>
-            <input class="form-control" type="password" id="ConfPassword" name="ConfPassword" 
-                ng-model="ConfPassword" ng-required="(button_name!='Update' || Password != '')" />
+            <!-- compare-to="Password" -->
+            <label>Confirm Password<span ng-show="button_name!='Update'">*</span></label>
+            <input class="form-control" type="password" id="ConfPassword" name="ConfPassword" ng-model="ConfPassword" ng-required="(button_name!='Update' || Password != '')" />
             <span class="error" ng-show="userForm.confPassword.$touched && userForm.confPassword.$invalid">Confirm Password required</span>
             <span class="error" ng-show="userForm.confPassword.$touched && userForm.confPassword.$invalid && !userForm.confPassword.$error.required">Confirm password doesnot match with password</span>
             <span class="error">{{ userForm.confPassword }}</span>
@@ -113,7 +110,7 @@ Date: 05 Jan 2016
             <br>
             <button class="btn btn-primary" ng-bind="button_name" ng-click="processUser()">Add</button>
             <button class="btn btn-primary" ng-if="button_name=='Update' && UserType != 1" ng-click="deleteUser()">
-            Delete</button>
+                Delete</button>
             <button class="btn btn-primary" ng-if="button_name=='Update'" ng-click="resetControls()">Cancel</button>
             <p ng-show="UserType == 1">Admin account cannot be deleted, Only updated.</p>
         </ng-form>
@@ -122,13 +119,40 @@ Date: 05 Jan 2016
         <div class="wait_block" ng-if="!ListInitialized">
             <p class="wait_text">Please Wait...</p>
         </div>
+        <div class="row">
+            <div class="col-xs-4">
+                <label for="search">Search:</label>
+                <input ng-model="q" id="search" class="form-control" placeholder="Filter text">
+            </div>
+            <div class="col-xs-4">
+                <label for="search">Records/Page:</label>
+                <select ng-model="userPageSize" class="form-control">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                </select>
+            </div>
+        </div>
         <!-- Main content -->
         <table class="table">
-            <th>Name</th>
-            <th>Designation</th>
-            <th>Email</th>
-            <th>Assigned Store</th>
-            <tr ng-repeat="u in userData | orderBy:BeaconKey ">
+            <th ng-click="O=(O=='Name' && '-Name' || 'Name' )">Name
+                <span ng-show="O=='Name'">▲</span>
+                <span ng-show="O=='-Name'">▼</span>
+            </th>
+            <th ng-click="O=(O=='Designation' && '-Designation' || 'Designation' )">Designation
+                <span ng-show="O=='Designation'">▲</span>
+                <span ng-show="O=='-Designation'">▼</span>
+            </th>
+            <th ng-click="O=(O=='Email' && '-Email' || 'Email' )">Email
+                <span ng-show="O=='Email'">▲</span>
+                <span ng-show="O=='-Email'">▼</span>
+            </th>
+            <th ng-click="O=(O=='StoreName' && '-StoreName' || 'StoreName' )">Assigned Store
+                <span ng-show="O=='StoreName'">▲</span>
+                <span ng-show="O=='-StoreName'">▼</span>
+            </th>
+            <tr dir-paginate="u in userData | filter:q | orderBy : O | itemsPerPage:  userPageSize" current-page="userCurrentPage">
+                <!-- <tr ng-repeat=" | orderBy:Name "> -->
                 <td>
                     <input class="form-control" type='text' ng-model="u.Name" readonly />
                 </td>
@@ -144,6 +168,13 @@ Date: 05 Jan 2016
                 <td ng-click="getUser(u._id)"><span class="btn btn-primary">Edit</span></td>
             </tr>
         </table>
+        <div>
+            <nav aria-label="Page navigation">
+                <div class="text-center">
+                    <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)" template-url="app/modules/dashboard/views/dirPagination.tpl.html"></dir-pagination-controls>
+                </div>
+            </nav>
+        </div>
     </section>
     <!-- /.content -->
 </section>

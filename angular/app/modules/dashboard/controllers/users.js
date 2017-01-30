@@ -78,11 +78,20 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
 
     var vm = this;
 
+    $scope.userCurrentPage = 1;
+    $scope.userPageSize = 10;
+    $scope.pageChangeHandler2 = function(num) {
+        console.log('going to page ' + num);
+    };
+
     $scope.getAllUsers = function() {
         $scope.ListInitialized = false;
         apiService.userData().then(function(res) {
             $scope.userData = res.data.data;
-            $scope.resetControls();            
+            $scope.O = 'Name';
+            $scope.userCurrentPage = 1;
+            $scope.userPageSize = 10;
+            $scope.resetControls();
             $scope.ListInitialized = true;
         });
     }
@@ -105,8 +114,9 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
         $scope.UserObjectID = '';
         $scope.button_name = "Add";
         $scope.ResetPassword = false;
-        $scope.userForm.$setPristine();
+        $scope.userForm.$setUntouched();
         $scope.userForm.$setDirty();
+        $scope.userForm.$setPristine();
     }
 
     $scope.getUser = function(pUserObjectID) {
