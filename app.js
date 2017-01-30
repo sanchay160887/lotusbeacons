@@ -2115,10 +2115,7 @@ app.post('/sendpushnotification_test', function(req, res) {
 app.post('/sendpushnotification_plain', function(req, res) {
     not_title = req.body.title;
     not_descr = req.body.description;
-    not_device_token_dup = req.body.gcmTokens;
-    not_device_token = not_device_token_dup.filter(function(elem, pos) {
-        return myArray.indexOf(elem) == pos;
-    });
+    not_device_token = req.body.gcmTokens;
     sendpushnotification(res, not_device_token, not_title, not_descr);
 });
 
@@ -2215,10 +2212,22 @@ app.post('/sendpushnotification_image', function(req, res) {
     not_title = req.body.title;
     not_descr = req.body.description;
     not_image = req.body.image_url;
+    //not_MobileNo = req.body.gcmTokens;
     not_MobileNo = req.body.gcmTokens;
     sendpushnotification_mobileno(res, not_MobileNo, not_title, not_descr, not_image);
 });
 
+function array_unique(a) {
+    a.sort();
+    for (var i = 1; i < a.length;) {
+        if (a[i - 1] == a[i]) {
+            a.splice(i, 1);
+        } else {
+            i++;
+        }
+    }
+    return a;
+}
 
 function sendpushnotification_mobileno(res, gcmMobiles, title, description, image_url) {
     not_title = title;
@@ -2239,6 +2248,7 @@ function sendpushnotification_mobileno(res, gcmMobiles, title, description, imag
                     mobilenos.push(mobileno);
                 }
             }
+            mobilenos = array_unique(mobilenos);
             callback(null, mobilenos);
         },
         function(mobilenos, callback) {
