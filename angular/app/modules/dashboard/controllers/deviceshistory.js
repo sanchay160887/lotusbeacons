@@ -58,11 +58,22 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.HistorySearchDetailsData = [];
 
     if (!$rootScope.loggedInUser) {
-        apiService.checkloginUser().then(function(res) {
+        $scope.checkLoggedInUser();
+        /*apiService.checkloginUser().then(function(res) {
             if (typeof(res.data.user) != undefined && res.data.user){
                 $rootScope.loggedInUser = res.data.user;
             } else {
                 $location.path("/");                
+            }
+        });*/
+    }
+
+    $scope.checkLoggedInUser = function() {
+        apiService.checkloginUser().then(function(res) {
+            if (typeof(res.data.user) != undefined && res.data.user) {
+                $rootScope.loggedInUser = res.data.user;
+            } else {
+                $location.path("/");
             }
         });
     }
@@ -307,6 +318,8 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     };
 
     $scope.getAllDevicesHistory = function() {
+
+        $scope.checkLoggedInUser();
 
         var queriedUrl = $location.search();
 

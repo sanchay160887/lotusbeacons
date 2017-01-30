@@ -18,11 +18,22 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
     $scope.BeaconInitialized = true;
 
     if (!$rootScope.loggedInUser) {
-        apiService.checkloginUser().then(function(res) {
-            if (typeof(res.data.user) != undefined && res.data.user){
+        $scope.checkLoggedInUser();
+        /*apiService.checkloginUser().then(function(res) {
+            if (typeof(res.data.user) != undefined && res.data.user) {
                 $rootScope.loggedInUser = res.data.user;
             } else {
-                $location.path("/");                
+                $location.path("/");
+            }
+        });*/
+    }
+
+    $scope.checkLoggedInUser = function() {
+        apiService.checkloginUser().then(function(res) {
+            if (typeof(res.data.user) != undefined && res.data.user) {
+                $rootScope.loggedInUser = res.data.user;
+            } else {
+                $location.path("/");
             }
         });
     }
@@ -73,7 +84,7 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
                 checkedlist.push($scope.deviceData[dd].DeviceID);
             }
         }
-        
+
         if (checkedlist && checkedlist.length > 0) {
             $scope.IsRecordSelected = true;
         } else {
@@ -125,6 +136,9 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
     }
 
     $scope.getAllDevices = function() {
+
+        $scope.checkLoggedInUser();
+
         var queriedUrl = $location.search();
 
         var selectedStore = '';
