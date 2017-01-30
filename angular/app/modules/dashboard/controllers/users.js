@@ -151,6 +151,16 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
 
     $scope.processUser = function() {
         console.log($scope.button_name);
+        if ($scope.userForm.$invalid) {
+            angular.forEach($scope.userForm.$error, function(field) {
+                angular.forEach(field, function(errorField) {
+                    errorField.$setTouched();
+                })
+            });
+            alert("Please check all values on Form.");
+            return;
+        }
+
         if ($scope.button_name == 'Update') {
             if ($scope.Password != $scope.ConfPassword) {
                 alert('Confirm password doesnot match with password');
@@ -165,15 +175,7 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
                 return;
             }
         }
-        if ($scope.userForm.$invalid) {
-            angular.forEach($scope.userForm.$error, function(field) {
-                angular.forEach(field, function(errorField) {
-                    errorField.$setTouched();
-                })
-            });
-            alert("Please check all values on Form.");
-            return;
-        }
+
         $scope.FormInitialized = false;
         if ($scope.button_name == 'Add') {
             apiService.addUser($scope.UserID, $scope.Password, $scope.Email, $scope.Name, $scope.Designation,
