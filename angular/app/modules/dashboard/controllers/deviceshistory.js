@@ -456,7 +456,6 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
     $scope.$watchCollection('[deviceHistoryDetailPageSize]', function() {
         $scope.deviceHistoryDetailCurrentPage = 1;
-        $scope.pages = $scope.HistoryDetailsData / $scope.deviceHistoryDetailPageSize;
     });
 
     $scope.pageChangeHandler2 = function(num) {
@@ -539,8 +538,6 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
     $scope.$watchCollection('[searchHistoryPageSize]', function() {
         $scope.searchHistoryCurrentPage = 1;
-         $scope.pages = $scope.HistorySearchDetailsData / $scope.searchHistoryPageSize;
-
     });
 
     $scope.getDeviceSearchHistoryDetails = function(PersonName, MobileNo) {
