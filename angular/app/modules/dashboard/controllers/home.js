@@ -8,8 +8,8 @@
 
  ===========================================================*/
 
-dashboard.controller("HomeController", ['$rootScope', '$scope', '$state', '$location', 'dashboardService', 'Flash',
-    function($rootScope, $scope, $state, $location, dashboardService, Flash) {
+dashboard.controller("HomeController", ['$rootScope', '$scope', '$state', '$location', 'dashboardService', 'Flash', 'apiService',
+    function($rootScope, $scope, $state, $location, dashboardService, Flash, apiService) {
         var vm = this;
 
         if (!$rootScope.loggedInUser) {
@@ -25,6 +25,18 @@ dashboard.controller("HomeController", ['$rootScope', '$scope', '$state', '$loca
                 }
             });
         }
+
+        $scope.storelist = {};
+
+        apiService.getStore_Users().then(function(res) {
+            $scope.storelist = res.data;
+        });
+
+        $scope.notiflist = {}
+
+        apiService.getLastNotification().then(function(res) {
+            $scope.notiflist = res.data;
+        });
 
         vm.showDetails = true;
         vm.home = {};

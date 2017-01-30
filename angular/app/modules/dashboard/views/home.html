@@ -3,34 +3,107 @@ Author: Ranjithprabhu K
 Page Description: Dashboard Home page
 Date: 05 Jan 2016
 -->
-
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <h1>
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
            My Home Page
         </h1>
-        <ol class="breadcrumb">
-            <li><a><i class="fa fa-dashboard"></i> Dashboard</a></li>
-            <li class="active">Home</li>
-        </ol>
-    </section>
-    <!-- Main content -->
-    <section class="content">
-        <!-- Info boxes -->
-        <div class="row">
-            <div class="col-md-3 col-sm-6 col-xs-12" data-ng-repeat="data in vm.home.mainData">
-                <div class="info-box">
-                    <span class="info-box-icon bg-{{data.theme}}"><i class="fa fa-{{data.icon}}"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">{{data.title}}</span>
-                        <span class="info-box-number">{{data.value}}</span>
-                    </div><!-- /.info-box-content -->
-                </div><!-- /.info-box -->
-            </div><!-- /.col -->
-        </div><!-- /.row -->
-        <div class="row">
-            <div class="col-md-12">
-                <h1>Welcome to Beacons Dashboard</h1>
-            </div><!-- /.col -->
-        </div><!-- /.row -->
-    </section><!-- /.content -->
+    <ol class="breadcrumb">
+        <li><a><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li class="active">Home</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content">
+    <!-- Info boxes -->
+    <div class="row">
+        <div class="col-md-3 col-sm-6 col-xs-12" data-ng-repeat="data in vm.home.mainData">
+            <div class="info-box">
+                <span class="info-box-icon bg-{{data.theme}}"><i class="fa fa-{{data.icon}}"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">{{data.title}}</span>
+                    <span class="info-box-number">{{data.value}}</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Welcome to Beacons Dashboard</h1>
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="box box-success">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Stores </h3>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <div ng-repeat="store in storelist">
+                        <strong>
+                        <span class="pull-right">{{ store.NoOfMobiles }} Users</span>
+                        <i class="fa fa-empire margin-r-5"></i>
+                        <span> {{ store.StoreName }}</span></strong>
+                        <hr>
+                    </div>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+        </div>
+        <div class="col-md-8">
+            <div class="box box-success">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Recent Notifications</h3>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body table-responsive">
+                    <table class="table table-striped">
+                        <thead class="thead-default">
+                            <tr>
+                                <th>
+                                    Time
+                                </th>
+                                <th>
+                                    Title
+                                </th>
+                                <th>
+                                    Description
+                                </th>
+                                <th>
+                                    Mobile Number
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="notif in notiflist">
+                                <td>
+                                    {{ notif.notification_date | date:'dd/MM/yyyy hh:mm a' }}
+                                </td>
+                                <td>
+                                    {{ notif.heading }}
+                                </td>
+                                <td>
+                                    {{ notif.notification_message }}
+                                </td>
+                                <td>
+                                    {{ notif.mobile_no }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+        </div>
+    </div>
+</section>
+<!-- /.content -->

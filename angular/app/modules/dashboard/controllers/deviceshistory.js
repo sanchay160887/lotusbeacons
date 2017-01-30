@@ -506,6 +506,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         apiService.deviceHistoryDetailsData(MobileNo, BeaconID, selectedDateFrom, selectedDateTo)
             .then(function(res) {
                 $scope.HistoryDetailsData = [];
+                $scope.HistorySearchDetailsData = [];
                 $scope.HistoryDetailsData = res.data;
                 $scope.O = '-Date';
                 $scope.deviceHistoryDetailCurrentPage = 1
@@ -585,6 +586,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         apiService.deviceSearchHistoryDetailsData(MobileNo, selectedDateFrom, selectedDateTo, $scope.detailPageLimit)
             .then(function(res) {
                 console.log(res);
+                $scope.HistoryDetailsData = [];
                 $scope.HistorySearchDetailsData = [];
                 $scope.HistorySearchDetailsData = res.data;
                 $scope.searchHistoryCurrentPage = 1;

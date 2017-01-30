@@ -16,6 +16,7 @@ app.controller("appCtrl", ['$rootScope', '$scope', '$state', '$location', 'Flash
         $scope.loggedInUser = $rootScope.loggedInUser;
 
         $scope.UCF = function(word) {
+            if (!word) return '';
             return word.substring(0, 1).toUpperCase() + word.slice(1);
         }
 

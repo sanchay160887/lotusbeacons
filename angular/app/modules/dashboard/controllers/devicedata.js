@@ -73,6 +73,7 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
                 checkedlist.push($scope.deviceData[dd].DeviceID);
             }
         }
+        
         if (checkedlist && checkedlist.length > 0) {
             $scope.IsRecordSelected = true;
         } else {

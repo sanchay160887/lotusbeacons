@@ -2929,41 +2929,127 @@ app.post('/getstoreuserscount', function(req, res) {
         async.waterfall([
             function(callback) {
                 var collection = db.collection('stores');
-                collection.find().toArray(function(err, stores) {
-                    if (stores && stores.length > 0) {
-                        for (var dvc in stores) {
-                            stores.push(stores[dvc]);
+                collection.find().toArray(function(err, records) {
+                    var stores = [];
+                    if (records && records.length > 0) {
+                        for (var dvc in records) {
+                            stores.push(records[dvc]);
                         }
                         callback(null, stores);
                     }
                 });
             },
             function(stores, callback) {
+                var storelist = [];
                 forEach(stores, function(item, index) {
                     var done = this.async();
                     async.waterfall([
                         function(callback2) {
-                            var collection = db.collection('stores');
+                            var collection = db.collection('beacons');
                             collection.find({
                                 'BeaconStore': ObjectId(item._id)
                             }).toArray(function(err, beacons) {
                                 if (beacons && beacons.length > 0) {
+                                    var beaconsIDs = [];
                                     for (var dvc in beacons) {
-                                        stores.push(beacons[dvc]);
+                                        beaconsIDs.push(beacons[dvc].BeaconID);
                                     }
-                                    callback(null, stores);
+                                    callback2(null, beaconsIDs);
+                                } else {
+                                    callback2(null, {});
                                 }
                             });
-
-                            callback2(null, '');
+                        },
+                        function(beaconsIDs, callback2) {
+                            //console.log(beaconsIDs);
+                            var devicecollection = db.collection('device_history');
+                            devicecollection.aggregate(
+                                    [{
+                                        $match: {
+                                            'BeaconID': {
+                                                $in: beaconsIDs,
+                                            }
+                                        }
+                                    }, {
+                                        $group: {
+                                            _id: { MobileNo: '$MobileNo' },
+                                            lastUpdateTime: { $max: "$DateTo" }
+                                        }
+                                    }]
+                                )
+                                .toArray(function(err, mobilenumbers) {
+                                    if (mobilenumbers && mobilenumbers.length > 0) {
+                                        item.NoOfMobiles = mobilenumbers.length;
+                                        storelist.push(item);
+                                        callback2(null, beaconsIDs);
+                                    } else {
+                                        item.NoOfMobiles = 0;
+                                        storelist.push(item);
+                                        callback2(null, {});
+                                    }
+                                });
+                        },
+                        function(mobiles, callback2) {
+                            done();
                         }
                     ]);
-
-                    console.log(item);
-
-                    setTimeout(done, 1000);
+                }, function(notAborted, arr) {
+                    callback(null, storelist);
+                    console.log("done", notAborted, arr);
                 });
+            },
+            function(storelist, callback) {
+                //console.log(storelist);
+                res.send(storelist);
+            }
+        ]);
 
+    });
+});
+
+app.post('/getBeaconsLastNotifications', function(req, res) {
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        async.waterfall([
+            function(callback) {
+                var request = require('request');
+
+                request.post('http://lampdemos.com/lotus15/v2/user/get_beacons_notifications', {
+                        form: {
+                            'recordlimit': 10,
+                        }
+                    },
+                    function(res2, err, body) {
+                        notif_detail = [];
+                        //var reqbody = JSON.parse(body);
+                        var reqbody = parse_JSON(body);
+                        if (reqbody) {
+                            reqbody = reqbody.data;
+                            if (reqbody) {
+                                var sa = [];
+                                for (var r in reqbody) {
+                                    //reqbody[r].srno = cnt;
+                                    reqbody[r].datetimestamp = new Date(reqbody[r].date_added).getTime();
+                                    if (reqbody[r].mobile_no){
+                                        reqbody[r].mobile_no = reqbody[r].mobile_no.substr(2);
+                                    } else {
+                                        reqbody[r].mobile_no = '';
+                                    }
+                                    
+                                    notif_detail.push(reqbody[r]);
+                                }
+                            }
+                        }
+
+                        res.send(notif_detail);
+                        callback(null, notif_detail);
+                    })
+            },
+            function(notif_detail, callback) {
+                db.close();
             }
         ]);
 

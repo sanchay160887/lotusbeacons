@@ -406,6 +406,30 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
     apiService.checkloginUser = checkloginUser;
     /*User end*/
 
+    /*Home start*/
+
+    var getStore_Users = function() {
+        return $http({
+            method: "post",
+            url: "/getstoreuserscount"            
+        });
+    }
+    apiService.getStore_Users = getStore_Users;
+
+
+    var getLastNotification = function() {
+        return $http({
+            method: "post",
+            url: "/getBeaconsLastNotifications",
+            data : {
+                'recordlimit' : 10
+            }
+        });
+    }
+    apiService.getLastNotification = getLastNotification;
+
+    /*Home end*/
+
     var sendNotification_plain = function(gcmTokens, title, description) {
         return $http({
             method: "post",
