@@ -1762,12 +1762,24 @@ app.post('/getbeacon', function(req, res) {
 
         async.waterfall([
             function(callback) {
+                var collection = db.collection('stores');
+                collection.find().toArray(function(err, stores) {
+                    var storelist = [];
+                    for (var b in stores) {
+                        storelist[stores[b]._id] = stores[b].StoreName;
+                    }
+                    callback(null, storelist);
+                });
+            },
+            function(storelist, callback) {
                 collection.find({
                     'BeaconID': BeaconID
                 }).toArray(function(err, devices) {
+                    if (devices && devices.length > 0) {
+                        devices[0].StoreName = storelist[ObjectId(devices[0].BeaconStore)];
+                    }
                     callback(null, devices);
                 });
-
             },
             function(devices, callback) {
                 if (devices && devices.length > 0) {

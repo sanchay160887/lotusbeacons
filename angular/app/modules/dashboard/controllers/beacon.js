@@ -10,6 +10,7 @@ dashboard.controller("BeaconsController", function($rootScope, $scope, apiServic
     $scope.button_name = 'Add';
     $scope.storeData = [];
     $scope.Beacon_Store = '';
+    $scope.Beacon_Store_Name = '';    
     $scope.ListInitialized = false;
     $scope.FormInitialized = true;
     $scope.loggedInUser = $rootScope.loggedInUser;
@@ -101,6 +102,7 @@ dashboard.controller("BeaconsController", function($rootScope, $scope, apiServic
                     $scope.Beacon_Welcome = data.data[0].BeaconWelcome;
                     $scope.Beacon_Descr = data.data[0].BeaconDescr;
                     $scope.Beacon_Store = data.data[0].BeaconStore;
+                    $scope.Beacon_Store_Name = data.data[0].StoreName;                    
                     $scope.O = 'StoreName';
                     $scope.beaconCurrentPage = 1;
                     $scope.beaconPageSize = 10;
