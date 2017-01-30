@@ -61,8 +61,8 @@ Date: 05 Jan 2016
         <div class="wait_block" ng-if="!FormInitialized">
             <p class="wait_text">Please Wait...</p>
         </div>
-        <h4 ng-if="button_name!='update'">Add User</h4>
-        <h4 ng-if="button_name=='update'">Update User</h4>
+        <h4 ng-if="button_name!='Update'">Add User</h4>
+        <h4 ng-if="button_name=='Update'">Update User</h4>
         <ng-form name="userForm" id="userForm">
             <label>Name<span>*</span></label>
             <input class="form-control" type="text" name="Name" id="Name" ng-model="Name" required="required" />
@@ -151,7 +151,7 @@ Date: 05 Jan 2016
                 <span ng-show="O=='StoreName'">▲</span>
                 <span ng-show="O=='-StoreName'">▼</span>
             </th>
-            <tr dir-paginate="u in userData | filter:q | orderBy : O | itemsPerPage:  userPageSize" current-page="userCurrentPage">
+            <tr dir-paginate="u in userData | filter: {searchfield: q } | orderBy : O | itemsPerPage:  userPageSize" current-page="userCurrentPage">
                 <!-- <tr ng-repeat=" | orderBy:Name "> -->
                 <td>
                     <input class="form-control" type='text' ng-model="u.Name" readonly />
