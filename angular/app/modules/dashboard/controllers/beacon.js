@@ -82,7 +82,7 @@ dashboard.controller("BeaconsController", function($rootScope, $scope, apiServic
 
     $scope.beaconCurrentPage = 1;
     $scope.beaconPageSize = 10;
-    $scope.pageChangeHandler2 = function(num) {
+    $scope.pageChangeHandler = function(num) {
         console.log('going to page ' + num);
     };
 

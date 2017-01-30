@@ -444,7 +444,6 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
                 }
             });
         }
-
     }
 
     $scope.toProperCase = function(strval) {
@@ -459,11 +458,13 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
     $scope.$watchCollection('[deviceHistoryDetailPageSize]', function() {
         $scope.deviceHistoryDetailCurrentPage = 1;
+        console.log($scope.historypagination)
         $scope.pageNumber = 1;
     });
 
     $scope.pageChangeHandler2 = function(num) {
         console.log('going to page ' + num);
+        console.log(pagination);
     };
 
 
@@ -537,6 +538,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
     $scope.searchHistoryCurrentPage = 1;
     $scope.searchHistoryPageSize = 10;
+    $scope.searchpagination = {};
 
     $scope.pageChangeHandler = function(num) {
         console.log('going to page ' + num);

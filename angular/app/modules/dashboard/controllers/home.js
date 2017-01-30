@@ -40,6 +40,8 @@ dashboard.controller("HomeController", ['$rootScope', '$scope', '$state', '$loca
 
         apiService.getLastNotification().then(function(res) {
             $scope.notiflist = res.data;
+            $scope.notifCurrentPage = 1;
+            $scope.notifPageSize = 10;
             $scope.NotifInitialized = true;
         });
 

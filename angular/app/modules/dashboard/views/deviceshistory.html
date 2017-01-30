@@ -444,7 +444,8 @@ Date: 05 Jan 2016
                             </th>
                         </thead>
                         <tbody>
-                            <tr dir-paginate="hdd in HistoryDetailsData | filter:q | orderBy : O | itemsPerPage: deviceHistoryDetailPageSize " current-page="searchHistoryCurrentPage" >
+                            <tr dir-paginate="hdd in HistoryDetailsData | filter:q | orderBy : O | itemsPerPage: deviceHistoryDetailPageSize " current-page="searchHistoryCurrentPage" 
+                            pagination-id="devicehistory">
                                 <td>{{ hdd.Date | date }}</td>
                                 <td>{{ hdd.DateIn | date:'hh:mm a' }}</td>
                                 <td>{{ hdd.DateTo | date:'hh:mm a' }}</td>
@@ -455,7 +456,8 @@ Date: 05 Jan 2016
                     <div>
                         <nav aria-label="Page navigation">
                             <div class="text-center">
-                                <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler2(newPageNumber)" template-url="app/modules/dashboard/views/dirPagination.tpl.html">
+                                <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler2(newPageNumber)" template-url="app/modules/dashboard/views/dirPagination.tpl.html"
+                                 pagination-id="devicehistory">
                                 </dir-pagination-controls>
                             </div>
                         </nav>
@@ -517,14 +519,15 @@ Date: 05 Jan 2016
                         </thead>
                         <tbody>
                                 <tr dir-paginate="hdd in HistorySearchDetailsData | filter:q | orderBy : O | itemsPerPage: searchHistoryPageSize" 
-                                current-page="searchHistoryCurrentPage ">
+                                current-page="searchHistoryCurrentPage" pagination-id="searchhistory">
                                     <td>{{ hdd.datetimestamp | date }}</td>
                                     <td>{{ hdd.search_keyword }}</td>
                                 </tr>
                         </tbody>
                     </table>
                     <div class="text-center ">
-                        <dir-pagination-controls boundary-links="true " on-page-change="pageChangeHandler(newPageNumber) " template-url="app/modules/dashboard/views/dirPagination.tpl.html "></dir-pagination-controls>
+                        <dir-pagination-controls boundary-links="true " on-page-change="pageChangeHandler(newPageNumber) " template-url="app/modules/dashboard/views/dirPagination.tpl.html"
+                         pagination-id="searchhistory"></dir-pagination-controls>
                     </div>
                     <table ng-show="HistorySearchDetailsData.length <=0 ">
                         <tbody>
@@ -541,7 +544,7 @@ Date: 05 Jan 2016
                 <h1>Loading Search History, Please wait...</h1>
             </div>
             <div class="modal-footer ">
-                <button type="button " class="btn btn-primary" data-dismiss="modal"> Close </button>
+                <button type="button " class="btn btn-primary " data-dismiss="modal"> Close </button>
             </div>
         </div>
     </div>
