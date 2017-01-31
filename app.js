@@ -1796,6 +1796,7 @@ app.post('/getbeacon', function(req, res) {
         ]);
     });
 });
+
 /*Beacon services end*/
 
 
