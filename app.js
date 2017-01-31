@@ -81,7 +81,6 @@ io.on('receiveTime', function(data) {
     console.log('Data coming from client :: ');
 })
 
-
 /* General Supportive Function start -->> */
 function isNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
@@ -1796,7 +1795,6 @@ app.post('/getbeacon', function(req, res) {
         ]);
     });
 });
-
 /*Beacon services end*/
 
 
