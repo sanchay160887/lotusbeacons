@@ -290,6 +290,12 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
     $scope.loadDataWithSearch = function() {
         $scope.currPage = 1;
+        var searchval = '';
+        if ($scope.searchNameNumber.length > 1){
+            searchval = $scope.searchNameNumber;
+        } else {
+            searchval = '';
+        }
         $location.search({
             'store': $scope.selectedStore,
             'beacon': $scope.selectedBeacon,
@@ -297,7 +303,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             'dateTo': $scope.selectedDateTo,
             'page': $scope.currPage,
             'limit': $scope.pageLimit,
-            'search': $scope.searchNameNumber
+            'search': searchval
         });
         $scope.getAllDevicesHistory();
     }
@@ -405,6 +411,9 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             searchNameNumber = queriedUrl.search;
         } else {
             searchNameNumber = $scope.searchNameNumber;
+        }
+        if (searchNameNumber.length <= 1){
+            searchNameNumber = '';
         }
 
         $scope.InvalidInputs = false;
