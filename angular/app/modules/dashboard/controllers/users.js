@@ -88,6 +88,9 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
     $scope.getAllUsers = function() {
         $scope.ListInitialized = false;
         apiService.userData().then(function(res) {
+            if (!res.data.IsSuccess) {
+                alert(res.data.message);
+            }
             $scope.userData = res.data.data;
             $scope.O = 'Name';
             $scope.userCurrentPage = 1;
@@ -230,6 +233,8 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
             if (res.IsSuccess) {
                 alert('User Deleted Successfully');
                 $scope.getAllUsers();
+            } else {
+                alert(res.message);
             }
         });
     }

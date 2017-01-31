@@ -42,6 +42,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.searchNameNumber = '';
     $scope.currPage = 1;
     $scope.pageLimit = 10;
+    $scope.q = '';
     $scope.GM_ImageFilePath = '';
     $scope.baseUrl = apiService.base_url;
     $scope.InvalidInputs = false;
@@ -540,7 +541,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
                 $scope.deviceHistoryDetailPageSize = 10;
                 $scope.HistoryDetailsData = res.data;
                 $scope.HistoryDetailsDataCount = res.data.length;
-                $scope.O = '-Date';                
+                $scope.O = '-Date';
                 $scope.InitializingHistoryDetails = false;
             });
 
@@ -623,6 +624,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
                 $scope.searchHistoryPageSize = 10;
                 $scope.HistorySearchDetailsData = res.data;                
                 $scope.O = '-datetimestamp';
+                $scope.q = '';
                 $scope.InitializingHistoryDetails = false;
             });
 
