@@ -157,7 +157,7 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
                     errorField.$setTouched();
                 })
             });
-            alert("Please check all values on Form.");
+            //alert("Please check all values on Form.");
             return;
         }
 
