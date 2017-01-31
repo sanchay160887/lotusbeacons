@@ -89,7 +89,7 @@ Date: 05 Jan 2016
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="notif in notiflist">
+                            <tr ng-repeat="notif in notiflist" ng-show="notiflist.length > 0">
                                 <td>
                                     {{ notif.notification_date | date:'dd/MM/yyyy hh:mm a' }}
                                 </td>
@@ -111,6 +111,9 @@ Date: 05 Jan 2016
                                     alt="Sorry! Image may be corrupted or deleted"
                                     onerror="if (this.src != '/images/home/No_Image_Available.png') this.src = '/images/home/No_Image_Available.png';">
                                 </td>
+                            </tr>
+                            <tr ng-show="notiflist.length <= 0">
+                                <td colspan="5">No Record Found</td>
                             </tr>
                         </tbody>
                     </table>
