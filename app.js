@@ -136,7 +136,6 @@ function convertSecondsToStringTime2(seconds) {
     if (seconds && !isNumeric(seconds)) {
         return 0;
     }
-
     seconds = parseInt(seconds);
     var timestring = '';
     hours = Math.floor(seconds / 3600);
