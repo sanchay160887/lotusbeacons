@@ -140,7 +140,7 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
 
     $scope.getAllDevices = function() {
 
-        $scope.checkLoggedInUser();
+        //$scope.checkLoggedInUser();
 
         var queriedUrl = $location.search();
 
@@ -162,6 +162,12 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         if ((beaconlist && beaconlist.length > 0) || selectedStore) {
             $scope.Initialized = false;
             apiService.deviceData(beaconlist, selectedStore).then(function(res) {
+                console.log(res);
+                if (!res.data.IsSuccess && res.data.message == 'Login Expired. Please reload and login again.'){
+                    alert('Login Expired.');
+                    $location.path("/");
+                    return;
+                }
                 var checkedlist = [];
                 for (var dd in $scope.deviceData) {
                     if ($scope.deviceData[dd].checked) {

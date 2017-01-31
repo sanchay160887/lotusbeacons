@@ -23,6 +23,7 @@ require('timers');
 var devicecron = require('node-cron');
 var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon';
 
+//if change here also change it to device history and devicedata controller
 var loginexpiredmessage = 'Login Expired. Please reload and login again.';
 
 //var mongourl = 'mongodb://localhost:27017/lotusbeacon';
@@ -737,6 +738,7 @@ app.post('/getdata', function(req, res) {
     BeaconID = req.body.BeaconID;
 
     if (!req.session.loggedInUser) {
+        console.log('login expired');
         var resObj = {};
         resObj.IsSuccess = false;
         resObj.message = loginexpiredmessage;

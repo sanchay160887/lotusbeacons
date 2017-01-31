@@ -424,6 +424,13 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             $scope.Initialized = false;
             apiService.deviceHistoryData(beaconlist, selectedStore, selectedDateFrom, selectedDateTo, currentPage, pageLimit, searchNameNumber).then(function(res) {
                 var checkedlist = [];
+
+                if (!res.data.IsSuccess && res.data.message == 'Login Expired. Please reload and login again.'){
+                    alert('Login Expired.');
+                    $location.path("/");
+                    return;
+                }
+
                 for (var dd in $scope.deviceData) {
                     if ($scope.deviceData[dd].checked) {
                         checkedlist.push($scope.deviceData[dd].UniqueKey);
