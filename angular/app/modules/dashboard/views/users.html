@@ -93,8 +93,7 @@ Date: 05 Jan 2016
             <span class="error" ng-show="userForm.UserID.$touched && userForm.UserID.$invalid && !userForm.UserID.$error.required">User ID must be lowercase and only alphabets</span>
             <br>
             <label>Password<span ng-show="button_name!='Update'">*</span></label>
-            <input class="form-control" type="password" id="Password" name="Password" ng-model="Password" 
-            ng-pattern="passwordregex" ng-required="button_name!='Update'" />
+            <input class="form-control" type="password" id="Password" name="Password" ng-model="Password" ng-pattern="passwordregex" ng-required="button_name!='Update'" />
             <span class="error" ng-show="userForm.Password.$touched && userForm.Password.$invalid && userForm.Password.$error.required">Password required</span>
             <span class="error" ng-show="userForm.Password.$touched && userForm.Password.$invalid && !userForm.Password.$error.required">Password should be atleast 8 characters long
             and should contain one number,one character and one special
@@ -168,6 +167,9 @@ Date: 05 Jan 2016
                     <input class="form-control" type='text' ng-model="u.StoreName" readonly />
                 </td>
                 <td ng-click="getUser(u._id)"><span class="btn btn-primary">Edit</span></td>
+            </tr>
+            <tr ng-show="!(userData | filter: (q.length > 1 ? {searchfield: q } : '')).length">
+                <td colspan="4">No Record Found</td>
             </tr>
         </table>
         <div>

@@ -234,7 +234,7 @@ Date: 05 Jan 2016
                 <div class="col-md-1" style="padding-left: 0px; padding-top: 20px;">
                     <label class="bcon-slect-title"></label>
                     <button type="button" class="btn btn-info" style="width: auto;" ng-click="loadDataWithSearch()"
-                        ng-disabled="searchNameNumber.length <= 1"><i class="fa fa-search"></i></button>
+                        ng-disabled="searchNameNumber.length == 1"><i class="fa fa-search"></i></button>
                 </div>
                 <div class="col-md-7"></div>
                 <div class="col-md-1">
@@ -530,7 +530,8 @@ Date: 05 Jan 2016
                             </th>
                         </thead>
                         <tbody>
-                                <tr dir-paginate="hdd in HistorySearchDetailsData | filter:(q.length > 1 ? q : '') | orderBy : O | itemsPerPage: searchHistoryPageSize" 
+                                <tr dir-paginate="hdd in HistorySearchDetailsData | 
+                                    filter:(q.length > 1 ? { search_keyword : q} : '') | orderBy : O | itemsPerPage: searchHistoryPageSize" 
                                 current-page="searchHistoryCurrentPage" 
                                 pagination-id="searchhistory">
                                     <td>{{ hdd.datetimestamp | date }}</td>
@@ -542,7 +543,8 @@ Date: 05 Jan 2016
                         <dir-pagination-controls boundary-links="true " on-page-change="pageChangeHandler(newPageNumber) " template-url="app/modules/dashboard/views/dirPagination.tpl.html "
                          pagination-id="searchhistory" current-page="searchHistoryCurrentPage"></dir-pagination-controls>
                     </div>
-                    <table ng-show="HistorySearchDetailsData.length <=0 ">
+                    <table ng-show="HistorySearchDetailsData.length <=0  || !(HistorySearchDetailsData | 
+                                    filter:(q.length > 1 ? { search_keyword : q} : '')).length">
                         <tbody>
                             <tr>
                                 <td colspan="4 ">
