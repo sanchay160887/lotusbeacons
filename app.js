@@ -81,7 +81,7 @@ io.on('receiveTime', function(data) {
     console.log('Data coming from client :: ');
 })
 
-/* General Supportive Function start -->> */
+/* General Supportive Function start */
 function isNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
