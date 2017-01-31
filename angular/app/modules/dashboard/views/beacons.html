@@ -46,7 +46,7 @@ Date: 05 Jan 2016
 <section class="content-blocks">
     <section class="content-header">
         <h1>
-            Register Beacons
+            Beacons
         </h1>
         <ol class="breadcrumb">
             <li><a ui-sref="app.dashboard"><i class="fa fa-dashboard"></i> Dashboard</a></li>
@@ -67,8 +67,7 @@ Date: 05 Jan 2016
         <input class="form-control" type="text" name="beacon_key" ng-model="Beacon_Key" ng-readonly="loggedInUser.UserType==2" />
         <br>
         <label>Select Store</label>
-        <select class="form-control col-md-4" ng-model="Beacon_Store" ng-show="loggedInUser.UserType!=2" 
-        ng-readonly="loggedInUser.UserType==2">
+        <select class="form-control col-md-4" ng-model="Beacon_Store" ng-show="loggedInUser.UserType!=2" ng-readonly="loggedInUser.UserType==2">
             <option ng-repeat="device in storeData | orderBy:StoreName" value="{{device._id}}">{{device.StoreName}}</option>
         </select>
         <input class="form-control" ng-show="loggedInUser.UserType==2" type="text" name="Beacon_Store_Name" ng-model="Beacon_Store_Name" ng-readonly="loggedInUser.UserType==2" />
@@ -85,6 +84,11 @@ Date: 05 Jan 2016
         <button class="btn btn-primary" ng-if="loggedInUser.UserType == 2" ng-click="resetControls()">Close</button>
     </section>
     <section class="content-body register_block_2">
+        <div class="row">
+            <div class="col-xs-5">
+                <h4>Registered Beacons</h4>
+            </div>
+        </div>
         <div class="wait_block" ng-if="!ListInitialized">
             <p class="wait_text">Please Wait...</p>
         </div>
