@@ -90,6 +90,7 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
         apiService.userData().then(function(res) {
             if (!res.data.IsSuccess) {
                 alert(res.data.message);
+                return;
             }
             $scope.userData = res.data.data;
             $scope.O = 'Name';

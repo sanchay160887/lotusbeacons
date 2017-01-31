@@ -57,6 +57,10 @@ dashboard.controller("BeaconsController", function($rootScope, $scope, apiServic
         $scope.resetControls();
         $scope.ListInitialized = false;
         apiService.beaconData().then(function(res) {
+            if (!res.data.IsSuccess) {
+                alert(res.data.message);
+                return;
+            }
             $scope.beaconData = res.data.data;
             for(var d in $scope.beaconData){
                 $scope.beaconData[d]._id = '';

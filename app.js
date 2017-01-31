@@ -22,6 +22,9 @@ querystring = require('querystring');
 require('timers');
 var devicecron = require('node-cron');
 var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon';
+
+var loginexpiredmessage = 'Login Expired. Please reload and login again.';
+
 //var mongourl = 'mongodb://localhost:27017/lotusbeacon';
 MongoClient.connect(mongourl, function(err, db) {
     assert.equal(null, err);
@@ -736,7 +739,7 @@ app.post('/getdata', function(req, res) {
     if (!req.session.loggedInUser) {
         var resObj = {};
         resObj.IsSuccess = false;
-        resObj.message = "Login Expired.";
+        resObj.message = loginexpiredmessage;
         resObj.data = '';
         res.send(resObj);
         return;
@@ -896,7 +899,7 @@ app.post('/getDeviceHistorydata', function(req, res) {
     if (!req.session.loggedInUser) {
         var resObj = {};
         resObj.IsSuccess = false;
-        resObj.message = "Login Expired.";
+        resObj.message = loginexpiredmessage;
         resObj.data = '';
         res.send(resObj);
         return;
@@ -1500,7 +1503,7 @@ app.post('/addbeacon', function(req, res) {
     var resObj = {};
     if (!req.session.loggedInUser) {
         resObj.IsSuccess = false;
-        resObj.message = "Login Expired.";
+        resObj.message = loginexpiredmessage;
         resObj.data = '';
         res.send(resObj);
         return;
@@ -1607,7 +1610,7 @@ app.post('/updatebeacon', function(req, res) {
     var resObj = {};
     if (!req.session.loggedInUser) {
         resObj.IsSuccess = false;
-        resObj.message = "Login Expired.";
+        resObj.message = loginexpiredmessage;
         resObj.data = '';
         res.send(resObj);
         return;
@@ -1697,7 +1700,7 @@ app.post('/deletebeacon', function(req, res) {
     var resObj = {};
     if (!req.session.loggedInUser) {
         resObj.IsSuccess = false;
-        resObj.message = "Login Expired.";
+        resObj.message = loginexpiredmessage;
         resObj.data = '';
         res.send(resObj);
         return;
@@ -1860,7 +1863,7 @@ app.post('/addstore', function(req, res) {
 
     if (!req.session.loggedInUser) {
         resObj.IsSuccess = false;
-        resObj.message = "Login Expired.";
+        resObj.message = loginexpiredmessage;
         resObj.data = '';
         res.send(resObj);
         return;
@@ -1946,7 +1949,7 @@ app.post('/updatestore', function(req, res) {
     var resObj = {};
     if (!req.session.loggedInUser) {
         resObj.IsSuccess = false;
-        resObj.message = "Login Expired.";
+        resObj.message = loginexpiredmessage;
         resObj.data = '';
         res.send(resObj);
         return;
@@ -2004,7 +2007,7 @@ app.post('/deletestore', function(req, res) {
     var resObj = {};
     if (!req.session.loggedInUser) {
         resObj.IsSuccess = false;
-        resObj.message = "Login Expired.";
+        resObj.message = loginexpiredmessage;
         resObj.data = '';
         res.send(resObj);
         return;
@@ -2407,7 +2410,7 @@ app.post('/getUserdata', function(req, res) {
     console.log(req.session);
     if (!req.session.loggedInUser) {
         resObj.IsSuccess = false;
-        resObj.message = "Login Expired.";
+        resObj.message = loginexpiredmessage;
         resObj.data = '';
         res.send(resObj);
         return;
@@ -2490,7 +2493,7 @@ app.post('/addUser', function(req, res) {
     var resObj = {};
     if (!req.session.loggedInUser) {
         resObj.IsSuccess = false;
-        resObj.message = "Login Expired.";
+        resObj.message = loginexpiredmessage;
         resObj.data = '';
         res.send(resObj);
         return;
@@ -2622,7 +2625,7 @@ app.post('/updateUser', function(req, res) {
     var resObj = {};
     if (!req.session.loggedInUser) {
         resObj.IsSuccess = false;
-        resObj.message = "Login Expired.";
+        resObj.message = loginexpiredmessage;
         resObj.data = '';
         res.send(resObj);
         return;
@@ -2765,7 +2768,7 @@ app.post('/deleteUser', function(req, res) {
     var resObj = {};
     if (!req.session.loggedInUser) {
         resObj.IsSuccess = false;
-        resObj.message = "Login Expired.";
+        resObj.message = loginexpiredmessage;
         resObj.data = '';
         res.send(resObj);
         return;

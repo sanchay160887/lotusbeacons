@@ -50,6 +50,10 @@ dashboard.controller("StoresController", function($rootScope, $scope, apiService
     $scope.getAllStores = function() {
         $scope.ListInitialized = false;
         apiService.storeData().then(function(res) {
+            if (!res.data.IsSuccess) {
+                alert(res.data.message);
+                return;
+            }
             $scope.resetControls();
             $scope.storeData = res.data.data;
             $scope.ListInitialized = true;
