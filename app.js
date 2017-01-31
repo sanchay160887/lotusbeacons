@@ -87,7 +87,6 @@ function isNumeric(n) {
 }
 
 function convertToMinutes(timeValue) {
-
     var a = timeValue.split(':'); // split it at the colons
     if (a.length < 3) {
         return 0;
