@@ -457,7 +457,7 @@ Date: 05 Jan 2016
                             </th>
                         </thead>
                         <tbody>
-                            <tr dir-paginate="hdd in HistoryDetailsData | filter:q | orderBy : O | itemsPerPage: deviceHistoryDetailPageSize " current-page="searchHistoryCurrentPage" pagination-id="devicehistory">
+                            <tr dir-paginate="hdd in HistoryDetailsData | filter:q | orderBy : O | itemsPerPage: deviceHistoryDetailPageSize " current-page="deviceHistoryDetailCurrentPage" pagination-id="devicehistory">
                                 <td>{{ hdd.Date | date }}</td>
                                 <td>{{ hdd.DateIn | date:'hh:mm a' }}</td>
                                 <td>{{ hdd.DateTo | date:'hh:mm a' }}</td>
@@ -468,7 +468,7 @@ Date: 05 Jan 2016
                     <div>
                         <nav aria-label="Page navigation">
                             <div class="text-center">
-                                <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler2(newPageNumber)" template-url="app/modules/dashboard/views/dirPagination.tpl.html" pagination-id="devicehistory" current-page="searchHistoryCurrentPage">
+                                <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler2(newPageNumber)" template-url="app/modules/dashboard/views/dirPagination.tpl.html" pagination-id="devicehistory" current-page="deviceHistoryDetailCurrentPage">
                                 </dir-pagination-controls>
                             </div>
                         </nav>
