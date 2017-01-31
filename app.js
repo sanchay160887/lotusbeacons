@@ -2448,7 +2448,7 @@ app.post('/getUserdata', function(req, res) {
                         for (var u in users) {
                             users[u].StoreName = storelist[ObjectId(users[u].AssignedStore)];
                             users[u].searchfield =
-                                users[u].Name + ' ' + users[u].Designation + ' ' + users[u].Email + ' ' + users[u].StoreName;
+                                users[u].Name + ' ' + users[u].UserID + ' ' + users[u].Email + ' ' + users[u].StoreName;
                             userlist.push(users[u]);
                         }
                         resObj.IsSuccess = true;
