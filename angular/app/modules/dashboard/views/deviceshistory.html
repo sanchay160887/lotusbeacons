@@ -228,7 +228,7 @@ Date: 05 Jan 2016
             <div class="form-group">
                 <div class="col-md-3" style="padding-right: 0;">
                     <label class="bcon-slect-title">Search</label>
-                    <input type="text" ng-model="searchNameNumber" class="form-control" placeholder="Enter Name / Number" ng-enter="searchNameNumber.length > 1 && loadDataWithSearch()">
+                    <input type="text" ng-model="searchNameNumber" class="form-control" placeholder="Enter Name / Number" ng-enter="searchNameNumber.length != 1 && loadDataWithSearch()">
                     <small style="color:purple;">Search only work with atleast 2 character</small>
                 </div>
                 <div class="col-md-1" style="padding-left: 0px; padding-top: 20px;">
