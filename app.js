@@ -100,7 +100,6 @@ function convertToMinutes(timeValue) {
 }
 
 function convertStringTimeToSeconds(timeValue) {
-
     var a = timeValue.split(':'); // split it at the colons
     if (a.length < 3) {
         return 0;
@@ -137,6 +136,7 @@ function convertSecondsToStringTime2(seconds) {
     if (seconds && !isNumeric(seconds)) {
         return 0;
     }
+
     seconds = parseInt(seconds);
     var timestring = '';
     hours = Math.floor(seconds / 3600);
