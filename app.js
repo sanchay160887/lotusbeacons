@@ -3067,12 +3067,11 @@ app.post('/getBeaconsLastNotifications', function(req, res) {
                                 for (var r in reqbody) {
                                     //reqbody[r].srno = cnt;
                                     reqbody[r].datetimestamp = new Date(reqbody[r].date_added).getTime();
-                                    if (reqbody[r].mobile_no) {
+                                    /*if (reqbody[r].mobile_no) {
                                         reqbody[r].mobile_no = reqbody[r].mobile_no.substr(2);
                                     } else {
                                         reqbody[r].mobile_no = '';
-                                    }
-
+                                    }*/
                                     notif_detail.push(reqbody[r]);
                                 }
                             }

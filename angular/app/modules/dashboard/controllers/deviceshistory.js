@@ -207,7 +207,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
 
     setTimeout(function() {
-        jQuery(".datepicker").datepicker({ 'dateFormat': 'dd/mm/yy', 'maxDate': '0' });
+        jQuery(".datepicker").datepicker({ 'dateFormat': 'dd/mm/yy', 'maxDate': '0', 'minDate':'-365' });
     }, 1000);
 
     var queriedUrl = $location.search();

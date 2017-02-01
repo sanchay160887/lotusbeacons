@@ -15,6 +15,7 @@ dashboard.controller("HomeController", ['$rootScope', '$scope', '$state', '$loca
         $scope.baseUrl = apiService.base_url;
         console.log($scope.baseUrl);
 
+
         if (!$rootScope.loggedInUser) {
             apiService.checkloginUser().then(function(res) {
                 if (typeof(res.data.user) != undefined && res.data.user) {
@@ -37,6 +38,13 @@ dashboard.controller("HomeController", ['$rootScope', '$scope', '$state', '$loca
 
         apiService.getStore_Users().then(function(res) {
             $scope.storelist = res.data;
+
+            $scope.labels = [];
+            $scope.data = [];
+            for(var sl in $scope.storelist){
+                $scope.labels.push($scope.storelist[sl].StoreName);
+                $scope.data.push($scope.storelist[sl].NoOfMobiles);
+            }
             $scope.StoreInitialized = true;
         });
 

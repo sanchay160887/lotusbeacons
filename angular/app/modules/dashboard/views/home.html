@@ -57,6 +57,18 @@ Date: 05 Jan 2016
                 <!-- /.box-body -->
             </div>
             <!-- /.box -->
+            <div class="box box-success">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Stores Users Analytics</h3>
+                </div>
+                <div class="box-body" ng-show="!StoreInitialized">
+                    Data Loading...
+                </div>
+                <div class="box-body" ng-show="StoreInitialized">
+                    <canvas id="pie" class="chart chart-pie" chart-data="data" chart-labels="labels" chart-options="options">
+                    </canvas>
+                </div>
+            </div>
         </div>
         <div class="col-md-8">
             <div class="box box-success">
@@ -103,13 +115,10 @@ Date: 05 Jan 2016
                                     {{ notif.notification_message }}
                                 </td>
                                 <td ng-if="!notif.notification_img || notif.notification_img == '#'">
-                                    <img src="/images/home/No_Image_Available.png" width="50" height="50" 
-                                    alt="Sorry! Image may be corrupted or deleted">
+                                    <img src="/images/home/No_Image_Available.png" width="50" height="50" alt="Sorry! Image may be corrupted or deleted">
                                 </td>
                                 <td ng-if="notif.notification_img && notif.notification_img != '#'">
-                                    <img src="{{ baseUrl + '/' + notif.notification_img}}" width="50" height="50" 
-                                    alt="Sorry! Image may be corrupted or deleted"
-                                    onerror="if (this.src != '/images/home/No_Image_Available.png') this.src = '/images/home/No_Image_Available.png';">
+                                    <img src="{{ baseUrl + '/' + notif.notification_img}}" width="50" height="50" alt="Sorry! Image may be corrupted or deleted" onerror="if (this.src != '/images/home/No_Image_Available.png') this.src = '/images/home/No_Image_Available.png';">
                                 </td>
                             </tr>
                             <tr ng-show="notiflist.length <= 0">
