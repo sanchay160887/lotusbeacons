@@ -273,7 +273,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
     $scope.loadValueInURL = function() {
         //$scope.pageLimit = 10;
-        $scope.searchNameNumber = '';
+        //$scope.searchNameNumber = '';
         $location.search({
             'store': $scope.selectedStore,
             'beacon': $scope.selectedBeacon,
@@ -312,6 +312,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.showData = function() {
         $scope.unselectRecords();
         $scope.selectAllRecord = false;
+        $scope.searchNameNumber = '';
         $scope.pageLimit = 10;
         $scope.currPage = 1;
         $scope.loadData();
