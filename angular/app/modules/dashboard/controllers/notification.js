@@ -152,6 +152,7 @@
      $scope.showData = function() {
          $scope.pageLimit = 10;
          $scope.currPage = 1;
+         $scope.searchNameNumber = '';
          $scope.loadData();
      }
 
