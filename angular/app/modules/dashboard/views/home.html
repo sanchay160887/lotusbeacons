@@ -1,4 +1,9 @@
-﻿<!--
+﻿<style type="text/css">
+.btn.btn-info.btn-circle {
+    border-radius: 25px;
+}
+</style>
+<!--
 Author: Ranjithprabhu K
 Page Description: Dashboard Home page
 Date: 05 Jan 2016
@@ -35,6 +40,13 @@ Date: 05 Jan 2016
         </div>
     </div> -->
     <!-- /.row -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="pull-right">
+                <button type="button" class="btn btn-info btn-circle" title="Refresh" ng-click="refreshDashboard()"><i class="fa fa-refresh"></i></button>
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-4">
             <div class="box box-success">
@@ -126,6 +138,9 @@ Date: 05 Jan 2016
                             </tr>
                         </tbody>
                     </table>
+                    <div class="text-center">
+                        <a class="btn btn-info" ui-sref="app.notifications">View More</a>
+                    </div>
                 </div>
                 <!-- /.box-body -->
             </div>

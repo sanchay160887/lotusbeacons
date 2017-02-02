@@ -1,0 +1,305 @@
+<style>
+.content-device_block {
+    border: 1px solid grey;
+    margin: 2% auto;
+    min-height: 300px;
+    padding: 2% 0;
+    width: 98%;
+}
+
+.block_title_1 {
+    border-bottom: 1px solid;
+    font-size: 15px;
+    margin-bottom: 0;
+    padding: 3px 0;
+    text-align: center;
+}
+
+.block_title_2 {
+    border-bottom: 1px solid;
+    font-size: 12px;
+    margin-bottom: 0;
+    padding: 3px 0;
+    min-height: 40px;
+    word-wrap: break-word;
+}
+
+.block_title_3 {
+    border-bottom: 1px solid;
+    font-size: 16px;
+    margin-bottom: 0;
+    padding: 3px 0;
+    min-height: 40px;
+}
+
+.bcon-slect-title {
+    margin-bottom: 0;
+    /* padding: 7%   0;*/
+}
+
+.error_text {
+    background-color: #d9edf7;
+    border-radius: 3px;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 8px 10px;
+    font-style: italic;
+    border: 1px solid #bce8f1;
+}
+
+.wait_text {
+    background-color: #d9edf7;
+    border-radius: 3px;
+    color: #31708f;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 8px 10px;
+    font-style: italic;
+    border: 1px solid #bce8f1;
+}
+
+.bcon_selection_block_left {
+    border-radius: 3px;
+    /*width: 80%;*/
+    /*display: inline-block;*/
+    vertical-align: top;
+}
+
+.bcon_selection_block_right {
+    border-radius: 3px;
+    width: 100%;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.no-pad {
+    padding: 0 2px;
+}
+
+.bcon_selection_section {
+    padding: 0 0 24px 12px;
+}
+
+.push_btnn_block {
+    text-align: right;
+}
+
+.pad_box {
+    padding-top: 20px;
+}
+
+.btn-info {
+    width: 100%;
+}
+
+.btn.btn-info.btn-auto-width {
+    width: auto;
+}
+
+.btn_set {
+    margin-top: 20px;
+    width: 200px !important;
+}
+
+.error_text {
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    color: #a94442;
+}
+
+#graphic-message .modal-footer {
+    text-align: center;
+}
+
+#graphic-message .modal-header {
+    background: #2E96F2;
+    color: #fff;
+}
+
+#graphic-message .modal-title {
+    font-weight: bold;
+}
+
+.input-icon.right textarea,
+.input-icon.right:input[type="text"] {
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    resize: none;
+}
+
+#graphic-message .modal-body > small {
+    font-weight: bold;
+    font-size: 14px;
+    color: #1D8DF1;
+}
+
+#graphic-message .close {
+    color: #fff;
+    font-size: 34px;
+    opacity: 1;
+}
+
+a.disabled {
+    background-color: #ffffff;
+    border-color: #dddddd;
+    color: #999999;
+    cursor: not-allowed;
+}
+
+
+/*#uploadForm > input {
+    margin-bottom: 10px;
+}*/
+</style>
+<!--
+Author: Ranjithprabhu K
+Page Description: Dashboard Home page
+Date: 05 Jan 2016
+-->
+<!-- Content Header (Page header) -->
+<div ng-show="!connection" class="alert alert-danger">You're offline now. Please check your internet connection</div>
+<div ng-show="connection_msg" class="alert alert-success">Re-connected successfully</div>
+<section class="content-header">
+    <h1> Notifications </h1>
+    <ol class="breadcrumb">
+        <li><a ui-sref="app.dashboard"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li class="active">Notifications</li>
+    </ol>
+</section>
+<div class="content-device_block">
+    <div class="container-fluid">
+        <div class="wait_block" ng-if="InvalidInputs">
+            <p class="error_text" ng-show="!InvalidDateInputs">Please select Store and Date for getting list of device history.</p>
+            <p class="error_text" ng-show="InvalidDateInputs">End date must be greater or equal to start date.</p>
+        </div>
+        <div class="wait_block" ng-if="!Initialized">
+            <p class="wait_text">Please Wait...</p>
+        </div>
+        <div class="bcon_selection_section">
+            <div class="bcon_selection_block_left">
+                <div class="bcon_selection row">
+                    <div class="bcon_selection_left_1 col-md-6" style="padding-left: 0px;">
+                        <div class="form-group">
+                            <div class="col-md-5 no-pad">
+                                <label class="bcon-slect-title">Date From</label>
+                                <input type="text" ng-model="selectedDateFrom" id="datepickerFrom" class="datepicker form-control" readonly="readonly">
+                            </div>
+                            <div class="col-md-5 no-pad">
+                                <label class="bcon-slect-title">Date To</label>
+                                <input type="text" ng-model="selectedDateTo" id="datepickerTo" class="datepicker form-control" readonly="readonly">
+                            </div>
+                            <div class="col-md-2 no-pad">
+                                <div class="pad_box">
+                                    <button type="button" class="btn btn-info" ng-click="showData()">Show</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-3" style="padding-right: 0;">
+                    <label class="bcon-slect-title">Search</label>
+                    <input type="text" ng-model="searchNameNumber" class="form-control" placeholder="Enter Name / Number / Message" ng-enter="searchNameNumber.length != 1 && loadDataWithSearch()">
+                    <small style="color:purple;">Please enter atleast 2 characters to get results</small>
+                </div>
+                <div class="col-md-1" style="padding-left: 0px; padding-top: 20px;">
+                    <label class="bcon-slect-title"></label>
+                    <button type="button" class="btn btn-info" style="width: auto;" ng-click="loadDataWithSearch()" ng-disabled="searchNameNumber.length == 1"><i class="fa fa-search"></i></button>
+                </div>
+                <div class="col-md-7"></div>
+                <div class="col-md-1">
+                    <label class="bcon-slect-title"><small>Records/Page</small></label>
+                    <select ng-model="pageLimit" class="form-control">
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="30">30</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+            </div>
+        </div>
+        <div class="row">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                            <span ng-if="notifDataCount == 1">1 Record</span>
+                            <span ng-if="notifDataCount > 1">{{ notifDataCount }} Records</span>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>
+                            Time
+                        </th>
+                        <th>
+                            Mobile Number
+                        </th>
+                        <th>
+                            Title
+                        </th>
+                        <th>
+                            Description
+                        </th>
+                        <th>
+                            Image
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="notif in notifData | orderBy:-notification_date " ng-if="notifData.length > 0">
+                        <td>
+                            {{ notif.notification_date | date:'dd/MM/yyyy hh:mm a' }}
+                        </td>
+                        <td>
+                            {{ notif.mobile_no }}
+                        </td>
+                        <td>
+                            {{ notif.heading }}
+                        </td>
+                        <td>
+                            {{ notif.notification_message }}
+                        </td>
+                        <td ng-if="!notif.notification_img || notif.notification_img == '#'">
+                            <img src="/images/home/No_Image_Available.png" width="50" height="50" alt="Sorry! Image may be corrupted or deleted">
+                        </td>
+                        <td ng-if="notif.notification_img && notif.notification_img != '#'">
+                            <img src="{{ baseUrl + '/' + notif.notification_img}}" width="50" height="50" alt="Sorry! Image may be corrupted or deleted" onerror="if (this.src != '/images/home/No_Image_Available.png') this.src = '/images/home/No_Image_Available.png';">
+                        </td>
+                    </tr>
+                    <tr ng-if="!(notifData.length > 0)">
+                        <td colspan="6">
+                            No Record Found
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="col-md-12 text-right">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li ng-if="notifDataPageCount > 1">
+                            <a ng-click="(currPage > 1 && loadPage(1) || true)" aria-label="First" ng-class="{ disabled : currPage <= 1 }"><span aria-hidden="true">&laquo;</span></a>
+                        </li>
+                        <li ng-if="notifDataPageCount > 1">
+                            <a ng-click="(currPage > 1 && loadPage(currPage - 1) || true)" aria-label="Previous" ng-class="{ disabled : currPage <= 1 }"><span aria-hidden="true">&lsaquo;</span></a>
+                        </li>
+                        <li ng-repeat="n in range(1,notifDataPageCount)" ng-if="notifDataPageCount > 1">
+                            <a ng-click="loadPage(n)" ng-if="n!=currPage">{{n}}</a>
+                            <span ng-if="n==currPage">{{n}}</span>
+                        </li>
+                        <li ng-if="notifDataPageCount > 1">
+                            <a ng-click="(currPage == notifDataPageCount && true || loadPage(currPage + 1))" ng-class="{ disabled : currPage == notifDataPageCount }" aria-label="Next"><span aria-hidden="true">&rsaquo;</span></a>
+                        </li>
+                        <li ng-if="notifDataPageCount > 1">
+                            <a ng-click="(currPage == notifDataPageCount && true || lastPage())" ng-class="{ disabled : currPage == notifDataPageCount }" aria-label="Last"><span aria-hidden="true">&raquo;</span></a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>

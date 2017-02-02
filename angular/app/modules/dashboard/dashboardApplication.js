@@ -206,4 +206,14 @@ dashboard.config(["$stateProvider", function($stateProvider) {
         }
     });
 
+    $stateProvider.state('app.notifications', {
+        url: '/notifications',
+        templateUrl: 'app/modules/dashboard/views/notification.html',
+        controller: 'NotificationController',
+        controllerAs: 'vm',
+        data: {
+            pageTitle: 'Notifications List'
+        }
+    });
+
 }]);

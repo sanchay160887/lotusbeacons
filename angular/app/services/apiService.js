@@ -428,6 +428,21 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
     }
     apiService.getLastNotification = getLastNotification;
 
+    var getAllNotifications = function(selectedDateFrom, selectedDateTo, currpage, limit, search) {
+        return $http({
+            method: "post",
+            url: "/getAllNotifications",
+            data: {
+                'DateFrom': selectedDateFrom,
+                'DateTo': selectedDateTo,
+                'PageNo': currpage,
+                'RecordsPerPage': limit,
+                'Search': search
+            }
+        });
+    }
+    apiService.getAllNotifications = getAllNotifications;
+
     /*Home end*/
 
     var sendNotification_plain = function(gcmTokens, title, description) {

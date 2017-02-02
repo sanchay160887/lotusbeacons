@@ -11,7 +11,7 @@
 dashboard.controller("HomeController", ['$rootScope', '$scope', '$state', '$location', 'dashboardService', 'Flash', 'apiService',
     function($rootScope, $scope, $state, $location, dashboardService, Flash, apiService) {
         var vm = this;
-        
+
         $scope.baseUrl = apiService.base_url;
         console.log($scope.baseUrl);
 
@@ -33,29 +33,44 @@ dashboard.controller("HomeController", ['$rootScope', '$scope', '$state', '$loca
         $scope.StoreInitialized = false;
         $scope.NotifInitialized = false;
 
-
         $scope.storelist = {};
 
-        apiService.getStore_Users().then(function(res) {
-            $scope.storelist = res.data;
+        $scope.getStoresUsers = function() {
+            $scope.StoreInitialized = false;
+            apiService.getStore_Users().then(function(res) {
+                $scope.storelist = res.data;
 
-            $scope.labels = [];
-            $scope.data = [];
-            for(var sl in $scope.storelist){
-                $scope.labels.push($scope.storelist[sl].StoreName);
-                $scope.data.push($scope.storelist[sl].NoOfMobiles);
-            }
-            $scope.StoreInitialized = true;
-        });
+                $scope.labels = [];
+                $scope.data = [];
+                for (var sl in $scope.storelist) {
+                    $scope.labels.push($scope.storelist[sl].StoreName);
+                    $scope.data.push($scope.storelist[sl].NoOfMobiles);
+                }
+                $scope.StoreInitialized = true;
+            });
+
+        }
+
+        $scope.getStoresUsers()
 
         $scope.notiflist = {}
 
-        apiService.getLastNotification().then(function(res) {
-            $scope.notiflist = res.data;
-            $scope.notifCurrentPage = 1;
-            $scope.notifPageSize = 10;
-            $scope.NotifInitialized = true;
-        });
+        $scope.getLastNotifications = function() {
+            $scope.NotifInitialized = false;
+            apiService.getLastNotification().then(function(res) {
+                $scope.notiflist = res.data;
+                $scope.notifCurrentPage = 1;
+                $scope.notifPageSize = 10;
+                $scope.NotifInitialized = true;
+            });
+        }
+
+        $scope.getLastNotifications();
+
+        $scope.refreshDashboard = function(){
+            $scope.getStoresUsers()
+            $scope.getLastNotifications();
+        }
 
         vm.showDetails = true;
         vm.home = {};

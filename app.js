@@ -3088,3 +3088,78 @@ app.post('/getBeaconsLastNotifications', function(req, res) {
 
     });
 });
+
+
+app.post('/getAllNotifications', function(req, res) {
+    fromDate = 0;
+    toDate = 0;
+    seldate = new Date(req.body.DateFrom);
+    fromDate = seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate();
+    seldate = new Date(req.body.DateTo);
+    toDate = seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate();
+
+    PageNo = 1;
+    if (typeof(req.body.PageNo) != 'undefined' && req.body.PageNo) {
+        PageNo = req.body.PageNo;
+    }
+
+    RecordsPerPage = 15;
+    if (typeof(req.body.RecordsPerPage) != 'undefined' && req.body.RecordsPerPage) {
+        RecordsPerPage = parseInt(req.body.RecordsPerPage);
+    }
+
+    Search = '';
+    if (typeof(req.body.Search) != 'undefined' && req.body.Search) {
+        Search = req.body.Search;
+    }
+
+    var resObjVal = {};
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        async.waterfall([
+            function(callback) {
+                var request = require('request');
+
+                request.post('http://lampdemos.com/lotus15/v2/user/get_all_notifications', {
+                        form: {
+                            'from': fromDate,
+                            'to': toDate,
+                            'pageno': PageNo,
+                            'recordlimit' : RecordsPerPage,
+                            'Search' : Search
+                        }
+                    },
+                    function(res2, err, body) {
+                        notifications = [];
+                        var reqbody = parse_JSON(body);
+                        if (reqbody) {
+                            resObjVal.NoOfRecords = reqbody.data.NoOfRecords;
+                            reqbody = reqbody.data.Records;
+                            if (reqbody) {
+                                var sa = [];
+                                for (var r in reqbody) {
+                                    reqbody[r].datetimestamp = new Date(reqbody[r].notification_date).getTime();
+                                    notifications.push(reqbody[r]);
+                                }
+                            } else {
+                                resObjVal.NoOfRecords = 0;
+                            }
+                        }
+                        
+                        resObjVal.Records = notifications;
+
+                        res.send(resObjVal);
+                        callback(null, notifications);
+                    })
+            },
+            function(notifications, callback) {
+                db.close();
+            }
+        ]);
+
+    });
+});
