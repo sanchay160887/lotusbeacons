@@ -2412,7 +2412,6 @@ app.post('/getdeviceidentity', function(req, res) {
     res.send();
 });
 
-
 /*User Services start*/
 app.post('/getUserdata', function(req, res) {
     var resObj = {};
@@ -3096,7 +3095,6 @@ app.post('/getBeaconsLastNotifications', function(req, res) {
 
     });
 });
-
 
 app.post('/getAllNotifications', function(req, res) {
     fromDate = 0;
