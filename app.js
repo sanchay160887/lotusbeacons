@@ -2906,8 +2906,6 @@ app.post('/userLogin', function(req, res) {
                         var dbpassword = users[0].Password;
                         users[0].Password = "";
                         userRecord = users[0];
-                        /*console.log('DB Pass : ' + dbpassword);
-                        console.log('User Pass ' + req.body.password);*/
                         var isPasswordMatch = passwordHash.verify(req.body.password, dbpassword);
                         //isPasswordMatch = true;
                         req.session.loggedInUser = users[0];
