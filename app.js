@@ -74,8 +74,8 @@ var server = app.listen(process.env.PORT || 3000, function() {
 
 var notificationImagesdirectory = './angular/images/notificationuploads/';
 
-if (!fs.existsSync(notifimagesdir)){
-    fs.mkdirSync(notifimagesdir);
+if (!fs.existsSync(notificationImagesdirectory)){
+    fs.mkdirSync(notificationImagesdirectory);
 }
 
 // Socket.io server listens to our app
@@ -2355,7 +2355,8 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
 var multer = require('multer');
 var storage = multer.diskStorage({
     destination: function(req, file, callback) {
-        callback(null, './angular/images/notificationuploads/');
+        //callback(null, './angular/images/notificationuploads/');
+        callback(null, notificationImagesdirectory);        
     },
     filename: function(req, file, callback) {
         extension = file.originalname.split('.')[1];
