@@ -2912,14 +2912,6 @@ app.post('/userLogin', function(req, res) {
                         //isPasswordMatch = true;
                         req.session.loggedInUser = users[0];
                         callback(null, isPasswordMatch);
-                        /*bcrypt.compare(req.body.password, dbpassword, function(err, isPasswordMatch) {
-                            //isPasswordMatch = true;
-                            if (err)
-                                return false;
-                            callback(null, isPasswordMatch);
-                            return isPasswordMatch;
-                        });*/
-
                     } else {
                         resObj.message = "Invalid Username."
                         resObj.isSuccess = false;
