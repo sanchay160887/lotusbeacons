@@ -130,9 +130,8 @@
 
      setTimeout(function() {
          jQuery(".datepicker").datepicker({ 'dateFormat': 'dd/mm/yy', 'maxDate': '0', 'minDate': '-365' });
-         $scope.Initialized = true;
+         //$scope.Initialized = true;
      }, 1000);
-
 
      $scope.$watchCollection('[pageLimit]', function() {
          if ($scope.Initialized) {
@@ -155,7 +154,6 @@
          $scope.currPage = 1;
          $scope.loadData();
      }
-
 
      $scope.range = function(min, max, step) {
          step = step || 1;
@@ -229,5 +227,7 @@
          });
 
      }
+
+     $scope.showData();
 
  })
