@@ -71,6 +71,13 @@ var server = app.listen(process.env.PORT || 3000, function() {
     console.log("App started with Mongodb");
 });
 
+
+var notificationImagesdirectory = './angular/images/notificationuploads/';
+
+if (!fs.existsSync(notifimagesdir)){
+    fs.mkdirSync(notifimagesdir);
+}
+
 // Socket.io server listens to our app
 var io = require('socket.io').listen(server);
 
