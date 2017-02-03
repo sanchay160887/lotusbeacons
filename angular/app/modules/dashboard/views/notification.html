@@ -201,16 +201,17 @@ Date: 05 Jan 2016
         </div>
         <div class="row">
             <div class="form-group">
-                <div class="col-md-3" style="padding-right: 0;">
-                    <label class="bcon-slect-title">Search</label>
+                <div class="col-md-4" style="padding-right: 0;">
+                    <!-- <label class="bcon-slect-title">Search</label> -->
+                    <label for="search">Search: <small style="color:purple;">(Please enter atleast 2 characters to get results)</small></label>
                     <input type="text" id="searchNameNumber" ng-model="searchNameNumber" class="form-control" placeholder="Enter Name / Number / Message" ng-enter="searchNameNumber.length != 1 && loadDataWithSearch()">
-                    <small style="color:purple;">Please enter atleast 2 characters to get results</small>
+                    <!-- <small style="color:purple;">Please enter atleast 2 characters to get results</small> -->
                 </div>
-                <div class="col-md-1" style="padding-left: 0px; padding-top: 20px;">
+                <div class="col-md-1" style="padding-left: 0px; padding-top: 25px;">
                     <label class="bcon-slect-title"></label>
                     <button type="button" class="btn btn-info" style="width: auto;" ng-click="loadDataWithSearch()" ng-disabled="searchNameNumber.length == 1"><i class="fa fa-search"></i></button>
                 </div>
-                <div class="col-md-7"></div>
+                <div class="col-md-6"></div>
                 <div class="col-md-1">
                     <label class="bcon-slect-title"><small>Records/Page</small></label>
                     <select ng-model="pageLimit" class="form-control">

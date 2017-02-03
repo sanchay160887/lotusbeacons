@@ -96,12 +96,13 @@ Date: 05 Jan 2016
             <p class="wait_text">Please Wait...</p>
         </div>
         <div class="row">
-            <div class="col-xs-5">
-                <label for="search">Search:</label>
+            <div class="col-xs-7">
+                <!-- <label for="search">Search:</label> -->
+                <label for="search">Search: <small style="color:purple;">(Please enter atleast 2 characters to get results)</small></label>
                 <input ng-model="q" id="search" class="form-control" placeholder="Filter text" ng-change="beaconCurrentPage=1">
-                <small style="color:purple;">Please enter atleast 2 characters to get results</small>
+                <!-- <small style="color:purple;">Please enter atleast 2 characters to get results</small> -->
             </div>
-            <div class="col-xs-4">
+            <div class="col-xs-3">
                 <label for="search">Records/Page:</label>
                 <select ng-model="beaconPageSize" class="form-control">
                     <option value="10">10</option>
@@ -109,8 +110,11 @@ Date: 05 Jan 2016
                     <option value="30">30</option>
                 </select>
             </div>
-            <div class="col-xs-3 pull-right">
-                <label style="padding-top: 25%;">{{ (beaconData | filter: (q.length > 1 ? q : '')).length || 0 }} Record(s)</label>
+        </div>
+        <div class="row">
+            <div class="col-xs-2" style="margin-top: 10px;">
+                <small style="margin-top: 10px;" ng-show="(beaconData | filter: (q.length > 1 ? q : '')).length > 1"><b>{{ (beaconData | filter: (q.length > 1 ? q : '')).length || 0 }} Records</b></small>
+                <small style="margin-top: 10px;" ng-show="(beaconData | filter: (q.length > 1 ? q : '')).length == 1"><b>1 Record</b></small>
             </div>
         </div>
         <!-- Main content -->

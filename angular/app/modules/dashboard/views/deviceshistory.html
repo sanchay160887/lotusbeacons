@@ -226,16 +226,17 @@ Date: 05 Jan 2016
         </div>
         <div class="row">
             <div class="form-group">
-                <div class="col-md-3" style="padding-right: 0;">
-                    <label class="bcon-slect-title">Search</label>
+                <div class="col-md-4" style="padding-right: 0;">
+                    <!-- <label class="bcon-slect-title">Search</label> -->
+                    <label for="search">Search: <small style="color:purple;">(Please enter atleast 2 characters to get results)</small></label>
                     <input type="text" ng-model="searchNameNumber" id="searchNameNumber" class="form-control" placeholder="Enter Name / Number" ng-enter="searchNameNumber.length != 1 && loadDataWithSearch()">
-                    <small style="color:purple;">Please enter atleast 2 characters to get results</small>
+                    <!-- <small style="color:purple;">Please enter atleast 2 characters to get results</small> -->
                 </div>
-                <div class="col-md-1" style="padding-left: 0px; padding-top: 20px;">
+                <div class="col-md-1" style="padding-left: 0px; padding-top: 25px;">
                     <label class="bcon-slect-title"></label>
                     <button type="button" class="btn btn-info" style="width: auto;" ng-click="loadDataWithSearch()" ng-disabled="searchNameNumber.length == 1"><i class="fa fa-search"></i></button>
                 </div>
-                <div class="col-md-7"></div>
+                <div class="col-md-6"></div>
                 <div class="col-md-1">
                     <label class="bcon-slect-title"><small>Records/Page</small></label>
                     <select ng-model="pageLimit" class="form-control">
@@ -438,8 +439,11 @@ Date: 05 Jan 2016
                             <option value="30">30</option>
                         </select>
                     </div>
-                    <div class="col-xs-3 pull-right">
-                        <label style="padding-top: 30%;">{{ (HistoryDetailsData.length) || 0 }} Record(s)</label>
+                </div>
+                <div class="row">
+                    <div class="col-xs-2" style="margin-top: 10px;">
+                        <small style="margin-top: 10px;" ng-show="HistoryDetailsData.length > 1"><b>{{ (HistoryDetailsData.length) || 0 }} Records</b></small>
+                        <small style="margin-top: 10px;" ng-show="HistoryDetailsData.length == 1"><b>1 Record</b></small>
                     </div>
                 </div>
                 <div class="form-group clearfix">
@@ -505,10 +509,10 @@ Date: 05 Jan 2016
             </div>
             <div class="modal-body" ng-show="!InitializingHistoryDetails">
                 <div class="row" ng-show="HistorySearchDetailsData.length > 0">
-                    <div class="col-xs-6">
-                        <label for="search">Search:</label>
+                    <div class="col-xs-7">
+                        <!-- <label for="search">Search:</label> -->
+                        <label for="search">Search: <small style="color:purple;">(Please enter atleast 2 characters to get results)</small></label>
                         <input ng-model="q" id="search" ng-change="searchHistoryCurrentPage = 1" class="form-control" placeholder="Filter text">
-                        <small style="color:purple;">Please enter atleast 2 characters to get results</small>
                     </div>
                     <div class="col-xs-3">
                         <label for="search">Records/Page:</label>
@@ -518,8 +522,11 @@ Date: 05 Jan 2016
                             <option value="30">30</option>
                         </select>
                     </div>
-                    <div class="col-xs-3">
-                        <label style="padding-top: 30%;">{{ ((HistorySearchDetailsData | filter:(q.length > 1 ? { search_keyword : q} : '')).length) || 0 }} Record(s)</label>
+                </div>
+                <div class="row">
+                    <div class="col-xs-2" style="margin-top: 10px;">
+                        <small style="margin-top: 10px;" ng-show="(HistorySearchDetailsData | filter:(q.length > 1 ? { search_keyword : q} : '')).length > 1"><b>{{ ((HistorySearchDetailsData | filter:(q.length > 1 ? { search_keyword : q} : '')).length) || 0 }} Records</b></small>
+                        <small style="margin-top: 10px;" ng-show="(HistorySearchDetailsData | filter:(q.length > 1 ? { search_keyword : q} : '')).length == 1"><b>1 Record</b></small>
                     </div>
                 </div>
                 <div class="form-group clearfix">

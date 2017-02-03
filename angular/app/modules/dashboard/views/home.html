@@ -68,20 +68,21 @@ Date: 05 Jan 2016
                     </div>
                 </div>
                 <!-- /.box-body -->
+                <div class="box-body" ng-show="StoreInitialized">
+                    <canvas id="pie" class="chart chart-pie" chart-data="data" chart-labels="labels" chart-options="options">
+                    </canvas>
+                </div>
             </div>
             <!-- /.box -->
-            <div class="box box-success" ng-show="data.length > 1">
+            <!-- <div class="box box-success" ng-show="data.length > 1">
                 <div class="box-header with-border">
                     <h3 class="box-title">Stores Users Analytics</h3>
                 </div>
                 <div class="box-body" ng-show="!StoreInitialized">
                     Data Loading...
                 </div>
-                <div class="box-body" ng-show="StoreInitialized">
-                    <canvas id="pie" class="chart chart-pie" chart-data="data" chart-labels="labels" chart-options="options">
-                    </canvas>
-                </div>
-            </div>
+                
+            </div> -->
         </div>
         <div class="col-md-8">
             <div class="box box-success">
@@ -139,7 +140,7 @@ Date: 05 Jan 2016
                             </tr>
                         </tbody>
                     </table>
-                    <div class="text-center">
+                    <div class="text-center" ng-show="notiflist.length > 0">
                         <a class="btn btn-info" ui-sref="app.notifications">View More</a>
                     </div>
                 </div>
