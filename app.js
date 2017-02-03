@@ -74,7 +74,7 @@ var server = app.listen(process.env.PORT || 3000, function() {
 
 var notificationImagesdirectory = './angular/images/notificationuploads/';
 
-if (!fs.existsSync(notificationImagesdirectory)){
+if (!fs.existsSync(notificationImagesdirectory)) {
     fs.mkdirSync(notificationImagesdirectory);
 }
 
@@ -988,12 +988,13 @@ app.post('/getDeviceHistorydata', function(req, res) {
                     callback(null, beaconslist);
                 });
             },
+            /* Total record count now not needed. Its done beneath
             function(beaconlist, callback) {
                 console.log('======BL=====');
                 console.log(beaconlist);
                 console.log('=============');
 
-                if (SearchNameNumber) {
+                if (SearchNameNumber || 1 == 1) {
                     resObjVal.NoOfRecords = 1;
                     callback(null, beaconlist);
                     return 0;
@@ -1030,7 +1031,7 @@ app.post('/getDeviceHistorydata', function(req, res) {
                     resObjVal.NoOfRecords = 0;
                     callback(null, []);
                 }
-            },
+            },*/
             function(beaconlist, callback) {
                 //var collection = db.collection('test_device_history');
                 var collection = db.collection('device_history');
@@ -1059,9 +1060,10 @@ app.post('/getDeviceHistorydata', function(req, res) {
                             }
                         }]
                     )
-                    if (!SearchNameNumber) {
+
+                    /*if (!SearchNameNumber || 1 != 1) { removed because of record inconsistency during pagination
                         reccollection = reccollection.skip(recordsToSkip).limit(RecordsPerPage);
-                    }
+                    }*/
 
                     reccollection.toArray(function(err, devices) {
                         for (var dvc in devices) {
@@ -1136,6 +1138,10 @@ app.post('/getDeviceHistorydata', function(req, res) {
                             }
 
 
+                            /*if (SearchNameNumber || 1 == 1) {
+                                removed due to record inconsistency on pagination
+                                */ 
+
                             if (SearchNameNumber) {
                                 var i;
                                 i = devicelist.length;
@@ -1149,24 +1155,25 @@ app.post('/getDeviceHistorydata', function(req, res) {
                                 }
 
                                 console.log(devicelist);
-
-                                resObjVal.NoOfRecords = devicelist.length;
-
-                                var finaldevicelist = [];
-
-                                var count = 1;
-                                for (var idx in devicelist) {
-                                    if (count > recordsToSkip) {
-                                        finaldevicelist.push(devicelist[idx]);
-                                    }
-                                    count = count + 1;
-
-                                    if (finaldevicelist.length >= RecordsPerPage) {
-                                        break;
-                                    }
-                                }
-                                devicelist = finaldevicelist;
                             }
+
+                            resObjVal.NoOfRecords = devicelist.length;
+
+                            var finaldevicelist = [];
+
+                            var count = 1;
+                            for (var idx in devicelist) {
+                                if (count > recordsToSkip) {
+                                    finaldevicelist.push(devicelist[idx]);
+                                }
+                                count = count + 1;
+
+                                if (finaldevicelist.length >= RecordsPerPage) {
+                                    break;
+                                }
+                            }
+                            devicelist = finaldevicelist;
+                            /*}*/
                         }
 
                         //console.log(devicelist);
@@ -2356,7 +2363,7 @@ var multer = require('multer');
 var storage = multer.diskStorage({
     destination: function(req, file, callback) {
         //callback(null, './angular/images/notificationuploads/');
-        callback(null, notificationImagesdirectory);        
+        callback(null, notificationImagesdirectory);
     },
     filename: function(req, file, callback) {
         extension = file.originalname.split('.')[1];
@@ -3125,8 +3132,8 @@ app.post('/getAllNotifications', function(req, res) {
                             'from': fromDate,
                             'to': toDate,
                             'pageno': PageNo,
-                            'recordlimit' : RecordsPerPage,
-                            'Search' : Search
+                            'recordlimit': RecordsPerPage,
+                            'Search': Search
                         }
                     },
                     function(res2, err, body) {
@@ -3145,7 +3152,7 @@ app.post('/getAllNotifications', function(req, res) {
                                 resObjVal.NoOfRecords = 0;
                             }
                         }
-                        
+
                         resObjVal.Records = notifications;
 
                         res.send(resObjVal);
