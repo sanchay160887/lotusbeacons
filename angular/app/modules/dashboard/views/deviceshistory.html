@@ -228,13 +228,12 @@ Date: 05 Jan 2016
             <div class="form-group">
                 <div class="col-md-3" style="padding-right: 0;">
                     <label class="bcon-slect-title">Search</label>
-                    <input type="text" ng-model="searchNameNumber" class="form-control" placeholder="Enter Name / Number" ng-enter="searchNameNumber.length != 1 && loadDataWithSearch()">
+                    <input type="text" ng-model="searchNameNumber" id="searchNameNumber" class="form-control" placeholder="Enter Name / Number" ng-enter="searchNameNumber.length != 1 && loadDataWithSearch()">
                     <small style="color:purple;">Please enter atleast 2 characters to get results</small>
                 </div>
                 <div class="col-md-1" style="padding-left: 0px; padding-top: 20px;">
                     <label class="bcon-slect-title"></label>
-                    <button type="button" class="btn btn-info" style="width: auto;" ng-click="loadDataWithSearch()"
-                        ng-disabled="searchNameNumber.length == 1"><i class="fa fa-search"></i></button>
+                    <button type="button" class="btn btn-info" style="width: auto;" ng-click="loadDataWithSearch()" ng-disabled="searchNameNumber.length == 1"><i class="fa fa-search"></i></button>
                 </div>
                 <div class="col-md-7"></div>
                 <div class="col-md-1">
@@ -439,6 +438,9 @@ Date: 05 Jan 2016
                             <option value="30">30</option>
                         </select>
                     </div>
+                    <div class="col-xs-3 pull-right">
+                        <label style="padding-top: 30%;">{{ (HistoryDetailsData.length) || 0 }} Record(s)</label>
+                    </div>
                 </div>
                 <div class="form-group clearfix">
                     <table class="table table-striped" ng-show="HistoryDetailsData.length > 0">
@@ -503,18 +505,21 @@ Date: 05 Jan 2016
             </div>
             <div class="modal-body" ng-show="!InitializingHistoryDetails">
                 <div class="row" ng-show="HistorySearchDetailsData.length > 0">
-                    <div class="col-xs-5">
+                    <div class="col-xs-6">
                         <label for="search">Search:</label>
                         <input ng-model="q" id="search" ng-change="searchHistoryCurrentPage = 1" class="form-control" placeholder="Filter text">
                         <small style="color:purple;">Please enter atleast 2 characters to get results</small>
                     </div>
-                    <div class="col-xs-4">
+                    <div class="col-xs-3">
                         <label for="search">Records/Page:</label>
                         <select ng-model="searchHistoryPageSize" class="form-control">
                             <option value="10">10</option>
                             <option value="20">20</option>
                             <option value="30">30</option>
                         </select>
+                    </div>
+                    <div class="col-xs-3">
+                        <label style="padding-top: 30%;">{{ ((HistorySearchDetailsData | filter:(q.length > 1 ? { search_keyword : q} : '')).length) || 0 }} Record(s)</label>
                     </div>
                 </div>
                 <div class="form-group clearfix">
@@ -530,18 +535,14 @@ Date: 05 Jan 2016
                             </th>
                         </thead>
                         <tbody>
-                                <tr dir-paginate="hdd in HistorySearchDetailsData | 
-                                    filter:(q.length > 1 ? { search_keyword : q} : '') | orderBy : O | itemsPerPage: searchHistoryPageSize" 
-                                current-page="searchHistoryCurrentPage" 
-                                pagination-id="searchhistory">
-                                    <td>{{ hdd.datetimestamp | date }}</td>
-                                    <td>{{ hdd.search_keyword }}</td>
+                                <tr dir-paginate="hdd in HistorySearchDetailsData | filter:(q.length> 1 ? { search_keyword : q} : '') | orderBy : O | itemsPerPage: searchHistoryPageSize" current-page="searchHistoryCurrentPage" pagination-id="searchhistory">
+                                <td>{{ hdd.datetimestamp | date }}</td>
+                                <td>{{ hdd.search_keyword }}</td>
                                 </tr>
-                        </tbody>
+                                </tbody>
                     </table>
                     <div class="text-center ">
-                        <dir-pagination-controls boundary-links="true " on-page-change="pageChangeHandler(newPageNumber) " template-url="app/modules/dashboard/views/dirPagination.tpl.html "
-                         pagination-id="searchhistory" current-page="searchHistoryCurrentPage"></dir-pagination-controls>
+                        <dir-pagination-controls boundary-links="true " on-page-change="pageChangeHandler(newPageNumber) " template-url="app/modules/dashboard/views/dirPagination.tpl.html " pagination-id="searchhistory" current-page="searchHistoryCurrentPage"></dir-pagination-controls>
                     </div>
                     <table ng-show="HistorySearchDetailsData.length <=0  || !(HistorySearchDetailsData | 
                                     filter:(q.length > 1 ? { search_keyword : q} : '')).length">

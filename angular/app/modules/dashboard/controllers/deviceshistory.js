@@ -313,6 +313,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         $scope.unselectRecords();
         $scope.selectAllRecord = false;
         $scope.searchNameNumber = '';
+        document.getElementById('searchNameNumber').value = ''
         $scope.pageLimit = 10;
         $scope.currPage = 1;
         $scope.loadData();
@@ -633,6 +634,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
                 $scope.HistorySearchDetailsData = res.data;                
                 $scope.O = '-datetimestamp';
                 $scope.q = '';
+                document.getElementById('search').value = '';
                 $scope.InitializingHistoryDetails = false;
             });
 

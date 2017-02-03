@@ -140,6 +140,9 @@ Date: 05 Jan 2016
                     <option value="30">30</option>
                 </select>
             </div>
+            <div class="col-xs-3 pull-right">
+                <label style="padding-top: 25%;">{{ (userData | filter: (q.length > 1 ? q : '')).length || 0 }} Record(s)</label>
+            </div>
         </div>
         <!-- Main content -->
         <table class="table">

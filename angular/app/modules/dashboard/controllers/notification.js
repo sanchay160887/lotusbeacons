@@ -153,6 +153,7 @@
          $scope.pageLimit = 10;
          $scope.currPage = 1;
          $scope.searchNameNumber = '';
+         document.getElementById('searchNameNumber').value = '';
          $scope.loadData();
      }
 
