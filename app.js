@@ -22,6 +22,8 @@ querystring = require('querystring');
 require('timers');
 var devicecron = require('node-cron');
 var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon';
+var lotusWebURL = 'https://www.lotuselectronics.com/v2/';
+//var lotusWebURL = 'http://lampdemos.com/lotus15/v2/';
 
 //if change here also change it to device history and devicedata controller
 var loginexpiredmessage = 'Login Expired. Please reload and login again.';
@@ -848,7 +850,7 @@ app.post('/getdata', function(req, res) {
                 //console.log(data);
 
                 //request.post('http://lampdemos.com/lotus15/v2/user/get_user_name', {
-                request.post('http://lampdemos.com/lotus15/v2/user/get_user_name_by_mobileno', {
+                request.post(lotusWebURL + 'user/get_user_name_by_mobileno', {
                         form: {
                             //'android_device_token': data
                             'mobile_nos': data
@@ -1096,7 +1098,7 @@ app.post('/getDeviceHistorydata', function(req, res) {
                 var data = JSON.stringify(devices);
 
                 //request.post('http://lampdemos.com/lotus15/v2/user/get_user_name', {
-                request.post('http://lampdemos.com/lotus15/v2/user/get_user_name_by_mobileno', {
+                request.post(lotusWebURL + 'user/get_user_name_by_mobileno', {
                         form: {
                             //'android_device_token': data
                             'mobile_nos': data
@@ -1384,7 +1386,7 @@ app.post('/getDeviceSearchHistoryDetailsdata', function(req, res) {
             function(callback) {
                 var request = require('request');
 
-                request.post('http://lampdemos.com/lotus15/v2/user/get_search_result', {
+                request.post(lotusWebURL + 'user/get_search_result', {
                         form: {
                             'mobile_no': MobileNo,
                             'from': fromDate,
@@ -2285,7 +2287,7 @@ function sendpushnotification_mobileno(res, gcmMobiles, title, description, imag
             var request = require('request');
             var data = JSON.stringify(mobilenos);
 
-            request.post('http://lampdemos.com/lotus15/v2/user/get_user_name_by_mobileno', {
+            request.post(lotusWebURL + 'user/get_user_name_by_mobileno', {
                     form: {
                         'mobile_nos': data
                     }
@@ -2342,7 +2344,7 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
             if (response.success) {
                 var request = require('request');
                 var gcmdata = JSON.stringify(gcmToken);
-                request.post('http://lampdemos.com/lotus15/v2/user/get_notification_entry', {
+                request.post(lotusWebURL + 'user/get_notification_entry', {
                         form: {
                             'android_device_token': gcmdata,
                             'title': title,
@@ -2410,7 +2412,7 @@ app.post('/getdeviceidentity', function(req, res) {
     var request = require('request');
     var data = JSON.stringify(["APA91bHcxKvZbp5pcY_KeivI3qbHj1LF0KNct3Vx13jXVEFLzZDH5LMaE_1j08rClLhzAOwVJLp9Jmga0rPX3qndKOe6kK35sG8yDSYg4dipInhSZsgZOTU"]);
 
-    request.post('http://lampdemos.com/lotus15/v2/user/get_user_name', {
+    request.post(lotusWebURL + 'user/get_user_name', {
             form: {
                 'android_device_token': data
             }
@@ -3057,7 +3059,7 @@ app.post('/getBeaconsLastNotifications', function(req, res) {
             function(callback) {
                 var request = require('request');
 
-                request.post('http://lampdemos.com/lotus15/v2/user/get_beacons_notifications', {
+                request.post(lotusWebURL + 'user/get_beacons_notifications', {
                         form: {
                             'recordlimit': 10,
                         }
@@ -3129,7 +3131,7 @@ app.post('/getAllNotifications', function(req, res) {
             function(callback) {
                 var request = require('request');
 
-                request.post('http://lampdemos.com/lotus15/v2/user/get_all_notifications', {
+                request.post(lotusWebURL + 'user/get_all_notifications', {
                         form: {
                             'from': fromDate,
                             'to': toDate,
