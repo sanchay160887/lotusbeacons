@@ -416,7 +416,9 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
             function(devicelist, callback) {
                 if (!(devicelist && devicelist.length > 0)) {
                     if (typeof(beacons[0].BeaconWelcome) != 'undefined' && beacons[0].BeaconWelcome) {
-                        sendpushnotification('', [DeviceID], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
+                        //sendpushnotification('', [DeviceID], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
+                        notifresobj = {};
+                        sendpushnotification_mobileno(notifresobj, [MobileNo], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
                     }
                 }
                 console.log('Sending notification');
