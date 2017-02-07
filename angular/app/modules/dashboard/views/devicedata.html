@@ -162,7 +162,7 @@
                             <div class="col-md-8 no-pad">
                                 <select class="form-control col-md-4" ng-model="selectedStore">
                                     <option value="">Select Store</option>
-                                    <option ng-repeat="device in storeData" value="{{device._id}}">{{device.StoreName}}</option>
+                                    <option ng-repeat="device in storeData | orderBy:StoreName" value="{{device._id}}">{{device.StoreName}}</option>
                                 </select>
                             </div>
                         </div>
@@ -178,7 +178,7 @@
                                 </select>
                                 <select class="form-control" ng-model="selectedBeacon" ng-show="BeaconInitialized">
                                     <option value="">All</option>
-                                    <option ng-repeat="device in beaconData | orderBy:BeaconKey" value="{{device.BeaconID}}">{{device.BeaconKey}}</option>
+                                    <option ng-repeat="beacon in beaconData | orderBy:BeaconKey" value="{{beacon.BeaconID}}">{{beacon.BeaconKey}}</option>
                                 </select>
                             </div>
                             <div class="col-md-1 no-pad">

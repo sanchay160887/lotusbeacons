@@ -1485,7 +1485,7 @@ app.post('/getbeacondata', function(req, res) {
                     }
                 }
 
-                beaconcollection.toArray(function(err, beacons) {
+                beaconcollection.sort({ 'BeaconKey': 1 }).toArray(function(err, beacons) {
                     var beaconlist = [];
                     if (beacons && beacons.length > 0) {
                         for (var b in beacons) {
@@ -1853,7 +1853,7 @@ app.post('/getstoredata', function(req, res) {
             collection = collection.find();
         }
 
-        collection.toArray(function(err, devices) {
+        collection.sort({ 'StoreName': 1 }).toArray(function(err, devices) {
             if (devices && devices.length > 0) {
                 for (var dvc in devices) {
                     devicelist.push(devices[dvc]);
