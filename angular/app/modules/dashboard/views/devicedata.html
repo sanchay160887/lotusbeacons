@@ -37,7 +37,7 @@
     padding: 7% 0;
 }
 
-.wait_text {
+/*.wait_text {
     background-color: #d9edf7;
     border-radius: 3px;
     color: #31708f;
@@ -46,7 +46,7 @@
     padding: 8px 10px;
     font-style: italic;
     border: 1px solid #bce8f1;
-}
+}*/
 
 .bcon_selection_block_left {
     border-radius: 3px;
@@ -99,9 +99,31 @@
 }
 
 .error_text {
+    background-color: #d9edf7;
+    border-radius: 3px;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 8px 10px;
+    font-style: italic;
+    border: 1px solid #bce8f1;
+}
+
+.error_text {
     background-color: #f2dede;
     border-color: #ebccd1;
     color: #a94442;
+}
+
+.wait_text {
+    background-color: #d9edf7;
+    border-radius: 3px;
+    color: #31708f;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 8px 10px;
+    font-style: italic;
+    border: 1px solid #bce8f1;
 }
 
 #graphic-message .modal-footer {
@@ -148,6 +170,9 @@
 </section>
 <div class="content-device_block">
     <div class="container-fluid">
+        <div class="wait_block" ng-if="InvalidInputs">
+            <p class="error_text">Please select Store and Date for getting list of device history.</p>
+        </div>
         <div class="wait_block" ng-if="!Initialized">
             <p class="wait_text">Please Wait...</p>
         </div>
@@ -315,8 +340,7 @@
                 <h1>Sorry!!! No device selected</h1>
             </div>
             <div class="modal-footer">
-                <button type="button" id="sendpushnotification" class="btn btn-info btn_set" data-dismiss="modal" 
-                    ng-click="sendImageMessage()" ng-if="IsRecordSelected" disabled="disabled"> Send</button>
+                <button type="button" id="sendpushnotification" class="btn btn-info btn_set" data-dismiss="modal" ng-click="sendImageMessage()" ng-if="IsRecordSelected" disabled="disabled"> Send</button>
                 <button type="button" class="btn btn-info btn_set" data-dismiss="modal"> Close </button>
                 <!-- <input type="submit" value="Submit"> -->
             </div>
@@ -358,7 +382,7 @@ $(document).ready(function() {
 
 function uploadimage(object) {
     var uploadedfile = $('#uploadfileinput').val();
-    if (!uploadedfile){
+    if (!uploadedfile) {
         alert('No file selected.');
         return false;
     }

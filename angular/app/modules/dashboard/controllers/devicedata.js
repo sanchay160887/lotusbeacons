@@ -16,6 +16,15 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
     $scope.orderbyfield = 'Distance';
     $scope.Initialized = false;
     $scope.BeaconInitialized = true;
+    $scope.InvalidInputs = false;
+
+    $scope.$watchCollection('[InvalidInputs]', function() {
+        if ($scope.InvalidInputs) {
+            setTimeout(function() {
+                $scope.InvalidInputs = false;
+            }, 5000);
+        }
+    });
 
     $scope.checkLoggedInUser = function() {
         apiService.checkloginUser().then(function(res) {
@@ -145,9 +154,17 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         var queriedUrl = $location.search();
 
         var selectedStore = '';
-        if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store) {
+        if ($scope.selectedStore) {
+            selectedStore = $scope.selectedStore;
+        } else if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store) {
             selectedStore = queriedUrl.store;
+        } else {
+            $scope.InvalidInputs = true;
+            return;
         }
+        /*if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store) {
+            selectedStore = queriedUrl.store;
+        }*/
 
         var selectedBeacon = '';
         if (typeof(queriedUrl.beacon) != 'undefined' && queriedUrl.beacon) {
@@ -158,6 +175,8 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
             beaconlist.push(selectedBeacon);
             console.log(beaconlist);
         }
+
+        $scope.InvalidInputs = false;
 
         if ((beaconlist && beaconlist.length > 0) || selectedStore) {
             $scope.Initialized = false;

@@ -331,7 +331,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
     $scope.getAllDevicesHistory = function() {
 
-        $scope.checkLoggedInUser();
+        //$scope.checkLoggedInUser();
 
         var queriedUrl = $location.search();
 
