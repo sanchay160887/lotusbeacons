@@ -3170,3 +3170,248 @@ app.post('/getAllNotifications', function(req, res) {
 
     });
 });
+
+
+app.post('/addEmployee',function(req, res){
+	
+	
+	
+	console.log(req);
+	
+    UserID = req.body.UserID;
+    Password = req.body.Password;
+    
+    Name = req.body.Name;
+	AssignedStore = req.body.AssignedStore;
+	AssignedSection = req.body.AssignedSection;
+
+    UserID = UserID.toLowerCase();
+   
+    Name = Name.toLowerCase();
+   
+
+    var resObj = {};
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = loginexpiredmessage;
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
+
+    if (!(UserID && Password && Name)) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please enter appropriate informations";
+        res.send(resObj);
+        return;
+    }
+
+    if (!AssignedStore) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please select Store";
+        res.send(resObj);
+        return;
+    }
+
+    if (AssignedStore.length != 24) {
+        resObj.IsSuccess = false;
+        resObj.message = "Invalid store selected";
+        res.send(resObj);
+        return;
+    }
+	//<!------- Assigned Section -------->
+//	
+//	 if (!AssignedSection) {
+//        resObj.IsSuccess = false;
+//        resObj.message = "Please select Store";
+//        res.send(resObj);
+//        return;
+//    }
+//
+//    if (AssignedSection.length != 24) {
+//        resObj.IsSuccess = false;
+//        resObj.message = "Invalid store selected";
+//        res.send(resObj);
+//        return;
+//    }
+	
+	
+	
+	<!------ Assigned Section end --->
+	
+	
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        assert.equal(null, err);
+
+        var collection = db.collection('employee');
+
+        async.waterfall([
+            function(callback) {
+                collection.find().toArray(function(err, employee) {
+                    var cnt = employee.length;
+                    for (var u in employee) {
+                        if (employee[u].UserID == UserID) {
+                            resObj.IsSuccess = false;
+                            resObj.message = "User ID already exists";
+                            res.send(resObj);
+                            return 0;
+                        } 
+                        /*else if (users[u].Name == Name) {
+                            resObj.IsSuccess = false;
+                            resObj.message = "Name already exists";
+                            res.send(resObj);
+                            return 0;
+                        }*/
+                    }
+                    callback(null, employee);
+                });
+            },
+            function(userdata, callback) {
+                /*bcrypt.genSalt(10, function(err, salt) {
+                    if (err)
+                        return callback(err);
+
+                    bcrypt.hash(Password, salt, function(err, hash) {
+                        return callback(null, hash);
+                    });
+                });*/
+                var hashedPassword = passwordHash.generate(Password);
+                callback(null, hashedPassword);
+            },
+            function(hashedpassword, callback) {
+                collection.insert({
+                    'UserID': UserID,
+                    
+                    'Name': Name,
+                    
+                    'Password': hashedpassword,
+                    
+                    'AssignedStore': ObjectId(AssignedStore),
+					
+                    
+                });
+                console.log('User inserted');
+
+                callback(null, 'inserted');
+            },
+            function(response, callback) {
+                db.close();
+                resObj.IsSuccess = true;
+                resObj.message = "User registered successfully.";
+                res.send(resObj);
+                callback(null, response);
+            }
+        ]);
+    });
+
+	
+	
+	
+	
+});
+
+app.post('/addSection',function(req,res){
+
+	console.log(req);
+	
+    SectionName = req.body.SectionName;
+    SectionDesc = req.body.SectionDesc;
+
+    var resObj = {};
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = loginexpiredmessage;
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
+
+    if (!(SectionName && SectionDesc )) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please enter appropriate informations";
+        res.send(resObj);
+        return;
+    }
+
+  
+
+  
+	
+	
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        assert.equal(null, err);
+
+        var collection = db.collection('sections');
+
+        async.waterfall([
+            function(callback) {
+                collection.find().toArray(function(err, sections) {
+                    var cnt = sections.length;
+                    for (var u in sections) {
+                        if (sections[u].SectionName == SectionName) {
+                            resObj.IsSuccess = false;
+                            resObj.message = "SectionName already exists";
+                            res.send(resObj);
+                            return 0;
+                        } 
+                        
+                    }
+                    callback(null, sections);                                                              
+                });
+            },
+            function(sections, callback) {
+                collection.insert({
+                    'SectionName': SectionName,
+                    
+                    'SectionDesc': SectionDesc,
+                  
+					
+                    
+                });
+                console.log('Section inserted');
+
+                callback(null, 'inserted');
+            },
+          
+            function(response, callback) {
+                db.close();
+                resObj.IsSuccess = true;
+                resObj.message = "Section added successfully.";
+                res.send(resObj);
+                callback(null, response);
+            }
+        ]);
+    });
+
+	
+	
+	
+	
+	
+	
+	
+});

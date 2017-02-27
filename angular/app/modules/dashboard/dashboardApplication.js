@@ -215,5 +215,29 @@ dashboard.config(["$stateProvider", function($stateProvider) {
             pageTitle: 'Notifications List'
         }
     });
+	
+	 $stateProvider.state('app.employees', {
+        url: '/employees',
+        templateUrl: 'app/modules/dashboard/views/employee.html',
+        controller: 'EmployeeController',
+        controllerAs: 'vm',
+		data: {
+            pageTitle: 'Employee List'
+        }
+    });
+	
+	
+	
+	    $stateProvider.state('app.sections', {
+        url: '/sections',
+        templateUrl: 'app/modules/dashboard/views/section.html',
+        controller: 'SectionController',
+        controllerAs: 'vm',
+        data: {
+            pageTitle: 'Section List'
+        }
+    });
+	
+
 
 }]);

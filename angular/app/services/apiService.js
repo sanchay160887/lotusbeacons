@@ -514,6 +514,68 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
     //apiService.base_url = 'http://lotusbeacon.herokuapp.com';
     apiService.base_url = 'http://lotuslive.herokuapp.com';
     //apiService.base_url = 'http://52.205.143.53:3000';
+	
+	
+	
+	var employeeData =function(){
+		 return $http({
+            method: "post",
+            url: "/getEmployeedata"
+        });
+		
+		
+	}
+	/*   var sectionData = function(data) {
+        return $http.post('/getsectiondata', { headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;' } });
+    }
+	*/
+	
+	    var addEmployee = function(UserID,Password,Name,AssignedStore,AssignedSection='') {
+			
+        return $http({
+            method: "post",
+            url: "/addEmployee",
+            data: {
+                'UserID': UserID,
+                'Password': Password,
+	            'Name': Name,
+				'AssignedStore': AssignedStore,
+				'AssignedSection': AssignedSection,
+            }
+        });
+    }
+	
+	
+	
+	  //apiService.sectionData = sectionData;
+    apiService.addEmployee = addEmployee;
+   // apiService.updateEmployee = updateEmployee;
+    //apiService.deleteEmployee = deleteEmployee;
+	
+	
+	
+	
+	
+	
+	  var addSection = function(SectionName,SectionDesc) {
+			
+        return $http({
+            method: "post",
+            url: "/addSection",
+            data: {
+                'SectionName': SectionName,
+                'SectionDesc': SectionDesc,
+	            
+        }
+		
+		});
+    
+	
+	  }
+	
+	
+	 
+    apiService.addSection = addSection;
 
     return apiService;
 
