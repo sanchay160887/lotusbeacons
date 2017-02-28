@@ -12,7 +12,7 @@
 var dashboard = angular.module('dashboard', ['ui.router', 'ngAnimate', 'ngMaterial', 'angularUtils.directives.dirPagination', 'chart.js']);
 
 
-dashboard.config(["$stateProvider", function($stateProvider) {   
+dashboard.config(["$stateProvider", function($stateProvider) {
 
     //dashboard home page state
     $stateProvider.state('app.dashboard', {
@@ -213,6 +213,26 @@ dashboard.config(["$stateProvider", function($stateProvider) {
         controllerAs: 'vm',
         data: {
             pageTitle: 'Notifications List'
+        }
+    });
+
+    $stateProvider.state('app.employees', {
+        url: '/employees',
+        templateUrl: 'app/modules/dashboard/views/employee.html',
+        controller: 'EmployeeController',
+        controllerAs: 'vm',
+        data: {
+            pageTitle: 'Employee List'
+        }
+    });
+
+    $stateProvider.state('app.sections', {
+        url: '/sections',
+        templateUrl: 'app/modules/dashboard/views/section.html',
+        controller: 'SectionController',
+        controllerAs: 'vm',
+        data: {
+            pageTitle: 'Section List'
         }
     });
 

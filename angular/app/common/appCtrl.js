@@ -113,30 +113,41 @@ app.controller("appCtrl", ['$rootScope', '$scope', '$state', '$location', 'Flash
         //Main menu items of the dashboard
 
         vm.menuItems = [{
-            title: "Dashboard",
-            icon: "dashboard",
-            state: "dashboard"
-        }, {
-            title: "Devices",
-            icon: "tablet",
-            state: "devices"
-        }, {
-            title: "Devices History",
-            icon: "list-ul",
-            state: "deviceshistory"
-        }, {
-            title: "Beacons",
-            icon: "bluetooth",
-            state: "beacons"
-        }, {
-            title: "Stores",
-            icon: "empire ",
-            state: "stores"
-        }, {
-            title: "Users",
-            icon: "user",
-            state: "users"
-        }];
+                title: "Dashboard",
+                icon: "dashboard",
+                state: "dashboard"
+            }, {
+                title: "Devices",
+                icon: "tablet",
+                state: "devices"
+            }, {
+                title: "Devices History",
+                icon: "list-ul",
+                state: "deviceshistory"
+            }, {
+                title: "Beacons",
+                icon: "bluetooth",
+                state: "beacons"
+            }, {
+                title: "Stores",
+                icon: "empire ",
+                state: "stores"
+            }, {
+                title: "Users",
+                icon: "user",
+                state: "users"
+            },
+
+            {
+                title: "Employees",
+                icon: "user",
+                state: "employees"
+            }, {
+                title: "Sections",
+                icon: "arrows",
+                state: "sections"
+            }
+        ];
 
         //set the theme selected
         vm.setTheme = function(value) {
