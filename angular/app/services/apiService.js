@@ -80,7 +80,8 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
 
 
     // Services for Devices start
-    var deviceData = function(selectedBeacon, selectedStore) {
+
+var deviceData = function(selectedBeacon, selectedStore) {
         return $http({
             method: "post",
             url: '/getdata',
@@ -90,6 +91,7 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
             }
         });
     }
+
 
     var deviceHistoryData = function(selectedBeacon, selectedStore, selectedDateFrom, selectedDateTo, currpage, limit, search = '') {
         return $http({
@@ -511,8 +513,8 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
     apiService.updateDeviceHistory = updateDeviceHistory;
 
     //apiService.base_url = 'http://localhost:3000';
-    //apiService.base_url = 'http://lotusbeacon.herokuapp.com';
-    apiService.base_url = 'http://lotuslive.herokuapp.com';
+    apiService.base_url = 'http://lotusbeacon.herokuapp.com';
+    //apiService.base_url = 'http://lotuslive.herokuapp.com';
     //apiService.base_url = 'http://52.205.143.53:3000';
 
     var employeeData = function() {
@@ -528,7 +530,9 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
         }
         */
 
-    var addEmployee = function(UserID, Password, Name, AssignedStore, AssignedSection = '') {
+    var addEmployee = function(UserID, Password, Name,Designation ,AssignedStore, AssignedSection) {
+       
+
 
         return $http({
             method: "post",
@@ -537,6 +541,8 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
                 'UserID': UserID,
                 'Password': Password,
                 'Name': Name,
+                'Designation':Designation,
+
                 'AssignedStore': AssignedStore,
                 'AssignedSection': AssignedSection,
             }
@@ -547,6 +553,10 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
     apiService.addEmployee = addEmployee;
     // apiService.updateEmployee = updateEmployee;
     //apiService.deleteEmployee = deleteEmployee;
+    
+    var sectionData = function(data) {
+        return $http.post('/getsectiondata', { headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;' } });
+    }
 
     var addSection = function(SectionName, SectionDesc) {
         return $http({
@@ -561,6 +571,10 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
     }
 
     apiService.addSection = addSection;
+    apiService.sectionData = sectionData;
+
+
+
 
     return apiService;
 

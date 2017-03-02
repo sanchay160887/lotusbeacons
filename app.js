@@ -22,8 +22,8 @@ querystring = require('querystring');
 require('timers');
 var devicecron = require('node-cron');
 var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon';
-var lotusWebURL = 'https://www.lotuselectronics.com/v2/';
-//var lotusWebURL = 'http://lampdemos.com/lotus15/v2/';
+//var lotusWebURL = 'https://www.lotuselectronics.com/v2/';
+var lotusWebURL = 'http://lampdemos.com/lotus15/v2/';
 
 //if change here also change it to device history and devicedata controller
 var loginexpiredmessage = 'Login Expired. Please reload and login again.';
@@ -1824,7 +1824,7 @@ app.post('/getstoredata', function(req, res) {
 
     var resObj = {};
     /*if (!req.session.loggedInUser) {
-        resObj.IsSuccess = false;
+        sObj.IsSuccess = false;
         resObj.message = "You are not logged in.";
         resObj.data = '';
         res.send(resObj);
@@ -2908,11 +2908,33 @@ app.post('/userLogin', function(req, res) {
         var collection = db.collection('users');
         var userRecord = {};
 
+        var isCallingFromApp = false;
+        if (typeof(req.body.fromApp) != undefined) {
+            isCallingFromApp = req.body.fromApp;
+        }
+
         async.waterfall([
             function(callback) {
-                collection.find({
-                    "UserID": req.body.username,
-                }).toArray(function(err, users) {
+                var dataParam = {};
+                if (isCallingFromApp) {
+                    dataParam = {
+                        "UserID": req.body.username,
+                        "UserType": 3,
+                    }
+                } else {
+                    dataParam = {
+                        "UserID": req.body.username,
+                        "UserType": { "$in": [1,2] },
+                    }
+                }
+
+                console.log('=====');
+                console.log(JSON.stringify(dataParam));
+                console.log('=====');
+
+                collection.find(dataParam).toArray(function(err, users) {
+                    console.log(JSON.stringify(users));
+
                     if (users && users.length) {
                         var dbpassword = users[0].Password;
                         users[0].Password = "";
@@ -2928,6 +2950,7 @@ app.post('/userLogin', function(req, res) {
                         //callback(null, false);
                         return 0;
                     }
+
                 });
             },
             function(passwordmatched, callback) {
@@ -3179,12 +3202,16 @@ app.post('/addEmployee', function(req, res) {
     Password = req.body.Password;
 
     Name = req.body.Name;
+    Designation = req.body.Designation;
     AssignedStore = req.body.AssignedStore;
     AssignedSection = req.body.AssignedSection;
 
     UserID = UserID.toLowerCase();
 
     Name = Name.toLowerCase();
+    Designation = Designation.toLowerCase();
+    AssignedStore = AssignedStore.toLowerCase();
+    AssignedSection = AssignedSection.toLowerCase();
 
 
     var resObj = {};
@@ -3252,14 +3279,14 @@ app.post('/addEmployee', function(req, res) {
 
         assert.equal(null, err);
 
-        var collection = db.collection('employee');
+        var collection = db.collection('users');
 
         async.waterfall([
             function(callback) {
-                collection.find().toArray(function(err, employee) {
-                    var cnt = employee.length;
-                    for (var u in employee) {
-                        if (employee[u].UserID == UserID) {
+                collection.find().toArray(function(err, users) {
+                    var cnt = users.length;
+                    for (var u in users) {
+                        if (users[u].UserID == UserID) {
                             resObj.IsSuccess = false;
                             resObj.message = "User ID already exists";
                             res.send(resObj);
@@ -3272,7 +3299,7 @@ app.post('/addEmployee', function(req, res) {
                             return 0;
                         }*/
                     }
-                    callback(null, employee);
+                    callback(null, users);
                 });
             },
             function(userdata, callback) {
@@ -3294,8 +3321,11 @@ app.post('/addEmployee', function(req, res) {
                     'Name': Name,
 
                     'Password': hashedpassword,
+                    'Designation': Designation,
 
                     'AssignedStore': ObjectId(AssignedStore),
+                    'AssignedSection': AssignedSection,
+                    'UserType': 3,
 
 
                 });
@@ -3316,12 +3346,71 @@ app.post('/addEmployee', function(req, res) {
 });
 
 
+
+
+/*Section Services start*/
+app.post('/getsectiondata', function(req, res) {
+
+    var resObj = {};
+    /*if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not logged in.";
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }*/
+
+    //UserSection = getUserAllotedSection(req);
+
+    /*if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = "No record found.";
+        resObj.data = '';
+        res.send(resObj);
+    }*/
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        var devicelist = new Array();
+        var collection = db.collection('sections');
+        collection = collection.find();
+        collection.sort({ 'SectionName': 1 }).toArray(function(err, devices) {
+            if (devices && devices.length > 0) {
+                for (var dvc in devices) {
+                    devicelist.push(devices[dvc]);
+                }
+
+                resObj.IsSuccess = true;
+                resObj.message = "Success";
+                resObj.data = devicelist;
+                res.send(resObj);
+            } else {
+                resObj.IsSuccess = false;
+                resObj.message = "No record found.";
+                resObj.data = '';
+                res.send(resObj);
+            }
+        })
+        db.close();
+    });
+});
+
+
+
 app.post('/addSection', function(req, res) {
 
     console.log(req);
 
     SectionName = req.body.SectionName;
     SectionDesc = req.body.SectionDesc;
+
+
+    SectionName = SectionName.toLowerCase();
+
+    SectionDesc = SectionDesc.toLowerCase();
 
     var resObj = {};
     if (!req.session.loggedInUser) {
@@ -3385,6 +3474,23 @@ app.post('/addSection', function(req, res) {
                 callback(null, 'inserted');
             },
 
+            /* function('sectionbeacon',callback){
+
+                  collection.insert({
+                    'SectionId': SectionId,
+
+                    'BeaconID': BeaconID,
+
+
+
+                });
+                console.log('Section inserted');
+
+                callback(null, 'inserted');
+
+
+            },
+*/
             function(response, callback) {
                 db.close();
                 resObj.IsSuccess = true;
