@@ -2935,7 +2935,7 @@ app.post('/userLogin', function(req, res) {
                 collection.find(dataParam).toArray(function(err, users) {
                     console.log(JSON.stringify(users));
 
-                    if (users && users.length) {
+                    if (users && users.length > 0) {
                         var dbpassword = users[0].Password;
                         users[0].Password = "";
                         userRecord = users[0];
@@ -3444,6 +3444,8 @@ app.post('/addSection', function(req, res) {
 
         var collection = db.collection('sections');
 
+        var sectionbeacon = db.collection('section_beacons');
+
         async.waterfall([
             function(callback) {
                 collection.find().toArray(function(err, sections) {
@@ -3460,7 +3462,7 @@ app.post('/addSection', function(req, res) {
                     callback(null, sections);
                 });
             },
-            function(sections, callback) {
+          /*  function(sections, callback) {
                 collection.insert({
                     'SectionName': SectionName,
 
@@ -3472,7 +3474,47 @@ app.post('/addSection', function(req, res) {
                 console.log('Section inserted');
 
                 callback(null, 'inserted');
-            },
+            },*/
+
+            function(sections, callback) {
+                collection.insert({
+                    'SectionName': SectionName,
+
+                    'SectionDesc': SectionDesc,
+
+
+
+                },function(err, records) {
+                     console.log(JSON.stringify(records));
+
+                     //var SectionID = records[0]._id;
+                        callback(null, 'inserted');
+                        console.log('Section inserted');
+                    });
+               
+
+               // callback(null, 'inserted');
+
+
+                },
+
+                function(rec,callback)
+                {
+                    sectionbeacon.insert({
+                    'SectionID': '12345',
+
+                    'BeaconID': '00:11:22:33',
+
+
+
+                });
+
+                console.log('Section Beacon inserted');
+                callback(null, 'rec');
+
+                },
+
+           
 
             /* function('sectionbeacon',callback){
 
