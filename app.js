@@ -759,7 +759,7 @@ app.post('/getdata', function(req, res) {
         return;
     }
 
-    if (req.session.loggedInUser.UserType == 2 && !UserID) {
+    if (!UserID && req.session.loggedInUser.UserType == 2) {
         StoreID = getUserAllotedStore(req);
     } else {
         StoreID = req.body.StoreID;
