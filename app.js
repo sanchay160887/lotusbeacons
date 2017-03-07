@@ -764,7 +764,7 @@ app.post('/getdata', function(req, res) {
     } else {
         StoreID = req.body.StoreID;
     }
-    if (!StoreID) {
+    if (!StoreID && !UserID) {
         res.send({});
     }
 
