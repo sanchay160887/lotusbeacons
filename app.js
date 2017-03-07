@@ -749,7 +749,7 @@ app.post('/getdata', function(req, res) {
     BeaconID = req.body.BeaconID;
     UserID = req.body.UserID;
 
-    if (!req.session.loggedInUser) {
+    if (!req.session.loggedInUser && !UserID) {
         console.log('login expired');
         var resObj = {};
         resObj.IsSuccess = false;
