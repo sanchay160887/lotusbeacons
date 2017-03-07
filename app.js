@@ -747,6 +747,7 @@ function getUserAllotedStore(req) {
 app.post('/getdata', function(req, res) {
     console.log(JSON.stringify(req.body));
     BeaconID = req.body.BeaconID;
+    UserID = req.body.UserID;
 
     if (!req.session.loggedInUser) {
         console.log('login expired');
@@ -758,7 +759,7 @@ app.post('/getdata', function(req, res) {
         return;
     }
 
-    if (req.session.loggedInUser.UserType == 2) {
+    if (req.session.loggedInUser.UserType == 2 && !UserID) {
         StoreID = getUserAllotedStore(req);
     } else {
         StoreID = req.body.StoreID;
@@ -2935,6 +2936,9 @@ app.post('/userLogin', function(req, res) {
                 collection.find(dataParam).toArray(function(err, users) {
                     console.log(JSON.stringify(users));
 
+
+
+
                     if (users && users.length > 0) {
                         var dbpassword = users[0].Password;
                         users[0].Password = "";
@@ -2962,11 +2966,15 @@ app.post('/userLogin', function(req, res) {
                     resObj.message = "Wrong Password."
                     resObj.isSuccess = false;
                 }
-                res.send(resObj);
-                callback(null, passwordmatched);
+                if (!isCallingFromApp){
+                    db.close();
+                    res.send(resObj);
+                } else {
+                    callback(null, userRecord);
+                }               
             },
             function(user, callback) {
-                db.close();
+                
             }
         ]);
     });
@@ -3386,6 +3394,7 @@ app.post('/getsectiondata', function(req, res) {
                 resObj.IsSuccess = true;
                 resObj.message = "Success";
                 resObj.data = devicelist;
+                console.log(resObj.data);
                 res.send(resObj);
             } else {
                 resObj.IsSuccess = false;
@@ -3406,6 +3415,8 @@ app.post('/addSection', function(req, res) {
 
     SectionName = req.body.SectionName;
     SectionDesc = req.body.SectionDesc;
+    AssignedStore = req.body.AssignedStore;
+    selectedBeacon = req.body.selectedBeacon;
 
 
     SectionName = SectionName.toLowerCase();
@@ -3446,10 +3457,14 @@ app.post('/addSection', function(req, res) {
 
         var sectionbeacon = db.collection('section_beacons');
 
+        var SectionID = '';
+
+
         async.waterfall([
             function(callback) {
                 collection.find().toArray(function(err, sections) {
                     var cnt = sections.length;
+
                     for (var u in sections) {
                         if (sections[u].SectionName == SectionName) {
                             resObj.IsSuccess = false;
@@ -3477,33 +3492,42 @@ app.post('/addSection', function(req, res) {
             },*/
 
             function(sections, callback) {
+
                 collection.insert({
                     'SectionName': SectionName,
 
                     'SectionDesc': SectionDesc,
+                    'AssignedStore': AssignedStore,
+                   
 
 
 
                 },function(err, records) {
                      console.log(JSON.stringify(records));
+                     console.log(records.ops[0]._id);
 
-                     //var SectionID = records[0]._id;
+                    // console.log(json_decode(records));
+
+                   SectionID = records.ops[0]._id;
+
+
                         callback(null, 'inserted');
+
                         console.log('Section inserted');
                     });
                
-
-               // callback(null, 'inserted');
-
 
                 },
 
                 function(rec,callback)
                 {
-                    sectionbeacon.insert({
-                    'SectionID': '12345',
 
-                    'BeaconID': '00:11:22:33',
+                    sectionbeacon.insert({
+                    'SectionID': SectionID,
+
+                    'BeaconID': selectedBeacon,
+
+
 
 
 
@@ -3513,27 +3537,7 @@ app.post('/addSection', function(req, res) {
                 callback(null, 'rec');
 
                 },
-
-           
-
-            /* function('sectionbeacon',callback){
-
-                  collection.insert({
-                    'SectionId': SectionId,
-
-                    'BeaconID': BeaconID,
-
-
-
-                });
-                console.log('Section inserted');
-
-                callback(null, 'inserted');
-
-
-            },
-*/
-            function(response, callback) {
+           function(response, callback) {
                 db.close();
                 resObj.IsSuccess = true;
                 resObj.message = "Section added successfully.";

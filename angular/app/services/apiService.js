@@ -525,10 +525,11 @@ var deviceData = function(selectedBeacon, selectedStore) {
 
 
         }
-        /*   var sectionData = function(data) {
+          var sectionData = function(data) {
+
             return $http.post('/getsectiondata', { headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;' } });
         }
-        */
+       
 
     var addEmployee = function(UserID, Password, Name,Designation ,AssignedStore, AssignedSection) {
        
@@ -549,29 +550,31 @@ var deviceData = function(selectedBeacon, selectedStore) {
         });
     }
 
-    //apiService.sectionData = sectionData;
+    apiService.sectionData = sectionData;
     apiService.addEmployee = addEmployee;
     // apiService.updateEmployee = updateEmployee;
     //apiService.deleteEmployee = deleteEmployee;
     
-    var sectionData = function(data) {
+/*    var sectionData = function(data) {
         return $http.post('/getsectiondata', { headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;' } });
     }
-
-    var addSection = function(SectionName, SectionDesc) {
+*/
+    var addSection = function(SectionName, SectionDesc,AssignedStore,selectedBeacon) {
         return $http({
             method: "post",
             url: "/addSection",
             data: {
                 'SectionName': SectionName,
                 'SectionDesc': SectionDesc,
+                'AssignedStore': AssignedStore,
+                'selectedBeacon':selectedBeacon,
 
             }
         });
     }
 
     apiService.addSection = addSection;
-    apiService.sectionData = sectionData;
+   // apiService.sectionData = sectionData;
 
 
 
