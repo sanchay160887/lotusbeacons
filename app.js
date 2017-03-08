@@ -764,7 +764,7 @@ app.post('/getdata', function(req, res) {
     } else {
         StoreID = req.body.StoreID;
     }
-    if (!StoreID && !UserID) {
+    if (!UserID && !StoreID) {
         res.send({});
     }
 
@@ -893,6 +893,9 @@ app.post('/getdata', function(req, res) {
                                 devicelist.splice(i, 1);
                             }
                         }
+
+                        console.log(JSON.stringify(devicelist));
+                        console.log('called');
 
                         res.send(devicelist);
                         callback(null, devicelist);
@@ -2907,6 +2910,10 @@ app.post('/userLogin', function(req, res) {
 
         var resObj = {};
         var collection = db.collection('users');
+        var AllotedSection = '';
+        // to find beacon id for lotus employee App.
+
+
         var userRecord = {};
 
         var isCallingFromApp = false;
@@ -2925,7 +2932,7 @@ app.post('/userLogin', function(req, res) {
                 } else {
                     dataParam = {
                         "UserID": req.body.username,
-                        "UserType": { "$in": [1,2] },
+                        "UserType": { "$in": [1, 2] },
                     }
                 }
 
@@ -2934,10 +2941,6 @@ app.post('/userLogin', function(req, res) {
                 console.log('=====');
 
                 collection.find(dataParam).toArray(function(err, users) {
-                    console.log(JSON.stringify(users));
-
-
-
 
                     if (users && users.length > 0) {
                         var dbpassword = users[0].Password;
@@ -2966,15 +2969,50 @@ app.post('/userLogin', function(req, res) {
                     resObj.message = "Wrong Password."
                     resObj.isSuccess = false;
                 }
-                if (!isCallingFromApp){
+                if (!isCallingFromApp) {
                     db.close();
                     res.send(resObj);
                 } else {
                     callback(null, userRecord);
-                }               
+                }
             },
             function(user, callback) {
-                
+
+                //console.log(user);
+
+                if (isCallingFromApp) {
+                    var beaconCollection = db.collection('beacons_temp');
+                    var AllotedSection = user.BeaconSection;
+
+
+                    var beacons1 = [];
+                    beaconCollection.find({
+                        "BeaconSection": ObjectId(AllotedSection)
+                    }).toArray(function(err, beacons) {
+                        var AllotedSection = user.BeaconSection;
+                        for (var b in beacons) {
+                                         
+                            //beacons.push(beacons[b].BeaconKey)
+                           // beacons.push(beacons);
+                           beacons1.push(beacons[b]);
+                        }
+
+                       
+
+                          
+                        resObj.beacons = beacons;
+                        
+                      // console.log(user.resObj);
+                       // console.log("merge called");
+                         console.log(resObj);
+                       
+                        console.log('======end of beacon called==========');
+                        res.send(resObj);
+                    });
+                } else {
+                    res.send(resObj);
+                }
+                db.close();
             }
         ]);
     });
@@ -3455,7 +3493,7 @@ app.post('/addSection', function(req, res) {
 
         var collection = db.collection('sections');
 
-        var sectionbeacon = db.collection('section_beacons');
+        var sectionbeacon = db.collection('beacons_temp');
 
         var SectionID = '';
 
@@ -3477,19 +3515,19 @@ app.post('/addSection', function(req, res) {
                     callback(null, sections);
                 });
             },
-          /*  function(sections, callback) {
-                collection.insert({
-                    'SectionName': SectionName,
+            /*  function(sections, callback) {
+                  collection.insert({
+                      'SectionName': SectionName,
 
-                    'SectionDesc': SectionDesc,
+                      'SectionDesc': SectionDesc,
 
 
 
-                });
-                console.log('Section inserted');
+                  });
+                  console.log('Section inserted');
 
-                callback(null, 'inserted');
-            },*/
+                  callback(null, 'inserted');
+              },*/
 
             function(sections, callback) {
 
@@ -3497,47 +3535,64 @@ app.post('/addSection', function(req, res) {
                     'SectionName': SectionName,
 
                     'SectionDesc': SectionDesc,
-                    'AssignedStore': AssignedStore,
-                   
+                    'AssignedStore': selectedBeacon,
+                    'BeaconID': AssignedStore,
 
 
 
-                },function(err, records) {
-                     console.log(JSON.stringify(records));
-                     console.log(records.ops[0]._id);
+
+                }, function(err, records) {
+                    console.log(JSON.stringify(records));
+                    console.log(records.ops[0]._id);
 
                     // console.log(json_decode(records));
 
-                   SectionID = records.ops[0]._id;
+                    SectionID = records.ops[0]._id;
 
 
-                        callback(null, 'inserted');
+                    callback(null, 'inserted');
 
-                        console.log('Section inserted');
-                    });
-               
+                    console.log('Section inserted');
+                });
 
-                },
 
-                function(rec,callback)
-                {
+            },
 
-                    sectionbeacon.insert({
+            function(rec, callback) {
+
+
+                /* sectionbeacon.insert({
                     'SectionID': SectionID,
 
                     'BeaconID': selectedBeacon,
 
+                });*/
+                sectionbeacon.updateMany({
+                        // 'BeaconID': AssignedStore,
+                        'BeaconID': {
+                            $in: AssignedStore
+                        }
+                    }, {
+                        '$set': {
+                            'BeaconSection': SectionID,
+                        }
+                    },
+                    function(err, result) {
+                        if (err) {
+                            throw err;
+                        } else {
+
+                        }
+                    }
+                );
 
 
-
-
-                });
 
                 console.log('Section Beacon inserted');
                 callback(null, 'rec');
 
-                },
-           function(response, callback) {
+            },
+            function(response, callback) {
                 db.close();
                 resObj.IsSuccess = true;
                 resObj.message = "Section added successfully.";
