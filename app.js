@@ -764,14 +764,15 @@ app.post('/getdata', function(req, res) {
     } else {
         StoreID = req.body.StoreID;
     }
-    if (!UserID || !StoreID) {
-        res.send({});
-    }
 
     console.log('Beacon Parameter on start');
     console.log(BeaconID);
     console.log('Store Parameter on start');
     console.log(StoreID);
+
+    if (typeof(BeaconID) == 'string'){
+        BeaconID = BeaconID.split(',');
+    }    
 
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
