@@ -1,0 +1,207 @@
+<style>
+.register_block_1 {
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    display: inline-block;
+    margin: 2% 2%;
+    padding: 20px;
+    vertical-align: top;
+    width: 34%;
+}
+
+.register_block_2 {
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    display: inline-block;
+    margin: 2% 1%;
+    padding: 20px;
+    vertical-align: top;
+    width: 58%;
+}
+
+.content-header {
+    padding: 6% 15px 0;
+    position: relative;
+}
+
+.wait_text {
+    background-color: #d9edf7;
+    border-radius: 3px;
+    color: #31708f;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 8px 10px;
+    font-style: italic;
+    border: 1px solid #bce8f1;
+}
+
+.error {
+    color: red;
+}
+</style>
+<!--
+Author: Ranjithprabhu K
+Page Description: Dashboard Home page
+Date: 05 Jan 2016
+-->
+<!-- Content Header (Page header) -->
+<div ng-show="!connection" class="alert alert-danger">You're offline now. Please check your internet connection</div>
+<div ng-show="connection_msg" class="alert alert-success">Re-connected successfully</div>
+<section class="content-blocks">
+    <section class="content-header">
+        <h1>
+            Users
+        </h1>
+        <ol class="breadcrumb">
+            <!-- <li><a><i class="fa fa-dashboard"></i> Dashboard</a></li> -->
+            <li><a ui-sref="app.dashboard"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+            <li class="active">Users</li>
+        </ol>
+    </section>
+    <section class="content-body register_block_1">
+        <div class="wait_block" ng-if="!FormInitialized">
+            <p class="wait_text">Please Wait...</p>
+        </div>
+        <h4 ng-if="button_name!='Update'">Add User</h4>
+        <h4 ng-if="button_name=='Update'">Update User</h4>
+        <ng-form name="employeeForm" id="employeeForm">
+        
+        <label>User ID<span class="error">*</span></label>
+            <input class="form-control" type="text" name="UserID" id="UserID" ng-model="UserID" ng-pattern="useridregex" required="required" />
+            <span class="error" ng-show="employeeForm.UserID.$touched && employeeForm.UserID.$error.required">User ID required</span>
+            <span class="error" ng-show="employeeForm.UserID.$touched && employeeForm.UserID.$invalid && !employeeForm.UserID.$error.required">User ID must be lowercase and only alphabets</span>
+            <br>
+            
+            <label>Name<span class="error">*</span></label>
+            <input class="form-control" type="text" name="Name" id="Name" ng-model="Name" required="required" />
+            <span class="error" ng-show="employeeForm.Name.$touched && employeeForm.Name.$invalid">Name required</span>
+            <br>
+           
+            <label>Assign Store<span class="error">*</span></label>
+            <select class="form-control col-md-4" ng-model="AssignedStore" id="AssignedStore" name="AssignedStore" required="required">
+                <option value="">Select Store</option>
+                <option ng-repeat="device in storeData | orderBy:StoreName" value="{{device._id}}">
+                    {{device.StoreName}}</option>
+            </select>
+            <br>
+            <span class="error" ng-show="employeeForm.AssignedStore.$touched && employeeForm.AssignedStore.$invalid">Please assign any store</span>
+            <br>
+ 			
+ 			<label>Designation</label>
+            <input class="form-control" type="text" name="Designation" id="Designation" ng-model="Designation" />
+            
+            <br>
+            
+            
+            <label>Assign Section<span class="error">*</span></label>
+            <select class="form-control col-md-4" ng-model="AssignedSection" id="AssignedSection" name="AssignedSection" required="required">
+                <option value="">Select Setion</option>
+                <option ng-repeat="device in sectionData | orderBy:SectionName" value="{{device._id}}">
+                    {{device.sectionData}}</option>
+            </select> 
+          <!--    <input class="form-control" type="text" name="AssignedSection" id="AssignedSection" ng-model="AssignedSection" required="required" /> -->
+
+            <br>
+         <span class="error" ng-show="employeeForm.AssignedSection.$touched && employeeForm.AssignedSection.$invalid">Please assign any section</span>
+            <br>
+            
+            
+            
+            
+            <label>Password<span ng-show="button_name!='Update'" class="error">*</span></label>
+            <input class="form-control" type="password" id="Password" name="Password" ng-model="Password" ng-pattern="passwordregex" ng-required="button_name!='Update'" />
+            <span class="error" ng-show="employeeForm.Password.$touched && employeeForm.Password.$invalid && employeeForm.Password.$error.required">Password required</span>
+            <span class="error" ng-show="employeeForm.Password.$touched && employeeForm.Password.$invalid && !employeeForm.Password.$error.required">Password should be atleast 8 characters long
+            and should contain one number,one character and one special
+            character</span>
+            <br>
+            <!-- compare-to="Password" -->
+            <label>Confirm Password<span ng-show="button_name!='Update'" class="error">*</span></label>
+            <input class="form-control" type="password" id="ConfPassword" name="ConfPassword" ng-model="ConfPassword" ng-required="(button_name != 'Update' || Password)" />
+            <span class="error" ng-show="employeeForm.ConfPassword.$touched && employeeForm.ConfPassword.$invalid && employeeForm.ConfPassword.$error.required">Confirm Password required</span>
+            <span class="error" ng-show="employeeForm.confPassword.$touched && employeeForm.confPassword.$invalid && !employeeForm.confPassword.$error.required">Confirm password doesnot match with password</span>
+            <span class="error">{{ employeeForm.confPassword }}</span>
+            <br>
+            <p ng-show="button_name=='Update'">Leave password field blank if you donot want to reset password.</p>
+            <br>
+            <button class="btn btn-primary" ng-bind="button_name" ng-click="processUser()">Add</button>
+            <button class="btn btn-primary" ng-if="button_name=='Update' && UserType != 1" ng-click="deleteUser()">
+                Delete</button>
+            <button class="btn btn-primary" ng-if="button_name=='Update'" ng-click="resetControls()">Cancel</button>
+            <p ng-show="UserType == 1">Admin account cannot be deleted, Only updated.</p>
+        </ng-form>
+    </section>
+    <section class="content-body register_block_2">
+        <div class="row">
+            <div class="col-xs-5">
+                <h4>Registered Users</h4>
+            </div>
+        </div>
+        <div class="wait_block" ng-if="!ListInitialized">
+            <p class="wait_text">Please Wait...</p>
+        </div>
+        <div class="row">
+            <div class="col-xs-7">
+                <!-- <label for="search">Search:</label> -->
+                <label for="search">Search: <small style="color:purple;">(Please enter atleast 2 characters to get results)</small></label>
+                <input ng-model="q" id="search" class="form-control" placeholder="Filter text" ng-change="userCurrentPage=1">
+                <!-- <small style="color:purple;">Please enter atleast 2 characters to get results</small> -->
+            </div>
+            <div class="col-xs-3">
+                <label for="search">Records/Page:</label>
+                <select ng-model="userPageSize" class="form-control">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-2" style="margin-top: 10px;">
+                <small style="margin-top: 10px;" ng-show="(userData | filter: (q.length > 1 ? q : '')).length > 1"><b>{{ (userData | filter: (q.length > 1 ? q : '')).length || 0 }} Records</b></small>
+                <small style="margin-top: 10px;" ng-show="(userData | filter: (q.length > 1 ? q : '')).length == 1"><b>1 Record</b></small>
+            </div>
+        </div>
+        <!-- Main content -->
+        <table class="table">
+            <th ng-click="O=(O=='UserID' && '-UserID' || 'UserID' )">User ID
+                <span ng-show="O=='UserID'">▲</span>
+                <span ng-show="O=='-UserID'">▼</span>
+            </th>
+            <th ng-click="O=(O=='Name' && '-Name' || 'Name' )">Name
+                <span ng-show="O=='Name'">▲</span>
+                <span ng-show="O=='-Name'">▼</span>
+            </th>
+            
+            <th ng-click="O=(O=='StoreName' && '-StoreName' || 'StoreName' )">Assigned Store
+                <span ng-show="O=='StoreName'">▲</span>
+                <span ng-show="O=='-StoreName'">▼</span>
+            </th>
+            <tr dir-paginate="u in userData | filter: (q.length > 1 ? {searchfield: q } : '') | orderBy : O | itemsPerPage:  userPageSize" current-page="userCurrentPage">
+                <!-- <tr ng-repeat=" | orderBy:Name "> -->
+                <td>
+                    <input class="form-control" type='text' ng-model="u.UserID" readonly />
+                </td>
+                <td>
+                    <input class="form-control" type='text' ng-model="u.Name" readonly />
+                </td>
+                
+                <td>
+                    <input class="form-control" type='text' ng-model="u.StoreName" readonly />
+                </td>
+                <td ng-click="getUser(u._id)"><span class="btn btn-primary">Edit</span></td>
+            </tr>
+            <tr ng-show="!(userdata | filter: (q.length > 1 ? {searchfield: q } : '')).length">
+                <td colspan="4">No Record Found</td>
+            </tr>
+        </table>
+        <div>
+            <nav aria-label="Page navigation">
+                <div class="text-center">
+                    <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)" template-url="app/modules/dashboard/views/dirPagination.tpl.html"></dir-pagination-controls>
+                </div>
+            </nav>
+        </div>
+    </section>
+    <!-- /.content -->
+</section>
