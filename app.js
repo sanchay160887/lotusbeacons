@@ -745,7 +745,7 @@ function getUserAllotedStore(req) {
 }
 
 app.post('/getdata', function(req, res) {
-    console.log(JSON.stringify(req.body));
+    console.log('Ali calling here');
     BeaconID = req.body.BeaconID;
     UserID = req.body.UserID;
 
