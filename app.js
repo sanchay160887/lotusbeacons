@@ -770,9 +770,9 @@ app.post('/getdata', function(req, res) {
     console.log('Store Parameter on start');
     console.log(StoreID);
 
-    if (typeof(BeaconID) == 'string'){
+    if (typeof(BeaconID) == 'string') {
         BeaconID = BeaconID.split(',');
-    }    
+    }
 
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
@@ -898,7 +898,15 @@ app.post('/getdata', function(req, res) {
                         console.log(JSON.stringify(devicelist));
                         console.log('called');
 
-                        res.send(devicelist);
+                        if (UserID && !devicelist) {
+                            var resObj = {};
+                            resObj.IsSuccess = false;
+                            resObj.message = 'No Record found';
+                            resObj.data = '';
+                            res.send(resObj);
+                        } else {
+                            res.send(devicelist);
+                        }
                         callback(null, devicelist);
                     })
             },
@@ -2992,21 +3000,21 @@ app.post('/userLogin', function(req, res) {
                     }).toArray(function(err, beacons) {
                         var AllotedSection = user.BeaconSection;
                         for (var b in beacons) {
-                                         
+
                             //beacons.push(beacons[b].BeaconKey)
-                           // beacons.push(beacons);
-                           beacons1.push(beacons[b]);
+                            // beacons.push(beacons);
+                            beacons1.push(beacons[b]);
                         }
 
-                       
 
-                          
+
+
                         resObj.beacons = beacons;
-                        
-                      // console.log(user.resObj);
-                       // console.log("merge called");
-                         console.log(resObj);
-                       
+
+                        // console.log(user.resObj);
+                        // console.log("merge called");
+                        console.log(resObj);
+
                         console.log('======end of beacon called==========');
                         res.send(resObj);
                     });
