@@ -277,10 +277,27 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
         data: {
             username: 'admin12345',
             password: 'sis12345@',
-            fromApp: '1'
+            fromApp: '1',
+            devicetoken:'APA91bHcxKvZbp5pcY_KeivI3qbHj1LF0KNct3Vx13jXVEFLzZDH5LMaE_1j08rClLhzAOwVJLp9Jmga0rPX3qndKOe6kK35sG8yDSYg4dipInhSZsgZOTU',
         }
     });
 
+
+    $http({
+        method: "post",
+        url: "/fcmtest",
+         data: {
+            'message': 'Sanchay Description',
+            'badge': 1,
+            'title': 'Notification Title',
+            'img_url': 'https://lh4.ggpht.com/mJDgTDUOtIyHcrb69WM0cpaxFwCNW6f0VQ2ExA7dMKpMDrZ0A6ta64OCX3H-NMdRd20=w300',
+            'notification_type': 6,
+        }
+    });
+
+
+
+    
 /*  $http({
         method: "post",
         url: "/getdata",

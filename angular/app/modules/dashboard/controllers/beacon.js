@@ -191,5 +191,14 @@ dashboard.controller("BeaconsController", function($rootScope, $scope, apiServic
         }
     });*/
 
+    $http({
+        method: "post",
+        url: "/getbeacondata",
+        data: {
+            'BeaconStore' : '586b97cf871a07c3e6b8f611',
+           
+        }
+    });
+
     //apiService.updateDevice('12:32:45:22:89','APA91bE8pbcfkLUbtfWPLurBq1h2jKe2S4LcA5mkQB7a-tp26pSBLY8jj726HqfBbxXK5hBkp1Aw9IzAlTU8DB3cxGlpIOrMbJjE6BkNA1EdZS3Xi6VaYWA','60');
 })

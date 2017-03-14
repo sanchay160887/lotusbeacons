@@ -309,6 +309,8 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         }
     }
 
+    //apiService.update_beacon_active('00:A0:50:17:1F:35','45ddxcdd55a5ds5fd5fdf5dfd','3.05');
+
     //apiService.updateDevice('00:A0:50:17:1F:35','APA91bGwYOTmTCYcS3F4L3n8HKrK0nJzNM-uJbIYFrdG6l7-49vJ2MHiXYNcpMMibY1ISU38-lLp8ONw3ZRPW2ioQdIAjMm5ycfMolCOSc6kM5S6NwMFu88','3.05');
 
     /*$http({

@@ -13,6 +13,7 @@ var async = require('async');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var GcmGoogleKey = 'AIzaSyAUxc6EwlgRP6MITCynw3_vsYatPI4iZuw';
+var FcmGoogleKeyEmp = 'AIzaSyBG65mkyorOX8uzdzcmMY8DOC183OcQozo';
 var gcm = require('android-gcm');
 var request = require('request');
 var forEach = require('async-foreach').forEach;
@@ -193,6 +194,7 @@ function parse_JSON(responsecontent) {
 /* General Supportive Function End <<-- */
 
 function updateDevice(BeaconID, DeviceID, Distance, MobileNo, resObj) {
+    console.log('Update Device called to check socket');
     if (MobileNo && MobileNo == '9584010456') {
         console.log('Beacon ID ' + BeaconID);
         console.log('Device ID ' + DeviceID);
@@ -318,6 +320,348 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, resObj) {
 }
 
 
+
+/// Employe function for update user Active start
+function updateUser_Active(BeaconID, UserID, Distance, resObj) {
+
+    var UserID = ObjectId(UserID);
+
+    console.log('Update User Active called');
+
+    console.log('Beacon ID ' + BeaconID);
+    console.log('User ID ' + UserID);
+    console.log('Distance ' + Distance);
+
+
+    var BeaconStoreID = '';
+
+    var resObjVal = {};
+    if (!(UserID && Distance)) {
+        console.log('Invalid data passing');
+        io.emit('updateUser_Active_response', {
+            'IsSuccess': false,
+            'message': 'Invalid data passing'
+        });
+
+        if (resObj) {
+            resObjVal.IsSuccess = false;
+            resObjVal.message = "Invalid data passing";
+            resObj.send(resObjVal);
+        }
+        return;
+    }
+
+    if (!isNumeric(Distance)) {
+        if (resObj) {
+            resObjVal.IsSuccess = false;
+            resObjVal.message = "Distance should be in numbers";
+            resObj.send(resObjVal);
+        }
+        return;
+    }
+
+    console.log('Update device called');
+
+    var comingFromLatLong = false;
+    if (!BeaconID) {
+        BeaconID = '';
+        comingFromLatLong = true;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+
+        var collection = db.collection('user_beacons_active');
+
+        async.waterfall([
+            function(callback) {
+                var bcollection = db.collection('beacons');
+                bcollection.find({
+                    'BeaconID': BeaconID
+                }).toArray(function(err, beacons) {
+                    callback(null, beacons);
+                });
+            },
+            function(beacons, callback) {
+                if (!(beacons && beacons.length > 0)) {
+                    if (resObj) {
+                        resObjVal.IsSuccess = false;
+                        resObjVal.message = "Invalid Beacon ID";
+                        resObj.send(resObjVal);
+                    }
+                    return 0;
+                } else {
+                    BeaconStoreID = beacons[0].BeaconStore;
+                }
+
+                collection.find({
+                    'UserID': UserID
+                }).toArray(function(err, user_beacons) {
+                    if (user_beacons && user_beacons.length > 0 && BeaconID != '') {
+                        updateUser_Beacon_History(user_beacons[0].BeaconID, user_beacons[0].UserID);
+                    }
+                    callback(null, user_beacons);
+                });
+            },
+            function(user_beacons_data, callback) {
+                console.log(user_beacons_data);
+                 console.log('user beacon data called');
+
+                if (BeaconID != '') {
+                    collection.update({
+                        'UserID': UserID //It should be oid
+                    }, {
+                        'BeaconID': BeaconID,
+                        'UserID': UserID,
+
+                        'Distance': Distance,
+                        'connectiontime': getCurrentTime(),
+                    }, {
+                        'upsert': true,
+                    }, function(err, result) {
+                        console.log('Employee updated or inserted');
+                        callback(null, 'updated or inserted');
+                    });
+                }
+            },
+            function(response, callback) {
+                io.emit('updateUser_Active_response', {
+                    'IsSuccess': true,
+                    'BeaconID': BeaconID,
+                    'StoreID': BeaconStoreID,
+                    'UserID': UserID,
+                    'message': 'Data inserted successfully'
+                });
+
+                db.close();
+                if (resObj) {
+                    var obj = {
+                        'IsSuccess': true,
+                        'BeaconID': BeaconID,
+                        'StoreID': BeaconStoreID,
+                        'UserID': UserID,
+                        'message': 'Data inserted successfully'
+                    };
+
+                    resObj.send(obj);
+                }
+                callback(null, response);
+            }
+        ]);
+    });
+
+
+
+
+
+}
+
+
+function updateUser_Beacon_History(BeaconID, UserID, resObj) {
+
+
+
+    console.log('------------Updating User employee History--------------');
+    console.log('Beacon ID ' + BeaconID);
+    console.log('User ID ' + UserID);
+
+    console.log('------------Updating User employee History--------------');
+
+    var resObjVal = {};
+    if (!(BeaconID && UserID)) {
+        return;
+    }
+
+    var BeaconStore = '';
+
+    todaysdate = getCurrentTime();
+    seldate = new Date(todaysdate);
+    datestring = seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate();
+    fromDate = new Date(datestring).getTime();
+    toDate = new Date(datestring + ' 23:59:59').getTime();
+
+    console.log('Update user history called');
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+
+        //var collection = db.collection('test_device_history');
+        var collection = db.collection('user_beacons_history ');
+        var beacons = [];
+
+        async.waterfall([
+            function(callback) {
+                var bcollection = db.collection('beacons');
+                bcollection.find({
+                    'BeaconID': BeaconID
+                }).toArray(function(err, beaconsdata) {
+                    callback(null, beaconsdata);
+                });
+            },
+            function(beaconsdata, callback) {
+                if (!(beaconsdata && beaconsdata.length > 0)) {
+                    if (typeof(resObj) != 'undefined') {
+                        resObjVal.IsSuccess = false;
+                        resObjVal.message = "Invalid Beacon ID";
+                        resObj.send(resObjVal);
+                    }
+                    return;
+                } else {
+                    beacons = beaconsdata;
+                    BeaconStore = beaconsdata[0].BeaconStore;
+                    callback(null, 'next callback');
+                }
+            },
+    
+            function(data, callback) {
+                collection.find({
+                    'UserID': UserID,
+                    'Date': {
+                        $gte: fromDate,
+                        $lte: toDate,
+                    }
+                }).sort({ 'Date': -1 }).toArray(function(err, devicelist) {
+                    callback(null, devicelist);
+                })
+            },
+            function(devicelist, callback) {
+                var devicetoken = ''
+                if (!(devicelist && devicelist.length > 0)) {
+                    if (typeof(beacons[0].BeaconWelcome) != 'undefined' && beacons[0].BeaconWelcome) {
+
+                            //========================find device toten on basis of user ID====================
+
+
+                            var usercollection = db.collection('users');
+
+                            usercollection.find({ 'UserID': UserID,}).toArray(function(err,token){
+
+                               devicetoken = token[0].devicetoken;
+
+                            });
+
+
+
+
+
+                            //End===================   find device toten on basis of user ID====================
+
+
+
+                        //sendpushnotification('', [DeviceID], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
+                        notifresobj = {};
+                        sendpushnotification(notifresobj, [devicetoken], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
+                    }
+                }
+                console.log('Sending notification');
+                callback(null, devicelist);
+            },
+            function(devices, callback) {
+                console.log('Inserting records over device history');
+                var IsInsertRecord = false;
+                currtime = getCurrentTime();
+
+                if (devices && devices.length > 0 &&
+                    !(typeof(devices[0].freeze) != 'undefined' && devices[0].freeze)) {
+                    //When user stayed to same beacon and socket calling update service again and again
+                    if (devices[0].BeaconID == BeaconID) {
+                        StayTime = Math.max(((todaysdate - devices[0].Date) / 1000), 0);
+                        if (StayTime >= 1) {
+                            collection.update({
+                                    _id: ObjectId(devices[0]._id)
+                                }, {
+                                    '$set': {
+                                        'DateTo': todaysdate,
+                                        'StayTime': StayTime,
+                                    }
+                                },
+                                function(err, result) {
+                                    if (err) {
+                                        throw err;
+                                    } else {
+                                        callback(null, 'updated');
+                                        return 0;
+                                    }
+                                });
+                        }
+                    } else {
+                        //When user move to another beacon from previous beacon
+                        StayTime = Math.max(((todaysdate - devices[0].Date) / 1000) - 1, 0);
+                        if (StayTime >= 1) {
+                            collection.update({
+                                    _id: ObjectId(devices[0]._id)
+                                }, {
+                                    '$set': {
+                                        'DateTo': todaysdate,
+                                        'StayTime': StayTime,
+                                    }
+                                },
+                                function(err, result) {
+                                    if (err) {
+                                        throw err;
+                                    }
+                                });
+                        }
+                        IsInsertRecord = true;
+                    }
+                } else {
+                    IsInsertRecord = true;
+                }
+                if (IsInsertRecord) {
+                    collection.insert({
+                        'BeaconID': BeaconID,
+                        'UserID':UserID,
+                       
+                        'StayTime': 1,
+                       
+                        'Date': todaysdate,
+                        'DateTo': todaysdate
+                    }, function(err, records) {
+                        callback(null, 'inserted');
+                        console.log('Device History inserted Mobile No:' + UserID);
+                    });
+                }
+            },
+            function(response, callback) {
+                io.emit('updateDeviceHistory_response', {
+                    'IsSuccess': true,
+                    'BeaconID': BeaconID,
+                    'UserID':UserID,
+                    //'StoreID': BeaconStore,
+                   // 'MobileNo': MobileNo,
+                    'message': 'Data updated successfully'
+                });
+                console.log('coming to last callback');
+                db.close();
+                if (resObj) {
+                    var obj = {
+                            'IsSuccess': true,
+                            'BeaconID': BeaconID,
+                            'UserID':UserID,
+                            //'StoreID': BeaconStore,
+                            //'MobileNo': MobileNo,
+                            'message': 'Data updated successfully'
+                        }
+                        //resObjVal.data = 'History updated upto last callback';
+                    resObj.send(obj);
+                }
+                callback(null, response);
+            }
+        ]);
+    });
+
+
+
+
+}
+
+
 function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
     if (MobileNo && MobileNo == '9584010456') {
         console.log('------------Updating device History--------------');
@@ -347,8 +691,10 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
         }
         assert.equal(null, err);
 
+
         //var collection = db.collection('test_device_history');
         var collection = db.collection('device_history');
+   
         var beacons = [];
 
         async.waterfall([
@@ -375,6 +721,7 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                 }
             },
             function(data, callback) {
+
                 collection.find({
                     'MobileNo': MobileNo
                 }).toArray(function(err, devicehistory) {
@@ -405,6 +752,8 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                 });
             },
             function(data, callback) {
+                console.log(data);
+                console.log('ready to call');
                 collection.find({
                     'MobileNo': MobileNo,
                     'Date': {
@@ -416,12 +765,57 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                 })
             },
             function(devicelist, callback) {
+                    var empcollection = db.collection('user_beacons_active');
+
+                           empcollection.find({
+                        'BeaconID': beacons[0].BeaconID 
+                    }).sort({ 'Distance': -1 }).toArray(function(err, emplist) {
+                        console.log(emplist);
+                        console.log('emplist called');
+                        if (emplist && emplist.length > 0) {
+                            var empusers = db.collection('users');
+
+                            var userid = emplist[0].UserID;
+
+                        console.log(userid);
+
+                            empusers.find({
+                        'UserID': userid
+                    }).toArray(function(err, emplist) {
+
+
+                            console.log(JSON.stringify(emplist));
+
+                            var token = emplist[0].devicetoken;
+
+                                            console.log(JSON.stringify(token));
+                                console.log('Employee Device Token called');
+                                notifresobj = {};
+
+                                sendpushnotification_fcm(notifresobj, [token], 'Check your customer is nearby you');
+                           })
+                        }
+                    })
+
+                    
+                console.log('Call End.');
+
+
                 if (!(devicelist && devicelist.length > 0)) {
+                  console.log('call start');
                     if (typeof(beacons[0].BeaconWelcome) != 'undefined' && beacons[0].BeaconWelcome) {
                         //sendpushnotification('', [DeviceID], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
                         notifresobj = {};
                         sendpushnotification_mobileno(notifresobj, [MobileNo], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
                     }
+
+                    /* Send notification to employees */
+                   
+
+
+
+
+             
                 }
                 console.log('Sending notification');
                 callback(null, devicelist);
@@ -537,6 +931,16 @@ io.on('connection', function(socket) {
         //sendDevices();
     });
 
+    //Employee socket start from here
+
+
+    socket.on('updateUser_Active', function(data) {
+        console.log('updateUser_Active socket calling');
+        updateUser_Active(data.BeaconID, data.UserID, data.Distance);
+        return "Update device called : " + data.BeaconID + ' UserID : ' + data.UserID;
+        //sendDevices();
+    });
+
 });
 
 app.post('/updateDevice', function(req, res) {
@@ -549,6 +953,20 @@ app.post('/updateDevice', function(req, res) {
     }
 
 });
+
+// Employee update user Active Start
+app.post('/updateUser_Active', function(req, res) {
+    updateUser_Active(req.body.BeaconID, req.body.UserID, req.body.Distance, res);
+    if (req.body.BeaconID) {
+        var staytime = 0;
+        if (req.body.stayTime) {
+            staytime = req.body.stayTime;
+        }
+    }
+
+});
+
+////    end  /////////////////
 
 app.post('/updateDeviceHistory', function(req, res) {
     console.log('service calling');
@@ -841,6 +1259,7 @@ app.post('/getdata', function(req, res) {
                 }
             },
             function(devicelist, callback) {
+                
                 var devices = [];
                 for (var d in devicelist) {
                     //devices.push(devicelist[d].DeviceID);
@@ -889,11 +1308,11 @@ app.post('/getdata', function(req, res) {
 
                         var i;
                         i = devicelist.length;
-                        while (i--) {
+                        /*while (i--) {
                             if (!devicelist[i].DeviceName) {
                                 devicelist.splice(i, 1);
                             }
-                        }
+                        }*/
 
                         console.log(JSON.stringify(devicelist));
                         console.log('called');
@@ -1499,6 +1918,8 @@ app.post('/getbeacondata', function(req, res) {
                 }
 
                 beaconcollection.sort({ 'BeaconKey': 1 }).toArray(function(err, beacons) {
+                    console.log(beacons);
+                    console.log('Beacon list called');
                     var beaconlist = [];
                     if (beacons && beacons.length > 0) {
                         for (var b in beacons) {
@@ -1519,6 +1940,8 @@ app.post('/getbeacondata', function(req, res) {
                 });
             },
             function(beaconlist, callback) {
+
+
                 db.close();
             }
         ]);
@@ -2130,10 +2553,11 @@ app.post('/getstore', function(req, res) {
 
 
 /*This function kept as checking purpose because this is working code*/
+
 app.post('/sendpushnotification_test', function(req, res) {
     var gcm = require('android-gcm');
     //var gcmObject = new gcm.AndroidGcm('AIzaSyAUxc6EwlgRP6MITCynw3_vsYatPI4iZuw');
-    var gcmObject = new gcm.AndroidGcm(GcmGoogleKey);
+    var gcmObject = new gcm.AndroidGcm(FcmGoogleKeyEmp);
 
     // initialize new androidGcm object 
     var message = new gcm.Message({
@@ -2156,6 +2580,52 @@ app.post('/sendpushnotification_test', function(req, res) {
         res.send();
     });
 });
+
+app.post('/fcmtest',function(req,res){
+
+    var FCM = require('fcm-node');
+
+var serverKey = 'AIzaSyBG65mkyorOX8uzdzcmMY8DOC183OcQozo';
+var fcm = new FCM(serverKey);
+
+var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
+    to: 'coldh9VkoBo:APA91bFAe02ww8s17JU8N1L-KlRmhoVvm9iE0rrSlGiXu80fGbOzJhP5ecTsKW9-0AvYJ-dtDmEfUHKzWw3jjqI6PDx6koqYSPb_KumPFIMU56te4OB6IOzFd4a1Ew3ZZzpg1Mwy7-qP', 
+    collapse_key: 'your_collapse_key',
+    
+    notification: {
+        title: 'Title of your push notification', 
+        body: 'Body of your push notification' 
+    },
+    
+    data: {  //you can send only notification or only data(or include both)
+        my_key: 'my value',
+        my_another_key: 'my another value'
+    }
+};
+
+fcm.send(message, function(err, response){
+    if (err) {
+        console.log("Something has gone wrong!");
+    } else {
+        console.log("Successfully sent with response: ", response);
+    }
+});
+
+
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
 
 app.post('/sendpushnotification_plain', function(req, res) {
     not_title = req.body.title;
@@ -2329,6 +2799,8 @@ function sendpushnotification_mobileno(res, gcmMobiles, title, description, imag
 }
 
 function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
+    console.log(gcmToken);
+    console.log('push notification called');
     var gcmObject = new gcm.AndroidGcm(GcmGoogleKey);
     if (!image_url) {
         image_url = '';
@@ -2375,6 +2847,90 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
         }
     });
 }
+
+
+
+function sendpushnotification_fcm(resObj, gcmToken, title, messagebody, image_url) {
+    console.log(gcmToken);
+    console.log('push notification called');
+   var FCM = require('fcm-node');
+
+var serverKey = 'AIzaSyCJ7BLdXAhonngXWKpqUtYK3fOdZFi8m_g';
+var fcm = new FCM(serverKey);
+    if (!image_url) {
+        image_url = '';
+    }
+
+    // initialize new androidGcm object
+    /*var message = new gcm.Message({
+        registration_ids: gcmToken, //[gcmToken],
+        data: {
+            'message': messagebody,
+            'badge': 1,
+            'title': title,
+            //'img_url': 'https://lh4.ggpht.com/mJDgTDUOtIyHcrb69WM0cpaxFwCNW6f0VQ2ExA7dMKpMDrZ0A6ta64OCX3H-NMdRd20=w300',
+            'img_url': image_url,
+            'notification_type': 6,
+        }
+    });*/
+
+    var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
+    to: gcmToken, 
+    collapse_key: 'your_collapse_key',
+    
+    data: {
+            'message': messagebody,
+            'badge': 1,
+            'title': title,
+            //'img_url': 'https://lh4.ggpht.com/mJDgTDUOtIyHcrb69WM0cpaxFwCNW6f0VQ2ExA7dMKpMDrZ0A6ta64OCX3H-NMdRd20=w300',
+            'img_url': image_url,
+            'notification_type': 6,
+        }
+    };
+
+    
+    data: {  //you can send only notification or only data(or include both)
+        my_key: 'my value',
+        my_another_key: 'my another value'
+    }
+};
+
+
+fcm.send(message, function(err, response){
+    if (err) {
+        console.log("Something has gone wrong!");
+    } else {
+            if (response.success) {
+                var request = require('request');
+                var gcmdata = JSON.stringify(gcmToken);
+                request.post(lotusWebURL + 'user/get_notification_entry', {
+                        form: {
+                            'android_device_token': gcmdata,
+                            'title': title,
+                            'message': messagebody,
+                            'notification_img': image_url
+                        }
+                    },
+                    function(res2, err, body) {
+                        console.log('Data coming from service --> ' + JSON.stringify(body));
+                        if (resObj) {
+                            resObj.send(body);
+                        }
+                    });
+            }
+        
+        console.log("Successfully sent with response: ", response);
+    }
+});
+
+
+
+    //console.log(message);
+
+}
+
+
+
 
 var multer = require('multer');
 var storage = multer.diskStorage({
@@ -2937,6 +3493,7 @@ app.post('/userLogin', function(req, res) {
                     dataParam = {
                         "UserID": req.body.username,
                         "UserType": 3,
+
                     }
                 } else {
                     dataParam = {
@@ -2950,6 +3507,35 @@ app.post('/userLogin', function(req, res) {
                 console.log('=====');
 
                 collection.find(dataParam).toArray(function(err, users) {
+
+                    if (isCallingFromApp) {
+
+                        var devicetoken = req.body.devicetoken;
+
+                        console.log(devicetoken);
+
+                        collection.updateMany({
+                                // 'BeaconID': AssignedStore,
+                                'UserID': req.body.username,
+                            }, {
+                                '$set': {
+                                    'devicetoken': devicetoken,
+                                }
+                            },
+                            function(err, result) {
+                                if (err) {
+                                    throw err;
+                                } else {
+
+                                }
+                            }
+                        );
+
+
+
+                    }
+
+                    console.log(JSON.stringify(users));
 
                     if (users && users.length > 0) {
                         var dbpassword = users[0].Password;
@@ -2992,6 +3578,7 @@ app.post('/userLogin', function(req, res) {
                 if (isCallingFromApp) {
                     var beaconCollection = db.collection('beacons_temp');
                     var AllotedSection = user.BeaconSection;
+
 
 
                     var beacons1 = [];
