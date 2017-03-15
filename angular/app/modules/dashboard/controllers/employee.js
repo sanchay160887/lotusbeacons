@@ -296,6 +296,17 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
     });
 
 
+        $http({
+        method: "post",
+        url: "/getEmployeeDetails",
+        data: {
+            EmployeeID: 'admin12345',
+           
+        }
+    });
+
+
+
 
     
 /*  $http({

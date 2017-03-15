@@ -408,7 +408,7 @@ function updateUser_Active(BeaconID, UserID, Distance, resObj) {
             },
             function(user_beacons_data, callback) {
                 console.log(user_beacons_data);
-                 console.log('user beacon data called');
+                console.log('user beacon data called');
 
                 if (BeaconID != '') {
                     collection.update({
@@ -518,7 +518,7 @@ function updateUser_Beacon_History(BeaconID, UserID, resObj) {
                     callback(null, 'next callback');
                 }
             },
-    
+
             function(data, callback) {
                 collection.find({
                     'UserID': UserID,
@@ -535,22 +535,22 @@ function updateUser_Beacon_History(BeaconID, UserID, resObj) {
                 if (!(devicelist && devicelist.length > 0)) {
                     if (typeof(beacons[0].BeaconWelcome) != 'undefined' && beacons[0].BeaconWelcome) {
 
-                            //========================find device toten on basis of user ID====================
+                        //========================find device toten on basis of user ID====================
 
 
-                            var usercollection = db.collection('users');
+                        var usercollection = db.collection('users');
 
-                            usercollection.find({ 'UserID': UserID,}).toArray(function(err,token){
+                        usercollection.find({ 'UserID': UserID, }).toArray(function(err, token) {
 
-                               devicetoken = token[0].devicetoken;
+                            devicetoken = token[0].devicetoken;
 
-                            });
-
-
+                        });
 
 
 
-                            //End===================   find device toten on basis of user ID====================
+
+
+                        //End===================   find device toten on basis of user ID====================
 
 
 
@@ -616,10 +616,10 @@ function updateUser_Beacon_History(BeaconID, UserID, resObj) {
                 if (IsInsertRecord) {
                     collection.insert({
                         'BeaconID': BeaconID,
-                        'UserID':UserID,
-                       
+                        'UserID': UserID,
+
                         'StayTime': 1,
-                       
+
                         'Date': todaysdate,
                         'DateTo': todaysdate
                     }, function(err, records) {
@@ -632,9 +632,9 @@ function updateUser_Beacon_History(BeaconID, UserID, resObj) {
                 io.emit('updateDeviceHistory_response', {
                     'IsSuccess': true,
                     'BeaconID': BeaconID,
-                    'UserID':UserID,
+                    'UserID': UserID,
                     //'StoreID': BeaconStore,
-                   // 'MobileNo': MobileNo,
+                    // 'MobileNo': MobileNo,
                     'message': 'Data updated successfully'
                 });
                 console.log('coming to last callback');
@@ -643,7 +643,7 @@ function updateUser_Beacon_History(BeaconID, UserID, resObj) {
                     var obj = {
                             'IsSuccess': true,
                             'BeaconID': BeaconID,
-                            'UserID':UserID,
+                            'UserID': UserID,
                             //'StoreID': BeaconStore,
                             //'MobileNo': MobileNo,
                             'message': 'Data updated successfully'
@@ -694,7 +694,7 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
 
         //var collection = db.collection('test_device_history');
         var collection = db.collection('device_history');
-   
+
         var beacons = [];
 
         async.waterfall([
@@ -765,44 +765,44 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                 })
             },
             function(devicelist, callback) {
-                    var empcollection = db.collection('user_beacons_active');
+                var empcollection = db.collection('user_beacons_active');
 
-                           empcollection.find({
-                        'BeaconID': beacons[0].BeaconID 
-                    }).sort({ 'Distance': -1 }).toArray(function(err, emplist) {
-                        console.log(emplist);
-                        console.log('emplist called');
-                        if (emplist && emplist.length > 0) {
-                            var empusers = db.collection('users');
+                empcollection.find({
+                    'BeaconID': beacons[0].BeaconID
+                }).sort({ 'Distance': -1 }).toArray(function(err, emplist) {
+                    console.log(emplist);
+                    console.log('emplist called');
+                    if (emplist && emplist.length > 0) {
+                        var empusers = db.collection('users');
 
-                            var userid = emplist[0].UserID;
+                        var userid = emplist[0].UserID;
 
                         console.log(userid);
 
-                            empusers.find({
-                        'UserID': userid
-                    }).toArray(function(err, emplist) {
+                        empusers.find({
+                            'UserID': userid
+                        }).toArray(function(err, emplist) {
 
 
                             console.log(JSON.stringify(emplist));
 
                             var token = emplist[0].devicetoken;
 
-                                            console.log(JSON.stringify(token));
-                                console.log('Employee Device Token called');
-                                notifresobj = {};
+                            console.log(JSON.stringify(token));
+                            console.log('Employee Device Token called');
+                            notifresobj = {};
 
-                                sendpushnotification_fcm(notifresobj, [token], 'Check your customer is nearby you');
-                           })
-                        }
-                    })
+                            sendpushnotification_fcm(notifresobj, [token], 'Check your customer is nearby you');
+                        })
+                    }
+                })
 
-                    
+
                 console.log('Call End.');
 
 
                 if (!(devicelist && devicelist.length > 0)) {
-                  console.log('call start');
+                    console.log('call start');
                     if (typeof(beacons[0].BeaconWelcome) != 'undefined' && beacons[0].BeaconWelcome) {
                         //sendpushnotification('', [DeviceID], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
                         notifresobj = {};
@@ -810,12 +810,12 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                     }
 
                     /* Send notification to employees */
-                   
 
 
 
 
-             
+
+
                 }
                 console.log('Sending notification');
                 callback(null, devicelist);
@@ -1259,7 +1259,7 @@ app.post('/getdata', function(req, res) {
                 }
             },
             function(devicelist, callback) {
-                
+
                 var devices = [];
                 for (var d in devicelist) {
                     //devices.push(devicelist[d].DeviceID);
@@ -2581,35 +2581,35 @@ app.post('/sendpushnotification_test', function(req, res) {
     });
 });
 
-app.post('/fcmtest',function(req,res){
+app.post('/fcmtest', function(req, res) {
 
     var FCM = require('fcm-node');
 
-var serverKey = 'AIzaSyBG65mkyorOX8uzdzcmMY8DOC183OcQozo';
-var fcm = new FCM(serverKey);
+    var serverKey = 'AIzaSyBG65mkyorOX8uzdzcmMY8DOC183OcQozo';
+    var fcm = new FCM(serverKey);
 
-var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
-    to: 'coldh9VkoBo:APA91bFAe02ww8s17JU8N1L-KlRmhoVvm9iE0rrSlGiXu80fGbOzJhP5ecTsKW9-0AvYJ-dtDmEfUHKzWw3jjqI6PDx6koqYSPb_KumPFIMU56te4OB6IOzFd4a1Ew3ZZzpg1Mwy7-qP', 
-    collapse_key: 'your_collapse_key',
-    
-    notification: {
-        title: 'Title of your push notification', 
-        body: 'Body of your push notification' 
-    },
-    
-    data: {  //you can send only notification or only data(or include both)
-        my_key: 'my value',
-        my_another_key: 'my another value'
-    }
-};
+    var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
+        to: 'coldh9VkoBo:APA91bFAe02ww8s17JU8N1L-KlRmhoVvm9iE0rrSlGiXu80fGbOzJhP5ecTsKW9-0AvYJ-dtDmEfUHKzWw3jjqI6PDx6koqYSPb_KumPFIMU56te4OB6IOzFd4a1Ew3ZZzpg1Mwy7-qP',
+        collapse_key: 'your_collapse_key',
 
-fcm.send(message, function(err, response){
-    if (err) {
-        console.log("Something has gone wrong!");
-    } else {
-        console.log("Successfully sent with response: ", response);
-    }
-});
+        notification: {
+            title: 'Title of your push notification',
+            body: 'Body of your push notification'
+        },
+
+        data: { //you can send only notification or only data(or include both)
+            my_key: 'my value',
+            my_another_key: 'my another value'
+        }
+    };
+
+    fcm.send(message, function(err, response) {
+        if (err) {
+            console.log("Something has gone wrong!");
+        } else {
+            console.log("Successfully sent with response: ", response);
+        }
+    });
 
 
 
@@ -2853,53 +2853,43 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
 function sendpushnotification_fcm(resObj, gcmToken, title, messagebody, image_url) {
     console.log(gcmToken);
     console.log('push notification called');
-   var FCM = require('fcm-node');
+    console.log(title);
+    var FCM = require('fcm-node');
 
-var serverKey = 'AIzaSyCJ7BLdXAhonngXWKpqUtYK3fOdZFi8m_g';
-var fcm = new FCM(serverKey);
+    var serverKey = 'AIzaSyCJ7BLdXAhonngXWKpqUtYK3fOdZFi8m_g';
+    var fcm = new FCM(serverKey);
     if (!image_url) {
         image_url = '';
     }
 
-    // initialize new androidGcm object
-    /*var message = new gcm.Message({
-        registration_ids: gcmToken, //[gcmToken],
-        data: {
-            'message': messagebody,
-            'badge': 1,
-            'title': title,
-            //'img_url': 'https://lh4.ggpht.com/mJDgTDUOtIyHcrb69WM0cpaxFwCNW6f0VQ2ExA7dMKpMDrZ0A6ta64OCX3H-NMdRd20=w300',
-            'img_url': image_url,
-            'notification_type': 6,
-        }
-    });*/
+
 
     var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
-    to: gcmToken, 
-    collapse_key: 'your_collapse_key',
-    
-    data: {
-            'message': messagebody,
+        registration_ids:gcmToken,
+        //ollapse_key: 'your_collapse_key',
+
+        data: {
+            'message': 'Check your nearest customer',
             'badge': 1,
             'title': title,
             //'img_url': 'https://lh4.ggpht.com/mJDgTDUOtIyHcrb69WM0cpaxFwCNW6f0VQ2ExA7dMKpMDrZ0A6ta64OCX3H-NMdRd20=w300',
             'img_url': image_url,
-            'notification_type': 6,
+            'notification_type': 7,
+
         }
     };
 
-    
-    data: {  //you can send only notification or only data(or include both)
-        my_key: 'my value',
-        my_another_key: 'my another value'
-    }
-};
 
 
-fcm.send(message, function(err, response){
-    if (err) {
-        console.log("Something has gone wrong!");
-    } else {
+
+
+
+
+    fcm.send(message, function(err, response) {
+
+        if (err) {
+            console.log("Something has gone wrong!");
+        } else {
             if (response.success) {
                 var request = require('request');
                 var gcmdata = JSON.stringify(gcmToken);
@@ -2907,7 +2897,7 @@ fcm.send(message, function(err, response){
                         form: {
                             'android_device_token': gcmdata,
                             'title': title,
-                            'message': messagebody,
+                            'message': 'check your nearest customer',
                             'notification_img': image_url
                         }
                     },
@@ -2918,10 +2908,10 @@ fcm.send(message, function(err, response){
                         }
                     });
             }
-        
-        console.log("Successfully sent with response: ", response);
-    }
-});
+
+            console.log("Successfully sent with response: ", response);
+        }
+    });
 
 
 
@@ -4198,4 +4188,60 @@ app.post('/addSection', function(req, res) {
         ]);
     });
 
+});
+
+
+
+
+
+app.post('/getEmployeeDetails', function(req, res) {
+    EmployeeID = req.body.EmployeeID;
+
+    console.log(EmployeeID);
+    console.log('Employee Details Called -----=========');
+
+    var resObj = {};
+
+    if (!(EmployeeID)) {
+        resObj.IsSuccess = false;
+        resObj.message = "Invalid Employee selected";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+
+        var collection = db.collection('users');
+
+        async.waterfall([
+            function(callback) {
+                collection.find({
+                    'UserID': EmployeeID
+                }).toArray(function(err, devices) {
+                    callback(null, devices);
+                });
+
+            },
+            function(devices, callback) {
+                console.log(devices);
+
+                if (devices && devices.length > 0) {
+                    resObj.IsSuccess = true;
+                    resObj.message = "success";
+                    resObj.data = devices;
+                } else {
+                    resObj.IsSuccess = false;
+                    resObj.message = "Employee not found";
+                }
+                db.close();
+                console.log('===============emp=================');
+                console.log(resObj);
+                res.send(resObj);
+            }
+        ]);
+    });
 });
