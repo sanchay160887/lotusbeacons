@@ -4251,7 +4251,7 @@ app.post('/getEmployeeDetails', function(req, res) {
     });
 });
 
-// get customer executive datta
+// get customer executive data
 
 app.post('/getcustomerdata', function(req, res) {
     UserID = req.body.UserID;
@@ -4282,15 +4282,23 @@ app.post('/getcustomerdata', function(req, res) {
                 }).toArray(function(err, users) {
 
              
-                    console.log('========user called===============');
+                    console.log('=============user called====================');
                    
                        ID = users[0].UserID;
+                       var dbpassword = users[0].Password;
+
+                         var isPasswordMatch = passwordHash.verify(Password, dbpassword);
+
+  console.log(dbpassword);
+                         console.log(isPasswordMatch);
+
+
 
                        resObj.users = users;
                              // console.log(resObj);
 
-                     if (ID == UserID) {
-            console.log('====================hiiii===================');
+                     if (ID == UserID  && isPasswordMatch == 'true') {
+            console.log('====================hiiii=========================');
                           resObj.IsSuccess = true;
                           resObj.message = "success";
                           resObj.data = users;
@@ -4302,19 +4310,17 @@ app.post('/getcustomerdata', function(req, res) {
                        else {
                     resObj.IsSuccess = false;
                     resObj.message = "Customer executive not found";
+                     res.send(resObj);
                 }
+                 db.close();
 
              // var pass = users[0].Password;
                     
-                    callback(null, users);
+                  
                 });
             },
     
-            function(customerlist, callback) {
-              
-                db.close();
-               
-            }
+          
         ]);
     });
 });
