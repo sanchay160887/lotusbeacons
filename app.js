@@ -4294,6 +4294,7 @@ app.post('/getcustomerdata', function(req, res) {
                           resObj.IsSuccess = true;
                           resObj.message = "success";
                           resObj.data = users;
+                           console.log(resObj);
                           res.send(resObj);
 
                       }
