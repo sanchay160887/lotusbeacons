@@ -146,7 +146,13 @@ app.controller("appCtrl", ['$rootScope', '$scope', '$state', '$location', 'Flash
                 title: "Sections",
                 icon: "arrows",
                 state: "sections"
-            }
+            },
+            {
+                title: "CRM",
+                icon: "user",
+                state: "crm"
+            },
+
         ];
 
         //set the theme selected

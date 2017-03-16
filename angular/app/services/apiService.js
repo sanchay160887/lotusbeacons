@@ -576,6 +576,30 @@ var deviceData = function(selectedBeacon, selectedStore) {
     apiService.addSection = addSection;
    // apiService.sectionData = sectionData;
 
+   //Add CRM start from here
+
+    var addCustomer = function(UserID, Password, Name,Designation ,AssignedStore) {
+       
+
+
+        return $http({
+            method: "post",
+            url: "/addCustomer",
+            data: {
+                'UserID': UserID,
+                'Password': Password,
+                'Name': Name,
+                'Designation':Designation,
+
+                'AssignedStore': AssignedStore,
+                
+            }
+        });
+    }
+
+   // apiService.sectionData = sectionData;
+    apiService.addCustomer = addCustomer;
+
 
 
 

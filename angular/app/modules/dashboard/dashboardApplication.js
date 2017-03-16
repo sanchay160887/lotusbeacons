@@ -236,4 +236,16 @@ dashboard.config(["$stateProvider", function($stateProvider) {
         }
     });
 
+
+    $stateProvider.state('app.crm', {
+        url: '/crm',
+        templateUrl: 'app/modules/dashboard/views/crm.html',
+        controller: 'CrmController',
+        controllerAs: 'vm',
+        data: {
+            pageTitle: 'CRM List'
+        }
+    });
+
+
 }]);

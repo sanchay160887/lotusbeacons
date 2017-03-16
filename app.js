@@ -792,7 +792,7 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                             console.log('Employee Device Token called');
                             notifresobj = {};
 
-                            sendpushnotification_fcm(notifresobj, [token], 'Check your customer is nearby you');
+                            sendpushnotification_fcm(notifresobj, [token], beacons[0].BeaconID, 'Check your customer is nearby you');
                         })
                     }
                 })
@@ -2850,8 +2850,9 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
 
 
 
-function sendpushnotification_fcm(resObj, gcmToken, title, messagebody, image_url) {
+function sendpushnotification_fcm(resObj, gcmToken, BeaconID, title, messagebody, image_url) {
     console.log(gcmToken);
+    console.log(BeaconID);
     console.log('push notification called');
     console.log(title);
     var FCM = require('fcm-node');
@@ -2865,13 +2866,14 @@ function sendpushnotification_fcm(resObj, gcmToken, title, messagebody, image_ur
 
 
     var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
-        registration_ids:gcmToken,
+        registration_ids: gcmToken,
         //ollapse_key: 'your_collapse_key',
 
         data: {
             'message': 'Check your nearest customer',
             'badge': 1,
             'title': title,
+            'BeaconID': BeaconID,
             //'img_url': 'https://lh4.ggpht.com/mJDgTDUOtIyHcrb69WM0cpaxFwCNW6f0VQ2ExA7dMKpMDrZ0A6ta64OCX3H-NMdRd20=w300',
             'img_url': image_url,
             'notification_type': 7,
@@ -2894,14 +2896,18 @@ function sendpushnotification_fcm(resObj, gcmToken, title, messagebody, image_ur
                 var request = require('request');
                 var gcmdata = JSON.stringify(gcmToken);
                 request.post(lotusWebURL + 'user/get_notification_entry', {
+
                         form: {
                             'android_device_token': gcmdata,
                             'title': title,
                             'message': 'check your nearest customer',
                             'notification_img': image_url
+
                         }
+
                     },
                     function(res2, err, body) {
+                        console.log('=====notification inserted2222==========');
                         console.log('Data coming from service --> ' + JSON.stringify(body));
                         if (resObj) {
                             resObj.send(body);
@@ -4227,20 +4233,250 @@ app.post('/getEmployeeDetails', function(req, res) {
 
             },
             function(devices, callback) {
-                console.log(devices);
+
 
                 if (devices && devices.length > 0) {
-                    resObj.IsSuccess = true;
-                    resObj.message = "success";
-                    resObj.data = devices;
+
+                    var beaconCollection = db.collection('beacons_temp');
+                    var AllotedSection = devices[0].BeaconSection;
+
+
+
+
+                    var beacons1 = [];
+                    beaconCollection.find({
+                        "BeaconSection": ObjectId(AllotedSection)
+                    }).toArray(function(err, beacons) {
+
+
+                        for (var b in beacons) {
+
+
+                            beacons1.push(beacons[b]);
+                        }
+                        console.log('===========beacons start================');
+
+                        console.log(beacons);
+                        console.log('===========beacons called================');
+
+
+
+                        resObj.beacons = beacons;
+                        resObj.devices = devices;
+
+
+
+
+
+
+
+                        resObj.IsSuccess = true;
+                        resObj.message = "success";
+
+                        res.send(resObj);
+                        console.log('===========end called================');
+                    });
+
+
+                    // resObj.IsSuccess = true;
+                    //resObj.message = "success";
+                    //resObj.data = devices;
                 } else {
                     resObj.IsSuccess = false;
                     resObj.message = "Employee not found";
                 }
                 db.close();
-                console.log('===============emp=================');
-                console.log(resObj);
+                // console.log('===============emp=================');
+                //  console.log(resObj);
+                // res.send(resObj);
+            }
+        ]);
+    });
+});
+
+// get customer executive datta
+
+app.post('/getcustomerdata', function(req, res) {
+    UserID = req.body.UserID;
+    Password = req.body.Password;
+    var resObj = {};
+
+    if (!(UserID)) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please Provide UserID";
+        res.send(resObj);
+        return;
+    }
+    var ID ='';
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+
+        var collection = db.collection('users');
+
+        async.waterfall([
+            function(callback) {
+                var collection = db.collection('users');
+                collection.find({
+                    'UserID': UserID
+                }).toArray(function(err, users) {
+
+             
+                    console.log('========user called===============');
+                   
+                       ID = users[0].UserID;
+
+                       resObj.users = users;
+                             // console.log(resObj);
+
+                      if (ID == UserID) {
+                            console.log('====================hiiii===================');
+                          resObj.IsSuccess = true;
+                          resObj.message = "success";
+                          resObj.data = users;
+                          res.send(resObj);
+
+                      }
+
+                       else {
+                    resObj.IsSuccess = false;
+                    resObj.message = "Customer executive not found";
+                }
+
+             // var pass = users[0].Password;
+                    
+                    callback(null, users);
+                });
+            },
+    
+            function(customerlist, callback) {
+              
+                db.close();
+               
+            }
+        ]);
+    });
+});
+
+
+app.post('/addCustomer', function(req, res) {
+
+
+    console.log(req);
+
+    UserID = req.body.UserID;
+    Password = req.body.Password;
+
+    Name = req.body.Name;
+    Designation = req.body.Designation;
+    AssignedStore = req.body.AssignedStore;
+
+
+    UserID = UserID.toLowerCase();
+
+    Name = Name.toLowerCase();
+    Designation = Designation.toLowerCase();
+    AssignedStore = AssignedStore.toLowerCase();
+
+
+
+    var resObj = {};
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = loginexpiredmessage;
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
+
+    if (!(UserID && Password && Name)) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please enter appropriate informations";
+        res.send(resObj);
+        return;
+    }
+
+    if (!AssignedStore) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please select Store";
+        res.send(resObj);
+        return;
+    }
+
+    if (AssignedStore.length != 24) {
+        resObj.IsSuccess = false;
+        resObj.message = "Invalid store selected";
+        res.send(resObj);
+        return;
+    }
+
+
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        assert.equal(null, err);
+
+        var collection = db.collection('users');
+
+        async.waterfall([
+            function(callback) {
+                collection.find().toArray(function(err, users) {
+                    var cnt = users.length;
+                    for (var u in users) {
+                        if (users[u].UserID == UserID) {
+                            resObj.IsSuccess = false;
+                            resObj.message = "User ID already exists";
+                            res.send(resObj);
+                            return 0;
+                        }
+
+                    }
+                    callback(null, users);
+                });
+            },
+            function(userdata, callback) {
+
+                var hashedPassword = passwordHash.generate(Password);
+                callback(null, hashedPassword);
+            },
+            function(hashedpassword, callback) {
+                collection.insert({
+                    'UserID': UserID,
+
+                    'Name': Name,
+
+                    'Password': hashedpassword,
+                    'Designation': Designation,
+
+                    'AssignedStore': ObjectId(AssignedStore),
+
+                    'UserType': 4,
+
+
+                });
+                console.log('User inserted');
+
+                callback(null, 'inserted');
+            },
+            function(response, callback) {
+                db.close();
+                resObj.IsSuccess = true;
+                resObj.message = "Customer registered successfully.";
                 res.send(resObj);
+                callback(null, response);
             }
         ]);
     });

@@ -270,7 +270,7 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
     }
 
 
-
+/*
     $http({
         method: "post",
         url: "/userLogin",
@@ -281,7 +281,7 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
             devicetoken:'APA91bHcxKvZbp5pcY_KeivI3qbHj1LF0KNct3Vx13jXVEFLzZDH5LMaE_1j08rClLhzAOwVJLp9Jmga0rPX3qndKOe6kK35sG8yDSYg4dipInhSZsgZOTU',
         }
     });
-
+*/
 
     $http({
         method: "post",
