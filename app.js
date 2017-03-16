@@ -4332,14 +4332,14 @@ app.post('/getcustomerdata', function(req, res) {
                        resObj.users = users;
                              // console.log(resObj);
 
-                    //  if (ID == UserID) {
+                     if (ID == UserID) {
             console.log('====================hiiii===================');
                           resObj.IsSuccess = true;
                           resObj.message = "success";
                           resObj.data = users;
                           res.send(resObj);
 
-                     // }
+                      }
 
                        else {
                     resObj.IsSuccess = false;
