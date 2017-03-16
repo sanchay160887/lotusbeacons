@@ -283,7 +283,7 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
     });
 */
 
-    $http({
+/*    $http({
         method: "post",
         url: "/fcmtest",
          data: {
@@ -295,7 +295,7 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
         }
     });
 
-
+*/
         $http({
         method: "post",
         url: "/getEmployeeDetails",

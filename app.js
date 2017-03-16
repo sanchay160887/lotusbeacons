@@ -2581,49 +2581,6 @@ app.post('/sendpushnotification_test', function(req, res) {
     });
 });
 
-app.post('/fcmtest', function(req, res) {
-
-    var FCM = require('fcm-node');
-
-    var serverKey = 'AIzaSyBG65mkyorOX8uzdzcmMY8DOC183OcQozo';
-    var fcm = new FCM(serverKey);
-
-    var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
-        to: 'coldh9VkoBo:APA91bFAe02ww8s17JU8N1L-KlRmhoVvm9iE0rrSlGiXu80fGbOzJhP5ecTsKW9-0AvYJ-dtDmEfUHKzWw3jjqI6PDx6koqYSPb_KumPFIMU56te4OB6IOzFd4a1Ew3ZZzpg1Mwy7-qP',
-        collapse_key: 'your_collapse_key',
-
-        notification: {
-            title: 'Title of your push notification',
-            body: 'Body of your push notification'
-        },
-
-        data: { //you can send only notification or only data(or include both)
-            my_key: 'my value',
-            my_another_key: 'my another value'
-        }
-    };
-
-    fcm.send(message, function(err, response) {
-        if (err) {
-            console.log("Something has gone wrong!");
-        } else {
-            console.log("Successfully sent with response: ", response);
-        }
-    });
-
-
-
-});
-
-
-
-
-
-
-
-
-
-
 
 
 
