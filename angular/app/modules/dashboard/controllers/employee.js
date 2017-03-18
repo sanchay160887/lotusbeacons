@@ -65,14 +65,14 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
         console.log('going to page ' + num);
     };
 
-    $scope.getAllUsers = function() {
+    $scope.getAllEmployees = function() {
         $scope.ListInitialized = false;
-        apiService.userData().then(function(res) {
+        apiService.employeeData().then(function(res) {
             if (!res.data.IsSuccess) {
                 alert(res.data.message);
                 return;
             }
-            $scope.userData = res.data.data;
+            $scope.employeeData = res.data.data;
             $scope.O = 'Name';
             $scope.userCurrentPage = 1;
             $scope.userPageSize = 10;
@@ -81,7 +81,7 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
         });
     }
 
-    $scope.getAllUsers();
+    $scope.getAllEmployees();
 
     apiService.storeData().then(function(res) {
         $scope.storeData = res.data.data;
@@ -172,12 +172,12 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
 			
             $scope.FormInitialized = false;
             console.log($scope.Password);
-            apiService.updateUser($scope.UserObjectID, $scope.UserID, ($scope.Password && $scope.Password.length > 0), $scope.Password,  $scope.Name,
-                    $scope.Designation, $scope.MobileNo, $scope.AssignedStore)
+            apiService.updateEmployee($scope.UserObjectID, $scope.UserID, ($scope.Password && $scope.Password.length > 0), $scope.Password,  $scope.Name,
+                    $scope.Designation, $scope.AssignedStore, $scope.AssignedSection)
                 .success(function(data, status, headers, config) {
                     if (data.IsSuccess) {
                         alert('User Updated Successfully');
-                        $scope.getAllUsers();
+                        $scope.getAllEmployees();// $scope.getAllUsers();
                     } else {
                         alert(data.message);
                     }
@@ -309,16 +309,16 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
 
 
     
-/*  $http({
+ $http({
         method: "post",
-        url: "/getdata",
+        url: "/getEmployeedata",
         data: {
-            UserID: '58b696a3e690710a48c399ee',
+            UserType: '3',
             
-             BeaconID: ["00:A0:50:B3:77:11"],
+            
         }
     });
-*/
+
 
 
     console.log('Login service called end');

@@ -158,8 +158,8 @@ Date: 05 Jan 2016
         </div>
         <div class="row">
             <div class="col-xs-2" style="margin-top: 10px;">
-                <small style="margin-top: 10px;" ng-show="(userData | filter: (q.length > 1 ? q : '')).length > 1"><b>{{ (userData | filter: (q.length > 1 ? q : '')).length || 0 }} Records</b></small>
-                <small style="margin-top: 10px;" ng-show="(userData | filter: (q.length > 1 ? q : '')).length == 1"><b>1 Record</b></small>
+                <small style="margin-top: 10px;" ng-show="(employeeData | filter: (q.length > 1 ? q : '')).length > 1"><b>{{ (employeeData | filter: (q.length > 1 ? q : '')).length || 0 }} Records</b></small>
+                <small style="margin-top: 10px;" ng-show="(employeeData | filter: (q.length > 1 ? q : '')).length == 1"><b>1 Record</b></small>
             </div>
         </div>
         <!-- Main content -->
@@ -177,7 +177,14 @@ Date: 05 Jan 2016
                 <span ng-show="O=='StoreName'">▲</span>
                 <span ng-show="O=='-StoreName'">▼</span>
             </th>
-            <tr dir-paginate="u in userData | filter: (q.length > 1 ? {searchfield: q } : '') | orderBy : O | itemsPerPage:  userPageSize" current-page="userCurrentPage">
+
+      <th ng-click="O=(O=='AssignedSection' && '-AssignedSection' || 'AssignedSection' )">Assigned Section
+                <span ng-show="O=='AssignedSection'">▲</span>
+                <span ng-show="O=='-AssignedSection'">▼</span>
+            </th>
+
+
+            <tr dir-paginate="u in employeeData | filter: (q.length > 1 ? {searchfield: q } : '') | orderBy : O | itemsPerPage:  userPageSize" current-page="userCurrentPage">
                 <!-- <tr ng-repeat=" | orderBy:Name "> -->
                 <td>
                     <input class="form-control" type='text' ng-model="u.UserID" readonly />
@@ -189,9 +196,14 @@ Date: 05 Jan 2016
                 <td>
                     <input class="form-control" type='text' ng-model="u.StoreName" readonly />
                 </td>
+                
+                <td>
+                    <input class="form-control" type='text' ng-model="u.AssignedSection" readonly />
+                </td>
+
                 <td ng-click="getUser(u._id)"><span class="btn btn-primary">Edit</span></td>
             </tr>
-            <tr ng-show="!(userdata | filter: (q.length > 1 ? {searchfield: q } : '')).length">
+            <tr ng-show="!(employeeData | filter: (q.length > 1 ? {searchfield: q } : '')).length">
                 <td colspan="4">No Record Found</td>
             </tr>
         </table>

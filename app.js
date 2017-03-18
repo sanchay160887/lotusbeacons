@@ -4154,6 +4154,155 @@ app.post('/addSection', function(req, res) {
 });
 
 
+app.post('/updateEmployee', function(req,res){
+
+    UserID = req.body.UserID;
+    ResetPassword = req.body.ResetPassword;
+    Password = req.body.Password;
+    AssignedSection = req.body.AssignedSection;
+    Name = req.body.Name;
+    Designation = req.body.Designation;
+  
+    AssignedStore = req.body.AssignedStore;
+    UserObjectID = req.body.UserObjectID;
+
+    UserID = UserID.toLowerCase();
+    AssignedSection = AssignedSection.toLowerCase();
+    Name = Name.toLowerCase();
+    Designation = Designation.toLowerCase();
+   
+
+    var resObj = {};
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = loginexpiredmessage;
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
+
+    if (!(UserID && Name && Email && UserObjectID)) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please enter appropriate informations";
+        res.send(resObj);
+        return;
+    }
+
+    if (!AssignedStore) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please select User";
+        res.send(resObj);
+        return;
+    }
+
+    if (AssignedStore.length != 24) {
+        resObj.IsSuccess = false;
+        resObj.message = "Invalid User selected";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        assert.equal(null, err);
+
+        var collection = db.collection('users');
+
+        async.waterfall([
+            function(callback) {
+                collection.find({
+                    '_id': { $ne: ObjectId(UserObjectID) }
+                }).toArray(function(err, users) {
+                    var cnt = users.length;
+                    for (var u in users) {
+                        if (users[u].UserID == UserID) {
+                            resObj.IsSuccess = false;
+                            resObj.message = "User ID already exists";
+                            res.send(resObj);
+                            return 0;
+                        } 
+                        /*else if (users[u].Name == Name) {
+                            resObj.IsSuccess = false;
+                            resObj.message = "Name already exists";
+                            res.send(resObj);
+                            return 0;
+                        }*/
+                    }
+                    callback(null, users);
+                });
+            },
+            function(userdata, callback) {
+                /*bcrypt.genSalt(10, function(err, salt) {
+                    if (err)
+                        return callback(err);
+
+                    bcrypt.hash(Password, salt, function(err, hash) {
+                        return callback(null, hash);
+                    });
+                });*/
+                var hashedPassword = passwordHash.generate(Password);
+                callback(null, hashedPassword);
+            },
+            function(hashedpassword, callback) {
+                /*console.log(ResetPassword);
+                console.log(hashedpassword);*/
+                if (ResetPassword) {
+                    collection.update({
+                        '_id': ObjectId(UserObjectID)
+                    }, {
+                        '$set': {
+                            'UserID': UserID,
+                            'Email': Email,
+                            'AssignedSection': AssignedSection,
+                            'Designation': Designation,
+                            'Password': hashedpassword,
+                           
+                            'AssignedStore': ObjectId(AssignedStore),
+                        }
+                    });
+
+                } else {
+                    console.log(ObjectId(UserObjectID));
+                    collection.update({
+                        '_id': ObjectId(UserObjectID)
+                    }, {
+                        '$set': {
+                            'UserID': UserID,
+                            'Email': Email,
+                            'Name': Name,
+                            'Designation': Designation,
+                            'MobileNo': MobileNo,
+                            'AssignedStore': ObjectId(AssignedStore),
+                        }
+                    });
+                }
+
+                console.log('User updated');
+
+                callback(null, 'updated');
+            },
+            function(response, callback) {
+                db.close();
+                resObj.IsSuccess = true;
+                resObj.message = "User updated successfully.";
+                res.send(resObj);
+                callback(null, response);
+            }
+        ]);
+    });
+
+
+});
 
 
 
@@ -4445,3 +4594,84 @@ app.post('/addCustomer', function(req, res) {
         ]);
     });
 });
+
+app.post('/getEmployeedata', function(req,res){
+    var resObj = {};
+
+    console.log(req.session);
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = loginexpiredmessage;
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        async.waterfall([
+            function(callback) {
+                var collection = db.collection('stores');
+
+                var storecollection = {};
+                storecollection = collection.find();
+                storecollection.toArray(function(err, stores) {
+                    var storelist = [];
+                    for (var b in stores) {
+                        storelist[stores[b]._id] = stores[b].StoreName;
+                    }
+                    callback(null, storelist);
+                });
+            },
+            function(storelist, callback) {
+                var collection = db.collection('users');
+                /*{ "UserType": 2 }*/
+                collection.find({
+                    'UserType': 3
+
+                }).toArray(function(err, users) {
+                    var userlist = [];
+                    if (users && users.length > 0) {
+                        for (var u in users) {
+                            users[u].StoreName = storelist[ObjectId(users[u].AssignedStore)];
+                            users[u].searchfield =
+                                users[u].Name + ' ' + users[u].UserID + ' ' + ' ' + users[u].StoreName + ' ' + users[u].AssignedSection;
+                            userlist.push(users[u]);
+                        }
+                        resObj.IsSuccess = true;
+                        resObj.message = "Success";
+                        resObj.data = userlist;
+                         console.log('===========employee list Start======================');
+
+                         console.log(resObj);
+
+                        console.log('===========employee list called======================');
+
+                        res.send(resObj);
+                    } else {
+                        resObj.IsSuccess = false;
+                        resObj.message = "No record found.";
+                        resObj.data = '';
+                        res.send(resObj);
+                    }
+                    callback(null, userlist);
+                });
+            },
+            function(userlist, callback) {
+                db.close();
+            }
+        ]);
+
+    });
+});
+

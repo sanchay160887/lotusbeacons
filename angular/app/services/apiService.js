@@ -550,9 +550,30 @@ var deviceData = function(selectedBeacon, selectedStore) {
         });
     }
 
+
+
+    var updateEmployee = function(UserObjectID, UserID, ResetPassword, Password, AssignedSection, Name, Designation, AssignedStore) {
+        return $http({
+            method: "post",
+            url: "/updateEmployee",
+            data: {
+                'UserObjectID': UserObjectID,
+                'UserID': UserID,
+                'Password': Password,
+                'ResetPassword': ResetPassword,
+                'AssignedSection': AssignedSection,
+                'Name': Name,
+                'Designation': Designation,
+                'AssignedStore': AssignedStore
+            }
+        });
+    }
+
+
     apiService.sectionData = sectionData;
     apiService.addEmployee = addEmployee;
-    // apiService.updateEmployee = updateEmployee;
+    apiService.employeeData = employeeData;
+    apiService.updateEmployee = updateEmployee;
     //apiService.deleteEmployee = deleteEmployee;
     
 /*    var sectionData = function(data) {
@@ -599,8 +620,6 @@ var deviceData = function(selectedBeacon, selectedStore) {
 
    // apiService.sectionData = sectionData;
     apiService.addCustomer = addCustomer;
-
-
 
 
     return apiService;
