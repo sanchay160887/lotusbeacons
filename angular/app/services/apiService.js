@@ -570,16 +570,39 @@ var deviceData = function(selectedBeacon, selectedStore) {
     }
 
 
+
+    var deleteEmployee = function(UserObjectID) {
+
+        return $http({
+            method: "post",
+            url: "/deleteEmployee",
+            data: {
+                'UserObjectID': UserObjectID,
+            }
+        });
+    }
+
+
+
     apiService.sectionData = sectionData;
     apiService.addEmployee = addEmployee;
     apiService.employeeData = employeeData;
     apiService.updateEmployee = updateEmployee;
-    //apiService.deleteEmployee = deleteEmployee;
+    apiService.deleteEmployee = deleteEmployee;
     
 /*    var sectionData = function(data) {
         return $http.post('/getsectiondata', { headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;' } });
     }
 */
+
+         var secData = function() {
+            return $http({
+                method: "post",
+                url: "/getallsections"
+            });
+
+
+        }
     var addSection = function(SectionName, SectionDesc,AssignedStore,selectedBeacon) {
         return $http({
             method: "post",
@@ -595,9 +618,18 @@ var deviceData = function(selectedBeacon, selectedStore) {
     }
 
     apiService.addSection = addSection;
-   // apiService.sectionData = sectionData;
+    apiService.secData = secData;
 
    //Add CRM start from here
+
+     var crmData = function() {
+            return $http({
+                method: "post",
+                url: "/getCrmData"
+            });
+
+
+        }
 
     var addCustomer = function(UserID, Password, Name,Designation ,AssignedStore) {
        
@@ -618,8 +650,22 @@ var deviceData = function(selectedBeacon, selectedStore) {
         });
     }
 
+        var deleteCrm= function(UserObjectID) {
+
+        return $http({
+            method: "post",
+            url: "/deleteCrm",
+            data: {
+                'UserObjectID': UserObjectID,
+            }
+        });
+    }
+
+
    // apiService.sectionData = sectionData;
     apiService.addCustomer = addCustomer;
+    apiService.crmData = crmData;
+     apiService.deleteCrm = deleteCrm;
 
 
     return apiService;

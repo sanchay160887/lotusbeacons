@@ -50,7 +50,7 @@ Date: 05 Jan 2016
 <section class="content-blocks">
     <section class="content-header">
         <h1>
-            Users
+            CRM Data
         </h1>
         <ol class="breadcrumb">
             <!-- <li><a><i class="fa fa-dashboard"></i> Dashboard</a></li> -->
@@ -111,7 +111,7 @@ Date: 05 Jan 2016
             <p ng-show="button_name=='Update'">Leave password field blank if you donot want to reset password.</p>
             <br>
             <button class="btn btn-primary" ng-bind="button_name" ng-click="processUser()">Add</button>
-            <button class="btn btn-primary" ng-if="button_name=='Update' && UserType != 1" ng-click="deleteUser()">
+            <button class="btn btn-primary" ng-if="button_name=='Update' && UserType != 1" ng-click="deleteCrm()">
                 Delete</button>
             <button class="btn btn-primary" ng-if="button_name=='Update'" ng-click="resetControls()">Cancel</button>
             <p ng-show="UserType == 1">Admin account cannot be deleted, Only updated.</p>
@@ -144,8 +144,9 @@ Date: 05 Jan 2016
         </div>
         <div class="row">
             <div class="col-xs-2" style="margin-top: 10px;">
-                <small style="margin-top: 10px;" ng-show="(userData | filter: (q.length > 1 ? q : '')).length > 1"><b>{{ (userData | filter: (q.length > 1 ? q : '')).length || 0 }} Records</b></small>
-                <small style="margin-top: 10px;" ng-show="(userData | filter: (q.length > 1 ? q : '')).length == 1"><b>1 Record</b></small>
+                <small style="margin-top: 10px;" ng-show="(crmData | filter: (q.length > 1 ? q : '')).length > 1"><b>{{ (crmData | filter: (q.length > 1 ? q : '')).length || 0 }} Records</b></small>
+                <small style="margin-top: 10px;" ng-show="(crmData
+                 | filter: (q.length > 1 ? q : '')).length == 1"><b>1 Record</b></small>
             </div>
         </div>
         <!-- Main content -->
@@ -159,11 +160,17 @@ Date: 05 Jan 2016
                 <span ng-show="O=='-Name'">▼</span>
             </th>
             
+               <th ng-click="O=(O=='Designation' && '-Designation' || 'Designation' )">Designation
+                <span ng-show="O=='Designation'">▲</span>
+                <span ng-show="O=='-Designation'">▼</span>
+            </th>
+
+
             <th ng-click="O=(O=='StoreName' && '-StoreName' || 'StoreName' )">Assigned Store
                 <span ng-show="O=='StoreName'">▲</span>
                 <span ng-show="O=='-StoreName'">▼</span>
             </th>
-            <tr dir-paginate="u in userData | filter: (q.length > 1 ? {searchfield: q } : '') | orderBy : O | itemsPerPage:  userPageSize" current-page="userCurrentPage">
+            <tr dir-paginate="u in crmData | filter: (q.length > 1 ? {searchfield: q } : '') | orderBy : O | itemsPerPage:  userPageSize" current-page="userCurrentPage">
                 <!-- <tr ng-repeat=" | orderBy:Name "> -->
                 <td>
                     <input class="form-control" type='text' ng-model="u.UserID" readonly />
@@ -171,13 +178,18 @@ Date: 05 Jan 2016
                 <td>
                     <input class="form-control" type='text' ng-model="u.Name" readonly />
                 </td>
+
+                 <td>
+                    <input class="form-control" type='text' ng-model="u.Designation" readonly />
+                </td>
+                
                 
                 <td>
                     <input class="form-control" type='text' ng-model="u.StoreName" readonly />
                 </td>
                 <td ng-click="getUser(u._id)"><span class="btn btn-primary">Edit</span></td>
             </tr>
-            <tr ng-show="!(userdata | filter: (q.length > 1 ? {searchfield: q } : '')).length">
+            <tr ng-show="!(crmData | filter: (q.length > 1 ? {searchfield: q } : '')).length">
                 <td colspan="4">No Record Found</td>
             </tr>
         </table>

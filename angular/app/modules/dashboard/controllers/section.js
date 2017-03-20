@@ -59,15 +59,16 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
         console.log('going to page ' + num);
     };
 
-    $scope.getAllUsers = function() {
+    $scope.getAllSections = function() {
         $scope.ListInitialized = false;
-        apiService.userData().then(function(res) {
+        apiService.secData().then(function(res) {
+
             if (!res.data.IsSuccess) {
                 alert(res.data.message);
                 return;
             }
-            $scope.userData = res.data.data;
-            $scope.O = 'Name';
+            $scope.secData = res.data.data;
+            $scope.O = 'SectionName';
             $scope.userCurrentPage = 1;
             $scope.userPageSize = 10;
             $scope.resetControls();
@@ -75,13 +76,22 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
         });
     }
 
-    $scope.getAllUsers();
+    $scope.getAllSections();
 
     apiService.storeData().then(function(res) {
         $scope.storeData = res.data.data;
     });
 
-  
+   /* 
+    apiService.sectionData().then(function(res) {
+       
+
+
+        $scope.sectionData = res.data.data;
+       
+    });
+
+  */
 
     
 
@@ -110,21 +120,24 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
         $scope.sectionForm.$setPristine();
     }
 
-    $scope.getUser = function(pUserObjectID) {
+    $scope.getSections = function(pUserObjectID) {
+alert(pUserObjectID);
+
         $scope.FormInitialized = false;
-        apiService.getUser(pUserObjectID).
+        apiService.secData(pUserObjectID).
         success(function(data, status, headers, config) {
                 if (data.data) {
                     $scope.button_name = 'Update';
 
                     $scope.UserObjectID = pUserObjectID;
-                    $scope.UserID = data.data[0].UserID;
-                    $scope.Name = data.data[0].Name;
+                    $scope.SectionName = data.data[0].SectionName;
+                    $scope.SectionDesc = data.data[0].SectionDesc;
 
 
                     // $scope.UserType = data.data[0].UserType;
                     $scope.AssignedStore = data.data[0].AssignedStore;
-                    $scope.AssignedSection = data.data[0].AssignedSection;
+
+                    alert($scope.StoreName);
                 } else {
                     $scope.UserObjectID = '';
                     alert('User not found. Please refresh your page');

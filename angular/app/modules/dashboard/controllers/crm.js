@@ -65,14 +65,14 @@ dashboard.controller("CrmController", function($rootScope,$scope, apiService, $h
         console.log('going to page ' + num);
     };
 
-    $scope.getAllUsers = function() {
+    $scope.getAllCRM = function() {
         $scope.ListInitialized = false;
-        apiService.userData().then(function(res) {
+        apiService.crmData().then(function(res) {
             if (!res.data.IsSuccess) {
                 alert(res.data.message);
                 return;
             }
-            $scope.userData = res.data.data;
+            $scope.crmData = res.data.data;
             $scope.O = 'Name';
             $scope.userCurrentPage = 1;
             $scope.userPageSize = 10;
@@ -81,7 +81,7 @@ dashboard.controller("CrmController", function($rootScope,$scope, apiService, $h
         });
     }
 
-    $scope.getAllUsers();
+    $scope.getAllCRM();
 
     apiService.storeData().then(function(res) {
         $scope.storeData = res.data.data;
@@ -220,18 +220,18 @@ dashboard.controller("CrmController", function($rootScope,$scope, apiService, $h
        
     }
 
-    $scope.deleteUser = function() {
+    $scope.deleteCrm = function() {
         var r = confirm("Are you sure to delete this record ?");
         if (!r) {
             return;
         }
         $scope.FormInitialized = false;
-        apiService.deleteUser($scope.UserObjectID).success(function(res) {
+        apiService.deleteCrm($scope.UserObjectID).success(function(res) {
             console.log(res);
             $scope.FormInitialized = true;
             if (res.IsSuccess) {
                 alert('Employee Deleted Successfully');
-                $scope.getAllUsers();
+                $scope.getAllCRM();
             } else {
                 alert(res.message);
             }

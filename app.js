@@ -3964,6 +3964,8 @@ app.post('/getsectiondata', function(req, res) {
         res.send(resObj);
     }*/
 
+    console.log("Get Section Called================================================");
+
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
             return console.dir(err);
@@ -3982,6 +3984,8 @@ app.post('/getsectiondata', function(req, res) {
                 resObj.message = "Success";
                 resObj.data = devicelist;
                 console.log(resObj.data);
+
+                console.log('==== Section Data Called=======================');
                 res.send(resObj);
             } else {
                 resObj.IsSuccess = false;
@@ -4188,7 +4192,7 @@ app.post('/updateEmployee', function(req,res){
         return;
     }
 
-    if (!(UserID && Name && Email && UserObjectID)) {
+    if (!(UserID && Name  && UserObjectID)) {
         resObj.IsSuccess = false;
         resObj.message = "Please enter appropriate informations";
         res.send(resObj);
@@ -4278,23 +4282,24 @@ app.post('/updateEmployee', function(req,res){
                     }, {
                         '$set': {
                             'UserID': UserID,
-                            'Email': Email,
+                            
                             'Name': Name,
                             'Designation': Designation,
-                            'MobileNo': MobileNo,
+                           
                             'AssignedStore': ObjectId(AssignedStore),
+                            'AssignedSection': AssignedSection,
                         }
                     });
                 }
 
-                console.log('User updated');
+                console.log('Employee updated');
 
                 callback(null, 'updated');
             },
             function(response, callback) {
                 db.close();
                 resObj.IsSuccess = true;
-                resObj.message = "User updated successfully.";
+                resObj.message = "Employee updated successfully.";
                 res.send(resObj);
                 callback(null, response);
             }
@@ -4645,7 +4650,7 @@ app.post('/getEmployeedata', function(req,res){
                         for (var u in users) {
                             users[u].StoreName = storelist[ObjectId(users[u].AssignedStore)];
                             users[u].searchfield =
-                                users[u].Name + ' ' + users[u].UserID + ' ' + ' ' + users[u].StoreName + ' ' + users[u].AssignedSection;
+                                users[u].Name + ' ' + users[u].UserID + ' ' + users[u].Designation + ' ' + users[u].StoreName + ' ' + users[u].AssignedSection;
                             userlist.push(users[u]);
                         }
                         resObj.IsSuccess = true;
@@ -4675,3 +4680,267 @@ app.post('/getEmployeedata', function(req,res){
     });
 });
 
+
+app.post('/deleteEmployee', function(req, res) {
+    UserObjectID = req.body.UserObjectID;
+
+    console.log(UserObjectID);
+    console.log('============== Called===========EEEE==');
+
+    var resObj = {};
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = loginexpiredmessage;
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
+
+    if (!UserObjectID) {
+        resObj.IsSuccess = false;
+        resObj.message = "Invalid User Selected";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+
+        var collection = db.collection('users');
+
+        collection.deleteMany({
+            '_id': ObjectId(UserObjectID),
+            'UserType': 3
+        });
+        resObj.IsSuccess = true;
+        resObj.message = "Employee deleted successfully";
+        res.send(resObj);
+
+        db.close();
+
+    });
+});
+
+
+app.post('/getCrmData', function(req,res){
+    var resObj = {};
+
+    console.log(req.session);
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = loginexpiredmessage;
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        async.waterfall([
+            function(callback) {
+                var collection = db.collection('stores');
+
+                var storecollection = {};
+                storecollection = collection.find();
+                storecollection.toArray(function(err, stores) {
+                    var storelist = [];
+                    for (var b in stores) {
+                        storelist[stores[b]._id] = stores[b].StoreName;
+                    }
+                    callback(null, storelist);
+                });
+            },
+            function(storelist, callback) {
+                var collection = db.collection('users');
+                /*{ "UserType": 2 }*/
+                collection.find({
+                    'UserType': 4
+
+                }).toArray(function(err, users) {
+                    var userlist = [];
+                    if (users && users.length > 0) {
+                        for (var u in users) {
+                            users[u].StoreName = storelist[ObjectId(users[u].AssignedStore)];
+                            users[u].searchfield =
+                                users[u].Name + ' ' + users[u].UserID + ' ' + users[u].Designation + ' ' + users[u].StoreName;
+                            userlist.push(users[u]);
+                        }
+                        resObj.IsSuccess = true;
+                        resObj.message = "Success";
+                        resObj.data = userlist;
+                         console.log('===========employee list Start======================');
+
+                         console.log(resObj);
+
+                        console.log('===========employee list called======================');
+
+                        res.send(resObj);
+                    } else {
+                        resObj.IsSuccess = false;
+                        resObj.message = "No record found.";
+                        resObj.data = '';
+                        res.send(resObj);
+                    }
+                    callback(null, userlist);
+                });
+            },
+            function(userlist, callback) {
+                db.close();
+            }
+        ]);
+
+    });
+});
+
+
+app.post('/deleteCrm', function(req, res) {
+    UserObjectID = req.body.UserObjectID;
+
+    console.log(UserObjectID);
+    console.log('============== Called===========EEEE==');
+
+    var resObj = {};
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = loginexpiredmessage;
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
+
+    if (!UserObjectID) {
+        resObj.IsSuccess = false;
+        resObj.message = "Invalid User Selected";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+
+        var collection = db.collection('users');
+
+        collection.deleteMany({
+            '_id': ObjectId(UserObjectID),
+            'UserType': 4
+        });
+        resObj.IsSuccess = true;
+        resObj.message = "CRM deleted successfully";
+        res.send(resObj);
+
+        db.close();
+
+    });
+});
+
+
+app.post('/getallsections',function(req,res){
+
+
+    var resObj = {};
+
+    console.log(req.session);
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = loginexpiredmessage;
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        async.waterfall([
+            function(callback) {
+                var collection = db.collection('stores');
+
+                var storecollection = {};
+                storecollection = collection.find();
+                storecollection.toArray(function(err, stores) {
+                    var storelist = [];
+                    for (var b in stores) {
+                        storelist[stores[b]._id] = stores[b].StoreName;
+                    }
+                    callback(null, storelist);
+                });
+            },
+            function(storelist, callback) {
+                var collection = db.collection('sections');
+                /*{ "UserType": 2 }*/
+                collection.find().toArray(function(err, sections) {
+                    var sectionlist = [];
+                    if (sections && sections.length > 0) {
+                        for (var u in sections) {
+                            sections[u].StoreName = storelist[ObjectId(sections[u].AssignedStore)];
+                            sections[u].searchfield =
+                                sections[u].SectionName + ' ' + sections[u].SectionDesc + ' '  + sections[u].StoreName;
+                            sectionlist.push(sections[u]);
+                        }
+                        resObj.IsSuccess = true;
+                        resObj.message = "Success";
+                        resObj.data = sectionlist;
+                         console.log('===========Section list Start======================');
+
+                         console.log(resObj);
+
+                        console.log('===========Section list called======================');
+
+                        res.send(resObj);
+                    } else {
+                        resObj.IsSuccess = false;
+                        resObj.message = "No record found.";
+                        resObj.data = '';
+                        res.send(resObj);
+                    }
+                    callback(null, sectionlist);
+                });
+            },
+            function(sectionlist, callback) {
+                db.close();
+            }
+        ]);
+
+    });
+
+
+});

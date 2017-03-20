@@ -68,6 +68,7 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
     $scope.getAllEmployees = function() {
         $scope.ListInitialized = false;
         apiService.employeeData().then(function(res) {
+
             if (!res.data.IsSuccess) {
                 alert(res.data.message);
                 return;
@@ -220,18 +221,21 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
        
     }
 
-    $scope.deleteUser = function() {
+    $scope.deleteEmployee = function() {
         var r = confirm("Are you sure to delete this record ?");
         if (!r) {
             return;
         }
+
+       
         $scope.FormInitialized = false;
-        apiService.deleteUser($scope.UserObjectID).success(function(res) {
+        
+        apiService.deleteEmployee($scope.UserObjectID).success(function(res) {
             console.log(res);
             $scope.FormInitialized = true;
             if (res.IsSuccess) {
                 alert('Employee Deleted Successfully');
-                $scope.getAllUsers();
+                $scope.getAllEmployees();
             } else {
                 alert(res.message);
             }

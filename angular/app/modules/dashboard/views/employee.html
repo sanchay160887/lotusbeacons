@@ -50,12 +50,12 @@ Date: 05 Jan 2016
 <section class="content-blocks">
     <section class="content-header">
         <h1>
-            Users
+            Employees
         </h1>
         <ol class="breadcrumb">
             <!-- <li><a><i class="fa fa-dashboard"></i> Dashboard</a></li> -->
             <li><a ui-sref="app.dashboard"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-            <li class="active">Users</li>
+            <li class="active">Employees</li>
         </ol>
     </section>
     <section class="content-body register_block_1">
@@ -89,6 +89,8 @@ Date: 05 Jan 2016
  			
  			<label>Designation</label>
             <input class="form-control" type="text" name="Designation" id="Designation" ng-model="Designation" />
+
+
             
             <br>
             
@@ -97,7 +99,7 @@ Date: 05 Jan 2016
             <select class="form-control col-md-4" ng-model="AssignedSection" id="AssignedSection" name="AssignedSection" required="required">
                 <option value="">Select Setion</option>
                 <option ng-repeat="device in sectionData | orderBy:SectionName" value="{{device._id}}">
-                    {{device.sectionData}}</option>
+                    {{device.SectionName}}</option>
             </select> 
           <!--    <input class="form-control" type="text" name="AssignedSection" id="AssignedSection" ng-model="AssignedSection" required="required" /> -->
 
@@ -125,10 +127,10 @@ Date: 05 Jan 2016
             <p ng-show="button_name=='Update'">Leave password field blank if you donot want to reset password.</p>
             <br>
             <button class="btn btn-primary" ng-bind="button_name" ng-click="processUser()">Add</button>
-            <button class="btn btn-primary" ng-if="button_name=='Update' && UserType != 1" ng-click="deleteUser()">
+            <button class="btn btn-primary" ng-if="button_name=='Update' && UserType != 1" ng-click="deleteEmployee()">
                 Delete</button>
             <button class="btn btn-primary" ng-if="button_name=='Update'" ng-click="resetControls()">Cancel</button>
-            <p ng-show="UserType == 1">Admin account cannot be deleted, Only updated.</p>
+            <p ng-show="UserType == 3">Admin account cannot be deleted, Only updated.</p>
         </ng-form>
     </section>
     <section class="content-body register_block_2">
@@ -183,6 +185,11 @@ Date: 05 Jan 2016
                 <span ng-show="O=='-AssignedSection'">▼</span>
             </th>
 
+            <th ng-click="O=(O=='Designation' && '-Designation' || 'Designation' )">Designation
+                <span ng-show="O=='Designation'">▲</span>
+                <span ng-show="O=='-Designation'">▼</span>
+            </th>
+
 
             <tr dir-paginate="u in employeeData | filter: (q.length > 1 ? {searchfield: q } : '') | orderBy : O | itemsPerPage:  userPageSize" current-page="userCurrentPage">
                 <!-- <tr ng-repeat=" | orderBy:Name "> -->
@@ -199,6 +206,11 @@ Date: 05 Jan 2016
                 
                 <td>
                     <input class="form-control" type='text' ng-model="u.AssignedSection" readonly />
+                </td>
+
+
+                  <td>
+                    <input class="form-control" type='text' ng-model="u.Designation" readonly />
                 </td>
 
                 <td ng-click="getUser(u._id)"><span class="btn btn-primary">Edit</span></td>
