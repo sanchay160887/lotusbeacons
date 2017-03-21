@@ -230,18 +230,18 @@ alert(pUserObjectID);
 
     }
 
-    $scope.deleteUser = function() {
+    $scope.deleteSection = function() {
         var r = confirm("Are you sure to delete this record ?");
         if (!r) {
             return;
         }
         $scope.FormInitialized = false;
-        apiService.deleteUser($scope.UserObjectID).success(function(res) {
+        apiService.deleteSection($scope.UserObjectID).success(function(res) {
             console.log(res);
             $scope.FormInitialized = true;
             if (res.IsSuccess) {
-                alert('Employee Deleted Successfully');
-                $scope.getAllUsers();
+                alert('Section Deleted Successfully');
+                $scope.getAllSections();
             } else {
                 alert(res.message);
             }

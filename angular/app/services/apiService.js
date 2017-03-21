@@ -626,8 +626,21 @@ var deviceData = function(selectedBeacon, selectedStore) {
         });
     }
 
+
+        var deleteSection= function(UserObjectID) {
+
+        return $http({
+            method: "post",
+            url: "/deleteSection",
+            data: {
+                'UserObjectID': UserObjectID,
+            }
+        });
+    }
+
     apiService.addSection = addSection;
     apiService.secData = secData;
+     apiService.deleteSection = deleteSection;
 
    //Add CRM start from here
 
@@ -659,6 +672,37 @@ var deviceData = function(selectedBeacon, selectedStore) {
         });
     }
 
+
+
+
+    var updateCustomeExecutive = function(UserObjectID, UserID, Password, Name, AssignedStore,Designation  ) {//ResetPassword
+        alert(UserObjectID);
+        alert(UserID)
+         alert(Password);
+        //alert(ResetPassword);
+        alert(AssignedStore);
+       
+        alert(Designation);
+        return $http({
+            method: "post",
+            url: "/updateCustomeExecutive",
+            data: {
+                'UserObjectID': UserObjectID,
+                'UserID': UserID,
+                'Password': Password,
+                //'ResetPassword': ResetPassword,
+               
+                'Name': Name,
+                
+                'AssignedStore': AssignedStore,
+                
+                 'Designation': Designation
+            }
+        });
+    }
+
+
+
         var deleteCrm= function(UserObjectID) {
 
         return $http({
@@ -675,6 +719,7 @@ var deviceData = function(selectedBeacon, selectedStore) {
     apiService.addCustomer = addCustomer;
     apiService.crmData = crmData;
      apiService.deleteCrm = deleteCrm;
+     apiService.updateCustomeExecutive = updateCustomeExecutive;
 
 
     return apiService;

@@ -122,6 +122,7 @@ dashboard.controller("CrmController", function($rootScope,$scope, apiService, $h
                     $scope.UserObjectID = pUserObjectID;
                     $scope.UserID = data.data[0].UserID;
                     $scope.Name = data.data[0].Name;
+                    $scope.Designation = data.data[0].Designation;
       
                     
                    // $scope.UserType = data.data[0].UserType;
@@ -172,11 +173,11 @@ dashboard.controller("CrmController", function($rootScope,$scope, apiService, $h
 			
             $scope.FormInitialized = false;
             console.log($scope.Password);
-            apiService.updateUser($scope.UserObjectID, $scope.UserID, ($scope.Password && $scope.Password.length > 0), $scope.Password,  $scope.Name,
-                    $scope.Designation, $scope.MobileNo, $scope.AssignedStore)
+            apiService.updateCustomeExecutive($scope.UserObjectID, $scope.UserID,  $scope.Password,  $scope.Name,
+                  $scope.AssignedStore  , $scope.Designation )//($scope.Password && $scope.Password.length > 0)
                 .success(function(data, status, headers, config) {
                     if (data.IsSuccess) {
-                        alert('User Updated Successfully');
+                        alert('Custome care executive Updated Successfully');
                         $scope.getAllUsers();
                     } else {
                         alert(data.message);
