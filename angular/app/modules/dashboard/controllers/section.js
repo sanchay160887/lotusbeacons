@@ -135,10 +135,10 @@ alert('hii');
                     $scope.SectionDesc = data.data[0].SectionDesc;
 
 
-                    // $scope.UserType = data.data[0].UserType;
+                     $scope.BeaconID = data.data[0].BeaconID;
                     $scope.AssignedStore = data.data[0].AssignedStore;
 
-                    alert($scope.AssignedStore);
+                    alert($scope.BeaconID);
                 } else {
                     $scope.UserObjectID = '';
                     alert('Section not found. Please refresh your page');
