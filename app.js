@@ -2291,6 +2291,8 @@ app.post('/getstoredata', function(req, res) {
         }
 
         collection.sort({ 'StoreName': 1 }).toArray(function(err, devices) {
+
+
             if (devices && devices.length > 0) {
                 for (var dvc in devices) {
                     devicelist.push(devices[dvc]);
@@ -4901,6 +4903,13 @@ app.post('/deleteCrm', function(req, res) {
 app.post('/getallsections',function(req,res){
 
 
+   pUserObjectID = req.body.pUserObjectID;
+ console.log('=======================pobid  START CALLED=======================');
+
+   console.log(pUserObjectID);
+   console.log('=======================pobid called=======================');
+
+
     var resObj = {};
 
     console.log(req.session);
@@ -4940,24 +4949,30 @@ app.post('/getallsections',function(req,res){
             },
             function(storelist, callback) {
                 var collection = db.collection('sections');
-                /*{ "UserType": 2 }*/
+                
                 collection.find().toArray(function(err, sections) {
-                    var sectionlist = [];
+                    var userlist = [];
+                  
                     if (sections && sections.length > 0) {
                         for (var u in sections) {
                             sections[u].StoreName = storelist[ObjectId(sections[u].AssignedStore)];
                             sections[u].searchfield =
-                                sections[u].SectionName + ' ' + sections[u].SectionDesc + ' '  + sections[u].StoreName;
-                            sectionlist.push(sections[u]);
+                                sections[u].SectionName + ' ' + sections[u].SectionDesc +  ' ' + sections[u].StoreName;
+                            
+                            
+
+
+
+                            userlist.push(sections[u]);
                         }
                         resObj.IsSuccess = true;
                         resObj.message = "Success";
-                        resObj.data = sectionlist;
-                         console.log('===========Section list Start======================');
+                        resObj.data = userlist;
+                         console.log('===========Sections list Start======================');
 
                          console.log(resObj);
 
-                        console.log('===========Section list called======================');
+                        console.log('===========Sections list called End======================');
 
                         res.send(resObj);
                     } else {
@@ -4966,7 +4981,7 @@ app.post('/getallsections',function(req,res){
                         resObj.data = '';
                         res.send(resObj);
                     }
-                    callback(null, sectionlist);
+                    callback(null, userlist);
                 });
             },
             function(sectionlist, callback) {
@@ -5190,6 +5205,51 @@ app.post('/deleteSection', function(req, res) {
 
         db.close();
 
+    });
+});
+
+
+app.post('/getSection', function(req, res) {
+    pUserObjectID = req.body.pUserObjectID;
+    var resObj = {};
+
+    if (!(pUserObjectID)) {
+        resObj.IsSuccess = false;
+        resObj.message = "Invalid Section selected";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+
+        var collection = db.collection('sections');
+
+        async.waterfall([
+            function(callback) {
+                collection.find({
+                    '_id': ObjectId(pUserObjectID)
+                }).toArray(function(err, devices) {
+                    callback(null, devices);
+                });
+
+            },
+            function(devices, callback) {
+                if (devices && devices.length > 0) {
+                    resObj.IsSuccess = true;
+                    resObj.message = "success";
+                    resObj.data = devices;
+                } else {
+                    resObj.IsSuccess = false;
+                    resObj.message = "Section not found";
+                }
+                db.close();
+                res.send(resObj);
+            }
+        ]);
     });
 });
 

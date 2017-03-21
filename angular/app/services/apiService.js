@@ -604,14 +604,37 @@ var deviceData = function(selectedBeacon, selectedStore) {
     }
 */
 
-         var secData = function() {
+         var secData = function(pUserObjectID) {
+           
             return $http({
                 method: "post",
-                url: "/getallsections"
+                url: "/getallsections",
+                data:{
+
+                  'pUserObjectID': pUserObjectID ,     
+
+                }
             });
 
 
         }
+
+
+    var getSection = function(pUserObjectID) {
+         alert(pUserObjectID);
+        return $http({
+            method: "post",
+            url: "/getSection",
+            data: {
+                'pUserObjectID': pUserObjectID,
+            }
+        });
+    }
+
+
+
+
+
     var addSection = function(SectionName, SectionDesc,AssignedStore,selectedBeacon) {
         return $http({
             method: "post",
@@ -641,6 +664,7 @@ var deviceData = function(selectedBeacon, selectedStore) {
     apiService.addSection = addSection;
     apiService.secData = secData;
      apiService.deleteSection = deleteSection;
+     apiService.getSection = getSection;
 
    //Add CRM start from here
 

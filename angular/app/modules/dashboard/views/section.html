@@ -65,7 +65,7 @@ Date: 05 Jan 2016
         <h4 ng-if="button_name!='Update'">Add Section</h4>
         <h4 ng-if="button_name=='Update'">Update section</h4>
         <ng-form name="sectionForm" id="sectionForm">
-
+<!-- 
            <label>Assign Store<span class="error">*</span></label>
             <select class="form-control col-md-4" ng-model="AssignedStore" name="AssignedStore" id="AssignedStore" required="required">
                 <option value="">Select Store</option>
@@ -73,9 +73,15 @@ Date: 05 Jan 2016
                     {{device.StoreName}}</option>
             </select>
             <br>
-            <span class="error" ng-show="sectionForm.AssignedStore.$touched && sectionForm.AssignedStore.$invalid">Please assign any store</span>
+            <span class="error" ng-show="sectionForm.AssignedStore.$touched && sectionForm.AssignedStore.$invalid">Please assign any store</span> -->
+   
+            <label>Assign Store<span class="error">*</span></label>
+            <select class="form-control col-md-4" ng-model="AssignedStore" id="AssignedStore" name="AssignedStore" required="required">
+                <option value="">Select Store</option>
+                <option ng-repeat="device in storeData | orderBy:StoreName" value="{{device._id}}">
+                    {{device.StoreName}}</option>
+            </select>
             <br>
-            
 
              <label>Select Beacon<span class="error">*</span></label>
             <select class="form-control col-md-4" multiple="multiple" ng-model="selectedBeacon" id="selectedBeacon" name="selectedBeacon"  required="required">
@@ -181,7 +187,7 @@ Date: 05 Jan 2016
                 <td>
                     <input class="form-control" type='text' ng-model="u.StoreName" readonly />
                 </td>
-                <td ng-click="getSections(u._id)"><span class="btn btn-primary">Edit</span></td>
+                <td ng-click="getSection(u._id)"><span class="btn btn-primary">Edit</span></td>
             </tr>
             <tr ng-show="!(secData | filter: (q.length > 1 ? {searchfield: q } : '')).length">
                 <td colspan="4">No Record Found</td>

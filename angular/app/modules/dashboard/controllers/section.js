@@ -78,7 +78,7 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
 
     $scope.getAllSections();
 
-    apiService.storeData().then(function(res) {
+     apiService.storeData().then(function(res) {
         $scope.storeData = res.data.data;
     });
 
@@ -120,11 +120,12 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
         $scope.sectionForm.$setPristine();
     }
 
-    $scope.getSections = function(pUserObjectID) {
+    $scope.getSection = function(pUserObjectID) {
 alert(pUserObjectID);
+alert('hii');
 
         $scope.FormInitialized = false;
-        apiService.secData(pUserObjectID).
+        apiService.getSection(pUserObjectID).
         success(function(data, status, headers, config) {
                 if (data.data) {
                     $scope.button_name = 'Update';
@@ -137,10 +138,10 @@ alert(pUserObjectID);
                     // $scope.UserType = data.data[0].UserType;
                     $scope.AssignedStore = data.data[0].AssignedStore;
 
-                    alert($scope.StoreName);
+                    alert($scope.AssignedStore);
                 } else {
                     $scope.UserObjectID = '';
-                    alert('User not found. Please refresh your page');
+                    alert('Section not found. Please refresh your page');
                     $scope.button_name = 'add';
                 }
                 $scope.FormInitialized = true;
