@@ -90,6 +90,8 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
 	
 	apiService.sectionData().then(function(res) {
 
+        
+
 
         $scope.sectionData = res.data.data;
        
@@ -123,6 +125,7 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
                     $scope.UserObjectID = pUserObjectID;
                     $scope.UserID = data.data[0].UserID;
                     $scope.Name = data.data[0].Name;
+                    $scope.Designation = data.data[0].Designation;
       
                     
                    // $scope.UserType = data.data[0].UserType;
@@ -173,11 +176,13 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
 			
             $scope.FormInitialized = false;
             console.log($scope.Password);
-            apiService.updateEmployee($scope.UserObjectID, $scope.UserID, ($scope.Password && $scope.Password.length > 0), $scope.Password,  $scope.Name,
-                    $scope.Designation, $scope.AssignedStore, $scope.AssignedSection)
+            apiService.updateEmployee($scope.UserObjectID, $scope.UserID, $scope.Password,  $scope.Name,
+                   $scope.AssignedStore, $scope.AssignedSection,  $scope.Designation)
+
+
                 .success(function(data, status, headers, config) {
                     if (data.IsSuccess) {
-                        alert('User Updated Successfully');
+                        alert('Employee Updated Successfully');
                         $scope.getAllEmployees();// $scope.getAllUsers();
                     } else {
                         alert(data.message);

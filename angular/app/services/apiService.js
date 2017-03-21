@@ -552,7 +552,14 @@ var deviceData = function(selectedBeacon, selectedStore) {
 
 
 
-    var updateEmployee = function(UserObjectID, UserID, ResetPassword, Password, AssignedSection, Name, Designation, AssignedStore) {
+    var updateEmployee = function(UserObjectID, UserID, Password, Name, AssignedStore, AssignedSection,Designation  ) {
+        alert(UserObjectID);
+        alert(UserID);
+         alert(Password);
+        alert(Name);
+        alert(AssignedStore);
+        alert(AssignedSection);
+        alert(Designation);
         return $http({
             method: "post",
             url: "/updateEmployee",
@@ -560,11 +567,13 @@ var deviceData = function(selectedBeacon, selectedStore) {
                 'UserObjectID': UserObjectID,
                 'UserID': UserID,
                 'Password': Password,
-                'ResetPassword': ResetPassword,
-                'AssignedSection': AssignedSection,
+                //'ResetPassword': ResetPassword,
+               
                 'Name': Name,
-                'Designation': Designation,
-                'AssignedStore': AssignedStore
+                
+                'AssignedStore': AssignedStore,
+                 'AssignedSection': AssignedSection,
+                 'Designation': Designation
             }
         });
     }

@@ -63,7 +63,7 @@ Date: 05 Jan 2016
             <p class="wait_text">Please Wait...</p>
         </div>
         <h4 ng-if="button_name!='Update'">Add Employee</h4>
-        <h4 ng-if="button_name=='Update'">Update User</h4>
+        <h4 ng-if="button_name=='Update'">Update Employee</h4>
         <ng-form name="employeeForm" id="employeeForm">
         
         <label>User ID<span class="error">*</span></label>
@@ -87,12 +87,6 @@ Date: 05 Jan 2016
             <span class="error" ng-show="employeeForm.AssignedStore.$touched && employeeForm.AssignedStore.$invalid">Please assign any store</span>
             <br>
  			
- 			<label>Designation</label>
-            <input class="form-control" type="text" name="Designation" id="Designation" ng-model="Designation" />
-
-
-            
-            <br>
             
             
             <label>Assign Section<span class="error">*</span></label>
@@ -105,6 +99,14 @@ Date: 05 Jan 2016
 
             <br>
          <span class="error" ng-show="employeeForm.AssignedSection.$touched && employeeForm.AssignedSection.$invalid">Please assign any section</span>
+            <br>
+
+            
+            <label>Designation</label>
+            <input class="form-control" type="text" name="Designation" id="Designation" ng-model="Designation" />
+
+
+            
             <br>
             
             

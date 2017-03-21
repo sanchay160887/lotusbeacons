@@ -22,7 +22,8 @@ var session = require('express-session');
 querystring = require('querystring');
 require('timers');
 var devicecron = require('node-cron');
-var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon';
+//var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon'; Live Database
+var mongourl = 'mongodb://lotus:remote@ds137100.mlab.com:37100/lotusbeaconemployee'; //Staging Database
 //var lotusWebURL = 'https://www.lotuselectronics.com/v2/';
 var lotusWebURL = 'http://lampdemos.com/lotus15/v2/';
 
@@ -3919,7 +3920,7 @@ app.post('/addEmployee', function(req, res) {
                     'Designation': Designation,
 
                     'AssignedStore': ObjectId(AssignedStore),
-                    'AssignedSection': AssignedSection,
+                    'AssignedSection': ObjectId(AssignedSection),
                     'UserType': 3,
 
 
@@ -4160,6 +4161,8 @@ app.post('/addSection', function(req, res) {
 
 app.post('/updateEmployee', function(req,res){
 
+    console.log('==============jhhgjhjhj======update employee called=fdfdfdffddf=========================');
+
     UserID = req.body.UserID;
     ResetPassword = req.body.ResetPassword;
     Password = req.body.Password;
@@ -4266,12 +4269,14 @@ app.post('/updateEmployee', function(req,res){
                     }, {
                         '$set': {
                             'UserID': UserID,
-                            'Email': Email,
-                            'AssignedSection': AssignedSection,
-                            'Designation': Designation,
+                            'Name': Name,
+                            
+                           
                             'Password': hashedpassword,
                            
                             'AssignedStore': ObjectId(AssignedStore),
+                            'AssignedSection':  ObjectId(AssignedSection),
+                             'Designation': Designation
                         }
                     });
 
@@ -4284,15 +4289,16 @@ app.post('/updateEmployee', function(req,res){
                             'UserID': UserID,
                             
                             'Name': Name,
-                            'Designation': Designation,
+                            
                            
                             'AssignedStore': ObjectId(AssignedStore),
-                            'AssignedSection': AssignedSection,
+                            'AssignedSection': ObjectId(AssignedSection),
+                            'Designation': Designation,
                         }
                     });
                 }
 
-                console.log('Employee updated');
+                console.log('======================Employee updated=======================================');
 
                 callback(null, 'updated');
             },
@@ -4640,17 +4646,45 @@ app.post('/getEmployeedata', function(req,res){
             },
             function(storelist, callback) {
                 var collection = db.collection('users');
+                  var SectionName = '';
+
+                 var sectioncollection = db.collection('sections');
                 /*{ "UserType": 2 }*/
                 collection.find({
                     'UserType': 3
 
                 }).toArray(function(err, users) {
                     var userlist = [];
+                    var sectionlist = [];
                     if (users && users.length > 0) {
                         for (var u in users) {
                             users[u].StoreName = storelist[ObjectId(users[u].AssignedStore)];
                             users[u].searchfield =
                                 users[u].Name + ' ' + users[u].UserID + ' ' + users[u].Designation + ' ' + users[u].StoreName + ' ' + users[u].AssignedSection;
+                                
+
+                               /* sectioncollection.find({
+                                    '_id': users[u].AssignedSection,
+
+                                }).toArray(function(err,sections){
+
+                                    for (var s in sections)
+                                    {
+
+                                         sectionlist.push(sections[s].SectionName);
+                                    } 
+
+
+                               
+
+                                 console.log('============s=============section called==================s')
+                                 console.log(sectionlist);
+                                  console.log('============end=============section called End==================end')
+
+                                });*/
+
+
+
                             userlist.push(users[u]);
                         }
                         resObj.IsSuccess = true;
