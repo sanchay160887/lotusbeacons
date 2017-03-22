@@ -86,7 +86,7 @@ Date: 05 Jan 2016
              <label>Select Beacon<span class="error">*</span></label>
             <select class="form-control col-md-4" multiple="multiple" ng-model="selectedBeacon" id="selectedBeacon" name="selectedBeacon"  required="required">
                 <option value="">Select Beacon</option>
-                <option ng-repeat="device in beaconData | orderBy:BeaconKey" value="{{device.BeaconID}}">
+                <option ng-repeat="device in beaconData | orderBy:BeaconKey" value="{{device.BeaconID}}" ng-selected="selected">  
                     {{device.BeaconKey}}</option>
             </select>
          <br>

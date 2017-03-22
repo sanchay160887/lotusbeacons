@@ -4091,8 +4091,8 @@ app.post('/addSection', function(req, res) {
                     'SectionName': SectionName,
 
                     'SectionDesc': SectionDesc,
-                    'AssignedStore': selectedBeacon,
-                    'BeaconID': AssignedStore,
+                    'AssignedStore':  AssignedStore,
+                    'BeaconID': selectedBeacon,
 
 
 
@@ -4117,16 +4117,10 @@ app.post('/addSection', function(req, res) {
             function(rec, callback) {
 
 
-                /* sectionbeacon.insert({
-                    'SectionID': SectionID,
-
-                    'BeaconID': selectedBeacon,
-
-                });*/
                 sectionbeacon.updateMany({
-                        // 'BeaconID': AssignedStore,
+                     
                         'BeaconID': {
-                            $in: AssignedStore
+                            $in: selectedBeacon
                         }
                     }, {
                         '$set': {
@@ -5253,4 +5247,172 @@ app.post('/getSection', function(req, res) {
     });
 });
 
+
+
+app.post('/updateSection', function(req,res){
+
+    console.log('==============jhhgjhjhj======update Section called=fdfdfdffddf=========================');
+ UserObjectID = req.body.UserObjectID;
+
+    AssignedStore = req.body.AssignedStore;
+   
+    SectionName = req.body.SectionName;
+    SectionDesc = req.body.SectionDesc;
+    selectedBeacon  = req.body.selectedBeacon;
+
+     console.log(UserObjectID);
+       console.log(AssignedStore);
+       console.log(SectionName);
+       console.log(SectionDesc);
+       console.log(selectedBeacon);
+
+  
+
+   
+
+    SectionName = SectionName.toLowerCase();
+    SectionDesc = SectionDesc.toLowerCase();
+    
+   
+
+    var resObj = {};
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = loginexpiredmessage;
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
+
+    if (!(UserObjectID)) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please enter appropriate informations";
+        res.send(resObj);
+        return;
+    }
+
+    if (!AssignedStore) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please select User";
+        res.send(resObj);
+        return;
+    }
+
+    if (AssignedStore.length != 24) {
+        resObj.IsSuccess = false;
+        resObj.message = "Invalid User selected";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        assert.equal(null, err);
+
+        var collection = db.collection('sections');
+        var sectionbeacon = db.collection('beacons_temp');
+
+        async.waterfall([
+            function(callback) {
+                collection.find({
+                    '_id':  ObjectId(UserObjectID) 
+                }).toArray(function(err, sections) {
+                   
+                    callback(null, sections);
+                });
+            },
+            function(userdata, callback) {
+                   console.log('Userdata Callback====================Called');
+               
+               console.log(userdata);
+               
+                    console.log(ObjectId(UserObjectID));
+                    collection.update({
+                        '_id': ObjectId(UserObjectID)
+                    }, {
+                        '$set': {
+                           
+                           
+                            'AssignedStore': ObjectId(AssignedStore),
+                             'SectionName': SectionName,
+                            'SectionDesc': SectionDesc,
+                            'BeaconID' : selectedBeacon,
+                            
+                           
+                            
+                            
+                        }
+                    });
+               
+
+                console.log('======================Employee updated=======================================');
+                 
+              callback(null, 'updated');
+            },
+            function(updated, callback) {
+
+              /*  sectionbeacon.find({
+
+                    'BeaconSection': ObjectId(UserObjectID)
+                }).toArray(function(err,beacons_temp){
+
+                     sectionbeacon.deleteMany({
+                            'BeaconSection': ObjectId(UserObjectID)
+                        });
+
+
+                });
+*/
+
+                sectionbeacon.updateMany({
+                     
+                        'BeaconID': {
+                            $in: selectedBeacon
+                        }
+                    }, {
+                        '$set': {
+                            'BeaconSection': ObjectId(UserObjectID),
+                        }
+                    },
+                    function(err, result) {
+                        if (err) {
+                            throw err;
+                        } else {
+
+                        }
+                    }
+                );
+
+
+
+                console.log('Section Beacon Updated');
+                callback(null, 'rec');
+              
+                
+              
+            },
+            function(response,callback)
+            {
+                resObj.IsSuccess = true;
+                resObj.message = "Section updated successfully.";
+                res.send(resObj);
+                  db.close();
+
+
+            }
+        ]);
+    });
+
+
+});
 

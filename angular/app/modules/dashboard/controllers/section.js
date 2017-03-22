@@ -82,6 +82,8 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
         $scope.storeData = res.data.data;
     });
 
+
+
    /* 
     apiService.sectionData().then(function(res) {
        
@@ -98,6 +100,7 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
     $scope.$watchCollection('[AssignedStore]', function() {
         if ($scope.FormInitialized) {
             apiService.beaconData($scope.AssignedStore).then(function(res) {
+              
                 $scope.beaconData = res.data.data;
             });
         }
@@ -121,8 +124,8 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
     }
 
     $scope.getSection = function(pUserObjectID) {
-alert(pUserObjectID);
-alert('hii');
+//alert(pUserObjectID);
+//alert('hii');
 
         $scope.FormInitialized = false;
         apiService.getSection(pUserObjectID).
@@ -135,10 +138,11 @@ alert('hii');
                     $scope.SectionDesc = data.data[0].SectionDesc;
 
 
-                     $scope.BeaconID = data.data[0].BeaconID;
+                     $scope.selectedBeacon = data.data[0].BeaconID;
                     $scope.AssignedStore = data.data[0].AssignedStore;
 
-                    alert($scope.BeaconID);
+                
+                    alert($scope.selectedBeacon);
                 } else {
                     $scope.UserObjectID = '';
                     alert('Section not found. Please refresh your page');
@@ -161,7 +165,7 @@ alert('hii');
         $scope.FormInitialized = false;
         if ($scope.button_name == 'Add') {
             alert($scope.button_name);
- apiService.addSection($scope.SectionName,$scope.SectionDesc,$scope.selectedBeacon,$scope.AssignedStore)
+ apiService.addSection($scope.SectionName,$scope.SectionDesc,$scope.AssignedStore,$scope.selectedBeacon)
         .success(function(data, status, headers, config) {
             
 
@@ -181,15 +185,18 @@ alert('hii');
                 });
         } else {
 
+            //,$scope.selectedBeacon,
             $scope.FormInitialized = false;
             console.log($scope.SectionName);
-            apiService.updateUser($scope.UserObjectID, $scope.UserID, ($scope.SectionName,$scope.SectionDesc,$scope.selectedBeacon,$scope.AssignedStore))
+            apiService.updateSection($scope.UserObjectID,$scope.AssignedStore,$scope.selectedBeacon,$scope.SectionName,$scope.SectionDesc)
                 .success(function(data, status, headers, config) {
-                    alert('hello');
+                   // alert('hello123');
                     if (data.IsSuccess) {
-                        alert('User Updated Successfully');
+                        alert('Section Updated Successfully');
                         $scope.getAllUsers();
                     } else {
+                        alert('else');
+
                         alert(data.message);
                     }
                     $scope.FormInitialized = true;
