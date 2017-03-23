@@ -279,7 +279,7 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
     }
 
 
-/*
+
     $http({
         method: "post",
         url: "/userLogin",
@@ -287,10 +287,10 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
             username: 'admin12345',
             password: 'sis12345@',
             fromApp: '1',
-            devicetoken:'APA91bHcxKvZbp5pcY_KeivI3qbHj1LF0KNct3Vx13jXVEFLzZDH5LMaE_1j08rClLhzAOwVJLp9Jmga0rPX3qndKOe6kK35sG8yDSYg4dipInhSZsgZOTU',
+            devicetoken:'cswnMJAwqbM:APA91bGZhTovh5AlnvtJQMzZCx2q5Nv8KcFJV1GGkpRTh8offaq0YKXrGUBRDxILRWZcr9gdVIThRrIyiA1ADlHEiNro4HM46SycCD3LL3ZdQz87M7-3JIN4xGZ-S1U3QSwU0N6Etc_g',
         }
     });
-*/
+
 
 /*    $http({
         method: "post",
@@ -304,7 +304,7 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
         }
     });
 
-*/
+*//*
         $http({
         method: "post",
         url: "/getEmployeeDetails",
@@ -314,10 +314,10 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
         }
     });
 
+*/
 
 
-
-    
+/*    
  $http({
         method: "post",
         url: "/getEmployeedata",
@@ -327,7 +327,7 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
             
         }
     });
-
+*/
 
 
     console.log('Login service called end');

@@ -27,6 +27,8 @@ var mongourl = 'mongodb://lotus:remote@ds137100.mlab.com:37100/lotusbeaconemploy
 //var lotusWebURL = 'https://www.lotuselectronics.com/v2/';
 var lotusWebURL = 'http://lampdemos.com/lotus15/v2/';
 
+var lotusURL = 'http://lampdemos.com/lotus15/v2_emp/';
+
 //if change here also change it to device history and devicedata controller
 var loginexpiredmessage = 'Login Expired. Please reload and login again.';
 
@@ -328,6 +330,8 @@ function updateUser_Active(BeaconID, UserID, Distance, resObj) {
     var UserID = ObjectId(UserID);
 
     console.log('Update User Active called');
+     console.log(UserID);
+         console.log('==============================');
 
     console.log('Beacon ID ' + BeaconID);
     console.log('User ID ' + UserID);
@@ -682,7 +686,8 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
     seldate = new Date(todaysdate);
     datestring = seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate();
     fromDate = new Date(datestring).getTime();
-    toDate = new Date(datestring + ' 23:59:59').getTime();
+    //toDate = new Date(datestring + ' 23:59:59').getTime();
+    toDate = fromDate + 60000;
 
     console.log('Update device history called');
 
@@ -766,12 +771,26 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                 })
             },
             function(devicelist, callback) {
+
+                console.log('Call End.');
+                console.log(devicelist);
+
+
+                if (!(devicelist && devicelist.length > 0)) {
+                    console.log('call start');
+                    if (typeof(beacons[0].BeaconWelcome) != 'undefined' && beacons[0].BeaconWelcome) {
+                        //sendpushnotification('', [DeviceID], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
+                        notifresobj = {};
+                        sendpushnotification_mobileno(notifresobj, [MobileNo], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
+                    }
+
+                      /* ---------------------  Employee Notification Start ---------  */ 
                 var empcollection = db.collection('user_beacons_active');
 
-                empcollection.find({
+                empcollection.find(/*{
                     'BeaconID': beacons[0].BeaconID
-                }).sort({ 'Distance': -1 }).toArray(function(err, emplist) {
-                    console.log(emplist);
+                }*/).sort({ 'Distance': -1 }).toArray(function(err, emplist) {
+                    console.log(JSON.stringify(emplist));
                     console.log('emplist called');
                     if (emplist && emplist.length > 0) {
                         var empusers = db.collection('users');
@@ -791,24 +810,14 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
 
                             console.log(JSON.stringify(token));
                             console.log('Employee Device Token called');
-                            notifresobj = {};
+                            //notifresobj = {};
 
-                            sendpushnotification_fcm(notifresobj, [token], beacons[0].BeaconID, 'Check your customer is nearby you');
+                            sendpushnotification_fcm(null, [token], beacons[0].BeaconID, userid,MobileNo, 'Check your customer is nearby you');
                         })
                     }
                 })
 
-
-                console.log('Call End.');
-
-
-                if (!(devicelist && devicelist.length > 0)) {
-                    console.log('call start');
-                    if (typeof(beacons[0].BeaconWelcome) != 'undefined' && beacons[0].BeaconWelcome) {
-                        //sendpushnotification('', [DeviceID], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
-                        notifresobj = {};
-                        sendpushnotification_mobileno(notifresobj, [MobileNo], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
-                    }
+                /**   employee list end ------------------------------ *////////
 
                     /* Send notification to employees */
 
@@ -2810,9 +2819,10 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
 
 
 
-function sendpushnotification_fcm(resObj, gcmToken, BeaconID, title, messagebody, image_url) {
+function sendpushnotification_fcm(resObj, gcmToken, BeaconID, notification_user_id,MobileNo, title, messagebody, image_url) {
     console.log(gcmToken);
     console.log(BeaconID);
+     console.log(notification_user_id);
     console.log('push notification called');
     console.log(title);
     var FCM = require('fcm-node');
@@ -2831,48 +2841,55 @@ function sendpushnotification_fcm(resObj, gcmToken, BeaconID, title, messagebody
 
         data: {
             'message': 'Check your nearest customer',
+            'notification_user_id': notification_user_id,
             'badge': 1,
             'title': title,
             'BeaconID': BeaconID,
+            
+
             //'img_url': 'https://lh4.ggpht.com/mJDgTDUOtIyHcrb69WM0cpaxFwCNW6f0VQ2ExA7dMKpMDrZ0A6ta64OCX3H-NMdRd20=w300',
-            'img_url': image_url,
+           // 'img_url': image_url,
             'notification_type': 7,
 
         }
     };
 
-
-
-
-
-
-
     fcm.send(message, function(err, response) {
+
+       
+        console.log("===== break=====");
+        console.log(response);
 
         if (err) {
             console.log("Something has gone wrong!");
         } else {
-            if (response.success) {
-                var request = require('request');
-                var gcmdata = JSON.stringify(gcmToken);
-                request.post(lotusWebURL + 'user/get_notification_entry', {
+            if (response != 'undefined') {
+                try {
 
-                        form: {
-                            'android_device_token': gcmdata,
-                            'title': title,
-                            'message': 'check your nearest customer',
-                            'notification_img': image_url
+                    var request = require('request');
+                    var gcmdata = JSON.stringify(gcmToken);
+                    request.post(lotusURL + 'employee/get_notification_entry', {
 
-                        }
+                            form: {
+                                'android_device_token': gcmdata,
+                                'notification_user_id': notification_user_id,
+                                'mobile_no': MobileNo,
+                                'title': title,
+                                'message': 'check your nearest customer',
+                              //  'notification_img': image_url,
+                                'notification_type': 7,
 
-                    },
-                    function(res2, err, body) {
-                        console.log('=====notification inserted2222==========');
-                        console.log('Data coming from service --> ' + JSON.stringify(body));
-                        if (resObj) {
-                            resObj.send(body);
-                        }
-                    });
+                            }
+
+                        },
+                        function(res2, err, body) {
+                            console.log('=====notification inserted2222==========');
+                            console.log('Data coming from service --> ' + JSON.stringify(body));
+                            if (resObj) {
+                                resObj.send(body);
+                            }
+                        });
+                } catch (err) { console.dir(err.message) }
             }
 
             console.log("Successfully sent with response: ", response);
@@ -4091,7 +4108,7 @@ app.post('/addSection', function(req, res) {
                     'SectionName': SectionName,
 
                     'SectionDesc': SectionDesc,
-                    'AssignedStore':  AssignedStore,
+                    'AssignedStore': AssignedStore,
                     'BeaconID': selectedBeacon,
 
 
@@ -4118,7 +4135,7 @@ app.post('/addSection', function(req, res) {
 
 
                 sectionbeacon.updateMany({
-                     
+
                         'BeaconID': {
                             $in: selectedBeacon
                         }
@@ -4155,7 +4172,7 @@ app.post('/addSection', function(req, res) {
 });
 
 
-app.post('/updateEmployee', function(req,res){
+app.post('/updateEmployee', function(req, res) {
 
     console.log('==============jhhgjhjhj======update employee called=fdfdfdffddf=========================');
 
@@ -4165,7 +4182,7 @@ app.post('/updateEmployee', function(req,res){
     AssignedSection = req.body.AssignedSection;
     Name = req.body.Name;
     Designation = req.body.Designation;
-  
+
     AssignedStore = req.body.AssignedStore;
     UserObjectID = req.body.UserObjectID;
 
@@ -4173,7 +4190,7 @@ app.post('/updateEmployee', function(req,res){
     AssignedSection = AssignedSection.toLowerCase();
     Name = Name.toLowerCase();
     Designation = Designation.toLowerCase();
-   
+
 
     var resObj = {};
     if (!req.session.loggedInUser) {
@@ -4191,7 +4208,7 @@ app.post('/updateEmployee', function(req,res){
         return;
     }
 
-    if (!(UserID && Name  && UserObjectID)) {
+    if (!(UserID && Name && UserObjectID)) {
         resObj.IsSuccess = false;
         resObj.message = "Please enter appropriate informations";
         res.send(resObj);
@@ -4233,7 +4250,7 @@ app.post('/updateEmployee', function(req,res){
                             resObj.message = "User ID already exists";
                             res.send(resObj);
                             return 0;
-                        } 
+                        }
                         /*else if (users[u].Name == Name) {
                             resObj.IsSuccess = false;
                             resObj.message = "Name already exists";
@@ -4266,13 +4283,13 @@ app.post('/updateEmployee', function(req,res){
                         '$set': {
                             'UserID': UserID,
                             'Name': Name,
-                            
-                           
+
+
                             'Password': hashedpassword,
-                           
+
                             'AssignedStore': ObjectId(AssignedStore),
-                            'AssignedSection':  ObjectId(AssignedSection),
-                             'Designation': Designation
+                            'AssignedSection': ObjectId(AssignedSection),
+                            'Designation': Designation
                         }
                     });
 
@@ -4283,10 +4300,10 @@ app.post('/updateEmployee', function(req,res){
                     }, {
                         '$set': {
                             'UserID': UserID,
-                            
+
                             'Name': Name,
-                            
-                           
+
+
                             'AssignedStore': ObjectId(AssignedStore),
                             'AssignedSection': ObjectId(AssignedSection),
                             'Designation': Designation,
@@ -4420,7 +4437,7 @@ app.post('/getcustomerdata', function(req, res) {
         res.send(resObj);
         return;
     }
-    var ID ='';
+    var ID = '';
 
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
@@ -4437,46 +4454,44 @@ app.post('/getcustomerdata', function(req, res) {
                     'UserID': UserID
                 }).toArray(function(err, users) {
 
-             
+
                     console.log('=============user called====================');
-                   
-                       ID = users[0].UserID;
-                       var dbpassword = users[0].Password;
 
-                         var isPasswordMatch = passwordHash.verify(Password, dbpassword);
+                    ID = users[0].UserID;
+                    var dbpassword = users[0].Password;
 
-  console.log(dbpassword);
-                         console.log(isPasswordMatch);
+                    var isPasswordMatch = passwordHash.verify(Password, dbpassword);
+
+                    console.log(dbpassword);
+                    console.log(isPasswordMatch);
 
 
 
-                       resObj.users = users;
-                             // console.log(resObj);
+                    resObj.users = users;
+                    // console.log(resObj);
 
-                     if (ID == UserID  && isPasswordMatch == 'true') {
-            console.log('====================hiiii=========================');
-                          resObj.IsSuccess = true;
-                          resObj.message = "success";
-                          resObj.data = users;
-                           console.log(resObj);
-                          res.send(resObj);
+                    if (ID == UserID && isPasswordMatch == 'true') {
+                        console.log('====================hiiii=========================');
+                        resObj.IsSuccess = true;
+                        resObj.message = "success";
+                        resObj.data = users;
+                        console.log(resObj);
+                        res.send(resObj);
 
-                      }
+                    } else {
+                        resObj.IsSuccess = false;
+                        resObj.message = "Customer executive not found";
+                        res.send(resObj);
+                    }
+                    db.close();
 
-                       else {
-                    resObj.IsSuccess = false;
-                    resObj.message = "Customer executive not found";
-                     res.send(resObj);
-                }
-                 db.close();
+                    // var pass = users[0].Password;
 
-             // var pass = users[0].Password;
-                    
-                  
+
                 });
             },
-    
-          
+
+
         ]);
     });
 });
@@ -4602,7 +4617,7 @@ app.post('/addCustomer', function(req, res) {
     });
 });
 
-app.post('/getEmployeedata', function(req,res){
+app.post('/getEmployeedata', function(req, res) {
     var resObj = {};
 
     console.log(req.session);
@@ -4642,9 +4657,9 @@ app.post('/getEmployeedata', function(req,res){
             },
             function(storelist, callback) {
                 var collection = db.collection('users');
-                  var SectionName = '';
+                var SectionName = '';
 
-                 var sectioncollection = db.collection('sections');
+                var sectioncollection = db.collection('sections');
                 /*{ "UserType": 2 }*/
                 collection.find({
                     'UserType': 3
@@ -4657,27 +4672,27 @@ app.post('/getEmployeedata', function(req,res){
                             users[u].StoreName = storelist[ObjectId(users[u].AssignedStore)];
                             users[u].searchfield =
                                 users[u].Name + ' ' + users[u].UserID + ' ' + users[u].Designation + ' ' + users[u].StoreName + ' ' + users[u].AssignedSection;
-                                
 
-                               /* sectioncollection.find({
-                                    '_id': users[u].AssignedSection,
 
-                                }).toArray(function(err,sections){
+                            /* sectioncollection.find({
+                                 '_id': users[u].AssignedSection,
 
-                                    for (var s in sections)
-                                    {
+                             }).toArray(function(err,sections){
 
-                                         sectionlist.push(sections[s].SectionName);
-                                    } 
+                                 for (var s in sections)
+                                 {
+
+                                      sectionlist.push(sections[s].SectionName);
+                                 } 
 
 
                                
 
-                                 console.log('============s=============section called==================s')
-                                 console.log(sectionlist);
-                                  console.log('============end=============section called End==================end')
+                              console.log('============s=============section called==================s')
+                              console.log(sectionlist);
+                               console.log('============end=============section called End==================end')
 
-                                });*/
+                             });*/
 
 
 
@@ -4686,9 +4701,9 @@ app.post('/getEmployeedata', function(req,res){
                         resObj.IsSuccess = true;
                         resObj.message = "Success";
                         resObj.data = userlist;
-                         console.log('===========employee list Start======================');
+                        console.log('===========employee list Start======================');
 
-                         console.log(resObj);
+                        console.log(resObj);
 
                         console.log('===========employee list called======================');
 
@@ -4762,7 +4777,7 @@ app.post('/deleteEmployee', function(req, res) {
 });
 
 
-app.post('/getCrmData', function(req,res){
+app.post('/getCrmData', function(req, res) {
     var resObj = {};
 
     console.log(req.session);
@@ -4818,9 +4833,9 @@ app.post('/getCrmData', function(req,res){
                         resObj.IsSuccess = true;
                         resObj.message = "Success";
                         resObj.data = userlist;
-                         console.log('===========CRM list Start======================');
+                        console.log('===========CRM list Start======================');
 
-                         console.log(resObj);
+                        console.log(resObj);
 
                         console.log('===========CRM list called======================');
 
@@ -4894,14 +4909,14 @@ app.post('/deleteCrm', function(req, res) {
 });
 
 
-app.post('/getallsections',function(req,res){
+app.post('/getallsections', function(req, res) {
 
 
-   pUserObjectID = req.body.pUserObjectID;
- console.log('=======================pobid  START CALLED=======================');
+    pUserObjectID = req.body.pUserObjectID;
+    console.log('=======================pobid  START CALLED=======================');
 
-   console.log(pUserObjectID);
-   console.log('=======================pobid called=======================');
+    console.log(pUserObjectID);
+    console.log('=======================pobid called=======================');
 
 
     var resObj = {};
@@ -4943,17 +4958,17 @@ app.post('/getallsections',function(req,res){
             },
             function(storelist, callback) {
                 var collection = db.collection('sections');
-                
+
                 collection.find().toArray(function(err, sections) {
                     var userlist = [];
-                  
+
                     if (sections && sections.length > 0) {
                         for (var u in sections) {
                             sections[u].StoreName = storelist[ObjectId(sections[u].AssignedStore)];
                             sections[u].searchfield =
-                                sections[u].SectionName + ' ' + sections[u].SectionDesc +  ' ' + sections[u].StoreName;
-                            
-                            
+                                sections[u].SectionName + ' ' + sections[u].SectionDesc + ' ' + sections[u].StoreName;
+
+
 
 
 
@@ -4962,9 +4977,9 @@ app.post('/getallsections',function(req,res){
                         resObj.IsSuccess = true;
                         resObj.message = "Success";
                         resObj.data = userlist;
-                         console.log('===========Sections list Start======================');
+                        console.log('===========Sections list Start======================');
 
-                         console.log(resObj);
+                        console.log(resObj);
 
                         console.log('===========Sections list called End======================');
 
@@ -4991,25 +5006,25 @@ app.post('/getallsections',function(req,res){
 
 
 
-app.post('/updateCustomeExecutive', function(req,res){
+app.post('/updateCustomeExecutive', function(req, res) {
 
     console.log('==============jhhgjhjhj======update CRM called=fdfdfdffddf=========================');
 
     UserID = req.body.UserID;
     ResetPassword = req.body.ResetPassword;
     Password = req.body.Password;
-   
+
     Name = req.body.Name;
     Designation = req.body.Designation;
-  
+
     AssignedStore = req.body.AssignedStore;
     UserObjectID = req.body.UserObjectID;
 
     UserID = UserID.toLowerCase();
-   
+
     Name = Name.toLowerCase();
     Designation = Designation.toLowerCase();
-   
+
 
     var resObj = {};
     if (!req.session.loggedInUser) {
@@ -5027,7 +5042,7 @@ app.post('/updateCustomeExecutive', function(req,res){
         return;
     }
 
-    if (!(UserID && Name  && UserObjectID)) {
+    if (!(UserID && Name && UserObjectID)) {
         resObj.IsSuccess = false;
         resObj.message = "Please enter appropriate informations";
         res.send(resObj);
@@ -5069,7 +5084,7 @@ app.post('/updateCustomeExecutive', function(req,res){
                             resObj.message = "User ID already exists";
                             res.send(resObj);
                             return 0;
-                        } 
+                        }
                         /*else if (users[u].Name == Name) {
                             resObj.IsSuccess = false;
                             resObj.message = "Name already exists";
@@ -5104,13 +5119,13 @@ app.post('/updateCustomeExecutive', function(req,res){
                         '$set': {
                             'UserID': UserID,
                             'Name': Name,
-                            
-                           
+
+
                             'Password': hashedpassword,
-                           
+
                             'AssignedStore': ObjectId(AssignedStore),
-                        
-                             'Designation': Designation
+
+                            'Designation': Designation
                         }
                     });
 
@@ -5121,12 +5136,12 @@ app.post('/updateCustomeExecutive', function(req,res){
                     }, {
                         '$set': {
                             'UserID': UserID,
-                            
+
                             'Name': Name,
-                            
-                           
+
+
                             'AssignedStore': ObjectId(AssignedStore),
-                       
+
                             'Designation': Designation,
                         }
                     });
@@ -5191,7 +5206,7 @@ app.post('/deleteSection', function(req, res) {
 
         collection.deleteMany({
             '_id': ObjectId(UserObjectID),
-           
+
         });
         resObj.IsSuccess = true;
         resObj.message = "Section deleted successfully";
@@ -5249,31 +5264,31 @@ app.post('/getSection', function(req, res) {
 
 
 
-app.post('/updateSection', function(req,res){
+app.post('/updateSection', function(req, res) {
 
     console.log('==============jhhgjhjhj======update Section called=fdfdfdffddf=========================');
- UserObjectID = req.body.UserObjectID;
+    UserObjectID = req.body.UserObjectID;
 
     AssignedStore = req.body.AssignedStore;
-   
+
     SectionName = req.body.SectionName;
     SectionDesc = req.body.SectionDesc;
-    selectedBeacon  = req.body.selectedBeacon;
+    selectedBeacon = req.body.selectedBeacon;
 
-     console.log(UserObjectID);
-       console.log(AssignedStore);
-       console.log(SectionName);
-       console.log(SectionDesc);
-       console.log(selectedBeacon);
+    console.log(UserObjectID);
+    console.log(AssignedStore);
+    console.log(SectionName);
+    console.log(SectionDesc);
+    console.log(selectedBeacon);
 
-  
 
-   
+
+
 
     SectionName = SectionName.toLowerCase();
     SectionDesc = SectionDesc.toLowerCase();
-    
-   
+
+
 
     var resObj = {};
     if (!req.session.loggedInUser) {
@@ -5325,43 +5340,43 @@ app.post('/updateSection', function(req,res){
         async.waterfall([
             function(callback) {
                 collection.find({
-                    '_id':  ObjectId(UserObjectID) 
+                    '_id': ObjectId(UserObjectID)
                 }).toArray(function(err, sections) {
-                   
+
                     callback(null, sections);
                 });
             },
             function(userdata, callback) {
-                   console.log('Userdata Callback====================Called');
-               
-               console.log(userdata);
-               
-                    console.log(ObjectId(UserObjectID));
-                    collection.update({
-                        '_id': ObjectId(UserObjectID)
-                    }, {
-                        '$set': {
-                           
-                           
-                            'AssignedStore': ObjectId(AssignedStore),
-                             'SectionName': SectionName,
-                            'SectionDesc': SectionDesc,
-                            'BeaconID' : selectedBeacon,
-                            
-                           
-                            
-                            
-                        }
-                    });
-               
+                console.log('Userdata Callback====================Called');
+
+                console.log(userdata);
+
+                console.log(ObjectId(UserObjectID));
+                collection.update({
+                    '_id': ObjectId(UserObjectID)
+                }, {
+                    '$set': {
+
+
+                        'AssignedStore': ObjectId(AssignedStore),
+                        'SectionName': SectionName,
+                        'SectionDesc': SectionDesc,
+                        'BeaconID': selectedBeacon,
+
+
+
+
+                    }
+                });
+
 
                 console.log('======================Employee updated=======================================');
-                 
-              callback(null, 'updated');
+
+                callback(null, 'updated');
             },
             function(updated, callback) {
 
-              /*  sectionbeacon.find({
+                /*  sectionbeacon.find({
 
                     'BeaconSection': ObjectId(UserObjectID)
                 }).toArray(function(err,beacons_temp){
@@ -5375,7 +5390,7 @@ app.post('/updateSection', function(req,res){
 */
 
                 sectionbeacon.updateMany({
-                     
+
                         'BeaconID': {
                             $in: selectedBeacon
                         }
@@ -5397,16 +5412,15 @@ app.post('/updateSection', function(req,res){
 
                 console.log('Section Beacon Updated');
                 callback(null, 'rec');
-              
-                
-              
+
+
+
             },
-            function(response,callback)
-            {
+            function(response, callback) {
                 resObj.IsSuccess = true;
                 resObj.message = "Section updated successfully.";
                 res.send(resObj);
-                  db.close();
+                db.close();
 
 
             }
@@ -5415,4 +5429,3 @@ app.post('/updateSection', function(req,res){
 
 
 });
-
