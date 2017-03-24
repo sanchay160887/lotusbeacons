@@ -3482,7 +3482,7 @@ app.post('/userLogin', function(req, res) {
                 console.log('=====');
 
                 /*collection.find(dataParam)*/
-                collection.aggregate([{
+              /*  collection.aggregate([{
                     $match: dataParam
                 }, {
                     $lookup: {
@@ -3499,13 +3499,13 @@ app.post('/userLogin', function(req, res) {
 
                     console.log('================Ali start===================');
                     console.log(JSON.stringify(users));
-                    console.log('================Ali end===================');
-
+                    console.log('================Ali end===================');*/
+                        collection.find(dataParam).toArray(function(err, users) {
                     if (isCallingFromApp) {
 
                         var devicetoken = req.body.devicetoken;
 
-                        console.log(devicetoken);
+                        //console.log(devicetoken);
 
                         collection.updateMany({
                                 // 'BeaconID': AssignedStore,
@@ -3528,7 +3528,7 @@ app.post('/userLogin', function(req, res) {
 
                     }
 
-                    console.log(JSON.stringify(users));
+                    //console.log(JSON.stringify(users));
 
                     if (users && users.length > 0) {
                         var dbpassword = users[0].Password;
@@ -4738,7 +4738,7 @@ app.post('/getEmployeedata', function(req, res) {
                         resObj.data = userlist;
                         console.log('===========employee list Start======================');
 
-                        console.log(resObj);
+                    //console.log(resObj);
 
                         console.log('===========employee list called======================');
 
