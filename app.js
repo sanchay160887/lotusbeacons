@@ -330,8 +330,8 @@ function updateUser_Active(BeaconID, UserID, Distance, resObj) {
     var UserID = ObjectId(UserID);
 
     console.log('Update User Active called');
-     console.log(UserID);
-         console.log('==============================');
+    console.log(UserID);
+    console.log('==============================');
 
     console.log('Beacon ID ' + BeaconID);
     console.log('User ID ' + UserID);
@@ -784,40 +784,42 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                         sendpushnotification_mobileno(notifresobj, [MobileNo], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
                     }
 
-                      /* ---------------------  Employee Notification Start ---------  */ 
-                var empcollection = db.collection('user_beacons_active');
+                    /* ---------------------  Employee Notification Start ---------  */
+                    var empcollection = db.collection('user_beacons_active');
 
-                empcollection.find(/*{
-                    'BeaconID': beacons[0].BeaconID
-                }*/).sort({ 'Distance': -1 }).toArray(function(err, emplist) {
-                    console.log(JSON.stringify(emplist));
-                    console.log('emplist called');
-                    if (emplist && emplist.length > 0) {
-                        var empusers = db.collection('users');
+                    empcollection.find(
+                        /*{
+                                            'BeaconID': beacons[0].BeaconID
+                                        }*/
+                    ).sort({ 'Distance': -1 }).toArray(function(err, emplist) {
+                        console.log(JSON.stringify(emplist));
+                        console.log('emplist called');
+                        if (emplist && emplist.length > 0) {
+                            var empusers = db.collection('users');
 
-                        var userid = emplist[0].UserID;
+                            var userid = emplist[0].UserID;
 
-                        console.log(userid);
+                            console.log(userid);
 
-                        empusers.find({
-                            'UserID': userid
-                        }).toArray(function(err, emplist) {
+                            empusers.find({
+                                'UserID': userid
+                            }).toArray(function(err, emplist) {
 
 
-                            console.log(JSON.stringify(emplist));
+                                console.log(JSON.stringify(emplist));
 
-                            var token = emplist[0].devicetoken;
+                                var token = emplist[0].devicetoken;
 
-                            console.log(JSON.stringify(token));
-                            console.log('Employee Device Token called');
-                            //notifresobj = {};
+                                console.log(JSON.stringify(token));
+                                console.log('Employee Device Token called');
+                                //notifresobj = {};
 
-                            sendpushnotification_fcm(null, [token], beacons[0].BeaconID, userid,MobileNo, 'Check your customer is nearby you');
-                        })
-                    }
-                })
+                                sendpushnotification_fcm(null, [token], beacons[0].BeaconID, userid, MobileNo, 'Check your customer is nearby you');
+                            })
+                        }
+                    })
 
-                /**   employee list end ------------------------------ *////////
+                    /**   employee list end ------------------------------ */ ///////
 
                     /* Send notification to employees */
 
@@ -2819,10 +2821,10 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
 
 
 
-function sendpushnotification_fcm(resObj, gcmToken, BeaconID, notification_user_id,MobileNo, title, messagebody, image_url) {
+function sendpushnotification_fcm(resObj, gcmToken, BeaconID, notification_user_id, MobileNo, title, messagebody, image_url) {
     console.log(gcmToken);
     console.log(BeaconID);
-     console.log(notification_user_id);
+    console.log(notification_user_id);
     console.log('push notification called');
     console.log(title);
     var FCM = require('fcm-node');
@@ -2845,10 +2847,10 @@ function sendpushnotification_fcm(resObj, gcmToken, BeaconID, notification_user_
             'badge': 1,
             'title': title,
             'BeaconID': BeaconID,
-            
+
 
             //'img_url': 'https://lh4.ggpht.com/mJDgTDUOtIyHcrb69WM0cpaxFwCNW6f0VQ2ExA7dMKpMDrZ0A6ta64OCX3H-NMdRd20=w300',
-           // 'img_url': image_url,
+            // 'img_url': image_url,
             'notification_type': 7,
 
         }
@@ -2856,7 +2858,7 @@ function sendpushnotification_fcm(resObj, gcmToken, BeaconID, notification_user_
 
     fcm.send(message, function(err, response) {
 
-       
+
         console.log("===== break=====");
         console.log(response);
 
@@ -2876,7 +2878,7 @@ function sendpushnotification_fcm(resObj, gcmToken, BeaconID, notification_user_
                                 'mobile_no': MobileNo,
                                 'title': title,
                                 'message': 'check your nearest customer',
-                              //  'notification_img': image_url,
+                                //  'notification_img': image_url,
                                 'notification_type': 7,
 
                             }
@@ -3479,7 +3481,25 @@ app.post('/userLogin', function(req, res) {
                 console.log(JSON.stringify(dataParam));
                 console.log('=====');
 
-                collection.find(dataParam).toArray(function(err, users) {
+                /*collection.find(dataParam)*/
+                collection.aggregate([{
+                    $match: dataParam
+                }, {
+                    $lookup: {
+                        from: 'sections',
+                        localField: 'AssignedSection',
+                        foreignField: '_id',
+                        as: 'section_docs'
+                    }
+                }]).toArray(function(err, users) {
+
+                    if (err) {
+                        return console.dir(err);
+                    }
+
+                    console.log('================Ali start===================');
+                    console.log(JSON.stringify(users));
+                    console.log('================Ali end===================');
 
                     if (isCallingFromApp) {
 
@@ -3514,6 +3534,13 @@ app.post('/userLogin', function(req, res) {
                         var dbpassword = users[0].Password;
                         users[0].Password = "";
                         userRecord = users[0];
+
+                     /*   var SectionName = users.section_docs.SectionName;
+                        console.log('====== Arpit===========');
+                           console.log(SectionName);
+
+                           console.log('====== Arpit===========');*/
+
                         var isPasswordMatch = passwordHash.verify(req.body.password, dbpassword);
                         //isPasswordMatch = true;
                         req.session.loggedInUser = users[0];
@@ -3550,7 +3577,8 @@ app.post('/userLogin', function(req, res) {
 
                 if (isCallingFromApp) {
                     var beaconCollection = db.collection('beacons_temp');
-                    var AllotedSection = user.BeaconSection;
+                    // var sectionCollection = db.collection('sections');
+                    var AllotedSection = user.AssignedSection;
 
 
 
@@ -3569,16 +3597,23 @@ app.post('/userLogin', function(req, res) {
 
 
 
+
+
+                        console.log('=====================SEC===========================');
+
+
                         resObj.beacons = beacons;
 
-                        // console.log(user.resObj);
-                        // console.log("merge called");
+
+
+                        //
                         console.log(resObj);
 
-                        console.log('======end of beacon called==========');
+                        console.log('======end of beacon Array called==========');
                         res.send(resObj);
                     });
                 } else {
+
                     res.send(resObj);
                 }
                 db.close();
