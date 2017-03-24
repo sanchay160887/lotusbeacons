@@ -3482,7 +3482,7 @@ app.post('/userLogin', function(req, res) {
                 console.log('=====');
 
                 /*collection.find(dataParam)*/
-              /*  collection.aggregate([{
+                collection.aggregate([{
                     $match: dataParam
                 }, {
                     $lookup: {
@@ -3496,11 +3496,17 @@ app.post('/userLogin', function(req, res) {
                     if (err) {
                         return console.dir(err);
                     }
-
+                    var SectionName = '';
                     console.log('================Ali start===================');
-                    console.log(JSON.stringify(users));
-                    console.log('================Ali end===================');*/
-                        collection.find(dataParam).toArray(function(err, users) {
+
+                    if (users[0].section_docs != 'undefined' && users[0].section_docs != '') {
+
+                        SectionName = users[0].section_docs[0].SectionName;
+
+                             resObj.SectionName  = SectionName;
+
+                    }
+
                     if (isCallingFromApp) {
 
                         var devicetoken = req.body.devicetoken;
@@ -3534,14 +3540,7 @@ app.post('/userLogin', function(req, res) {
                         var dbpassword = users[0].Password;
                         users[0].Password = "";
                         userRecord = users[0];
-
-                     /*   var SectionName = users.section_docs.SectionName;
-                        console.log('====== Arpit===========');
-                           console.log(SectionName);
-
-                           console.log('====== Arpit===========');*/
-
-                        var isPasswordMatch = passwordHash.verify(req.body.password, dbpassword);
+                     var isPasswordMatch = passwordHash.verify(req.body.password, dbpassword);
                         //isPasswordMatch = true;
                         req.session.loggedInUser = users[0];
                         callback(null, isPasswordMatch);
@@ -3559,6 +3558,7 @@ app.post('/userLogin', function(req, res) {
                 if (passwordmatched) {
                     resObj.message = "Successfully loggedin."
                     resObj.user = userRecord;
+
                     resObj.isSuccess = true;
                 } else {
                     resObj.message = "Wrong Password."
@@ -3586,7 +3586,7 @@ app.post('/userLogin', function(req, res) {
                     beaconCollection.find({
                         "BeaconSection": ObjectId(AllotedSection)
                     }).toArray(function(err, beacons) {
-                        var AllotedSection = user.BeaconSection;
+                        var AllotedSection = user.AssignedSection;
                         for (var b in beacons) {
 
                             //beacons.push(beacons[b].BeaconKey)
@@ -4738,7 +4738,7 @@ app.post('/getEmployeedata', function(req, res) {
                         resObj.data = userlist;
                         console.log('===========employee list Start======================');
 
-                    //console.log(resObj);
+                        //console.log(resObj);
 
                         console.log('===========employee list called======================');
 
