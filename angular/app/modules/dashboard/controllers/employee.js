@@ -280,7 +280,7 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
 
 
 
-    $http({
+  /*  $http({
         method: "post",
         url: "/userLogin",
         data: {
@@ -289,7 +289,7 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
             fromApp: '1',
             devicetoken:'cswnMJAwqbM:APA91bGZhTovh5AlnvtJQMzZCx2q5Nv8KcFJV1GGkpRTh8offaq0YKXrGUBRDxILRWZcr9gdVIThRrIyiA1ADlHEiNro4HM46SycCD3LL3ZdQz87M7-3JIN4xGZ-S1U3QSwU0N6Etc_g',
         }
-    });
+    });*/
 
 
 /*    $http({
@@ -328,6 +328,16 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
         }
     });
 */
+$http({
+        method: "get",
+        url: "/getCrmEmployee",
+        data: {
+           // UserType: '3',
+            
+            
+        }
+    });
+
 
 
     console.log('Login service called end');
