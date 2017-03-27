@@ -329,10 +329,10 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
     });
 */
 $http({
-        method: "get",
+        method: "post",
         url: "/getCrmEmployee",
         data: {
-           // UserType: '3',
+            UserType: '3',
             
             
         }

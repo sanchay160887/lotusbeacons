@@ -5444,7 +5444,9 @@ app.post('/updateSection', function(req, res) {
 
 // Get Employee Data For PHP through curl in CRM module
 
-app.get('/getCrmEmployee', function(req, res) {
+app.post('/getCrmEmployee', function(req, res) {
+
+    UserType = req.body.UserType;
     var resObj = {};
 
    
