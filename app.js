@@ -326,7 +326,7 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, resObj) {
 
 /// Employe function for update user Active start
 function updateUser_Active(BeaconID, UserID, Distance, resObj) {
-
+    console.log('updateUser_Active function calling')
     var UserID = ObjectId(UserID);
 
     console.log('Update User Active called');
@@ -457,22 +457,13 @@ function updateUser_Active(BeaconID, UserID, Distance, resObj) {
             }
         ]);
     });
-
-
-
-
-
 }
 
 
 function updateUser_Beacon_History(BeaconID, UserID, resObj) {
-
-
-
     console.log('------------Updating User employee History--------------');
     console.log('Beacon ID ' + BeaconID);
     console.log('User ID ' + UserID);
-
     console.log('------------Updating User employee History--------------');
 
     var resObjVal = {};
@@ -540,24 +531,13 @@ function updateUser_Beacon_History(BeaconID, UserID, resObj) {
                 if (!(devicelist && devicelist.length > 0)) {
                     if (typeof(beacons[0].BeaconWelcome) != 'undefined' && beacons[0].BeaconWelcome) {
 
-                        //========================find device toten on basis of user ID====================
-
-
+                        //========================find device token on basis of user ID====================
                         var usercollection = db.collection('users');
-
                         usercollection.find({ 'UserID': UserID, }).toArray(function(err, token) {
-
                             devicetoken = token[0].devicetoken;
-
                         });
 
-
-
-
-
                         //End===================   find device toten on basis of user ID====================
-
-
 
                         //sendpushnotification('', [DeviceID], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
                         notifresobj = {};
@@ -622,9 +602,7 @@ function updateUser_Beacon_History(BeaconID, UserID, resObj) {
                     collection.insert({
                         'BeaconID': BeaconID,
                         'UserID': UserID,
-
                         'StayTime': 1,
-
                         'Date': todaysdate,
                         'DateTo': todaysdate
                     }, function(err, records) {
@@ -948,6 +926,10 @@ io.on('connection', function(socket) {
 
     socket.on('updateUser_Active', function(data) {
         console.log('updateUser_Active socket calling');
+        io.emit('updateUser_Active_response', {
+            'IsSuccess': true,
+            'message': 'Socket is calling from yourside'
+        });
         updateUser_Active(data.BeaconID, data.UserID, data.Distance);
         return "Update device called : " + data.BeaconID + ' UserID : ' + data.UserID;
         //sendDevices();
@@ -975,9 +957,7 @@ app.post('/updateUser_Active', function(req, res) {
             staytime = req.body.stayTime;
         }
     }
-
 });
-
 ////    end  /////////////////
 
 app.post('/updateDeviceHistory', function(req, res) {
@@ -987,7 +967,7 @@ app.post('/updateDeviceHistory', function(req, res) {
 
 
 function beaconDisconnect(BeaconID, DeviceID, MobileNo) {
-    console.log('-------------------Beacon disconnected------------- ')
+    console.log('-------------------Beacon disconnected------------- ');
 
     updateDevice(BeaconID, DeviceID, -1, MobileNo);
 
@@ -3461,18 +3441,28 @@ app.post('/userLogin', function(req, res) {
             isCallingFromApp = req.body.fromApp;
         }
 
+        if (req.body.username){
+        	username = req.body.username.toLowerCase()	
+        } else {
+        	resObj.message = "Invalid Username."
+            resObj.isSuccess = false;
+            res.send(resObj);
+            return;
+        }
+        
+
         async.waterfall([
             function(callback) {
                 var dataParam = {};
                 if (isCallingFromApp) {
                     dataParam = {
-                        "UserID": req.body.username,
+                        "UserID": username,
                         "UserType": 3,
 
                     }
                 } else {
                     dataParam = {
-                        "UserID": req.body.username,
+                        "UserID": username,
                         "UserType": { "$in": [1, 2] },
                     }
                 }
@@ -3480,6 +3470,8 @@ app.post('/userLogin', function(req, res) {
                 console.log('=====');
                 console.log(JSON.stringify(dataParam));
                 console.log('=====');
+
+                console.log(collection);
 
                 /*collection.find(dataParam)*/
                 collection.aggregate([{
@@ -3497,14 +3489,12 @@ app.post('/userLogin', function(req, res) {
                         return console.dir(err);
                     }
                     var SectionName = '';
-                    console.log('================Ali start===================');
+                    console.log(JSON.stringify(users));
 
-                    if (users[0].section_docs != 'undefined' && users[0].section_docs != '') {
-
+                    if (users[0].hasOwnProperty('section_docs') && users[0].section_docs.length > 0) {
+                        console.log(users[0].section_docs);
                         SectionName = users[0].section_docs[0].SectionName;
-
-                             resObj.SectionName  = SectionName;
-
+                        resObj.SectionName = SectionName;
                     }
 
                     if (isCallingFromApp) {
@@ -3529,9 +3519,6 @@ app.post('/userLogin', function(req, res) {
                                 }
                             }
                         );
-
-
-
                     }
 
                     //console.log(JSON.stringify(users));
@@ -3540,7 +3527,7 @@ app.post('/userLogin', function(req, res) {
                         var dbpassword = users[0].Password;
                         users[0].Password = "";
                         userRecord = users[0];
-                     var isPasswordMatch = passwordHash.verify(req.body.password, dbpassword);
+                        var isPasswordMatch = passwordHash.verify(req.body.password, dbpassword);
                         //isPasswordMatch = true;
                         req.session.loggedInUser = users[0];
                         callback(null, isPasswordMatch);
@@ -3580,8 +3567,6 @@ app.post('/userLogin', function(req, res) {
                     // var sectionCollection = db.collection('sections');
                     var AllotedSection = user.AssignedSection;
 
-
-
                     var beacons1 = [];
                     beaconCollection.find({
                         "BeaconSection": ObjectId(AllotedSection)
@@ -3594,17 +3579,9 @@ app.post('/userLogin', function(req, res) {
                             beacons1.push(beacons[b]);
                         }
 
-
-
-
-
-
                         console.log('=====================SEC===========================');
 
-
                         resObj.beacons = beacons;
-
-
 
                         //
                         console.log(resObj);
@@ -4459,7 +4436,7 @@ app.post('/getEmployeeDetails', function(req, res) {
     });
 });
 
-// get customer executive data
+// get customer executive data in php by calling this webservice through CURL
 
 app.post('/getcustomerdata', function(req, res) {
     UserID = req.body.UserID;
@@ -5464,3 +5441,101 @@ app.post('/updateSection', function(req, res) {
 
 
 });
+
+// Get Employee Data For PHP through curl in CRM module
+
+app.post('/getCrmEmployee', function(req, res) {
+    var resObj = {};
+
+   
+
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        async.waterfall([
+            function(callback) {
+                var collection = db.collection('stores');
+
+                var storecollection = {};
+                storecollection = collection.find();
+                storecollection.toArray(function(err, stores) {
+                    var storelist = [];
+                    for (var b in stores) {
+                        storelist[stores[b]._id] = stores[b].StoreName;
+                    }
+                    callback(null, storelist);
+                });
+            },
+            function(storelist, callback) {
+                var collection = db.collection('users');
+                var SectionName = '';
+
+                var sectioncollection = db.collection('sections');
+                /*{ "UserType": 2 }*/
+                collection.find({
+                    'UserType': 3
+
+                }).toArray(function(err, users) {
+                    var userlist = [];
+                    var sectionlist = [];
+                    if (users && users.length > 0) {
+                        for (var u in users) {
+                            users[u].StoreName = storelist[ObjectId(users[u].AssignedStore)];
+                            users[u].searchfield =
+                                users[u].Name + ' ' + users[u].UserID + ' ' + users[u].Designation + ' ' + users[u].StoreName + ' ' + users[u].AssignedSection;
+
+
+                            /* sectioncollection.find({
+                                 '_id': users[u].AssignedSection,
+
+                             }).toArray(function(err,sections){
+
+                                 for (var s in sections)
+                                 {
+
+                                      sectionlist.push(sections[s].SectionName);
+                                 } 
+
+
+                               
+
+                              console.log('============s=============section called==================s')
+                              console.log(sectionlist);
+                               console.log('============end=============section called End==================end')
+
+                             });*/
+
+
+
+                            userlist.push(users[u]);
+                        }
+                        resObj.IsSuccess = true;
+                        resObj.message = "Success";
+                        resObj.data = userlist;
+                        console.log('===========employee list Start======================');
+
+                        //console.log(resObj);
+
+                        console.log('===========employee list called======================');
+
+                        res.send(resObj);
+                    } else {
+                        resObj.IsSuccess = false;
+                        resObj.message = "No record found.";
+                        resObj.data = '';
+                        res.send(resObj);
+                    }
+                    callback(null, userlist);
+                });
+            },
+            function(userlist, callback) {
+                db.close();
+            }
+        ]);
+
+    });
+});
+
