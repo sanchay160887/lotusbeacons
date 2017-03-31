@@ -328,7 +328,7 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
         }
     });
 */
-/*$http({
+$http({
         method: "post",
         url: "/getCrmEmployee",
         data: {
@@ -338,19 +338,18 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
         }
     });
 
-*/
-    
+    /*
      $http({
         method: "post",
         url: "/userLogin",
         data: {
             username: 'crm12345',
             password: 'sis12345@',
-            UserType : 4
+            UserType : [1,2,4]
            
            
         }
-    });
+    });*/
 
     console.log('Login service called end');
 

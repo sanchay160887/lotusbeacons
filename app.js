@@ -5499,10 +5499,33 @@ app.post('/getCrmEmployee', function(req, res) {
         if (err) {
             return console.dir(err);
         }
-
+        var sectionlist = [];
         async.waterfall([
             function(callback) {
-                var collection = db.collection('stores');
+              
+
+                 var SectionName = '';
+
+                var sectioncollection = db.collection('sections');
+
+
+
+                 var sectcollection = {};
+                sectcollection = sectioncollection.find();
+                sectcollection.toArray(function(err, sections) {
+                    
+                    
+                    for (var b in sections) {
+                        sectionlist[sections[b]._id] = sections[b].SectionName;
+                    }
+                    
+                    callback(null, sectionlist);
+                });
+                  },
+
+                  function(sectionlist,callback)
+                  {
+                      var collection = db.collection('stores');
 
                 var storecollection = {};
                 storecollection = collection.find();
@@ -5513,12 +5536,10 @@ app.post('/getCrmEmployee', function(req, res) {
                     }
                     callback(null, storelist);
                 });
-            },
+          },
             function(storelist, callback) {
                 var collection = db.collection('users');
-                var SectionName = '';
-
-                var sectioncollection = db.collection('sections');
+               
 
                 var SectionName = '';
                 /*{ "UserType": 2 }*/
@@ -5527,7 +5548,7 @@ app.post('/getCrmEmployee', function(req, res) {
 
                 }).toArray(function(err, users) {
                     var userlist = [];
-                    var sectionlist = [];
+                   
                     if (users && users.length > 0) {
 
 
@@ -5538,29 +5559,10 @@ app.post('/getCrmEmployee', function(req, res) {
                         for (var u in users) {
                             //var  AssignedSection = users[0].AssignedSection;
                             users[u].StoreName = storelist[ObjectId(users[u].AssignedStore)];
+                            users[u].SectionName = sectionlist[ObjectId(users[u].AssignedSection)];
                             users[u].searchfield =
-                                users[u].Name + ' ' + users[u].UserID + ' ' + users[u].Designation + ' ' + users[u].StoreName + ' ' + users[u].AssignedSection;
+                                users[u].Name + ' ' + users[u].UserID + ' ' + users[u].Designation + ' ' + users[u].StoreName + ' ' + users[u].SectionName;
 
-                            /*
-                                                       sectioncollection.find({
-                                                             '_id': ObjectId(AssignedSection),
-
-                                                         }).toArray(function(err,sections){
-
-                                                              for (var s in sections) {
-
-                                                                console.log('============s=============section called==================s')
-                                                          console.log(AssignedSection);
-                                                          console.log(s[0].SectionName);
-                                                           console.log('============end=============section called End==================end')
-
-
-
-                                                              }
-
-                                                          
-
-                                                         });*/
 
 
 
