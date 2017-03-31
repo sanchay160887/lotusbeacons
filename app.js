@@ -790,6 +790,15 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
 
                                 console.log(JSON.stringify(token));
                                 console.log('Employee Device Token called');
+
+
+                                //Get Name by mobile number =============//
+
+
+
+
+
+                                // Get name by mobile nyu
                                 //notifresobj = {};
 
                                 sendpushnotification_fcm(null, [token], beacons[0].BeaconID, userid, MobileNo, 'Check your customer is nearby you');
@@ -2770,6 +2779,7 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
         }
     });
 
+
     //console.log(message);
 
     gcmObject.send(message, function(err, response) {
@@ -2788,6 +2798,7 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
                             'notification_img': image_url
                         }
                     },
+
                     function(res2, err, body) {
                         console.log('Data coming from service --> ' + JSON.stringify(body));
                         if (resObj) {
@@ -2815,71 +2826,100 @@ function sendpushnotification_fcm(resObj, gcmToken, BeaconID, notification_user_
         image_url = '';
     }
 
+    async.waterfall([
+        function(callback) {
+
+            var request = require('request');
+
+            request.post(lotusWebURL + 'user/get_name_by_mobileno', {
+                    form: {
+
+                        'mobile_no': MobileNo
+                    }
+                },
+
+                function(res2, err, body) {
+
+                    callback(null, body);
+
+                });
+
+        },
+
+        function(response, callback) {
+
+            var reqbody = parse_JSON(response);
+
+           var data =reqbody.data;
+
+           var name = data.name;
 
 
-    var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
-        registration_ids: gcmToken,
-        //ollapse_key: 'your_collapse_key',
+            var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
+                registration_ids: gcmToken,
+              
+                data: {
+                    'message': 'Check '+  name  +  ' nearest to you',
+                    'notification_user_id': notification_user_id,
+                    'badge': 1,
+                    'title': title,
+                    'BeaconID': BeaconID,
+                    //'img_url': 'https://lh4.ggpht.com/mJDgTDUOtIyHcrb69WM0cpaxFwCNW6f0VQ2ExA7dMKpMDrZ0A6ta64OCX3H-NMdRd20=w300',
+                    // 'img_url': image_url,
+                    'notification_type': 7,
 
-        data: {
-            'message': 'Check your nearest customer',
-            'notification_user_id': notification_user_id,
-            'badge': 1,
-            'title': title,
-            'BeaconID': BeaconID,
+                }
+            };
 
-
-            //'img_url': 'https://lh4.ggpht.com/mJDgTDUOtIyHcrb69WM0cpaxFwCNW6f0VQ2ExA7dMKpMDrZ0A6ta64OCX3H-NMdRd20=w300',
-            // 'img_url': image_url,
-            'notification_type': 7,
-
-        }
-    };
-
-    fcm.send(message, function(err, response) {
+            fcm.send(message, function(err, response) {
 
 
-        console.log("===== break=====");
-        console.log(response);
+              
+                if (err) {
+                    console.log("Something has gone wrong!");
+                } else {
+                    if (response != 'undefined') {
+                        try {
 
-        if (err) {
-            console.log("Something has gone wrong!");
-        } else {
-            if (response != 'undefined') {
-                try {
-
-                    var request = require('request');
-                    var gcmdata = JSON.stringify(gcmToken);
-                    request.post(lotusURL + 'employee/get_notification_entry', {
-
-                            form: {
-                                'android_device_token': gcmdata,
-                                'notification_user_id': notification_user_id,
-                                'mobile_no': MobileNo,
-                                'title': title,
-                                'message': 'check your nearest customer',
-                                //  'notification_img': image_url,
-                                'notification_type': 7,
-
-                            }
-
-                        },
-                        function(res2, err, body) {
-                            console.log('=====notification inserted2222==========');
-                            console.log('Data coming from service --> ' + JSON.stringify(body));
-                            if (resObj) {
-                                resObj.send(body);
-                            }
-                        });
-                } catch (err) { console.dir(err.message) }
-            }
-
-            console.log("Successfully sent with response: ", response);
-        }
-    });
+                            var request = require('request');
+                            var gcmdata = JSON.stringify(gcmToken);
 
 
 
+
+
+                            request.post(lotusURL + 'employee/get_notification_entry', {
+
+                                    form: {
+                                        'android_device_token': gcmdata,
+                                        'notification_user_id': notification_user_id,
+                                        'mobile_no': MobileNo,
+                                        'title': title,
+                                        'message': 'Check '+  name  +  ' nearest to you',
+                                        //  'notification_img': image_url,
+                                        'notification_type': 7,
+
+                                    }
+
+                                },
+                                function(res2, err, body) {
+                                    console.log('=====notification inserted2222==========');
+                                    console.log('Data coming from service --> ' + JSON.stringify(body));
+                                    if (resObj) {
+                                        resObj.send(body);
+                                    }
+                                });
+                        } catch (err) { console.dir(err.message) }
+                    }
+
+                    console.log("Successfully sent with response: ", response);
+                }
+            });
+
+        },
+
+
+    ]);
     //console.log(message);
 
 }
@@ -3437,19 +3477,20 @@ app.post('/userLogin', function(req, res) {
         var userRecord = {};
 
         var isCallingFromApp = false;
+
         if (typeof(req.body.fromApp) != undefined) {
             isCallingFromApp = req.body.fromApp;
         }
 
-        if (req.body.username){
-        	username = req.body.username.toLowerCase()	
+        if (req.body.username) {
+            username = req.body.username.toLowerCase()
         } else {
-        	resObj.message = "Invalid Username."
+            resObj.message = "Invalid Username."
             resObj.isSuccess = false;
             res.send(resObj);
             return;
         }
-        
+
 
         async.waterfall([
             function(callback) {
@@ -3463,7 +3504,7 @@ app.post('/userLogin', function(req, res) {
                 } else {
                     dataParam = {
                         "UserID": username,
-                        "UserType": { "$in": [1, 2] },
+                        "UserType": { "$in": [1, 2, 4] },
                     }
                 }
 
@@ -3490,8 +3531,10 @@ app.post('/userLogin', function(req, res) {
                     }
                     var SectionName = '';
                     console.log(JSON.stringify(users));
+                    console.log("===11111111111111111--------User Called===========");
+                    
 
-                    if (users[0].hasOwnProperty('section_docs') && users[0].section_docs.length > 0) {
+                    if (users && users[0].hasOwnProperty('section_docs') && users[0].section_docs.length > 0) {
                         console.log(users[0].section_docs);
                         SectionName = users[0].section_docs[0].SectionName;
                         resObj.SectionName = SectionName;
@@ -5446,10 +5489,10 @@ app.post('/updateSection', function(req, res) {
 
 app.post('/getCrmEmployee', function(req, res) {
 
-    UserType = req.body.UserType;
+    var UserType = req.body.UserType;
     var resObj = {};
 
-   
+
 
 
     MongoClient.connect(mongourl, function(err, db) {
@@ -5476,6 +5519,8 @@ app.post('/getCrmEmployee', function(req, res) {
                 var SectionName = '';
 
                 var sectioncollection = db.collection('sections');
+
+                var SectionName = '';
                 /*{ "UserType": 2 }*/
                 collection.find({
                     'UserType': 3
@@ -5484,31 +5529,38 @@ app.post('/getCrmEmployee', function(req, res) {
                     var userlist = [];
                     var sectionlist = [];
                     if (users && users.length > 0) {
+
+
+
+
+
+
                         for (var u in users) {
+                            //var  AssignedSection = users[0].AssignedSection;
                             users[u].StoreName = storelist[ObjectId(users[u].AssignedStore)];
                             users[u].searchfield =
                                 users[u].Name + ' ' + users[u].UserID + ' ' + users[u].Designation + ' ' + users[u].StoreName + ' ' + users[u].AssignedSection;
 
+                            /*
+                                                       sectioncollection.find({
+                                                             '_id': ObjectId(AssignedSection),
 
-                            /* sectioncollection.find({
-                                 '_id': users[u].AssignedSection,
+                                                         }).toArray(function(err,sections){
 
-                             }).toArray(function(err,sections){
+                                                              for (var s in sections) {
 
-                                 for (var s in sections)
-                                 {
-
-                                      sectionlist.push(sections[s].SectionName);
-                                 } 
+                                                                console.log('============s=============section called==================s')
+                                                          console.log(AssignedSection);
+                                                          console.log(s[0].SectionName);
+                                                           console.log('============end=============section called End==================end')
 
 
-                               
 
-                              console.log('============s=============section called==================s')
-                              console.log(sectionlist);
-                               console.log('============end=============section called End==================end')
+                                                              }
 
-                             });*/
+                                                          
+
+                                                         });*/
 
 
 
@@ -5540,4 +5592,3 @@ app.post('/getCrmEmployee', function(req, res) {
 
     });
 });
-
