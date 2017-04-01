@@ -146,14 +146,15 @@ var deviceData = function(selectedBeacon, selectedStore) {
         });
     }
 
-    var updateDevice = function(BeaconID, DeviceID, Distance) {
+    var updateDevice = function(BeaconID, DeviceID, Distance, MobileNo) {
             $http({
                     method: "post",
                     url: "/updateDevice",
                     data: {
                         'BeaconID': BeaconID,
                         'DeviceID': DeviceID,
-                        'Distance': Distance
+                        'Distance': Distance,
+                        'MobileNo' : MobileNo
                     }
                 }).success(function(data, status, headers, config) {
                     console.log("Success.");

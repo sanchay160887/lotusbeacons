@@ -187,6 +187,7 @@
                             <div class="col-md-8 no-pad">
                                 <select class="form-control col-md-4" ng-model="selectedStore">
                                     <option value="">Select Store</option>
+                                    <option value="-1" ng-show="loggedInUser.UserType == 1">All Store</option>
                                     <option ng-repeat="device in storeData | orderBy:StoreName" value="{{device._id}}">{{device.StoreName}}</option>
                                 </select>
                             </div>

@@ -782,38 +782,18 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                             empusers.find({
                                 'UserID': userid
                             }).toArray(function(err, emplist) {
+                                if (emplist && emplist.length > 0) {
+                                    console.log(JSON.stringify(emplist));
+                                    var token = emplist[0].devicetoken;
+                                    console.log(JSON.stringify(token));
+                                    console.log('Employee Device Token called');
 
-
-                                console.log(JSON.stringify(emplist));
-
-                                var token = emplist[0].devicetoken;
-
-                                console.log(JSON.stringify(token));
-                                console.log('Employee Device Token called');
-
-
-                                //Get Name by mobile number =============//
-
-
-
-
-
-                                // Get name by mobile nyu
-                                //notifresobj = {};
-
-                                sendpushnotification_fcm(null, [token], beacons[0].BeaconID, userid, MobileNo, 'Check your customer is nearby you');
+                                    sendpushnotification_fcm(null, [token], beacons[0].BeaconID, userid, MobileNo, 'Check your customer is nearby you');
+                                }
                             })
                         }
                     })
-
-                    /**   employee list end ------------------------------ */ ///////
-
                     /* Send notification to employees */
-
-
-
-
-
 
                 }
                 console.log('Sending notification');
@@ -1164,7 +1144,6 @@ function getUserAllotedStore(req) {
 }
 
 app.post('/getdata', function(req, res) {
-    console.log('Ali calling here');
     BeaconID = req.body.BeaconID;
     UserID = req.body.UserID;
 
@@ -1208,10 +1187,12 @@ app.post('/getdata', function(req, res) {
                             $in: BeaconID
                         }
                     });
-                } else if (StoreID) {
+                } else if (StoreID && StoreID != "-1") {
                     beaconcollection = collection.find({
                         'BeaconStore': ObjectId(StoreID)
                     });
+                } else if (StoreID == "-1") {
+                    beaconcollection = collection.find();
                 } else {
                     beaconcollection = {};
                 }
@@ -1309,11 +1290,11 @@ app.post('/getdata', function(req, res) {
 
                         var i;
                         i = devicelist.length;
-                        /*while (i--) {
+                        while (i--) {
                             if (!devicelist[i].DeviceName) {
                                 devicelist.splice(i, 1);
                             }
-                        }*/
+                        }
 
                         console.log(JSON.stringify(devicelist));
                         console.log('called');
@@ -1857,6 +1838,9 @@ app.post('/getDeviceSearchHistoryDetailsdata', function(req, res) {
 /*Beacon Services start*/
 app.post('/getbeacondata', function(req, res) {
     BeaconStore = req.body.BeaconStore;
+    if (BeaconStore == "-1") {
+        BeaconStore = "";
+    }
 
     var resObj = {};
     /*if (!req.session.loggedInUser) {
@@ -2850,16 +2834,16 @@ function sendpushnotification_fcm(resObj, gcmToken, BeaconID, notification_user_
 
             var reqbody = parse_JSON(response);
 
-           var data =reqbody.data;
+            var data = reqbody.data;
 
-           var name = data.name;
+            var name = data.name;
 
 
             var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
                 registration_ids: gcmToken,
-              
+
                 data: {
-                    'message': 'Check '+  name  +  ' nearest to you',
+                    'message': 'Check ' + name + ' nearest to you',
                     'notification_user_id': notification_user_id,
                     'badge': 1,
                     'title': title,
@@ -2874,7 +2858,7 @@ function sendpushnotification_fcm(resObj, gcmToken, BeaconID, notification_user_
             fcm.send(message, function(err, response) {
 
 
-              
+
                 if (err) {
                     console.log("Something has gone wrong!");
                 } else {
@@ -2895,7 +2879,7 @@ function sendpushnotification_fcm(resObj, gcmToken, BeaconID, notification_user_
                                         'notification_user_id': notification_user_id,
                                         'mobile_no': MobileNo,
                                         'title': title,
-                                        'message': 'Check '+  name  +  ' nearest to you',
+                                        'message': 'Check ' + name + ' nearest to you',
                                         //  'notification_img': image_url,
                                         'notification_type': 7,
 
@@ -3532,7 +3516,7 @@ app.post('/userLogin', function(req, res) {
                     var SectionName = '';
                     console.log(JSON.stringify(users));
                     console.log("===11111111111111111--------User Called===========");
-                    
+
 
                     if (users && users[0].hasOwnProperty('section_docs') && users[0].section_docs.length > 0) {
                         console.log(users[0].section_docs);
@@ -5502,30 +5486,29 @@ app.post('/getCrmEmployee', function(req, res) {
         var sectionlist = [];
         async.waterfall([
             function(callback) {
-              
 
-                 var SectionName = '';
+
+                var SectionName = '';
 
                 var sectioncollection = db.collection('sections');
 
 
 
-                 var sectcollection = {};
+                var sectcollection = {};
                 sectcollection = sectioncollection.find();
                 sectcollection.toArray(function(err, sections) {
-                    
-                    
+
+
                     for (var b in sections) {
                         sectionlist[sections[b]._id] = sections[b].SectionName;
                     }
-                    
+
                     callback(null, sectionlist);
                 });
-                  },
+            },
 
-                  function(sectionlist,callback)
-                  {
-                      var collection = db.collection('stores');
+            function(sectionlist, callback) {
+                var collection = db.collection('stores');
 
                 var storecollection = {};
                 storecollection = collection.find();
@@ -5536,10 +5519,10 @@ app.post('/getCrmEmployee', function(req, res) {
                     }
                     callback(null, storelist);
                 });
-          },
+            },
             function(storelist, callback) {
                 var collection = db.collection('users');
-               
+
 
                 var SectionName = '';
                 /*{ "UserType": 2 }*/
@@ -5548,7 +5531,7 @@ app.post('/getCrmEmployee', function(req, res) {
 
                 }).toArray(function(err, users) {
                     var userlist = [];
-                   
+
                     if (users && users.length > 0) {
 
 

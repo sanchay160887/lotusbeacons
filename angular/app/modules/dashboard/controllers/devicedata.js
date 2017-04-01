@@ -333,7 +333,7 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
   
     //$scope.sendNotification();
   
-    apiService.updateDevice('00:A0:50:0E:0F:23','APA91bFvaILdRXwqIopkKzByeFujzqHwsuNcsVZ8TSyO7GRGPzzMwISIpPjSO4xbzNffIiXX5TZL5ZQwLfjf46Hx7TDXcHi2hUXJzMb_4leR-IMvDPLP-9E','3.25');
+    apiService.updateDevice('00:A0:50:17:20:1D','APA91bFvaILdRXwqIopkKzByeFujzqHwsuNcsVZ8TSyO7GRGPzzMwISIpPjSO4xbzNffIiXX5TZL5ZQwLfjf46Hx7TDXcHi2hUXJzMb_4leR-IMvDPLP-9E','3.25', '8982044994');
 
     /*$http({
         method: "post",
@@ -362,4 +362,5 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
       DeviceID : 'D1001',
       Distance : '1200'
   });*/
+  //apiService.updateDevice('00:A0:50:17:20:1D','APA91bFvaILdRXwqIopkKzByeFujzqHwsuNcsVZ8TSyO7GRGPzzMwISIpPjSO4xbzNffIiXX5TZL5ZQwLfjf46Hx7TDXcHi2hUXJzMb_4leR-IMvDPLP-9E','3.25', '8982044994');
 })
