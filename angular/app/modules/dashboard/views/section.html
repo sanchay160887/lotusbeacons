@@ -55,7 +55,7 @@ Date: 05 Jan 2016
         <ol class="breadcrumb">
             <!-- <li><a><i class="fa fa-dashboard"></i> Dashboard</a></li> -->
             <li><a ui-sref="app.dashboard"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-                        <li class="active">Sections</li>
+            <li class="active">Sections</li>
         </ol>
     </section>
     <section class="content-body register_block_1">
@@ -65,7 +65,7 @@ Date: 05 Jan 2016
         <h4 ng-if="button_name!='Update'">Add Section</h4>
         <h4 ng-if="button_name=='Update'">Update section</h4>
         <ng-form name="sectionForm" id="sectionForm">
-<!-- 
+            <!-- 
            <label>Assign Store<span class="error">*</span></label>
             <select class="form-control col-md-4" ng-model="AssignedStore" name="AssignedStore" id="AssignedStore" required="required">
                 <option value="">Select Store</option>
@@ -74,7 +74,6 @@ Date: 05 Jan 2016
             </select>
             <br>
             <span class="error" ng-show="sectionForm.AssignedStore.$touched && sectionForm.AssignedStore.$invalid">Please assign any store</span> -->
-   
             <label>Assign Store<span class="error">*</span></label>
             <select class="form-control col-md-4" ng-model="AssignedStore" id="AssignedStore" name="AssignedStore" required="required">
                 <option value="">Select Store</option>
@@ -82,42 +81,25 @@ Date: 05 Jan 2016
                     {{device.StoreName}}</option>
             </select>
             <br>
-
-             <label>Select Beacon<span class="error">*</span></label>
-            <select class="form-control col-md-4" multiple="multiple" ng-model="selectedBeacon" id="selectedBeacon" name="selectedBeacon"  required="required">
+            <label>Select Beacon<span class="error">*</span></label>
+            <select class="form-control col-md-4" multiple="multiple" ng-model="selectedBeacon" id="selectedBeacon" name="selectedBeacon" required="required">
                 <option value="">Select Beacon</option>
-                <option ng-repeat="device in beaconData | orderBy:BeaconKey" value="{{device.BeaconID}}" ng-selected="selected">  
+                <option ng-repeat="device in beaconData | orderBy:BeaconKey" value="{{device.BeaconID}}" ng-selected="selected">
                     {{device.BeaconKey}}</option>
             </select>
-         <br>
-          <span class="error" ng-show="sectionForm.selectedBeacon.$touched && sectionForm.selectedBeacon.$invalid">Please assign any Beacon</span>
             <br>
-            
-
-          
-       
-       
-        <label>Section Name<span class="error">*</span></label>
+            <span class="error" ng-show="sectionForm.selectedBeacon.$touched && sectionForm.selectedBeacon.$invalid">Please assign any Beacon</span>
+            <br>
+            <label>Section Name<span class="error">*</span></label>
             <input class="form-control" type="text" name="SectionName" id="SectionName" ng-model="SectionName" required="required" />
             <span class="error" ng-show="sectionForm.SectionName.$touched && sectionForm.SectionName.$invalid">Section Name required</span>
             <br>
-            
-            
-        <label>Section Description<span class="error">*</span></label>
+            <label>Section Description<span class="error">*</span></label>
             <!--<input class="form-control" type="text" name="SectionDesc" id="SectionDesc" ng-model="SectionDesc" required="required" />-->
             <textarea name="SectionDesc" id="SectionDesc" ng-model="SectionDesc" rows="5" cols="40" required="required"></textarea>
             <br>
-            
             <span class="error" ng-show="sectionForm.SectionDesc.$touched && sectionForm.SectionDesc.$invalid">Section Description required</span>
             <br>
-            
-            
-       
-       
-       
-       
-       
-       
             <button class="btn btn-primary" ng-bind="button_name" ng-click="processUser()">Add</button>
             <button class="btn btn-primary" ng-if="button_name=='Update' && UserType != 1" ng-click="deleteSection()">
                 Delete</button>
@@ -167,9 +149,6 @@ Date: 05 Jan 2016
                 <span ng-show="O=='SectionDesc'">▲</span>
                 <span ng-show="O=='-SectionDesc'">▼</span>
             </th>
-            
-            
-
             <th ng-click="O=(O=='StoreName' && '-StoreName' || 'StoreName' )">Assigned Store
                 <span ng-show="O=='StoreName'">▲</span>
                 <span ng-show="O=='-StoreName'">▼</span>
@@ -182,8 +161,6 @@ Date: 05 Jan 2016
                 <td>
                     <input class="form-control" type='text' ng-model="u.SectionDesc" readonly />
                 </td>
-
-            
                 <td>
                     <input class="form-control" type='text' ng-model="u.StoreName" readonly />
                 </td>

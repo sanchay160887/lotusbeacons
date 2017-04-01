@@ -8,12 +8,13 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
 
     //$scope.UserType = 2;
 
-    
 
+
+    var temporaryBeacon = [];
     $scope.AssignedSection = '';
     $scope.ResetPassword = false;
     $scope.UserObjectID = '';
-   
+
     $scope.button_name = 'Add';
     $scope.ListInitialized = false;
     $scope.FormInitialized = true;
@@ -78,13 +79,13 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
 
     $scope.getAllSections();
 
-     apiService.storeData().then(function(res) {
+    apiService.storeData().then(function(res) {
         $scope.storeData = res.data.data;
     });
 
 
 
-   /* 
+    /* 
     apiService.sectionData().then(function(res) {
        
 
@@ -95,12 +96,11 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
 
   */
 
-    
+
 
     $scope.$watchCollection('[AssignedStore]', function() {
         if ($scope.FormInitialized) {
             apiService.beaconData($scope.AssignedStore).then(function(res) {
-              
                 $scope.beaconData = res.data.data;
             });
         }
@@ -110,10 +110,10 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
     $scope.resetControls = function() {
         $scope.SectionName = '';
         $scope.SectionDesc = '';
-         
-         $scope.selectedBeacon = '';
-         
-         $scope.AssignedStore = '';
+
+        $scope.selectedBeacon = '';
+
+        $scope.AssignedStore = '';
 
         $scope.UserObjectID = '';
         $scope.button_name = "Add";
@@ -124,31 +124,36 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
     }
 
     $scope.getSection = function(pUserObjectID) {
-//alert(pUserObjectID);
-//alert('hii');
+        //alert(pUserObjectID);
+        //alert('hii');
 
         $scope.FormInitialized = false;
         apiService.getSection(pUserObjectID).
         success(function(data, status, headers, config) {
-                if (data.data) {
+                var SectionData = data.data;
+                if (data.data && data.data.length > 0) {
                     $scope.button_name = 'Update';
 
                     $scope.UserObjectID = pUserObjectID;
                     $scope.SectionName = data.data[0].SectionName;
                     $scope.SectionDesc = data.data[0].SectionDesc;
-
-
-                     $scope.selectedBeacon = data.data[0].BeaconID;
-                    $scope.AssignedStore = data.data[0].AssignedStore;
-
-                
-                    alert($scope.selectedBeacon);
+                    $scope.AssignedStore = SectionData[0].AssignedStore;
+                    apiService.beaconData(SectionData[0].AssignedStore).then(function(res) {
+                        $scope.beaconData = res.data.data;
+                        setTimeout(function(){
+                            $scope.selectedBeacon = SectionData[0].BeaconID;
+                            $scope.FormInitialized = true;
+                        }, 300);                        
+                    });
+                    
+                    //alert($scope.selectedBeacon);                    
                 } else {
                     $scope.UserObjectID = '';
                     alert('Section not found. Please refresh your page');
                     $scope.button_name = 'add';
+                    $scope.FormInitialized = true;
                 }
-                $scope.FormInitialized = true;
+
             })
             .error(function(data, status, headers, config) {
                 console.log("failed.");
@@ -165,9 +170,9 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
         $scope.FormInitialized = false;
         if ($scope.button_name == 'Add') {
             alert($scope.button_name);
- apiService.addSection($scope.SectionName,$scope.SectionDesc,$scope.AssignedStore,$scope.selectedBeacon)
-        .success(function(data, status, headers, config) {
-            
+            apiService.addSection($scope.SectionName, $scope.SectionDesc, $scope.AssignedStore, $scope.selectedBeacon)
+                .success(function(data, status, headers, config) {
+
 
                     if (data.IsSuccess) {
                         alert('Section Added Successfully');
@@ -188,9 +193,9 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
             //,$scope.selectedBeacon,
             $scope.FormInitialized = false;
             console.log($scope.SectionName);
-            apiService.updateSection($scope.UserObjectID,$scope.AssignedStore,$scope.selectedBeacon,$scope.SectionName,$scope.SectionDesc)
+            apiService.updateSection($scope.UserObjectID, $scope.AssignedStore, $scope.selectedBeacon, $scope.SectionName, $scope.SectionDesc)
                 .success(function(data, status, headers, config) {
-                   // alert('hello123');
+                    // alert('hello123');
                     if (data.IsSuccess) {
                         alert('Section Updated Successfully');
                         $scope.getAllUsers();
