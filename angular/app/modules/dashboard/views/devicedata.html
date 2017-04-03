@@ -237,7 +237,9 @@
                         <th ng-click="sortDevicedata('DeviceName')">Device Name</th>
                         <th ng-click="sortDevicedata('DevicePhone')">Mobile Number</th>
                         <th ng-click="sortDevicedata('Distance')">Distance</th>
-                        <th ng-click="sortDevicedata('BeaconKey')">Beacon</th>
+                        <th ng-click="sortDevicedata('StayTime')">Stay Time</th>
+                        <th ng-click="sortDevicedata('StoreName')" ng-show="selectedStore=='-1'">Store</th>
+                        <th ng-click="sortDevicedata('BeaconKey')">Beacon</th>                        
                     </tr>
                 </thead>
                 <tbody>
@@ -251,10 +253,15 @@
                         <td>{{ (device.Distance
                             < 0) && ( "Out of range") || (device.Distance | numberEx:2) + ' meter(s)' }}</td>
                                 <!-- <td>{{ device.Distance | numberEx:2 }} meter</td> -->
-                                <td>{{ device.BeaconKey }} ({{ device.BeaconID }})</td>
+                        <td>{{ device.StayTime }}</td>
+                        <td ng-show="selectedStore=='-1'">{{ device.StoreName }}</td>
+                        <td>{{ device.BeaconKey }} ({{ device.BeaconID }})</td>
                     </tr>
                     <tr ng-if="!(deviceData.length > 0)">
-                        <td colspan="5">
+                        <td colspan="6" ng-show="selectedStore!='-1'">
+                            No Record Found
+                        </td>
+                        <td colspan="7" ng-show="selectedStore=='-1'">
                             No Record Found
                         </td>
                     </tr>

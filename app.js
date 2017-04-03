@@ -766,34 +766,34 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                     var empcollection = db.collection('user_beacons_active');
 
                     empcollection.find(
-                        /*{
-                                            'BeaconID': beacons[0].BeaconID
-                                        }*/
-                    ).sort({ 'Distance': -1 }).toArray(function(err, emplist) {
-                        console.log(JSON.stringify(emplist));
-                        console.log('emplist called');
-                        if (emplist && emplist.length > 0) {
-                            var empusers = db.collection('users');
+                            /*{
+                                                'BeaconID': beacons[0].BeaconID
+                                            }*/
+                        ).sort({ 'Distance': -1 }).toArray(function(err, emplist) {
+                            console.log(JSON.stringify(emplist));
+                            console.log('emplist called');
+                            if (emplist && emplist.length > 0) {
+                                var empusers = db.collection('users');
 
-                            var userid = emplist[0].UserID;
+                                var userid = emplist[0].UserID;
 
-                            console.log(userid);
+                                console.log(userid);
 
-                            empusers.find({
-                                'UserID': userid
-                            }).toArray(function(err, emplist) {
-                                if (emplist && emplist.length > 0) {
-                                    console.log(JSON.stringify(emplist));
-                                    var token = emplist[0].devicetoken;
-                                    console.log(JSON.stringify(token));
-                                    console.log('Employee Device Token called');
+                                empusers.find({
+                                    'UserID': userid
+                                }).toArray(function(err, emplist) {
+                                    if (emplist && emplist.length > 0) {
+                                        console.log(JSON.stringify(emplist));
+                                        var token = emplist[0].devicetoken;
+                                        console.log(JSON.stringify(token));
+                                        console.log('Employee Device Token called');
 
-                                    sendpushnotification_fcm(null, [token], beacons[0].BeaconID, userid, MobileNo, 'Check your customer is nearby you');
-                                }
-                            })
-                        }
-                    })
-                    /* Send notification to employees */
+                                        sendpushnotification_fcm(null, [token], beacons[0].BeaconID, userid, MobileNo, 'Check your customer is nearby you');
+                                    }
+                                })
+                            }
+                        })
+                        /* Send notification to employees */
 
                 }
                 console.log('Sending notification');
@@ -1172,6 +1172,8 @@ app.post('/getdata', function(req, res) {
         BeaconID = BeaconID.split(',');
     }
 
+    var devicehistory = [];
+
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
             return console.dir(err);
@@ -1192,19 +1194,74 @@ app.post('/getdata', function(req, res) {
                         'BeaconStore': ObjectId(StoreID)
                     });
                 } else if (StoreID == "-1") {
-                    beaconcollection = collection.find();
+                    beaconcollection = collection.aggregate([{
+                        $lookup: {
+                            from: 'stores',
+                            localField: 'BeaconStore',
+                            foreignField: '_id',
+                            as: 'store_docs'
+                        }
+                    }]);
                 } else {
                     beaconcollection = {};
                 }
 
                 beaconcollection.toArray(function(err, beacons) {
+                    console.log('Store list');
+                    console.dir(beacons);
                     var beaconslist = [];
                     for (var b in beacons) {
-                        beaconslist[beacons[b].BeaconID] = beacons[b].BeaconKey;
+                        beaconslist[beacons[b].BeaconID] = {};
+                        beaconslist[beacons[b].BeaconID].BeaconKey = beacons[b].BeaconKey;
+                        if (beacons[b].store_docs != undefined && beacons[b].store_docs.length > 0){
+                            beaconslist[beacons[b].BeaconID].StoreName = beacons[b].store_docs[0].StoreName;
+                            
+                        } else {
+                            beaconslist[beacons[b].BeaconID].StoreName = '';    
+                        }                        
                     }
 
                     callback(null, beaconslist);
                 });
+            },
+            function(beaconlist, callback) {
+                var beacons = []
+                for (var b in beaconlist) {
+                    beacons.push(b);
+                }
+
+                todaysdate = getCurrentTime();
+                seldate = new Date(todaysdate);
+                datestring = seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate();
+                fromDate = new Date(datestring).getTime();
+
+                var collection = db.collection('device_history');
+                    collection.aggregate(
+                        [{
+                            $match: {
+                                'Date': {
+                                    '$gte': fromDate,
+                                },
+                                'BeaconID': {
+                                    $in: beacons,
+                                },
+                                'StayTime': {
+                                    $gte: 2
+                                }
+                            }
+                        }, {
+                            $group: {
+                                _id: { BeaconID: '$BeaconID', MobileNo: '$MobileNo' },
+                                StayTime: { $sum: "$StayTime" }
+                            }
+                        }]
+                    ).toArray(function(err, devices) {
+                        for(var d in devices){
+                            devicehistory[devices[d]._id.MobileNo] = [];
+                            devicehistory[devices[d]._id.MobileNo][devices[d]._id.BeaconID] = devices[d]['StayTime'];
+                        }
+                        callback(null, beaconlist);
+                    });
             },
             function(beaconlist, callback) {
                 var collection = db.collection('device');
@@ -1223,8 +1280,14 @@ app.post('/getdata', function(req, res) {
                     });
                     devicecollection.toArray(function(err, devices) {
                         for (var dvc in devices) {
-                            devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
+                            devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID].BeaconKey;
+                            devices[dvc].StoreName = beaconlist[devices[dvc].BeaconID].StoreName;
                             devices[dvc].UniqueKey = devices[dvc].MobileNo + '‖' + devices[dvc].BeaconID;
+                            if (devicehistory[devices[dvc].MobileNo] != undefined && devicehistory[devices[dvc].MobileNo][devices[dvc].BeaconID] != undefined){
+                                devices[dvc].StayTime = devicehistory[devices[dvc].MobileNo][devices[dvc].BeaconID];
+                            } else {
+                                devices[dvc].StayTime = 0;
+                            }
                             devicelist.push(devices[dvc]);
                         }
                         callback(null, devicelist);
@@ -1241,7 +1304,6 @@ app.post('/getdata', function(req, res) {
                 }
             },
             function(devicelist, callback) {
-
                 var devices = [];
                 for (var d in devicelist) {
                     //devices.push(devicelist[d].DeviceID);
