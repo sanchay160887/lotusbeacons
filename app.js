@@ -766,9 +766,6 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                     var empcollection = db.collection('user_beacons_active');
 
                     empcollection.find(
-                            /*{
-                                                'BeaconID': beacons[0].BeaconID
-                                            }*/
                         ).sort({ 'Distance': -1 }).toArray(function(err, emplist) {
                             console.log(JSON.stringify(emplist));
                             console.log('emplist called');
@@ -4433,29 +4430,35 @@ app.post('/updateEmployee', function(req, res) {
 
 app.post('/getEmployeeDetails', function(req, res) {
     EmployeeID = req.body.EmployeeID;
+    EmployeeID = 'admin12345';
 
     console.log(EmployeeID);
     console.log('Employee Details Called -----=========');
 
     var resObj = {};
+    console.log(4439);
 
-    if (!(EmployeeID)) {
+    if (!EmployeeID) {
+        console.log(4442);
         resObj.IsSuccess = false;
         resObj.message = "Invalid Employee selected";
         res.send(resObj);
         return;
     }
+    console.log(4448);
 
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
             return console.dir(err);
         }
         assert.equal(null, err);
+        console.log(4455);
 
         var collection = db.collection('users');
 
         async.waterfall([
             function(callback) {
+                console.log(4461);
                 collection.find({
                     'UserID': EmployeeID
                 }).toArray(function(err, devices) {
@@ -4464,6 +4467,7 @@ app.post('/getEmployeeDetails', function(req, res) {
 
             },
             function(devices, callback) {
+                console.log(4470);
                 if (devices && devices.length > 0) {
 
                     var beaconCollection = db.collection('beacons');
@@ -4512,6 +4516,7 @@ app.post('/getEmployeeDetails', function(req, res) {
 
             },
             function(workdone, callback) {
+                console.log(4419);
                 db.close();
             }
         ]);
