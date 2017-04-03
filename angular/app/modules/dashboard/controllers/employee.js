@@ -304,7 +304,8 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
         }
     });
 
-*//*
+*/
+
         $http({
         method: "post",
         url: "/getEmployeeDetails",
@@ -314,7 +315,7 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
         }
     });
 
-*/
+
 
 
 /*    

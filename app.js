@@ -1213,12 +1213,12 @@ app.post('/getdata', function(req, res) {
                     for (var b in beacons) {
                         beaconslist[beacons[b].BeaconID] = {};
                         beaconslist[beacons[b].BeaconID].BeaconKey = beacons[b].BeaconKey;
-                        if (beacons[b].store_docs != undefined && beacons[b].store_docs.length > 0){
+                        if (beacons[b].store_docs != undefined && beacons[b].store_docs.length > 0) {
                             beaconslist[beacons[b].BeaconID].StoreName = beacons[b].store_docs[0].StoreName;
-                            
+
                         } else {
-                            beaconslist[beacons[b].BeaconID].StoreName = '';    
-                        }                        
+                            beaconslist[beacons[b].BeaconID].StoreName = '';
+                        }
                     }
 
                     callback(null, beaconslist);
@@ -1236,32 +1236,32 @@ app.post('/getdata', function(req, res) {
                 fromDate = new Date(datestring).getTime();
 
                 var collection = db.collection('device_history');
-                    collection.aggregate(
-                        [{
-                            $match: {
-                                'Date': {
-                                    '$gte': fromDate,
-                                },
-                                'BeaconID': {
-                                    $in: beacons,
-                                },
-                                'StayTime': {
-                                    $gte: 2
-                                }
+                collection.aggregate(
+                    [{
+                        $match: {
+                            'Date': {
+                                '$gte': fromDate,
+                            },
+                            'BeaconID': {
+                                $in: beacons,
+                            },
+                            'StayTime': {
+                                $gte: 2
                             }
-                        }, {
-                            $group: {
-                                _id: { BeaconID: '$BeaconID', MobileNo: '$MobileNo' },
-                                StayTime: { $sum: "$StayTime" }
-                            }
-                        }]
-                    ).toArray(function(err, devices) {
-                        for(var d in devices){
-                            devicehistory[devices[d]._id.MobileNo] = [];
-                            devicehistory[devices[d]._id.MobileNo][devices[d]._id.BeaconID] = devices[d]['StayTime'];
                         }
-                        callback(null, beaconlist);
-                    });
+                    }, {
+                        $group: {
+                            _id: { BeaconID: '$BeaconID', MobileNo: '$MobileNo' },
+                            StayTime: { $sum: "$StayTime" }
+                        }
+                    }]
+                ).toArray(function(err, devices) {
+                    for (var d in devices) {
+                        devicehistory[devices[d]._id.MobileNo] = [];
+                        devicehistory[devices[d]._id.MobileNo][devices[d]._id.BeaconID] = devices[d]['StayTime'];
+                    }
+                    callback(null, beaconlist);
+                });
             },
             function(beaconlist, callback) {
                 var collection = db.collection('device');
@@ -1283,7 +1283,7 @@ app.post('/getdata', function(req, res) {
                             devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID].BeaconKey;
                             devices[dvc].StoreName = beaconlist[devices[dvc].BeaconID].StoreName;
                             devices[dvc].UniqueKey = devices[dvc].MobileNo + '‖' + devices[dvc].BeaconID;
-                            if (devicehistory[devices[dvc].MobileNo] != undefined && devicehistory[devices[dvc].MobileNo][devices[dvc].BeaconID] != undefined){
+                            if (devicehistory[devices[dvc].MobileNo] != undefined && devicehistory[devices[dvc].MobileNo][devices[dvc].BeaconID] != undefined) {
                                 devices[dvc].StayTime = devicehistory[devices[dvc].MobileNo][devices[dvc].BeaconID];
                             } else {
                                 devices[dvc].StayTime = 0;
@@ -3652,7 +3652,7 @@ app.post('/userLogin', function(req, res) {
                 //console.log(user);
 
                 if (isCallingFromApp) {
-                    var beaconCollection = db.collection('beacons_temp');
+                    var beaconCollection = db.collection('beacons');
                     // var sectionCollection = db.collection('sections');
                     var AllotedSection = user.AssignedSection;
 
@@ -4167,7 +4167,7 @@ app.post('/addSection', function(req, res) {
 
         var collection = db.collection('sections');
 
-        var sectionbeacon = db.collection('beacons_temp');
+        var sectionbeacon = db.collection('beacons');
 
         var SectionID = '';
 
@@ -4464,62 +4464,55 @@ app.post('/getEmployeeDetails', function(req, res) {
 
             },
             function(devices, callback) {
-
-
                 if (devices && devices.length > 0) {
 
-                    var beaconCollection = db.collection('beacons_temp');
-                    var AllotedSection = devices[0].BeaconSection;
+                    var beaconCollection = db.collection('beacons');
+                    var AssignedSection = devices[0].AssignedSection;
 
-
-
-
-                    var beacons1 = [];
+                    /*
                     beaconCollection.find({
-                        "BeaconSection": ObjectId(AllotedSection)
-                    }).toArray(function(err, beacons) {
-
-
-                        for (var b in beacons) {
-
-
-                            beacons1.push(beacons[b]);
+                        "BeaconSection": ObjectId(AssignedSection)
+                    })
+                    */
+                    beaconCollection.aggregate([{
+                        $match: {
+                            "BeaconSection": ObjectId(AssignedSection)
+                        },
+                    }, {
+                        $lookup: {
+                            from: 'stores',
+                            localField: 'BeaconStore',
+                            foreignField: '_id',
+                            as: 'store_docs'
                         }
-                        console.log('===========beacons start================');
-
-                        console.log(beacons);
-                        console.log('===========beacons called================');
-
-
-
+                    }, {
+                        $lookup: {
+                            from: 'sections',
+                            localField: 'BeaconSection',
+                            foreignField: '_id',
+                            as: 'section_docs'
+                        }
+                    }]).toArray(function(err, beacons) {
+                        
                         resObj.beacons = beacons;
                         resObj.devices = devices;
-
-
-
-
-
 
 
                         resObj.IsSuccess = true;
                         resObj.message = "success";
 
                         res.send(resObj);
-                        console.log('===========end called================');
+                        callback(null, true);
                     });
-
-
-                    // resObj.IsSuccess = true;
-                    //resObj.message = "success";
-                    //resObj.data = devices;
                 } else {
                     resObj.IsSuccess = false;
                     resObj.message = "Employee not found";
+                    callback(null, false);
                 }
+
+            },
+            function(workdone, callback) {
                 db.close();
-                // console.log('===============emp=================');
-                //  console.log(resObj);
-                // res.send(resObj);
             }
         ]);
     });
@@ -5436,7 +5429,7 @@ app.post('/updateSection', function(req, res) {
         assert.equal(null, err);
 
         var collection = db.collection('sections');
-        var sectionbeacon = db.collection('beacons_temp');
+        var sectionbeacon = db.collection('beacons');
 
         async.waterfall([
             function(callback) {
@@ -5476,22 +5469,7 @@ app.post('/updateSection', function(req, res) {
                 callback(null, 'updated');
             },
             function(updated, callback) {
-
-                /*  sectionbeacon.find({
-
-                    'BeaconSection': ObjectId(UserObjectID)
-                }).toArray(function(err,beacons_temp){
-
-                     sectionbeacon.deleteMany({
-                            'BeaconSection': ObjectId(UserObjectID)
-                        });
-
-
-                });
-*/
-
                 sectionbeacon.updateMany({
-
                         'BeaconID': {
                             $in: selectedBeacon
                         }
@@ -5509,12 +5487,8 @@ app.post('/updateSection', function(req, res) {
                     }
                 );
 
-
-
                 console.log('Section Beacon Updated');
                 callback(null, 'rec');
-
-
 
             },
             function(response, callback) {
