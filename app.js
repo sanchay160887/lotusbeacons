@@ -4493,7 +4493,7 @@ app.post('/getEmployeeDetails', function(req, res) {
                             as: 'section_docs'
                         }
                     }]).toArray(function(err, beacons) {
-                        
+
                         resObj.beacons = beacons;
                         resObj.devices = devices;
 
@@ -5375,10 +5375,6 @@ app.post('/updateSection', function(req, res) {
     console.log(SectionDesc);
     console.log(selectedBeacon);
 
-
-
-
-
     SectionName = SectionName.toLowerCase();
     SectionDesc = SectionDesc.toLowerCase();
 
@@ -5506,7 +5502,6 @@ app.post('/updateSection', function(req, res) {
 });
 
 // Get Employee Data For PHP through curl in CRM module
-
 app.post('/getCrmEmployee', function(req, res) {
 
     var UserType = req.body.UserType;
@@ -5611,5 +5606,67 @@ app.post('/getCrmEmployee', function(req, res) {
             }
         ]);
 
+    });
+});
+
+app.post('/getStore_DeviceCount', function(req, res) {
+    resObj = {};
+    console.log(req.session);
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = loginexpiredmessage;
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        var devicecollection = db.collection('device');
+
+
+        devicecollection.aggregate([{
+            '$lookup': {
+                'from': "beacons",
+                'localField': "BeaconID",
+                'foreignField': "BeaconID",
+                'as': "beacons"
+            }
+        }, {
+            '$unwind': {
+                'path': "$beacons",
+            }
+        }, {
+            '$lookup': {
+                'from': "stores",
+                'localField': "beacons.BeaconStore",
+                'foreignField': "_id",
+                'as': "stores",
+            }
+        }, {
+            '$unwind': {
+                'path': "$stores",
+            }
+        }, {
+            $group: {
+                _id: { StoreID: '$stores._id', StoreName: '$stores.StoreName' },
+                count: { $sum: 1 }
+            }
+        }]).toArray(function(err, devices) {
+            resObj.IsSuccess = true;
+            resObj.message = "Success";
+            resObj.records = devices;
+            res.send(resObj);
+        });
     });
 });

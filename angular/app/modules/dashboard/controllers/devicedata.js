@@ -17,6 +17,7 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
     $scope.Initialized = false;
     $scope.BeaconInitialized = true;
     $scope.InvalidInputs = false;
+    $scope.deviceAnalysis = {};
 
     $scope.$watchCollection('[InvalidInputs]', function() {
         if ($scope.InvalidInputs) {
@@ -26,6 +27,7 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         }
     });
 
+
     $scope.checkLoggedInUser = function() {
         apiService.checkloginUser().then(function(res) {
             if (typeof(res.data.user) != undefined && res.data.user) {
@@ -33,7 +35,18 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
             } else {
                 $location.path("/");
             }
+
+            $scope.fetchDeviceAnalysis();
+
         });
+    }
+
+    $scope.fetchDeviceAnalysis = function() {
+        if ($rootScope.loggedInUser.UserType == 1) {
+            apiService.deviceAnalysis().then(function(res) {
+                $scope.deviceAnalysis = res.data.records;
+            })
+        }
     }
 
 
@@ -245,6 +258,8 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
                 $scope.loadData();
             }
         }
+
+        $scope.fetchDeviceAnalysis();
     });
 
     function in_array(needle, haystack) {
@@ -362,5 +377,7 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
       DeviceID : 'D1001',
       Distance : '1200'
   });*/
-  //apiService.updateDevice('00:A0:50:17:20:1D','APA91bFvaILdRXwqIopkKzByeFujzqHwsuNcsVZ8TSyO7GRGPzzMwISIpPjSO4xbzNffIiXX5TZL5ZQwLfjf46Hx7TDXcHi2hUXJzMb_4leR-IMvDPLP-9E','3.25', '8982044994');
+    /*apiService.updateDevice('00:A0:50:17:20:1D', 'APA91bFvaILdRXwqIopkKzByeFujzqHwsuNcsVZ8TSyO7GRGPzzMwISIpPjSO4xbzNffIiXX5TZL5ZQwLfjf46Hx7TDXcHi2hUXJzMb_4leR-IMvDPLP-9E', '3.25', '8982044994');
+    apiService.updateDevice('00:A0:50:17:20:1D', 'APA91bFvaILdRXwqIopkKzByeFujzqHwsuNcsVZ8TSyO7GRGPzzMwISIpPjSO4xbzNffIiXX5TZL5ZQwLfjf46Hx7TDXcHi2hUXJzMb_4leR-IMvDPLP-9E', '3.25', '9584010456');    
+    apiService.updateDevice('00:A0:50:B3:77:11', 'APA91bFvaILdRXwqIopkKzByeFujzqHwsuNcsVZ8TSyO7GRGPzzMwISIpPjSO4xbzNffIiXX5TZL5ZQwLfjf46Hx7TDXcHi2hUXJzMb_4leR-IMvDPLP-9E', '4.25', '9926037416');*/
 })

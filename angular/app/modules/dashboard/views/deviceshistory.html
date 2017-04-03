@@ -147,6 +147,11 @@ a.disabled {
     cursor: not-allowed;
 }
 
+.active-users {
+    color: #555299;
+    margin-bottom: 10px;
+}
+
 
 /*#uploadForm > input {
     margin-bottom: 10px;
@@ -169,6 +174,14 @@ Date: 05 Jan 2016
 </section>
 <div class="content-device_block">
     <div class="container-fluid">
+        <div class="row" ng-show="deviceAnalysis && deviceAnalysis.length > 0">
+            <div class="col-md-12 active-users">
+                <div class="col-md-12"><strong>Number of active Devices at Stores: </strong></div>
+                <div class="col-md-3" ng-repeat="device in deviceAnalysis">
+                    {{ device._id.StoreName }} : {{ device.count }} {{ device.count > 1 && 'Users' || 'User' }}
+                </div>
+            </div>
+        </div>
         <div class="wait_block" ng-if="InvalidInputs">
             <p class="error_text" ng-show="!InvalidDateInputs">Please select Store and Date for getting list of device history.</p>
             <p class="error_text" ng-show="InvalidDateInputs">End date must be greater or equal to start date.</p>

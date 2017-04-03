@@ -57,6 +57,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.HistoryOfPlace = '';
     $scope.HitFromPagination = false;
     $scope.HistorySearchDetailsData = [];
+    $scope.deviceAnalysis = {};
 
     $scope.checkLoggedInUser = function() {
         apiService.checkloginUser().then(function(res) {
@@ -65,6 +66,8 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             } else {
                 $location.path("/");
             }
+
+            $scope.fetchDeviceAnalysis();
         });
     }
     
@@ -79,6 +82,13 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         });*/
     }
 
+    $scope.fetchDeviceAnalysis = function() {
+        if ($rootScope.loggedInUser.UserType == 1) {
+            apiService.deviceAnalysis().then(function(res) {
+                $scope.deviceAnalysis = res.data.records;
+            })
+        }
+    }
     
 
     $scope.connection = true;
@@ -673,14 +683,17 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             return;
         }
 
-        if (!(typeof(queriedUrl.date) != 'undefined' && queriedUrl.date)) {
+        if (!(typeof(queriedUrl.dateFrom) != 'undefined' && queriedUrl.dateFrom)) {
             return;
         }
+
+        $scope.fetchDeviceAnalysis();
 
         if (response.IsSuccess && response.StoreID && response.StoreID == queriedUrl.store) {
             $scope.getAllDevicesHistory();
             console.log($scope.selectedBeacon);
         }
+
     });
 
     $scope.sendNotification = function() {

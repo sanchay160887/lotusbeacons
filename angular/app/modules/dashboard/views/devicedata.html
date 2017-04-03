@@ -37,6 +37,7 @@
     padding: 7% 0;
 }
 
+
 /*.wait_text {
     background-color: #d9edf7;
     border-radius: 3px;
@@ -157,6 +158,12 @@
     font-size: 34px;
     opacity: 1;
 }
+
+.active-users {
+    color: #555299;
+    margin-bottom: 10px;
+}
+
 </style>
 <!-- Content Header (Page header) -->
 <div ng-show="!connection" class="alert alert-danger">You're offline now. Please check your internet connection</div>
@@ -170,6 +177,14 @@
 </section>
 <div class="content-device_block">
     <div class="container-fluid">
+        <div class="row" ng-show="deviceAnalysis && deviceAnalysis.length > 0">
+            <div class="col-md-12 active-users">
+                <div class="col-md-12"><strong>Number of active Devices at Stores: </strong></div>
+                <div class="col-md-3" ng-repeat="device in deviceAnalysis">
+                    {{ device._id.StoreName }} : {{ device.count }} {{ device.count > 1 && 'Users' || 'User' }}
+                </div>
+            </div>
+        </div>
         <div class="wait_block" ng-if="InvalidInputs">
             <p class="error_text">Please select Store for getting list of devices.</p>
         </div>
@@ -239,7 +254,7 @@
                         <th ng-click="sortDevicedata('Distance')">Distance</th>
                         <th ng-click="sortDevicedata('StayTime')">Stay Time</th>
                         <th ng-click="sortDevicedata('StoreName')" ng-show="selectedStore=='-1'">Store</th>
-                        <th ng-click="sortDevicedata('BeaconKey')">Beacon</th>                        
+                        <th ng-click="sortDevicedata('BeaconKey')">Beacon</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -253,9 +268,9 @@
                         <td>{{ (device.Distance
                             < 0) && ( "Out of range") || (device.Distance | numberEx:2) + ' meter(s)' }}</td>
                                 <!-- <td>{{ device.Distance | numberEx:2 }} meter</td> -->
-                        <td>{{ device.StayTime }}</td>
-                        <td ng-show="selectedStore=='-1'">{{ device.StoreName }}</td>
-                        <td>{{ device.BeaconKey }} ({{ device.BeaconID }})</td>
+                                <td>{{ device.StayTime }}</td>
+                                <td ng-show="selectedStore=='-1'">{{ device.StoreName }}</td>
+                                <td>{{ device.BeaconKey }} ({{ device.BeaconID }})</td>
                     </tr>
                     <tr ng-if="!(deviceData.length > 0)">
                         <td colspan="6" ng-show="selectedStore!='-1'">

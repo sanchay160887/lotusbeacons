@@ -81,7 +81,14 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
 
     // Services for Devices start
 
-var deviceData = function(selectedBeacon, selectedStore) {
+    var deviceAnalysis = function(BeaconID, DeviceID, Distance, MobileNo) {
+        return $http({
+            method: "post",
+            url: '/getStore_DeviceCount',
+        });
+    }
+
+    var deviceData = function(selectedBeacon, selectedStore) {
         return $http({
             method: "post",
             url: '/getdata',
@@ -154,7 +161,7 @@ var deviceData = function(selectedBeacon, selectedStore) {
                         'BeaconID': BeaconID,
                         'DeviceID': DeviceID,
                         'Distance': Distance,
-                        'MobileNo' : MobileNo
+                        'MobileNo': MobileNo
                     }
                 }).success(function(data, status, headers, config) {
                     console.log("Success.");
@@ -186,8 +193,8 @@ var deviceData = function(selectedBeacon, selectedStore) {
 
     /*Beacon device start*/
     var beaconData = function(BeaconStore) {
-       // alert(BeaconStore);
-       // alert('beacon');
+        // alert(BeaconStore);
+        // alert('beacon');
         return $http({
             method: "post",
             url: "/getbeacondata",
@@ -505,6 +512,7 @@ var deviceData = function(selectedBeacon, selectedStore) {
     apiService.update = update;
     apiService.delet = delet;
     apiService.deviceData = deviceData;
+    apiService.deviceAnalysis = deviceAnalysis;
     apiService.deviceHistoryData = deviceHistoryData;
     apiService.deviceHistoryDetailsData = deviceHistoryDetailsData;
     apiService.deviceSearchHistoryDetailsData = deviceSearchHistoryDetailsData;
@@ -521,21 +529,21 @@ var deviceData = function(selectedBeacon, selectedStore) {
     //apiService.base_url = 'http://52.205.143.53:3000';
 
     var employeeData = function() {
-            return $http({
-                method: "post",
-                url: "/getEmployeedata"
-            });
+        return $http({
+            method: "post",
+            url: "/getEmployeedata"
+        });
 
 
-        }
-          var sectionData = function(data) {
+    }
+    var sectionData = function(data) {
 
-            return $http.post('/getsectiondata', { headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;' } });
-        }
-       
+        return $http.post('/getsectiondata', { headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;' } });
+    }
 
-    var addEmployee = function(UserID, Password, Name,Designation ,AssignedStore, AssignedSection) {
-       
+
+    var addEmployee = function(UserID, Password, Name, Designation, AssignedStore, AssignedSection) {
+
 
 
         return $http({
@@ -545,7 +553,7 @@ var deviceData = function(selectedBeacon, selectedStore) {
                 'UserID': UserID,
                 'Password': Password,
                 'Name': Name,
-                'Designation':Designation,
+                'Designation': Designation,
 
                 'AssignedStore': AssignedStore,
                 'AssignedSection': AssignedSection,
@@ -555,14 +563,14 @@ var deviceData = function(selectedBeacon, selectedStore) {
 
 
 
-    var updateEmployee = function(UserObjectID, UserID, Password, Name, AssignedStore, AssignedSection,Designation  ) {
-      //  alert(UserObjectID);
-       // alert(UserID);
-       //  alert(Password);
-       // alert(Name);
-       // alert(AssignedStore);
-       // alert(AssignedSection);
-       // alert(Designation);
+    var updateEmployee = function(UserObjectID, UserID, Password, Name, AssignedStore, AssignedSection, Designation) {
+        //  alert(UserObjectID);
+        // alert(UserID);
+        //  alert(Password);
+        // alert(Name);
+        // alert(AssignedStore);
+        // alert(AssignedSection);
+        // alert(Designation);
         return $http({
             method: "post",
             url: "/updateEmployee",
@@ -571,12 +579,12 @@ var deviceData = function(selectedBeacon, selectedStore) {
                 'UserID': UserID,
                 'Password': Password,
                 //'ResetPassword': ResetPassword,
-               
+
                 'Name': Name,
-                
+
                 'AssignedStore': AssignedStore,
-                 'AssignedSection': AssignedSection,
-                 'Designation': Designation
+                'AssignedSection': AssignedSection,
+                'Designation': Designation
             }
         });
     }
@@ -601,26 +609,26 @@ var deviceData = function(selectedBeacon, selectedStore) {
     apiService.employeeData = employeeData;
     apiService.updateEmployee = updateEmployee;
     apiService.deleteEmployee = deleteEmployee;
-    
-/*    var sectionData = function(data) {
-        return $http.post('/getsectiondata', { headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;' } });
-    }
-*/
 
-         var secData = function(pUserObjectID) {
-           
-            return $http({
-                method: "post",
-                url: "/getallsections",
-                data:{
-
-                  'pUserObjectID': pUserObjectID ,     
-
-                }
-            });
-
-
+    /*    var sectionData = function(data) {
+            return $http.post('/getsectiondata', { headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;' } });
         }
+    */
+
+    var secData = function(pUserObjectID) {
+
+        return $http({
+            method: "post",
+            url: "/getallsections",
+            data: {
+
+                'pUserObjectID': pUserObjectID,
+
+            }
+        });
+
+
+    }
 
 
     var getSection = function(pUserObjectID) {
@@ -635,8 +643,8 @@ var deviceData = function(selectedBeacon, selectedStore) {
     }
 
 
-     var sectionBeaconKey = function(UserObjectID) {
-       //  alert(UserObjectID);
+    var sectionBeaconKey = function(UserObjectID) {
+        //  alert(UserObjectID);
         // alert('section beacon called');
         return $http({
             method: "post",
@@ -652,9 +660,9 @@ var deviceData = function(selectedBeacon, selectedStore) {
 
 
 
-    var addSection = function(SectionName, SectionDesc,AssignedStore,selectedBeacon) {
+    var addSection = function(SectionName, SectionDesc, AssignedStore, selectedBeacon) {
 
-        
+
 
         return $http({
             method: "post",
@@ -663,30 +671,30 @@ var deviceData = function(selectedBeacon, selectedStore) {
                 'SectionName': SectionName,
                 'SectionDesc': SectionDesc,
                 'AssignedStore': AssignedStore,
-                'selectedBeacon':selectedBeacon,
+                'selectedBeacon': selectedBeacon,
 
             }
         });
     }
 
 
-    var updateSection = function(UserObjectID,AssignedStore,selectedBeacon,SectionName,SectionDesc) {//
-           /* alert(UserObjectID);
-            alert(AssignedStore);
-            alert(selectedBeacon);
-            alert(SectionName);
-            alert(SectionDesc);*/
+    var updateSection = function(UserObjectID, AssignedStore, selectedBeacon, SectionName, SectionDesc) { //
+        /* alert(UserObjectID);
+         alert(AssignedStore);
+         alert(selectedBeacon);
+         alert(SectionName);
+         alert(SectionDesc);*/
 
 
         return $http({
             method: "post",
             url: "/updateSection",
             data: {
-                'UserObjectID':UserObjectID,
+                'UserObjectID': UserObjectID,
                 'SectionName': SectionName,
                 'SectionDesc': SectionDesc,
                 'AssignedStore': AssignedStore,
-                'selectedBeacon':selectedBeacon,
+                'selectedBeacon': selectedBeacon,
 
             }
         });
@@ -694,7 +702,7 @@ var deviceData = function(selectedBeacon, selectedStore) {
 
 
 
-        var deleteSection= function(UserObjectID) {
+    var deleteSection = function(UserObjectID) {
 
         return $http({
             method: "post",
@@ -707,23 +715,23 @@ var deviceData = function(selectedBeacon, selectedStore) {
 
     apiService.addSection = addSection;
     apiService.secData = secData;
-     apiService.deleteSection = deleteSection;
-     apiService.getSection = getSection;
-     apiService.updateSection = updateSection;
+    apiService.deleteSection = deleteSection;
+    apiService.getSection = getSection;
+    apiService.updateSection = updateSection;
 
-   //Add CRM start from here
+    //Add CRM start from here
 
-     var crmData = function() {
-            return $http({
-                method: "post",
-                url: "/getCrmData"
-            });
+    var crmData = function() {
+        return $http({
+            method: "post",
+            url: "/getCrmData"
+        });
 
 
-        }
+    }
 
-    var addCustomer = function(UserID, Password, Name,Designation ,AssignedStore) {
-       
+    var addCustomer = function(UserID, Password, Name, Designation, AssignedStore) {
+
 
 
         return $http({
@@ -733,10 +741,10 @@ var deviceData = function(selectedBeacon, selectedStore) {
                 'UserID': UserID,
                 'Password': Password,
                 'Name': Name,
-                'Designation':Designation,
+                'Designation': Designation,
 
                 'AssignedStore': AssignedStore,
-                
+
             }
         });
     }
@@ -744,14 +752,14 @@ var deviceData = function(selectedBeacon, selectedStore) {
 
 
 
-    var updateCustomeExecutive = function(UserObjectID, UserID, Password, Name, AssignedStore,Designation  ) {//ResetPassword
+    var updateCustomeExecutive = function(UserObjectID, UserID, Password, Name, AssignedStore, Designation) { //ResetPassword
         //alert(UserObjectID);
         //alert(UserID)
-         //alert(Password);
+        //alert(Password);
         //alert(ResetPassword);
-       // alert(AssignedStore);
-       
-       // alert(Designation);
+        // alert(AssignedStore);
+
+        // alert(Designation);
         return $http({
             method: "post",
             url: "/updateCustomeExecutive",
@@ -760,19 +768,19 @@ var deviceData = function(selectedBeacon, selectedStore) {
                 'UserID': UserID,
                 'Password': Password,
                 //'ResetPassword': ResetPassword,
-               
+
                 'Name': Name,
-                
+
                 'AssignedStore': AssignedStore,
-                
-                 'Designation': Designation
+
+                'Designation': Designation
             }
         });
     }
 
 
 
-        var deleteCrm= function(UserObjectID) {
+    var deleteCrm = function(UserObjectID) {
 
         return $http({
             method: "post",
@@ -784,11 +792,11 @@ var deviceData = function(selectedBeacon, selectedStore) {
     }
 
 
-   // apiService.sectionData = sectionData;
+    // apiService.sectionData = sectionData;
     apiService.addCustomer = addCustomer;
     apiService.crmData = crmData;
-     apiService.deleteCrm = deleteCrm;
-     apiService.updateCustomeExecutive = updateCustomeExecutive;
+    apiService.deleteCrm = deleteCrm;
+    apiService.updateCustomeExecutive = updateCustomeExecutive;
 
 
     return apiService;
