@@ -5728,3 +5728,98 @@ app.get('/getsettings', function(req, res) {
         ]);
     });
 });
+
+
+
+
+app.post('/updateSettingData', function(req, res) {
+
+    console.log('====================uupdateSettingData called=========================');
+   // UserObjectID = req.body.UserObjectID;
+
+    GeoFancingRange = req.body.GeoFancingRange;
+
+    MinStayTimeOfCustomerForEmployee = req.body.MinStayTimeOfCustomerForEmployee;
+    
+  
+    console.log(GeoFancingRange);
+    console.log(MinStayTimeOfCustomerForEmployee);
+    
+
+
+
+    var resObj = {};
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = loginexpiredmessage;
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
+
+   
+  
+
+    
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        assert.equal(null, err);
+
+        var collection = db.collection('settings');
+       
+
+        async.waterfall([
+            function(callback) {
+                collection.find().toArray(function(err, settings) {
+
+                    callback(null, settings);
+                });
+            },
+            function(userdata, callback) {
+                console.log('Userdata Callback====================Called');
+
+                console.log(userdata);
+
+               
+                collection.update({
+                   
+                }, {
+                    '$set': {
+
+
+                        'GeoFancingRange': GeoFancingRange,
+                        'MinStayTimeOfCustomerForEmployee': MinStayTimeOfCustomerForEmployee,
+     
+                    }
+                });
+
+
+                console.log('======================Settings updated=======================================');
+
+                callback(null, 'updated');
+            },
+            function(updated, callback) {
+
+              resObj.IsSuccess = true;
+                resObj.message = "Settings updated successfully.";
+                res.send(resObj);
+                db.close();
+
+
+            },
+           
+        ]);
+    });
+
+
+});

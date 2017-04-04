@@ -812,16 +812,12 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
         }
 
 
-    var updateSettingData = function(UserObjectID, GeoFancingRange, MinStayTimeOfCustomerForEmployee  ) {
-        alert(UserObjectID);
-         alert(GeoFancingRange);
-        alert(MinStayTimeOfCustomerForEmployee)
-        
+    var updateSettingData = function(GeoFancingRange, MinStayTimeOfCustomerForEmployee  ) {
         return $http({
             method: "post",
             url: "/updateSettingData",
             data: {
-                'UserObjectID': UserObjectID,
+                //'UserObjectID': UserObjectID,
                 'GeoFancingRange': GeoFancingRange,
                 'MinStayTimeOfCustomerForEmployee': MinStayTimeOfCustomerForEmployee,
                 

@@ -3,6 +3,7 @@ dashboard.controller("SettingController", function($rootScope, $scope, apiServic
 
     $scope.GeoFancingRange = 0;
     $scope.MinStayTimeOfCustomerForEmployee = 0;
+    $scope.FormInitialized = false;
 
     $scope.ListInitialized = false;
 
@@ -46,7 +47,7 @@ dashboard.controller("SettingController", function($rootScope, $scope, apiServic
     };
 
     $scope.getAllSetting = function() {
-        $scope.ListInitialized = false;
+        $scope.FormInitialized = false;
         apiService.settingData().then(function(res) {
             if (!res.data.IsSuccess) {
                 alert(res.data.message);
@@ -58,7 +59,7 @@ dashboard.controller("SettingController", function($rootScope, $scope, apiServic
             $scope.MinStayTimeOfCustomerForEmployee = Number($scope.settingData.MinStayTimeOfCustomerForEmployee);
             $scope.userCurrentPage = 1;
             $scope.userPageSize = 10;
-            $scope.ListInitialized = true;
+            $scope.FormInitialized = true;
         });
     }
 
@@ -67,30 +68,21 @@ dashboard.controller("SettingController", function($rootScope, $scope, apiServic
 
 
     $scope.processUser = function() {
-        alert('hello');
+        $scope.GeoFancingRange = Number($scope.GeoFancingRange);
 
-        /*  if ($scope.button_GeoFancingRange == 'Update') {
-              if ($scope.GeoFancingRange == '') {
-                  alert('Please Enter GeoFancingRange');
-                  return;
-              }
-               }
-           else if ($scope.button_MinStayTimeOfCustomerForEmployee== 'Update') {
+        if (!$scope.GeoFancingRange) {
+            alert('Please Enter GeoFancingRange');
+            return;
+        }
 
-            if($scope.MinStayTimeOfCustomerForEmployee == '') {
-                  alert('Min Stay Time field required');
-                  return;
-              }
 
-          }
-         */
+        $scope.MinStayTimeOfCustomerForEmployee = Number($scope.MinStayTimeOfCustomerForEmployee);
+        if (!$scope.MinStayTimeOfCustomerForEmployee) {
+            alert('Min Stay Time field required');
+            return;
+        }
 
         $scope.FormInitialized = false;
-        alert($scope.GeoFancingRange);
-        alert($scope.MinStayTimeOfCustomerForEmployee);
-
-
-
         apiService.updateSettingData($scope.GeoFancingRange, $scope.MinStayTimeOfCustomerForEmployee)
             .success(function(data, status, headers, config) {
                 if (data.IsSuccess) {
@@ -102,7 +94,6 @@ dashboard.controller("SettingController", function($rootScope, $scope, apiServic
                 $scope.FormInitialized = true;
             })
             .error(function(data, status, headers, config) {
-                console.log("failed.");
                 $scope.FormInitialized = true;
                 return '';
             });
