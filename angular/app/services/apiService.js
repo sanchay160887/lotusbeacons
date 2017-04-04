@@ -799,6 +799,44 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
     apiService.updateCustomeExecutive = updateCustomeExecutive;
 
 
+    
+     // Settings Get Data strat from here
+
+      var settingData = function() {
+            return $http({
+                method: "get",
+                url: "/getsettings"
+            });
+
+
+        }
+
+
+    var updateSettingData = function(UserObjectID, GeoFancingRange, MinStayTimeOfCustomerForEmployee  ) {
+        alert(UserObjectID);
+         alert(GeoFancingRange);
+        alert(MinStayTimeOfCustomerForEmployee)
+        
+        return $http({
+            method: "post",
+            url: "/updateSettingData",
+            data: {
+                'UserObjectID': UserObjectID,
+                'GeoFancingRange': GeoFancingRange,
+                'MinStayTimeOfCustomerForEmployee': MinStayTimeOfCustomerForEmployee,
+                
+            }
+        });
+    }
+
+
+
+
+
+         apiService.settingData = settingData;
+         apiService.updateSettingData = updateSettingData;
+
+
     return apiService;
 
 }]);

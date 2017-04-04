@@ -152,6 +152,11 @@ app.controller("appCtrl", ['$rootScope', '$scope', '$state', '$location', 'Flash
                 icon: "user",
                 state: "crm"
             },
+             {
+                title: "Settings",
+                icon: "cog",
+                state: "settings"
+            },
 
         ];
 

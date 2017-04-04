@@ -247,5 +247,18 @@ dashboard.config(["$stateProvider", function($stateProvider) {
         }
     });
 
+    
+    $stateProvider.state('app.settings', {
+        url: '/settings',
+        templateUrl: 'app/modules/dashboard/views/settings.html',
+        controller: 'SettingController',
+        controllerAs: 'vm',
+        data: {
+            pageTitle: 'Setting List'
+        }
+    });
+
+
+
 
 }]);
