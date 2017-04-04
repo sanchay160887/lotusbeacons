@@ -737,7 +737,6 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
             },
             function(data, callback) {
                 console.log(data);
-                console.log('ready to call');
                 collection.find({
                     'MobileNo': MobileNo,
                     'Date': {
@@ -5685,5 +5684,47 @@ app.post('/getStore_DeviceCount', function(req, res) {
             resObj.records = devices;
             res.send(resObj);
         });
+    });
+});
+
+app.get('/getsettings', function(req, res) {
+   
+    var resObj = {};
+   
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+
+        var collection = db.collection('settings');
+
+        async.waterfall([
+            function(callback) {
+                 collection.find().toArray(function(err, settings) {
+
+                    console.log('====================Settings Called====================');
+                     console.log(settings);
+
+                     console.log('====================Settings Called====================');
+                  
+                    callback(null, settings);
+                });
+               
+            },
+          
+            function(settingdata, callback) {
+                if (settingdata && settingdata.length > 0) {
+                    resObj.IsSuccess = true;
+                    resObj.message = "success";
+                    resObj.data = settingdata;
+                } else {
+                    resObj.IsSuccess = false;
+                    resObj.message = "No Record Found";
+                }
+                db.close();
+                res.send(resObj);
+            }
+        ]);
     });
 });
