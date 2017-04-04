@@ -755,18 +755,39 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
 
 
                 if (!(devicelist && devicelist.length > 0)) {
-                    console.log('call start');
+                    console.log('Sending notification');
                     if (typeof(beacons[0].BeaconWelcome) != 'undefined' && beacons[0].BeaconWelcome) {
                         //sendpushnotification('', [DeviceID], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
-                        notifresobj = {};
-                        sendpushnotification_mobileno(notifresobj, [MobileNo], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
+
+                        mobile_nos = [];
+                        mobile_nos.push('91' + MobileNo);
+                        var data = JSON.stringify(mobile_nos);
+
+                        request.post(lotusWebURL + 'user/get_user_name_by_mobileno', {
+                                form: {
+                                    'mobile_nos': data
+                                }
+                            },
+                            function(res2, err, body) {
+                                device_detail = [];
+                                var reqbody = parse_JSON(body);
+                                if (reqbody) {
+                                    reqbody = reqbody.data;
+                                    var mobileno = '';
+                                    for (var r in reqbody) {
+                                        if (reqbody[r] != false && reqbody[r].name) {
+                                            notifresobj = {};
+                                            sendpushnotification_mobileno(notifresobj, [MobileNo], 'Welcome ' + reqbody[r].name + ', Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
+                                        }
+                                    }
+                                }
+                            })
                     }
 
                     /* ---------------------  Employee Notification Start ---------  */
                     var empcollection = db.collection('user_beacons_active');
 
-                    empcollection.find(
-                        ).sort({ 'Distance': -1 }).toArray(function(err, emplist) {
+                    empcollection.find().sort({ 'Distance': -1 }).toArray(function(err, emplist) {
                             console.log(JSON.stringify(emplist));
                             console.log('emplist called');
                             if (emplist && emplist.length > 0) {
@@ -790,10 +811,9 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                                 })
                             }
                         })
-                        /* Send notification to employees */
 
-                }
-                console.log('Sending notification');
+                        /* Send notification to employees */
+                }                
                 callback(null, devicelist);
             },
             function(devices, callback) {
