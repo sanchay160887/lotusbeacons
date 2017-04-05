@@ -3637,12 +3637,8 @@ app.post('/userLogin', function(req, res) {
                     if (err) {
                         return console.dir(err);
                     }
-                    var SectionName = '';
-                    console.log(JSON.stringify(users));
-                    console.log("===11111111111111111--------User Called===========");
 
-
-                    if (users && users[0].hasOwnProperty('section_docs') && users[0].section_docs.length > 0) {
+                    if (users && users.length > 0 && users[0].hasOwnProperty('section_docs') && users[0].section_docs.length > 0) {
                         console.log(users[0].section_docs);
                         SectionName = users[0].section_docs[0].SectionName;
                         resObj.SectionName = SectionName;
