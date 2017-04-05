@@ -6,18 +6,9 @@
     margin: 2% 2%;
     padding: 20px;
     vertical-align: top;
-    width: 34%;
+    width: 50%;
 }
 
-.register_block_2 {
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    display: inline-block;
-    margin: 2% 1%;
-    padding: 20px;
-    vertical-align: top;
-    width: 58%;
-}
 
 .content-header {
     padding: 6% 15px 0;
@@ -71,9 +62,13 @@ Date: 05 Jan 2016
             <input class="form-control" type="number" ng-model="MinStayTimeOfCustomerForEmployee" name="MinStayTimeOfCustomerForEmployee" />
             <br>
             <label>Customer Welcome message</label>
-            <textarea ng-model="CustomerWelcomeMessage" name="CustomerWelcomeMessage"></textarea>
+            <textarea class="form-control" ng-model="CustomerWelcomeMessage" name="CustomerWelcomeMessage"></textarea>
             <br>
-            <input type="submit" name="Update" id="Update" class="btn btn-primary" value="Save" ng-click="processUser()">
+            <label>Employee Customer Intimation</label>
+            <textarea class="form-control" ng-model="EmployeeCustomerIntimation" name="EmployeeCustomerIntimation"></textarea>
+            <br>
+            <input type="submit" name="Update" id="Update" class="btn btn-primary" value="Save" 
+                ng-click="processSetting()">
         </form>
     </section>
     <!-- /.content -->

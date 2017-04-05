@@ -799,17 +799,17 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
     apiService.updateCustomeExecutive = updateCustomeExecutive;
 
 
-    
-     // Settings Get Data strat from here
 
-      var settingData = function() {
-            return $http({
-                method: "get",
-                url: "/getsettings"
-            });
+    // Settings Get Data strat from here
+
+    var settingData = function() {
+        return $http({
+            method: "get",
+            url: "/getsettings"
+        });
 
 
-        }
+    }
 
 
     var updateSettingData = function(GeoFancingRange, MinStayTimeOfCustomerForEmployee, CustomerWelcomeMessage, EmployeeCustomerIntimation) {
@@ -817,11 +817,10 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
             method: "post",
             url: "/updateSettingData",
             data: {
-                //'UserObjectID': UserObjectID,
                 'GeoFancingRange': GeoFancingRange,
                 'MinStayTimeOfCustomerForEmployee': MinStayTimeOfCustomerForEmployee,
-                'CustomerWelcomeMessage':CustomerWelcomeMessage,
-                'EmployeeCustomerIntimation':EmployeeCustomerIntimation
+                'CustomerWelcomeMessage': CustomerWelcomeMessage,
+                'EmployeeCustomerIntimation': EmployeeCustomerIntimation
             }
         });
     }
@@ -830,8 +829,8 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
 
 
 
-         apiService.settingData = settingData;
-         apiService.updateSettingData = updateSettingData;
+    apiService.settingData = settingData;
+    apiService.updateSettingData = updateSettingData;
 
 
     return apiService;

@@ -5748,12 +5748,6 @@ app.get('/getsettings', function(req, res) {
         async.waterfall([
             function(callback) {
                 collection.find().toArray(function(err, settings) {
-
-                    console.log('====================Settings Called====================');
-                    console.log(settings);
-
-                    console.log('====================Settings Called====================');
-
                     callback(null, settings);
                 });
 
@@ -5823,7 +5817,7 @@ app.post('/updateSettingData', function(req, res) {
                         'GeoFancingRange': GeoFancingRange,
                         'MinStayTimeOfCustomerForEmployee': MinStayTimeOfCustomerForEmployee,
                         'CustomerWelcomeMessage': CustomerWelcomeMessage,
-                        'EmployeeCustomerIntimation' : 'EmployeeCustomerIntimation'
+                        'EmployeeCustomerIntimation' : EmployeeCustomerIntimation
                     }
                 });
 

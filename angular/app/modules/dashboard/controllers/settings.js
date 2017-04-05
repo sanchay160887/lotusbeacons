@@ -59,7 +59,7 @@ dashboard.controller("SettingController", function($rootScope, $scope, apiServic
             settingData = settingData[0];
             $scope.GeoFancingRange = Number(settingData.GeoFancingRange);
             $scope.MinStayTimeOfCustomerForEmployee = Number(settingData.MinStayTimeOfCustomerForEmployee);
-            if (!settingData.CustomerWelcomeMessage){
+            if (settingData.CustomerWelcomeMessage){
                 $scope.CustomerWelcomeMessage = settingData.CustomerWelcomeMessage;    
             }            
             $scope.userCurrentPage = 1;
@@ -72,7 +72,7 @@ dashboard.controller("SettingController", function($rootScope, $scope, apiServic
 
 
 
-    $scope.processUser = function() {
+    $scope.processSetting = function() {
         $scope.GeoFancingRange = Number($scope.GeoFancingRange);
 
         if (!$scope.GeoFancingRange) {
@@ -83,12 +83,22 @@ dashboard.controller("SettingController", function($rootScope, $scope, apiServic
 
         $scope.MinStayTimeOfCustomerForEmployee = Number($scope.MinStayTimeOfCustomerForEmployee);
         if (!$scope.MinStayTimeOfCustomerForEmployee) {
-            alert('Min Stay Time field required');
+            alert('Please Enter Minimum Stay Time field.');
+            return;
+        }
+
+        if (!$scope.CustomerWelcomeMessage) {
+            alert('Please Enter Customer Welcome Message.');
+            return;
+        }
+
+        if (!$scope.EmployeeCustomerIntimation) {
+            alert('Please Enter Employee Customer Intimation.');
             return;
         }
 
         $scope.FormInitialized = false;
-        apiService.updateSettingData($scope.GeoFancingRange, $scope.MinStayTimeOfCustomerForEmployee, $scope.CustomerWelcomeMessage)
+        apiService.updateSettingData($scope.GeoFancingRange, $scope.MinStayTimeOfCustomerForEmployee, $scope.CustomerWelcomeMessage, $scope.EmployeeCustomerIntimation)
             .success(function(data, status, headers, config) {
                 if (data.IsSuccess) {
                     alert('Settings Updated Successfully');
