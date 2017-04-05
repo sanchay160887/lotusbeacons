@@ -772,13 +772,15 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
 
 
                 if (!(devicelist && devicelist.length > 0)) {
-                    console.log('Sending notification');
+                    console.log('Sending notification 775');
+                    console.log(JSON.stringify(beacons[0]));
                     if (typeof(beacons[0].BeaconWelcome) != 'undefined' && beacons[0].BeaconWelcome) {
                         //sendpushnotification('', [DeviceID], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
 
                         mobile_nos = [];
                         mobile_nos.push('91' + MobileNo);
                         var data = JSON.stringify(mobile_nos);
+                        console.log(JSON.stringify(mobile_nos));
 
                         request.post(lotusWebURL + 'user/get_user_name_by_mobileno', {
                                 form: {
@@ -793,9 +795,8 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                                     var mobileno = '';
                                     for (var r in reqbody) {
                                         if (reqbody[r] != false && reqbody[r].name) {
-                                            notifresobj = {};
-                                            notifymessage = settings_StayTime.replace('«CUSTNAME»', reqbody[r].name);
-                                            sendpushnotification_mobileno(notifresobj, [MobileNo], notifymessage);
+                                            notifymessage = settings_welcomeMessage.replace('«CUSTNAME»', reqbody[r].name);
+                                            sendpushnotification_mobileno(null, [MobileNo], notifymessage);
                                             break;
                                         }
                                     }
@@ -877,7 +878,7 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                                                             for (var r in reqbody) {
                                                                 if (reqbody[r] != false && reqbody[r].name) {
                                                                     notifresobj = {};
-                                                                    notifymessage = settings_StayTime.replace('«CUSTNAME»', reqbody[r].name);
+                                                                    notifymessage = settings_EmpCustIntimate.replace('«CUSTNAME»', reqbody[r].name);
                                                                     sendpushnotification_fcm(null, [token], beacons[0].BeaconID, userid, MobileNo, notifymessage);
                                                                 }
                                                             }
@@ -1346,7 +1347,7 @@ app.post('/getdata', function(req, res) {
                             devices[dvc].StoreName = beaconlist[devices[dvc].BeaconID].StoreName;
                             devices[dvc].UniqueKey = devices[dvc].MobileNo + '‖' + devices[dvc].BeaconID;
                             if (devicehistory[devices[dvc].MobileNo] != undefined && devicehistory[devices[dvc].MobileNo][devices[dvc].BeaconID] != undefined) {
-                                devices[dvc].StayTime = devicehistory[devices[dvc].MobileNo][devices[dvc].BeaconID];
+                                devices[dvc].StayTime = convertSecondsToStringTime(devicehistory[devices[dvc].MobileNo][devices[dvc].BeaconID]);
                             } else {
                                 devices[dvc].StayTime = 0;
                             }
@@ -1510,7 +1511,7 @@ app.post('/getDeviceHistorydata', function(req, res) {
                             $in: BeaconID
                         }
                     });
-                } else if (StoreID) {
+                } else if (StoreID && StoreID.length == 24 ) {
                     console.log('coming to store');
                     beaconcollection = collection.find({
                         'BeaconStore': ObjectId(StoreID)
