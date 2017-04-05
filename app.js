@@ -5773,6 +5773,7 @@ app.post('/updateSettingData', function(req, res) {
     MinStayTimeOfCustomerForEmployee = req.body.MinStayTimeOfCustomerForEmployee;
 
     CustomerWelcomeMessage = req.body.CustomerWelcomeMessage;
+    EmployeeCustomerIntimation = req.body.EmployeeCustomerIntimation;
 
     var resObj = {};
     if (!req.session.loggedInUser) {

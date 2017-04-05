@@ -102,11 +102,12 @@ dashboard.controller("SettingController", function($rootScope, $scope, apiServic
             .success(function(data, status, headers, config) {
                 if (data.IsSuccess) {
                     alert('Settings Updated Successfully');
+                    $scope.FormInitialized = true;
                     $scope.getAllSetting();
                 } else {
                     alert(data.message);
-                }
-                $scope.FormInitialized = true;
+                    $scope.FormInitialized = true;
+                }                
             })
             .error(function(data, status, headers, config) {
                 $scope.FormInitialized = true;
