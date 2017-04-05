@@ -812,7 +812,7 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
         }
 
 
-    var updateSettingData = function(GeoFancingRange, MinStayTimeOfCustomerForEmployee  ) {
+    var updateSettingData = function(GeoFancingRange, MinStayTimeOfCustomerForEmployee, CustomerWelcomeMessage, EmployeeCustomerIntimation) {
         return $http({
             method: "post",
             url: "/updateSettingData",
@@ -820,7 +820,8 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
                 //'UserObjectID': UserObjectID,
                 'GeoFancingRange': GeoFancingRange,
                 'MinStayTimeOfCustomerForEmployee': MinStayTimeOfCustomerForEmployee,
-                
+                'CustomerWelcomeMessage':CustomerWelcomeMessage,
+                'EmployeeCustomerIntimation':EmployeeCustomerIntimation
             }
         });
     }

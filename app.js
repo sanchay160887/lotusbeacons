@@ -664,17 +664,20 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
     seldate = new Date(todaysdate);
     datestring = seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate();
     fromDate = new Date(datestring).getTime();
-    //toDate = new Date(datestring + ' 23:59:59').getTime();
-    toDate = fromDate + 60000;
+    toDate = new Date(datestring + ' 23:59:59').getTime();
+    //toDate = fromDate + 60000;
 
     console.log('Update device history called');
+
+    var settings_StayTime = 90;
+    var settings_welcomeMessage = '';
+    var settings_EmpCustIntimate = '';
 
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
             return console.dir(err);
         }
         assert.equal(null, err);
-
 
         //var collection = db.collection('test_device_history');
         var collection = db.collection('device_history');
@@ -683,6 +686,21 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
 
         async.waterfall([
             function(callback) {
+                var settingsCol = db.collection('settings');
+                settingsCol.find().toArray(function(err, settings) {
+                    if (settings && settings.length > 0) {
+                        settings_StayTime = settings[0].MinStayTimeOfCustomerForEmployee;
+                        settings_welcomeMessage = settings[0].CustomerWelcomeMessage;
+                        settings_EmpCustIntimate = settings[0].EmployeeCustomerIntimation
+                    } else {
+                        settings_StayTime = 90;
+                        settings_welcomeMessage = 'Welcome «CUSTNAME», Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for';
+                        settings_EmpCustIntimate = 'Check your «CUSTNAME» is nearby you';
+                    }
+                    callback(null, true);
+                });
+            },
+            function(result, callback) {
                 var bcollection = db.collection('beacons');
                 bcollection.find({
                     'BeaconID': BeaconID
@@ -776,43 +794,17 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                                     for (var r in reqbody) {
                                         if (reqbody[r] != false && reqbody[r].name) {
                                             notifresobj = {};
-                                            sendpushnotification_mobileno(notifresobj, [MobileNo], 'Welcome ' + reqbody[r].name + ', Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
+                                            notifymessage = settings_StayTime.replace('«CUSTNAME»', reqbody[r].name);
+                                            sendpushnotification_mobileno(notifresobj, [MobileNo], notifymessage);
+                                            break;
                                         }
                                     }
                                 }
                             })
                     }
 
-                    /* ---------------------  Employee Notification Start ---------  */
-                    var empcollection = db.collection('user_beacons_active');
-
-                    empcollection.find().sort({ 'Distance': -1 }).toArray(function(err, emplist) {
-                            console.log(JSON.stringify(emplist));
-                            console.log('emplist called');
-                            if (emplist && emplist.length > 0) {
-                                var empusers = db.collection('users');
-
-                                var userid = emplist[0].UserID;
-
-                                console.log(userid);
-
-                                empusers.find({
-                                    'UserID': userid
-                                }).toArray(function(err, emplist) {
-                                    if (emplist && emplist.length > 0) {
-                                        console.log(JSON.stringify(emplist));
-                                        var token = emplist[0].devicetoken;
-                                        console.log(JSON.stringify(token));
-                                        console.log('Employee Device Token called');
-
-                                        sendpushnotification_fcm(null, [token], beacons[0].BeaconID, userid, MobileNo, 'Check your customer is nearby you');
-                                    }
-                                })
-                            }
-                        })
-
-                        /* Send notification to employees */
-                }                
+                    /* Send notification to employees */
+                }
                 callback(null, devicelist);
             },
             function(devices, callback) {
@@ -842,6 +834,60 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                                         return 0;
                                     }
                                 });
+                            if (StayTime >= settings_StayTime) {
+                                /* ---------------------  Employee Notification Start ---------  */
+                                var empcollection = db.collection('user_beacons_active');
+
+                                empcollection.find({
+                                    'BeaconID': BeaconID
+                                }).sort({ 'Distance': -1 }).toArray(function(err, emplist) {
+                                    console.log(JSON.stringify(emplist));
+                                    console.log('emplist called');
+                                    if (emplist && emplist.length > 0) {
+                                        var empusers = db.collection('users');
+
+                                        var userid = emplist[0].UserID;
+
+                                        console.log(userid);
+
+                                        empusers.find({
+                                            'UserID': userid
+                                        }).toArray(function(err, emplist) {
+                                            if (emplist && emplist.length > 0) {
+                                                console.log(JSON.stringify(emplist));
+                                                var token = emplist[0].devicetoken;
+                                                console.log(JSON.stringify(token));
+                                                console.log('Employee Device Token called');
+
+                                                mobile_nos = [];
+                                                mobile_nos.push('91' + MobileNo);
+                                                var data = JSON.stringify(mobile_nos);
+
+                                                request.post(lotusWebURL + 'user/get_user_name_by_mobileno', {
+                                                        form: {
+                                                            'mobile_nos': data
+                                                        }
+                                                    },
+                                                    function(res2, err, body) {
+                                                        device_detail = [];
+                                                        var reqbody = parse_JSON(body);
+                                                        if (reqbody) {
+                                                            reqbody = reqbody.data;
+                                                            var mobileno = '';
+                                                            for (var r in reqbody) {
+                                                                if (reqbody[r] != false && reqbody[r].name) {
+                                                                    notifresobj = {};
+                                                                    notifymessage = settings_StayTime.replace('«CUSTNAME»', reqbody[r].name);
+                                                                    sendpushnotification_fcm(null, [token], beacons[0].BeaconID, userid, MobileNo, notifymessage);
+                                                                }
+                                                            }
+                                                        }
+                                                    })                                                
+                                            }
+                                        })
+                                    }
+                                })
+                            }
                         }
                     } else {
                         //When user move to another beacon from previous beacon
@@ -5688,9 +5734,9 @@ app.post('/getStore_DeviceCount', function(req, res) {
 });
 
 app.get('/getsettings', function(req, res) {
-   
+
     var resObj = {};
-   
+
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
             return console.dir(err);
@@ -5701,18 +5747,18 @@ app.get('/getsettings', function(req, res) {
 
         async.waterfall([
             function(callback) {
-                 collection.find().toArray(function(err, settings) {
+                collection.find().toArray(function(err, settings) {
 
                     console.log('====================Settings Called====================');
-                     console.log(settings);
+                    console.log(settings);
 
-                     console.log('====================Settings Called====================');
-                  
+                    console.log('====================Settings Called====================');
+
                     callback(null, settings);
                 });
-               
+
             },
-          
+
             function(settingdata, callback) {
                 if (settingdata && settingdata.length > 0) {
                     resObj.IsSuccess = true;
@@ -5730,23 +5776,13 @@ app.get('/getsettings', function(req, res) {
 });
 
 
-
-
 app.post('/updateSettingData', function(req, res) {
-
-    console.log('====================uupdateSettingData called=========================');
-   // UserObjectID = req.body.UserObjectID;
 
     GeoFancingRange = req.body.GeoFancingRange;
 
     MinStayTimeOfCustomerForEmployee = req.body.MinStayTimeOfCustomerForEmployee;
-    
-  
-    console.log(GeoFancingRange);
-    console.log(MinStayTimeOfCustomerForEmployee);
-    
 
-
+    CustomerWelcomeMessage = req.body.CustomerWelcomeMessage;
 
     var resObj = {};
     if (!req.session.loggedInUser) {
@@ -5764,10 +5800,6 @@ app.post('/updateSettingData', function(req, res) {
         return;
     }
 
-   
-  
-
-    
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
             return console.dir(err);
@@ -5776,7 +5808,7 @@ app.post('/updateSettingData', function(req, res) {
         assert.equal(null, err);
 
         var collection = db.collection('settings');
-       
+
 
         async.waterfall([
             function(callback) {
@@ -5786,40 +5818,23 @@ app.post('/updateSettingData', function(req, res) {
                 });
             },
             function(userdata, callback) {
-                console.log('Userdata Callback====================Called');
-
-                console.log(userdata);
-
-               
-                collection.update({
-                   
-                }, {
+                collection.update({}, {
                     '$set': {
-
-
                         'GeoFancingRange': GeoFancingRange,
                         'MinStayTimeOfCustomerForEmployee': MinStayTimeOfCustomerForEmployee,
-     
+                        'CustomerWelcomeMessage': CustomerWelcomeMessage,
+                        'EmployeeCustomerIntimation' : 'EmployeeCustomerIntimation'
                     }
                 });
-
-
-                console.log('======================Settings updated=======================================');
 
                 callback(null, 'updated');
             },
             function(updated, callback) {
-
-              resObj.IsSuccess = true;
+                resObj.IsSuccess = true;
                 resObj.message = "Settings updated successfully.";
                 res.send(resObj);
                 db.close();
-
-
             },
-           
         ]);
     });
-
-
 });

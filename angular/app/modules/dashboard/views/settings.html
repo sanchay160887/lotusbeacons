@@ -68,8 +68,10 @@ Date: 05 Jan 2016
             <input type="number" class="form-control" ng-model="GeoFancingRange" name="GeoFancingRange" />
             <br>
             <label>MinStayTime</label>
-            <input class="form-control" type="number" ng-model="MinStayTimeOfCustomerForEmployee"
-                name="MinStayTimeOfCustomerForEmployee" />
+            <input class="form-control" type="number" ng-model="MinStayTimeOfCustomerForEmployee" name="MinStayTimeOfCustomerForEmployee" />
+            <br>
+            <label>Customer Welcome message</label>
+            <textarea ng-model="CustomerWelcomeMessage" name="CustomerWelcomeMessage"></textarea>
             <br>
             <input type="submit" name="Update" id="Update" class="btn btn-primary" value="Save" ng-click="processUser()">
         </form>
