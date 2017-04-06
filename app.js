@@ -365,13 +365,7 @@ function updateUser_Active(BeaconID, UserID, Distance, resObj) {
         return;
     }
 
-    console.log('Update device called');
-
-    var comingFromLatLong = false;
-    if (!BeaconID) {
-        BeaconID = '';
-        comingFromLatLong = true;
-    }
+    console.log('Update user active called');
 
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
@@ -403,7 +397,7 @@ function updateUser_Active(BeaconID, UserID, Distance, resObj) {
                 }
 
                 collection.find({
-                    'UserID': UserID
+                    'UserID': ObjectId(UserID)
                 }).toArray(function(err, user_beacons) {
                     if (user_beacons && user_beacons.length > 0 && BeaconID != '') {
                         updateUser_Beacon_History(user_beacons[0].BeaconID, user_beacons[0].UserID);
@@ -417,10 +411,10 @@ function updateUser_Active(BeaconID, UserID, Distance, resObj) {
 
                 if (BeaconID != '') {
                     collection.update({
-                        'UserID': UserID //It should be oid
+                        'UserID': ObjectId(UserID) //It should be oid
                     }, {
                         'BeaconID': BeaconID,
-                        'UserID': UserID,
+                        'UserID': ObjectId(UserID),
 
                         'Distance': Distance,
                         'connectiontime': getCurrentTime(),
@@ -1010,7 +1004,7 @@ app.post('/updateUser_Active', function(req, res) {
         }
     }
 });
-////    end  /////////////////
+//// end
 
 app.post('/updateDeviceHistory', function(req, res) {
     console.log('service calling');
@@ -1160,7 +1154,139 @@ app.post('/beaconDisconnected', function(req, res) {
 });
 
 
+function userDisconnect(BeaconID, UserID) {
+    console.log('-------------------Beacon disconnected------------- ');
+
+    updateUser_Active(BeaconID, UserID, -1);
+
+    setTimeout(function() {
+        MongoClient.connect(mongourl, function(err, db) {
+            if (err) {
+                return console.dir(err);
+            }
+            assert.equal(null, err);
+
+            var collection = db.collection('user_beacons_active');
+            var BeaconStoreID = '';
+
+            async.waterfall([
+                function(callback) {
+                    var bcollection = db.collection('beacons');
+                    bcollection.find({
+                        'BeaconID': BeaconID
+                    }).toArray(function(err, beacons) {
+                        callback(null, beacons);
+                    });
+                },
+                function(beacondata, callback) {
+                    BeaconStoreID = beacondata[0].BeaconStore;
+                    collection.find({
+                        'UserID': UserID,
+                        "Distance": { "$lte": -1 }
+                    }).toArray(function(err, users) {
+                        callback(null, users);
+                    });
+                },
+                function(users, callback) {
+                    var DeleteMe = false;
+                    if (users && users.length > 0) {
+                        console.log('going to Delete record >>>>>>>>>>>>');
+                        console.log(JSON.stringify(users));
+                        for (var u in users) {
+                            if (users[u].Distance < 0) {
+                                DeleteMe = true;
+                                console.log('Record Deleted >>>>>>> ' + DeleteMe);
+                                break;
+                            }
+                        }
+                    }
+                    if (DeleteMe) {
+                        console.log('Deleting records from mongo >>>>>>> ' + DeleteMe + ' User Id ' + UserID);
+                        collection.deleteMany({
+                            'UserID': ObjectId(UserID)
+                        });
+
+                        //var dhcollection = db.collection('test_device_history');
+                        var dhcollection = db.collection('user_beacons_history');
+                        dhcollection.updateMany({
+                                'BeaconID': BeaconID,
+                                'UserID': ObjectId(UserID)
+                            }, {
+                                '$set': {
+                                    'freeze': 1,
+                                }
+                            },
+                            function(err, result) {
+                                if (err) {
+                                    throw err;
+                                } else {
+
+                                }
+                            }
+                        );
+
+                        io.emit('updateUser_response', {
+                            'IsSuccess': true,
+                            'BeaconID': BeaconID,
+                            'StoreID': BeaconStoreID,
+                            'UserID': UserID,
+                            'message': 'Data inserted successfully'
+                        });
+                        callback(null, 'updated');
+                    }
+                },
+                function(acknowledge, callback) {
+                    db.close();
+                }
+            ]);
+        });
+    }, 120000);
+}
+
+app.post('/userDisconnected', function(req, res) {
+    console.log('-------------------Beacon disconnected------------- ');
+    BeaconID = req.body.BeaconID;
+    UserID = req.body.UserID;
+    console.log('Beacon ID ' + BeaconID);
+    console.log('Device ID ' + UserID);
+    console.log('Mobile No ' + MobileNo);
+    console.log('------------Beacon disconnected--------------');
+    async.waterfall([
+        function(callback) {
+            MongoClient.connect(mongourl, function(err, db) {
+                if (err) {
+                    return console.dir(err);
+                }
+
+                var collection = db.collection('user_beacons_active');
+
+                var filteredcollection = {};
+                
+                filteredcollection = collection.find({
+                    "UserID": ObjectId(UserID),
+                }).toArray(function(err, users) {
+                    userlist = [];
+                    for (var u in users) {
+                        userlist.push(users[u]);
+                    }
+                    callback(null, userlist);
+                })
+                db.close();
+
+            });
+        },
+        function(userlist, callback) {
+            if (userlist && userlist.length > 0) {
+                userDisconnect(userlist[0].BeaconID, userlist[0].UserID._id);
+            }
+        },
+    ]);
+});
+
+
 devicecron.schedule('* * * * *', function() {
+    var outofrangelimit = getCurrentTime();
+    outofrangelimit = outofrangelimit - (60 * 3 * 1000);
     async.waterfall([
 
         function(callback) {
@@ -1170,9 +1296,7 @@ devicecron.schedule('* * * * *', function() {
                 }
 
                 var collection = db.collection('device');
-                var devicelist = new Array();
-                var outofrangelimit = getCurrentTime();
-                outofrangelimit = outofrangelimit - (60 * 3 * 1000);
+                var devicelist = new Array();                
                 console.log('Device Cron executed on ' + outofrangelimit);
                 collection.find({
                     "connectiontime": { "$lte": outofrangelimit },
@@ -1192,7 +1316,36 @@ devicecron.schedule('* * * * *', function() {
                         devicelist[dvc].MobileNo);
                 }
             }
-            callback(null, devicelist);
+            callback(null, true);
+        },
+        function(result, callback) {
+            MongoClient.connect(mongourl, function(err, db) {
+                if (err) {
+                    return console.dir(err);
+                }
+
+                var collection = db.collection('user_beacons_active');
+                var userlist = new Array();                
+                console.log('Device Cron executed on ' + outofrangelimit);
+                collection.find({
+                    "connectiontime": { "$lte": outofrangelimit },
+                }).toArray(function(err, users) {
+                    for (var u in users) {
+                        userlist.push(users[u]);
+                    }
+                    callback(null, userlist);
+                })
+                db.close();
+            });
+        },
+        function(userlist, callback) {
+            if (userlist.length > 0) {
+                for (var u in userlist) {
+                    userDisconnect(userlist[u].BeaconID, userlist[u].UserID._id);
+
+                }
+            }
+            callback(null, userlist);
         }
     ]);
 });
@@ -3608,7 +3761,6 @@ app.post('/userLogin', function(req, res) {
                     dataParam = {
                         "UserID": username,
                         "UserType": 3,
-
                     }
                 } else {
                     dataParam = {
@@ -4333,11 +4485,8 @@ app.post('/addSection', function(req, res) {
 
 
 app.post('/updateEmployee', function(req, res) {
-
-    console.log('==============jhhgjhjhj======update employee called=fdfdfdffddf=========================');
-
     UserID = req.body.UserID;
-    ResetPassword = req.body.ResetPassword;
+    //ResetPassword = req.body.ResetPassword;
     Password = req.body.Password;
     AssignedSection = req.body.AssignedSection;
     Name = req.body.Name;
@@ -4436,23 +4585,19 @@ app.post('/updateEmployee', function(req, res) {
             function(hashedpassword, callback) {
                 /*console.log(ResetPassword);
                 console.log(hashedpassword);*/
-                if (ResetPassword) {
+                if (Password) {
                     collection.update({
                         '_id': ObjectId(UserObjectID)
                     }, {
                         '$set': {
                             'UserID': UserID,
                             'Name': Name,
-
-
                             'Password': hashedpassword,
-
                             'AssignedStore': ObjectId(AssignedStore),
                             'AssignedSection': ObjectId(AssignedSection),
                             'Designation': Designation
                         }
                     });
-
                 } else {
                     console.log(ObjectId(UserObjectID));
                     collection.update({
@@ -4460,18 +4605,13 @@ app.post('/updateEmployee', function(req, res) {
                     }, {
                         '$set': {
                             'UserID': UserID,
-
                             'Name': Name,
-
-
                             'AssignedStore': ObjectId(AssignedStore),
                             'AssignedSection': ObjectId(AssignedSection),
                             'Designation': Designation,
                         }
                     });
                 }
-
-                console.log('======================Employee updated=======================================');
 
                 callback(null, 'updated');
             },
@@ -4484,8 +4624,6 @@ app.post('/updateEmployee', function(req, res) {
             }
         ]);
     });
-
-
 });
 
 

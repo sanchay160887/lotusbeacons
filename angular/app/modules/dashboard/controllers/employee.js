@@ -156,8 +156,6 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
             apiService.addEmployee($scope.UserID,$scope.Password,$scope.Name,$scope.Designation, 
 			$scope.AssignedStore,$scope.AssignedSection)
                 .success(function(data, status, headers, config) {
-					
-					
                     if (data.IsSuccess) {
                         alert('Employee Added Successfully');
                         $scope.getAllUsers();

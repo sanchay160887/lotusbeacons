@@ -84,20 +84,6 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
     });
 
 
-
-    /* 
-    apiService.sectionData().then(function(res) {
-       
-
-
-        $scope.sectionData = res.data.data;
-       
-    });
-
-  */
-
-
-
     $scope.$watchCollection('[AssignedStore]', function() {
         if ($scope.FormInitialized) {
             apiService.beaconData($scope.AssignedStore).then(function(res) {
@@ -164,9 +150,6 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
 
 
     $scope.processUser = function() {
-
-        alert($scope.button_name);
-
         $scope.FormInitialized = false;
         if ($scope.button_name == 'Add') {
             alert($scope.button_name);
@@ -176,7 +159,7 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
 
                     if (data.IsSuccess) {
                         alert('Section Added Successfully');
-                        $scope.getAllUsers();
+                        $scope.getAllSections();
                     } else {
                         alert(data.message);
                     }
@@ -198,7 +181,7 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
                     // alert('hello123');
                     if (data.IsSuccess) {
                         alert('Section Updated Successfully');
-                        $scope.getAllUsers();
+                        $scope.getAllSections();
                     } else {
                         alert('else');
 
