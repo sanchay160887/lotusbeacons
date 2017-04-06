@@ -883,7 +883,7 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                                                                 }
                                                             }
                                                         }
-                                                    })                                                
+                                                    })
                                             }
                                         })
                                     }
@@ -1511,7 +1511,7 @@ app.post('/getDeviceHistorydata', function(req, res) {
                             $in: BeaconID
                         }
                     });
-                } else if (StoreID && StoreID.length == 24 ) {
+                } else if (StoreID && StoreID.length == 24) {
                     console.log('coming to store');
                     beaconcollection = collection.find({
                         'BeaconStore': ObjectId(StoreID)
@@ -4796,57 +4796,45 @@ app.post('/getEmployeedata', function(req, res) {
 
         async.waterfall([
             function(callback) {
-                var collection = db.collection('stores');
-
-                var storecollection = {};
-                storecollection = collection.find();
-                storecollection.toArray(function(err, stores) {
-                    var storelist = [];
-                    for (var b in stores) {
-                        storelist[stores[b]._id] = stores[b].StoreName;
+                var usercollection = db.collection('users');
+                usercollection.aggregate([{
+                    $match: {
+                        'UserType': 3
                     }
-                    callback(null, storelist);
-                });
-            },
-            function(storelist, callback) {
-                var collection = db.collection('users');
-                var SectionName = '';
+                }, {
+                    $lookup: {
+                        from: 'stores',
+                        localField: 'AssignedStore',
+                        foreignField: '_id',
+                        as: 'store_docs'
 
-                var sectioncollection = db.collection('sections');
-                /*{ "UserType": 2 }*/
-                collection.find({
-                    'UserType': 3
+                    }
+                }, {
+                    $lookup: {
+                        from: 'sections',
+                        localField: 'AssignedSection',
+                        foreignField: '_id',
+                        as: 'section_docs'
 
-                }).toArray(function(err, users) {
+                    }
+                }]).toArray(function(err, users) {
                     var userlist = [];
-                    var sectionlist = [];
                     if (users && users.length > 0) {
                         for (var u in users) {
-                            users[u].StoreName = storelist[ObjectId(users[u].AssignedStore)];
+                            if (users[u].store_docs.length > 0) {
+                                users[u].StoreName = users[u].store_docs[0].StoreName;
+                            } else {
+                                users[u].StoreName = '';
+                            }
+
+                            if (users[u].section_docs.length > 0) {
+                                users[u].SectionName = users[u].section_docs[0].SectionName;
+                            } else {
+                                users[u].SectionName = '';
+                            }
+
                             users[u].searchfield =
-                                users[u].Name + ' ' + users[u].UserID + ' ' + users[u].Designation + ' ' + users[u].StoreName + ' ' + users[u].AssignedSection;
-
-
-                            /* sectioncollection.find({
-                                 '_id': users[u].AssignedSection,
-
-                             }).toArray(function(err,sections){
-
-                                 for (var s in sections)
-                                 {
-
-                                      sectionlist.push(sections[s].SectionName);
-                                 } 
-
-
-                               
-
-                              console.log('============s=============section called==================s')
-                              console.log(sectionlist);
-                               console.log('============end=============section called End==================end')
-
-                             });*/
-
+                                users[u].Name + ' ' + users[u].UserID + ' ' + users[u].Designation + ' ' + users[u].StoreName + ' ' + users[u].SectionName;
 
 
                             userlist.push(users[u]);
@@ -4854,11 +4842,6 @@ app.post('/getEmployeedata', function(req, res) {
                         resObj.IsSuccess = true;
                         resObj.message = "Success";
                         resObj.data = userlist;
-                        console.log('===========employee list Start======================');
-
-                        //console.log(resObj);
-
-                        console.log('===========employee list called======================');
 
                         res.send(resObj);
                     } else {
@@ -5815,7 +5798,7 @@ app.post('/updateSettingData', function(req, res) {
                         'GeoFancingRange': GeoFancingRange,
                         'MinStayTimeOfCustomerForEmployee': MinStayTimeOfCustomerForEmployee,
                         'CustomerWelcomeMessage': CustomerWelcomeMessage,
-                        'EmployeeCustomerIntimation' : EmployeeCustomerIntimation
+                        'EmployeeCustomerIntimation': EmployeeCustomerIntimation
                     }
                 });
 
