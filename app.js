@@ -1261,7 +1261,7 @@ app.post('/userDisconnected', function(req, res) {
                 var collection = db.collection('user_beacons_active');
 
                 var filteredcollection = {};
-                
+
                 filteredcollection = collection.find({
                     "UserID": ObjectId(UserID),
                 }).toArray(function(err, users) {
@@ -1296,7 +1296,7 @@ devicecron.schedule('* * * * *', function() {
                 }
 
                 var collection = db.collection('device');
-                var devicelist = new Array();                
+                var devicelist = new Array();
                 console.log('Device Cron executed on ' + outofrangelimit);
                 collection.find({
                     "connectiontime": { "$lte": outofrangelimit },
@@ -1325,7 +1325,7 @@ devicecron.schedule('* * * * *', function() {
                 }
 
                 var collection = db.collection('user_beacons_active');
-                var userlist = new Array();                
+                var userlist = new Array();
                 console.log('Device Cron executed on ' + outofrangelimit);
                 collection.find({
                     "connectiontime": { "$lte": outofrangelimit },
@@ -5948,6 +5948,45 @@ app.post('/updateSettingData', function(req, res) {
                 res.send(resObj);
                 db.close();
             },
+        ]);
+    });
+});
+
+app.post('/getuserdataByUserType', function(req, res) {
+    var UserType = req.body.UserType;
+    var resObj = {};
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+
+        var collection = db.collection('users');
+
+
+
+        async.waterfall([
+            function(callback) {
+
+                collection.find({
+                    'UserType': Number(UserType)
+                }).toArray(function(err, users) {
+                    callback(null, users);
+                });
+            },
+            function(userdata, callback) {
+                if (userdata && userdata.length > 0) {
+                    resObj.IsSuccess = true;
+                    resObj.message = "success";
+                    resObj.data = userdata;
+                } else {
+                    resObj.IsSuccess = false;
+                    resObj.message = "No Record Found";
+                }
+                db.close();
+                res.send(resObj);
+            }
         ]);
     });
 });
