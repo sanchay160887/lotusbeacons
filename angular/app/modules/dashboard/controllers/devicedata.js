@@ -61,8 +61,6 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         });*/
     }
 
-
-
     var queriedUrl = $location.search();
 
     $scope.connection = true;
@@ -298,7 +296,6 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         } else {
             alert('No device selected');
         }
-
     }
 
     $scope.sendImageMessage = function() {

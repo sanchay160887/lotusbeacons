@@ -276,7 +276,7 @@ Date: 05 Jan 2016
                             All {{deviceDataCount }} records are selected, Clear Selection
                         </span>                        
                         </a></small></th>
-                        <th colspan="3">
+                        <th colspan="4">
                             <div class="bcon_selection_block_right">
                                 <div class="bcon_selection push_btnn_block row">
                                     <div class="col-md-12">
@@ -293,6 +293,7 @@ Date: 05 Jan 2016
                         <th>Mobile Number</th>
                         <th>Stay Time</th>
                         <th>Beacon</th>
+                        <th>Section</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -305,14 +306,15 @@ Date: 05 Jan 2016
                         <td>{{ device.DeviceName }}</td>
                         <td>{{ device.DevicePhone }}</td>
                         <td>{{ device.StayTime}}</td>
-                        <td>{{ device.BeaconKey + '(' + device.BeaconID + ')' }}</td>
+                        <td>{{ device.BeaconKey }}</td>
+                        <td>{{ device.SectionName }}</td>
                         <td>
                             <button type="button" class="btn btn-info btn-auto-width" data-toggle="modal" data-target="#search-history-detail" ng-click="deviceHistoryDetailCurrentPage = 1 && getDeviceSearchHistoryDetails(device.DeviceName, device.DevicePhone)">View Search History</button>
                             <button type="button" class="btn btn-info btn-auto-width" data-toggle="modal" data-target="#device-history-detail" ng-click="getDeviceHistoryDetails(device.DeviceName, device.BeaconKey, device.DevicePhone, device.BeaconID)">View Details</button>
                         </td>
                     </tr>
                     <tr ng-if="!(deviceData.length > 0)">
-                        <td colspan="6">
+                        <td colspan="7">
                             No Record Found
                         </td>
                     </tr>

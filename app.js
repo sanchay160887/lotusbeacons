@@ -385,6 +385,21 @@ function updateUser_Active(BeaconID, UserID, Distance, resObj) {
                 });
             },
             function(beacons, callback) {
+                var collection = db.collection('users');
+                collection.find(ObjectId(UserID)).toArray(function(err, users) {
+                    if (users.length <= 0) {
+                        if (resObj) {
+                            resObjVal.IsSuccess = false;
+                            resObjVal.message = "Device not available";
+                            resObj.send(resObjVal);
+                        }
+                        console.log('Invalid User ' + UserID);
+                    } else {
+                        callback(null, beacons);
+                    }
+                });
+            },
+            function(beacons, callback) {
                 if (!(beacons && beacons.length > 0)) {
                     if (resObj) {
                         resObjVal.IsSuccess = false;
@@ -408,6 +423,7 @@ function updateUser_Active(BeaconID, UserID, Distance, resObj) {
             function(user_beacons_data, callback) {
                 console.log(user_beacons_data);
                 console.log('user beacon data called');
+                console.log(user_beacons_data);
 
                 if (BeaconID != '') {
                     collection.update({
@@ -415,7 +431,6 @@ function updateUser_Active(BeaconID, UserID, Distance, resObj) {
                     }, {
                         'BeaconID': BeaconID,
                         'UserID': ObjectId(UserID),
-
                         'Distance': Distance,
                         'connectiontime': getCurrentTime(),
                     }, {
@@ -1155,7 +1170,6 @@ app.post('/beaconDisconnected', function(req, res) {
 
 
 function userDisconnect(BeaconID, UserID) {
-    console.log('-------------------Beacon disconnected------------- ');
 
     updateUser_Active(BeaconID, UserID, -1);
 
@@ -1167,27 +1181,19 @@ function userDisconnect(BeaconID, UserID) {
             assert.equal(null, err);
 
             var collection = db.collection('user_beacons_active');
-            var BeaconStoreID = '';
+            console.log('Getting Collection');
 
             async.waterfall([
                 function(callback) {
-                    var bcollection = db.collection('beacons');
-                    bcollection.find({
-                        'BeaconID': BeaconID
-                    }).toArray(function(err, beacons) {
-                        callback(null, beacons);
-                    });
-                },
-                function(beacondata, callback) {
-                    BeaconStoreID = beacondata[0].BeaconStore;
                     collection.find({
-                        'UserID': UserID,
+                        'UserID': ObjectId(UserID),
                         "Distance": { "$lte": -1 }
                     }).toArray(function(err, users) {
                         callback(null, users);
                     });
                 },
                 function(users, callback) {
+                    console.log('Deleting Collection ' + JSON.stringify(users));
                     var DeleteMe = false;
                     if (users && users.length > 0) {
                         console.log('going to Delete record >>>>>>>>>>>>');
@@ -1228,11 +1234,10 @@ function userDisconnect(BeaconID, UserID) {
                         io.emit('updateUser_response', {
                             'IsSuccess': true,
                             'BeaconID': BeaconID,
-                            'StoreID': BeaconStoreID,
                             'UserID': UserID,
                             'message': 'Data inserted successfully'
                         });
-                        callback(null, 'updated');
+
                     }
                 },
                 function(acknowledge, callback) {
@@ -1276,6 +1281,7 @@ app.post('/userDisconnected', function(req, res) {
             });
         },
         function(userlist, callback) {
+            console.log(JSON.stringify(userlist));
             if (userlist && userlist.length > 0) {
                 userDisconnect(userlist[0].BeaconID, userlist[0].UserID._id);
             }
@@ -1286,11 +1292,12 @@ app.post('/userDisconnected', function(req, res) {
 
 devicecron.schedule('* * * * *', function() {
     var outofrangelimit = getCurrentTime();
-    outofrangelimit = outofrangelimit - (60 * 3 * 1000);
-    async.waterfall([
+    outofrangelimit = outofrangelimit - (60 * 1 * 1000);
 
-        function(callback) {
-            MongoClient.connect(mongourl, function(err, db) {
+    MongoClient.connect(mongourl, function(err, db) {
+        async.waterfall([
+            function(callback) {
+
                 if (err) {
                     return console.dir(err);
                 }
@@ -1301,53 +1308,50 @@ devicecron.schedule('* * * * *', function() {
                 collection.find({
                     "connectiontime": { "$lte": outofrangelimit },
                 }).toArray(function(err, devices) {
+                    console.dir(err);
                     for (var dvc in devices) {
                         devicelist.push(devices[dvc]);
                     }
                     callback(null, devicelist);
                 })
-                db.close();
-            });
-        },
-        function(devicelist, callback) {
-            if (devicelist.length > 0) {
-                for (var dvc in devicelist) {
-                    beaconDisconnect(devicelist[dvc].BeaconID, devicelist[dvc].DeviceID,
-                        devicelist[dvc].MobileNo);
+            },
+            function(devicelist, callback) {
+                if (devicelist.length > 0) {
+                    for (var dvc in devicelist) {
+                        beaconDisconnect(devicelist[dvc].BeaconID, devicelist[dvc].DeviceID,
+                            devicelist[dvc].MobileNo);
+                    }
                 }
-            }
-            callback(null, true);
-        },
-        function(result, callback) {
-            MongoClient.connect(mongourl, function(err, db) {
-                if (err) {
-                    return console.dir(err);
-                }
-
-                var collection = db.collection('user_beacons_active');
+                callback(null, true);
+            },
+            function(result, callback) {
+                var ucollection = db.collection('user_beacons_active');
                 var userlist = new Array();
                 console.log('Device Cron executed on ' + outofrangelimit);
-                collection.find({
+                ucollection.find({
                     "connectiontime": { "$lte": outofrangelimit },
                 }).toArray(function(err, users) {
+                    console.dir(err);
+                    console.log('1324 ' + JSON.stringify(users));
                     for (var u in users) {
                         userlist.push(users[u]);
                     }
                     callback(null, userlist);
                 })
-                db.close();
-            });
-        },
-        function(userlist, callback) {
-            if (userlist.length > 0) {
-                for (var u in userlist) {
-                    userDisconnect(userlist[u].BeaconID, userlist[u].UserID._id);
-
+            },
+            function(userlist, callback) {
+                if (userlist.length > 0) {
+                    for (var u in userlist) {
+                        userDisconnect(userlist[u].BeaconID, userlist[u].UserID);
+                    }
                 }
+                callback(null, userlist);
+            },
+            function(lastval, callback) {
+                db.close();
             }
-            callback(null, userlist);
-        }
-    ]);
+        ]);
+    });
 });
 
 
@@ -1431,7 +1435,6 @@ app.post('/getdata', function(req, res) {
                         beaconslist[beacons[b].BeaconID].BeaconKey = beacons[b].BeaconKey;
                         if (beacons[b].store_docs != undefined && beacons[b].store_docs.length > 0) {
                             beaconslist[beacons[b].BeaconID].StoreName = beacons[b].store_docs[0].StoreName;
-
                         } else {
                             beaconslist[beacons[b].BeaconID].StoreName = '';
                         }
@@ -1489,11 +1492,44 @@ app.post('/getdata', function(req, res) {
                 }
 
                 if (beacons && beacons.length > 0) {
-                    devicecollection = collection.find({
+                    /*devicecollection = collection.find({
                         'BeaconID': {
                             '$in': beacons
                         }
-                    });
+                    });*/
+
+                    devicecollection = collection.aggregate([{
+                        $match: {
+                            'BeaconID': {
+                                '$in': beacons
+                            }
+                        }
+                    }, {
+                        $lookup: {
+                            'from': "beacons",
+                            'localField': "BeaconID",
+                            'foreignField': "BeaconID",
+                            'as': "beacons"
+                        }
+                    }, {
+                        $unwind: {
+                            'path': "$beacons",
+                        }
+                    }, {
+                        $lookup: {
+                            'from': "sections",
+                            'localField': "beacons.BeaconSection",
+                            'foreignField': "_id",
+                            'as': "sections",
+                        },
+
+                    }, {
+                        $unwind: {
+                            'path': "$beacons",
+                        }
+                    }]);
+
+
                     devicecollection.toArray(function(err, devices) {
                         for (var dvc in devices) {
                             devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID].BeaconKey;
@@ -1503,6 +1539,11 @@ app.post('/getdata', function(req, res) {
                                 devices[dvc].StayTime = convertSecondsToStringTime(devicehistory[devices[dvc].MobileNo][devices[dvc].BeaconID]);
                             } else {
                                 devices[dvc].StayTime = 0;
+                            }
+                            if (devices[dvc].sections != undefined && devices[dvc].sections.length > 0) {
+                                devices[dvc].SectionName = devices[dvc].sections[0].SectionName;
+                            } else {
+                                devices[dvc].SectionName = '';
                             }
                             devicelist.push(devices[dvc]);
                         }
@@ -1749,10 +1790,34 @@ app.post('/getDeviceHistorydata', function(req, res) {
                                 }
                             }
                         }, {
+                            $lookup: {
+                                'from': "beacons",
+                                'localField': "BeaconID",
+                                'foreignField': "BeaconID",
+                                'as': "beacons"
+                            }
+                        }, {
+                            $unwind: {
+                                'path': "$beacons",
+                            }
+                        }, {
+                            $lookup: {
+                                'from': "sections",
+                                'localField': "beacons.BeaconSection",
+                                'foreignField': "_id",
+                                'as': "sections",
+                            },
+
+                        }, {
+                            $unwind: {
+                                'path': "$beacons",
+                            }
+                        }, {
                             $group: {
                                 _id: { BeaconID: '$BeaconID', DeviceID: '$DeviceID' },
                                 StayTime: { $sum: "$StayTime" },
-                                MobileNo: { $max: "$MobileNo" }
+                                MobileNo: { $max: "$MobileNo" },
+                                SectionName: { $max: "$sections.SectionName" }
                             }
                         }]
                     )
@@ -1769,6 +1834,11 @@ app.post('/getDeviceHistorydata', function(req, res) {
                             //devices[dvc].MobileNo = devices[dvc].MobileNo;
                             devices[dvc].UniqueKey = devices[dvc].MobileNo + '‖' + devices[dvc].BeaconID;
                             devices[dvc].StayTime = convertSecondsToStringTime(devices[dvc].StayTime);
+                            if (devices[dvc].SectionName != undefined && devices[dvc].SectionName.length > 0) {
+                                devices[dvc].SectionName = devices[dvc].SectionName[0];
+                            } else {
+                                devices[dvc].SectionName = '';
+                            }
                             devicelist.push(devices[dvc]);
                         }
 
