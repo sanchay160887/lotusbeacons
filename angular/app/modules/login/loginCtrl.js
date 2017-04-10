@@ -8,8 +8,8 @@
 
  ===========================================================*/
 
-login.controller("loginCtrl", ['$rootScope', '$scope', '$state', '$location', 'loginService', 'Flash', 'apiService',
-    function($rootScope, $scope, $state, $location, loginService, Flash, apiService) {
+login.controller("loginCtrl", ['$rootScope', '$scope', '$state', '$location', 'loginService', 'Flash', 'apiService', '$cookieStore',
+    function($rootScope, $scope, $state, $location, loginService, Flash, apiService, $cookies) {
         var vm = this;
 
         vm.getUser = {};
@@ -24,6 +24,15 @@ login.controller("loginCtrl", ['$rootScope', '$scope', '$state', '$location', 'l
             success(function(data, status, headers, config) {
                     if (data.isSuccess) {
                         $rootScope.loggedInUser = data.user;
+                        var now = new Date();
+                        
+                        now.setMinutes(now.getMinutes() + 60);
+
+                        /*Cookies set from here for maintaining auto login in CRM*/
+                        $cookies.put("beacon_loggedinUser", data.user, {
+                            expires: now
+                        });
+
                         $state.go('app.dashboard');    
                     } else {
                         Flash.create('danger', 'Invalid Username or Password', 'large-text');    

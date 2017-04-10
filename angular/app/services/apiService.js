@@ -7,7 +7,7 @@
     s.no      date    author     description     
  ===========================================================*/
 
-app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, appSettings) {
+app.service('apiService', ['$http', '$q', 'appSettings', '$cookieStore', function($http, $q, appSettings, $cookies) {
 
     var apiService = {};
     var apiBase = appSettings.apiBase;
@@ -393,6 +393,7 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
     }
 
     var logOutUser = function(username, password) {
+        $cookies.remove("beacon_loggedinUser");
         return $http({
             method: "post",
             url: "/userLogout",

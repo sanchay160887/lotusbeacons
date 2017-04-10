@@ -11,7 +11,7 @@
  
 var app = angular.module('app', ['ui.router', 'ui.bootstrap', 'flash',
     //main modules
-    'login', 'dashboard']);
+    'login', 'dashboard', 'ngCookies']);
 
 
 app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', function ($stateProvider, $locationProvider, $urlRouterProvider, $modalInstance) {

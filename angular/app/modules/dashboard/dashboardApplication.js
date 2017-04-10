@@ -9,7 +9,7 @@
 
  ===========================================================*/
 
-var dashboard = angular.module('dashboard', ['ui.router', 'ngAnimate', 'ngMaterial', 'angularUtils.directives.dirPagination', 'chart.js']);
+var dashboard = angular.module('dashboard', ['ui.router', 'ngAnimate', 'ngMaterial', 'angularUtils.directives.dirPagination', 'chart.js', 'ngCookies']);
 
 
 dashboard.config(["$stateProvider", function($stateProvider) {
