@@ -6060,3 +6060,54 @@ app.post('/getuserdataByUserType', function(req, res) {
         ]);
     });
 });
+
+
+
+
+app.post('/getmanagerByStoreID', function(req, res) {
+
+    var AssignedStore = req.body.AssignedStore;
+    var resObj = {};
+    if (!AssignedStore) {
+        resObj.IsSuccess = false;
+        resObj.message = "Invalid Store selected";
+        res.send(resObj);
+    }
+
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+
+        var collection = db.collection('users');
+
+        async.waterfall([
+            function(callback) {
+
+                collection.find({
+                    'UserType': 2,
+                    'AssignedStore': ObjectId(AssignedStore)
+                }).toArray(function(err, users) {
+                    callback(null, users);
+                });
+            },
+            function(userdata, callback) {
+
+                if (userdata && userdata.length > 0) {
+                    resObj.IsSuccess = true;
+                    resObj.message = "success";
+                    resObj.data = userdata;
+                } else {
+                    resObj.IsSuccess = false;
+                    resObj.message = "No Record Found";
+                }
+
+                res.send(resObj);
+                db.close();
+
+            }
+        ]);
+    });
+});
