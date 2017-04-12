@@ -8,8 +8,8 @@
 
  ===========================================================*/
 
-login.controller("loginCtrl", ['$rootScope', '$scope', '$state', '$location', 'loginService', 'Flash', 'apiService', '$cookieStore',
-    function($rootScope, $scope, $state, $location, loginService, Flash, apiService, $cookies) {
+login.controller("loginCtrl", ['$rootScope', '$scope', '$state', '$location', 'loginService', 'Flash', 'apiService',
+    function($rootScope, $scope, $state, $location, loginService, Flash, apiService) {
         var vm = this;
 
         vm.getUser = {};
@@ -27,14 +27,6 @@ login.controller("loginCtrl", ['$rootScope', '$scope', '$state', '$location', 'l
                         var now = new Date();
                         
                         now.setMinutes(now.getMinutes() + 60);
-
-                        /*Cookies set from here for maintaining auto login in CRM*/
-                        $cookies.put("beacon_loggedinUser", data.user, {
-                            expires: now,
-                            domain: 'lampdemos.com',
-                            path: '/',
-                            secure: false
-                        });
 
                         $state.go('app.dashboard');    
                     } else {

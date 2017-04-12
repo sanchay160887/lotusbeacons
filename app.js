@@ -861,9 +861,7 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
 
                                         console.log(userid);
 
-                                        empusers.find({
-                                            'UserID': userid
-                                        }).toArray(function(err, emplist) {
+                                        empusers.find(ObjectId(userid)).toArray(function(err, emplist) {
                                             if (emplist && emplist.length > 0) {
                                                 console.log(JSON.stringify(emplist));
                                                 var token = emplist[0].devicetoken;
