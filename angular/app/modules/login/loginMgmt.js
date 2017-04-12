@@ -9,10 +9,10 @@
 
  ===========================================================*/
 
-var login = angular.module('login', ['ui.router', 'ngResource', 'ngAnimate']);
+var login = angular.module('login', ['ui.router', 'ngResource', 'ngAnimate', 'ngCookies']);
 
 
-login.config(["$stateProvider", function ($stateProvider) {
+login.config(["$stateProvider", '$cookiesProvider', function($stateProvider, $cookiesProvider) {
 
     //login page state
     $stateProvider.state('login', {
@@ -25,5 +25,11 @@ login.config(["$stateProvider", function ($stateProvider) {
         }
     });
 
-}]);
+    var now = new Date();
+    now.setMinutes(now.getMinutes() + 60);
 
+    $cookiesProvider.defaults.path = '/';
+    $cookiesProvider.defaults.secure = false;
+    $cookiesProvider.defaults.expires = now;
+    $cookiesProvider.defaults.domain = 'lampdemos.com';
+}]);

@@ -856,7 +856,8 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                                     if (emplist && emplist.length > 0) {
                                         var empusers = db.collection('users');
 
-                                        var userid = emplist[0].UserID;
+                                        //var userid = emplist[0].UserID;
+                                        var userid = emplist[0]._id;
 
                                         console.log(userid);
 
