@@ -4723,9 +4723,7 @@ app.post('/getEmployeeDetails', function(req, res) {
 
         async.waterfall([
             function(callback) {
-                collection.find({
-                    'UserID': EmployeeID
-                }).toArray(function(err, devices) {
+                collection.find(ObjectId(EmployeeID)).toArray(function(err, devices) {
                     callback(null, devices);
                 });
 
