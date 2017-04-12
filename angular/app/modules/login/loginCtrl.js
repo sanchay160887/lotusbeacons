@@ -31,7 +31,7 @@ login.controller("loginCtrl", ['$rootScope', '$scope', '$state', '$location', 'l
                         /*Cookies set from here for maintaining auto login in CRM*/
                         $cookies.put("beacon_loggedinUser", data.user, {
                             expires: now,
-                            domain: 'http://lampdemos.com'
+                            domain: 'lampdemos.com'
                         });
 
                         $state.go('app.dashboard');    
