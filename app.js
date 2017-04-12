@@ -846,7 +846,6 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                                     console.log(JSON.stringify(emplist));
                                     console.log('emplist called');
                                     if (emplist && emplist.length > 0) {
-
                                         //var userid = emplist[0].UserID;
                                         var userid = emplist[0].UserID.toString();
                                         var empusers = db.collection('users');
@@ -3906,8 +3905,11 @@ app.post('/userLogin', function(req, res) {
                         function(res2, err, body) {
                             crmToken = parse_JSON(body);
                             crmToken = crmToken.data;
-                            resObj.user.crmToken = crmToken;
-                            req.session.loggedInUser = resObj.user;
+                            if (crmToken && resObj.user){
+                                resObj.user.crmToken = crmToken;    
+                                req.session.loggedInUser = resObj.user;
+                            }                           
+                            
                             res.send(resObj);
                             db.close();
                         })                    
