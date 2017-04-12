@@ -3838,12 +3838,6 @@ app.post('/userLogin', function(req, res) {
                     }
                 }
 
-                console.log('=====');
-                console.log(JSON.stringify(dataParam));
-                console.log('=====');
-
-                console.log(collection);
-
                 /*collection.find(dataParam)*/
                 collection.aggregate([{
                     $match: dataParam
