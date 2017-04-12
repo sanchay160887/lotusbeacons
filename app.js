@@ -732,7 +732,6 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                 }
             },
             function(data, callback) {
-
                 collection.find({
                     'MobileNo': MobileNo
                 }).toArray(function(err, devicehistory) {
@@ -749,7 +748,6 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                                     if (err) {
                                         throw err;
                                     } else {
-                                        console.log(result);
                                         callback(null, 'DeviceID is different');
                                     }
                                 });
@@ -776,16 +774,9 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
             },
             function(devicelist, callback) {
 
-                console.log('Call End.');
-                console.log(devicelist);
-
-
                 if (!(devicelist && devicelist.length > 0)) {
-                    console.log('Sending notification 775');
                     console.log(JSON.stringify(beacons[0]));
                     if (typeof(beacons[0].BeaconWelcome) != 'undefined' && beacons[0].BeaconWelcome) {
-                        //sendpushnotification('', [DeviceID], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
-
                         mobile_nos = [];
                         mobile_nos.push('91' + MobileNo);
                         var data = JSON.stringify(mobile_nos);
@@ -812,8 +803,6 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                                 }
                             })
                     }
-
-                    /* Send notification to employees */
                 }
                 callback(null, devicelist);
             },
@@ -832,7 +821,7 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                                     _id: ObjectId(devices[0]._id)
                                 }, {
                                     '$set': {
-                                        'DateTo': todaysdate,
+                                        'Date': todaysdate,
                                         'StayTime': StayTime,
                                     }
                                 },
@@ -844,6 +833,9 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                                         return 0;
                                     }
                                 });
+
+                            console.log('Checking Staytime ', StayTime, ' ', settings_StayTime);
+
                             if (StayTime >= settings_StayTime) {
                                 /* ---------------------  Employee Notification Start ---------  */
                                 var empcollection = db.collection('user_beacons_active');
@@ -854,13 +846,10 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                                     console.log(JSON.stringify(emplist));
                                     console.log('emplist called');
                                     if (emplist && emplist.length > 0) {
-                                        var empusers = db.collection('users');
 
                                         //var userid = emplist[0].UserID;
-                                        var userid = emplist[0]._id;
-
-                                        console.log(userid);
-
+                                        var userid = emplist[0].UserID.toString();
+                                        var empusers = db.collection('users');
                                         empusers.find(ObjectId(userid)).toArray(function(err, emplist) {
                                             if (emplist && emplist.length > 0) {
                                                 console.log(JSON.stringify(emplist));
@@ -1307,7 +1296,6 @@ devicecron.schedule('* * * * *', function() {
                 collection.find({
                     "connectiontime": { "$lte": outofrangelimit },
                 }).toArray(function(err, devices) {
-                    console.dir(err);
                     for (var dvc in devices) {
                         devicelist.push(devices[dvc]);
                     }
@@ -1326,12 +1314,10 @@ devicecron.schedule('* * * * *', function() {
             function(result, callback) {
                 var ucollection = db.collection('user_beacons_active');
                 var userlist = new Array();
-                console.log('Device Cron executed on ' + outofrangelimit);
+                console.log('Employee Cron executed on ' + outofrangelimit);
                 ucollection.find({
                     "connectiontime": { "$lte": outofrangelimit },
                 }).toArray(function(err, users) {
-                    console.dir(err);
-                    console.log('1324 ' + JSON.stringify(users));
                     for (var u in users) {
                         userlist.push(users[u]);
                     }
