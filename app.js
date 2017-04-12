@@ -3849,7 +3849,6 @@ app.post('/userLogin', function(req, res) {
                         as: 'section_docs'
                     }
                 }]).toArray(function(err, users) {
-
                     if (err) {
                         return console.dir(err);
                     }
@@ -3861,13 +3860,8 @@ app.post('/userLogin', function(req, res) {
                     }
 
                     if (isCallingFromApp) {
-
                         var devicetoken = req.body.devicetoken;
-
-                        //console.log(devicetoken);
-
                         collection.updateMany({
-                                // 'BeaconID': AssignedStore,
                                 'UserID': req.body.username,
                             }, {
                                 '$set': {
@@ -3884,8 +3878,6 @@ app.post('/userLogin', function(req, res) {
                         );
                     }
 
-                    //console.log(JSON.stringify(users));
-
                     if (users && users.length > 0) {
                         var dbpassword = users[0].Password;
                         users[0].Password = "";
@@ -3898,7 +3890,6 @@ app.post('/userLogin', function(req, res) {
                         resObj.message = "Invalid Username."
                         resObj.isSuccess = false;
                         res.send(resObj);
-                        //callback(null, false);
                         return 0;
                     }
 
@@ -3908,23 +3899,37 @@ app.post('/userLogin', function(req, res) {
                 if (passwordmatched) {
                     resObj.message = "Successfully loggedin."
                     resObj.user = userRecord;
-
                     resObj.isSuccess = true;
                 } else {
                     resObj.message = "Wrong Password."
                     resObj.isSuccess = false;
                 }
+
                 if (!isCallingFromApp) {
-                    db.close();
-                    res.send(resObj);
+                    var PostReq = {
+                        'UserID': userRecord.UserID,
+                        'Email': userRecord.Email,
+                        'Name': userRecord.Name,
+                        'UserType': userRecord.UserType,
+                        'id': userRecord._id.toString()
+                    };
+
+                    request.post(lotusURL + 'employee/beacon_login_service', {
+                            form: PostReq
+                        },
+                        function(res2, err, body) {
+                            crmToken = parse_JSON(body);
+                            crmToken = crmToken.data;
+                            resObj.user.crmToken = crmToken;
+                            req.session.loggedInUser = resObj.user;
+                            res.send(resObj);
+                            db.close();
+                        })                    
                 } else {
                     callback(null, userRecord);
                 }
             },
             function(user, callback) {
-
-                //console.log(user);
-
                 if (isCallingFromApp) {
                     var beaconCollection = db.collection('beacons');
                     // var sectionCollection = db.collection('sections');
@@ -3936,27 +3941,18 @@ app.post('/userLogin', function(req, res) {
                     }).toArray(function(err, beacons) {
                         var AllotedSection = user.AssignedSection;
                         for (var b in beacons) {
-
-                            //beacons.push(beacons[b].BeaconKey)
-                            // beacons.push(beacons);
                             beacons1.push(beacons[b]);
                         }
-
-                        console.log('=====================SEC===========================');
-
                         resObj.beacons = beacons;
-
-                        //
-                        console.log(resObj);
-
-                        console.log('======end of beacon Array called==========');
-                        res.send(resObj);
+                        callback(null, resObj);
                     });
                 } else {
-
-                    res.send(resObj);
+                    callback(null, resObj);
                 }
+            },
+            function(result, callback) {
                 db.close();
+                res.send(resObj);
             }
         ]);
     });
