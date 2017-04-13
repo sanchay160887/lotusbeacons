@@ -3769,8 +3769,27 @@ app.post('/getLoggedinUser', function(req, res) {
 });
 
 app.post('/userLogout', function(req, res) {
+    var resObj = {};
+    var adminid = '';
+    user = req.session.loggedInUser;
+
+    var adminid = user._id;
+
+    console.log(adminid);
+
     console.log("Logging out user.");
+
     req.session.destroy(function() {
+        var request = require('request');
+        request.post(lotusURL + 'employee/beacon_logout_service', {
+                form: {
+                    'id': adminid
+                }
+            },
+            function(res2, err, body) {
+
+                console.log(body);
+            });
         res.redirect('/');
     });
 });
@@ -3905,14 +3924,14 @@ app.post('/userLogin', function(req, res) {
                         function(res2, err, body) {
                             crmToken = parse_JSON(body);
                             crmToken = crmToken.data;
-                            if (crmToken && resObj.user){
-                                resObj.user.crmToken = crmToken;    
+                            if (crmToken && resObj.user) {
+                                resObj.user.crmToken = crmToken;
                                 req.session.loggedInUser = resObj.user;
-                            }                           
-                            
+                            }
+
                             res.send(resObj);
                             db.close();
-                        })                    
+                        })
                 } else {
                     callback(null, userRecord);
                 }
