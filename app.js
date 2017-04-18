@@ -5708,7 +5708,32 @@ app.post('/updateSection', function(req, res) {
 
                 callback(null, 'updated');
             },
-            function(updated, callback) {
+           function(updated, callback) {
+
+                sectionbeacon.updateMany({
+                        'BeaconSection': ObjectId(UserObjectID)
+
+                    }, {
+                        '$unset': {
+                            'BeaconSection': 1,
+                        }
+                    }, {
+                        multi: true
+                    },
+                    function(err, result) {
+                        if (err) {
+                            throw err;
+                        } else {
+
+                        }
+                    }
+                );
+
+                console.log('Section Beacon Updated');
+                callback(null, 'removed');
+
+            },
+            function(update, callback) {
                 sectionbeacon.updateMany({
                         'BeaconID': {
                             $in: selectedBeacon
