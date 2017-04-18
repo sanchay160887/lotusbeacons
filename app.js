@@ -2444,12 +2444,14 @@ app.post('/updatebeacon', function(req, res) {
 
                 collection.update({
                     'BeaconID': BeaconID
-                }, {
+                },{
+                    '$set': {
                     'BeaconID': BeaconID,
                     'BeaconKey': BeaconKey,
                     'BeaconWelcome': BeaconWelcome,
                     'BeaconDescr': BeaconDescr,
                     'BeaconStore': ObjectId(BeaconStore)
+                    }
                 });
                 console.log('Beacon updated');
 
