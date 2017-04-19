@@ -2445,11 +2445,13 @@ app.post('/updatebeacon', function(req, res) {
                 collection.update({
                     'BeaconID': BeaconID
                 }, {
-                    'BeaconID': BeaconID,
-                    'BeaconKey': BeaconKey,
-                    'BeaconWelcome': BeaconWelcome,
-                    'BeaconDescr': BeaconDescr,
-                    'BeaconStore': ObjectId(BeaconStore)
+                    '$set': {
+                        'BeaconID': BeaconID,
+                        'BeaconKey': BeaconKey,
+                        'BeaconWelcome': BeaconWelcome,
+                        'BeaconDescr': BeaconDescr,
+                        'BeaconStore': ObjectId(BeaconStore)
+                    }
                 });
                 console.log('Beacon updated');
 
@@ -3211,6 +3213,7 @@ function sendpushnotification_fcm(resObj, gcmToken, BeaconID, notification_user_
                                         'notification_user_id': notification_user_id,
                                         'mobile_no': MobileNo,
                                         'title': title,
+                                        'BeaconID': BeaconID,
                                         'message': 'Check ' + name + ' nearest to you',
                                         //  'notification_img': image_url,
                                         'notification_type': 7,
@@ -3345,7 +3348,7 @@ app.post('/getUserdata', function(req, res) {
             function(storelist, callback) {
                 var collection = db.collection('users');
                 /*{ "UserType": 2 }*/
-                collection.find().toArray(function(err, users) {
+                collection.find({ "UserType": 2 }).toArray(function(err, users) { //{ "UserType": 2 } changed by arpit
                     var userlist = [];
                     if (users && users.length > 0) {
                         for (var u in users) {
@@ -3438,12 +3441,15 @@ app.post('/addUser', function(req, res) {
 
         async.waterfall([
             function(callback) {
-                collection.find().toArray(function(err, users) {
+                collection.find({
+                    "UserType": { "$in": [1, 2, 3, 4] }, //changed by Arpit
+
+                }).toArray(function(err, users) {
                     var cnt = users.length;
                     for (var u in users) {
                         if (users[u].UserID == UserID) {
                             resObj.IsSuccess = false;
-                            resObj.message = "User ID already exists";
+                            resObj.message = "This ID Already Exists in the Portal";
                             res.send(resObj);
                             return 0;
                         } else if (users[u].Email == Email) {
@@ -3497,7 +3503,7 @@ app.post('/addUser', function(req, res) {
             function(response, callback) {
                 db.close();
                 resObj.IsSuccess = true;
-                resObj.message = "User registered successfully.";
+                resObj.message = "Manager has been Added Successfully";
                 res.send(resObj);
                 callback(null, response);
             }
@@ -3577,7 +3583,7 @@ app.post('/updateUser', function(req, res) {
                     for (var u in users) {
                         if (users[u].UserID == UserID) {
                             resObj.IsSuccess = false;
-                            resObj.message = "User ID already exists";
+                            resObj.message = "This ID Already Exists in the Portal";
                             res.send(resObj);
                             return 0;
                         } else if (users[u].Email == Email) {
@@ -3654,7 +3660,7 @@ app.post('/updateUser', function(req, res) {
             function(response, callback) {
                 db.close();
                 resObj.IsSuccess = true;
-                resObj.message = "User updated successfully.";
+                resObj.message = "Manager has been Updated Successfully";
                 res.send(resObj);
                 callback(null, response);
             }
@@ -3773,8 +3779,10 @@ app.post('/userLogout', function(req, res) {
     var adminid = '';
     user = req.session.loggedInUser;
 
-    var adminid = user._id;
 
+    if (user != '') {
+        var adminid = user._id;
+    }
     console.log(adminid);
 
     console.log("Logging out user.");
@@ -3958,7 +3966,11 @@ app.post('/userLogin', function(req, res) {
                 }
             },
             function(result, callback) {
+                console.log('===============User Login List=====================');
+                console.log(result);
+
                 db.close();
+
                 res.send(resObj);
             }
         ]);
@@ -4281,7 +4293,7 @@ app.post('/addEmployee', function(req, res) {
                     for (var u in users) {
                         if (users[u].UserID == UserID) {
                             resObj.IsSuccess = false;
-                            resObj.message = "User ID already exists";
+                            resObj.message = "This ID Already Exists in the Portal";
                             res.send(resObj);
                             return 0;
                         }
@@ -4322,14 +4334,14 @@ app.post('/addEmployee', function(req, res) {
 
 
                 });
-                console.log('User inserted');
+                console.log('Employee inserted');
 
                 callback(null, 'inserted');
             },
             function(response, callback) {
                 db.close();
                 resObj.IsSuccess = true;
-                resObj.message = "User registered successfully.";
+                resObj.message = "Employee has been Added Successfully";
                 res.send(resObj);
                 callback(null, response);
             }
@@ -4428,9 +4440,16 @@ app.post('/addSection', function(req, res) {
         return;
     }
 
-    if (!(SectionName && SectionDesc)) {
+    if (!(SectionName)) {
         resObj.IsSuccess = false;
         resObj.message = "Please enter appropriate informations";
+        res.send(resObj);
+        return;
+    }
+
+    if (!AssignedStore) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please assign any store";
         res.send(resObj);
         return;
     }
@@ -4455,9 +4474,9 @@ app.post('/addSection', function(req, res) {
                     var cnt = sections.length;
 
                     for (var u in sections) {
-                        if (sections[u].SectionName == SectionName) {
+                        if (sections[u].SectionName == SectionName && sections[u].AssignedStore == AssignedStore) { //&& sections[u].AssignedStore == AssignedStorechanged by arpit
                             resObj.IsSuccess = false;
-                            resObj.message = "SectionName already exists";
+                            resObj.message = "Section already exists";
                             res.send(resObj);
                             return 0;
                         }
@@ -4540,7 +4559,7 @@ app.post('/addSection', function(req, res) {
             function(response, callback) {
                 db.close();
                 resObj.IsSuccess = true;
-                resObj.message = "Section added successfully.";
+                resObj.message = "Section has been Added Successfully";
                 res.send(resObj);
                 callback(null, response);
             }
@@ -4622,7 +4641,7 @@ app.post('/updateEmployee', function(req, res) {
                     for (var u in users) {
                         if (users[u].UserID == UserID) {
                             resObj.IsSuccess = false;
-                            resObj.message = "User ID already exists";
+                            resObj.message = "This ID Already Exists in the Portal";
                             res.send(resObj);
                             return 0;
                         }
@@ -4684,7 +4703,7 @@ app.post('/updateEmployee', function(req, res) {
             function(response, callback) {
                 db.close();
                 resObj.IsSuccess = true;
-                resObj.message = "Employee updated successfully.";
+                resObj.message = "Employee Details has been Updated Successfully";
                 res.send(resObj);
                 callback(null, response);
             }
@@ -4761,7 +4780,9 @@ app.post('/getEmployeeDetails', function(req, res) {
 
                         resObj.IsSuccess = true;
                         resObj.message = "success";
-
+                        console.log('==================check response of employee details==============');
+                        console.log(resObj.beacons);
+                        console.log('==================check response of employee details==============');
                         res.send(resObj);
                         callback(null, true);
                     });
@@ -4898,7 +4919,7 @@ app.post('/addCustomer', function(req, res) {
 
     if (!AssignedStore) {
         resObj.IsSuccess = false;
-        resObj.message = "Please select Store";
+        resObj.message = "Please Select Store";
         res.send(resObj);
         return;
     }
@@ -4928,7 +4949,7 @@ app.post('/addCustomer', function(req, res) {
                     for (var u in users) {
                         if (users[u].UserID == UserID) {
                             resObj.IsSuccess = false;
-                            resObj.message = "User ID already exists";
+                            resObj.message = "This ID Already Exists in the Portal";
                             res.send(resObj);
                             return 0;
                         }
@@ -4964,7 +4985,7 @@ app.post('/addCustomer', function(req, res) {
             function(response, callback) {
                 db.close();
                 resObj.IsSuccess = true;
-                resObj.message = "Customer registered successfully.";
+                resObj.message = "CRM User has been Added Successfully";
                 res.send(resObj);
                 callback(null, response);
             }
@@ -5098,18 +5119,53 @@ app.post('/deleteEmployee', function(req, res) {
             return console.dir(err);
         }
         assert.equal(null, err);
-
         var collection = db.collection('users');
 
-        collection.deleteMany({
-            '_id': ObjectId(UserObjectID),
-            'UserType': 3
-        });
-        resObj.IsSuccess = true;
-        resObj.message = "Employee deleted successfully";
-        res.send(resObj);
+        async.waterfall([
+            function(callback) {
 
-        db.close();
+
+
+                collection.find({
+                    '_id': ObjectId(UserObjectID)
+
+                }).toArray(function(err, users) {
+
+                    if (users[0].devicetoken != '') {
+
+
+                        var token = '';
+
+                        var token = users[0].devicetoken;
+                        var notifymessage = 'Your account is temporarily closed. Please contact to your store manager';
+                        var notificationtype = '8';
+                        var title = 'Account Closed';
+                        var image_url = '';
+
+
+                        pushnotification_fcm_common(null, [token], UserObjectID, '', title, notifymessage, notificationtype, image_url);
+
+                    }
+                    callback(null, users);
+                });
+            },
+
+            function(response, callback) {
+
+
+                collection.deleteMany({
+                    '_id': ObjectId(UserObjectID),
+                    'UserType': 3
+                });
+
+
+                resObj.IsSuccess = true;
+                resObj.message = "Employee has been Deleted Successfully";
+                res.send(resObj);
+
+                db.close();
+            }
+        ]);
 
     });
 });
@@ -5238,7 +5294,7 @@ app.post('/deleteCrm', function(req, res) {
             'UserType': 4
         });
         resObj.IsSuccess = true;
-        resObj.message = "CRM deleted successfully";
+        resObj.message = "CRM User has been Deleted Successfully";
         res.send(resObj);
 
         db.close();
@@ -5419,7 +5475,7 @@ app.post('/updateCustomeExecutive', function(req, res) {
                     for (var u in users) {
                         if (users[u].UserID == UserID) {
                             resObj.IsSuccess = false;
-                            resObj.message = "User ID already exists";
+                            resObj.msage = "This ID Already Exists in the Portal";
                             res.send(resObj);
                             return 0;
                         }
@@ -5492,7 +5548,7 @@ app.post('/updateCustomeExecutive', function(req, res) {
             function(response, callback) {
                 db.close();
                 resObj.IsSuccess = true;
-                resObj.message = "CRM updated successfully.";
+                resObj.message = "CRM User has been Updated Successfully";
                 res.send(resObj);
                 callback(null, response);
             }
@@ -5509,7 +5565,7 @@ app.post('/deleteSection', function(req, res) {
     UserObjectID = req.body.UserObjectID;
 
     console.log(UserObjectID);
-    console.log('============== Called===========EEEE==');
+    console.log('==============Delete Section Called============');
 
     var resObj = {};
     if (!req.session.loggedInUser) {
@@ -5541,16 +5597,118 @@ app.post('/deleteSection', function(req, res) {
         assert.equal(null, err);
 
         var collection = db.collection('sections');
+        var usercollection = db.collection('users');
+        var beaconcollection = db.collection('beacons');
 
-        collection.deleteMany({
-            '_id': ObjectId(UserObjectID),
+        async.waterfall([
+            function(callback) {
 
-        });
-        resObj.IsSuccess = true;
-        resObj.message = "Section deleted successfully";
-        res.send(resObj);
+                usercollection.aggregate([{
+                    $match: {
+                        'AssignedSection': ObjectId(UserObjectID)
+                    }
+                }, {
+                    $lookup: {
+                        'from': "sections",
+                        'localField': "AssignedSection",
+                        'foreignField': "_id",
+                        'as': "sections"
+                    }
+                }]).toArray(function(err, users) {
 
-        db.close();
+                    var token = '';
+                    for (var user in users) {
+                        if (!user.devicetoken) {
+                            continue;
+                        }
+
+                        if (user.sections && user.sections.length > 0) {
+                            var token = user.devicetoken;
+                            var notifymessage = 'We are closing ' + user.sections.SectionName + ' for now. Please contact to your store manager';
+                            var notificationtype = '9';
+                            var title = 'Section Deleted';
+                            var image_url = '';
+                            pushnotification_fcm_common(null, [token], UserObjectID, '', title, notifymessage, notificationtype, image_url);
+
+                        }
+
+                           callback(null, users);
+
+                    }
+                     callback(null, users);
+                 
+                });
+            },
+            function(users, callback) {
+                console.log('====user called===');
+                console.log(users);
+
+                console.log('====End called===');
+                usercollection.updateMany({
+                        'AssignedSection': ObjectId(UserObjectID)
+
+                    }, {
+                        '$unset': {
+                            'AssignedSection': 1,
+                        }
+                    }, {
+                        multi: true
+                    },
+                    function(err, result) {
+                        if (err) {
+                            throw err;
+                        } else {
+
+                        }
+                    }
+                );
+
+                callback(null, 'beacons');
+
+
+            },
+
+            function(beacons, callback) {
+                beaconcollection.updateMany({
+                        'BeaconSection': ObjectId(UserObjectID)
+
+                    }, {
+                        '$unset': {
+                            'BeaconSection': 1,
+                        }
+                    }, {
+                        multi: true
+                    },
+                    function(err, result) {
+                        if (err) {
+                            throw err;
+                        } else {
+
+                        }
+                    }
+                );
+
+                callback(null, 'sections');
+
+
+            },
+
+            function(sections, callback) {
+
+
+                collection.deleteMany({
+                    '_id': ObjectId(UserObjectID),
+
+                });
+
+                resObj.IsSuccess = true;
+                resObj.message = "Section has been Deleted Successfully";
+                res.send(resObj);
+
+                db.close();
+            }
+
+        ]);
 
     });
 });
@@ -5697,9 +5855,6 @@ app.post('/updateSection', function(req, res) {
                         'SectionDesc': SectionDesc,
                         'BeaconID': selectedBeacon,
 
-
-
-
                     }
                 });
 
@@ -5709,6 +5864,31 @@ app.post('/updateSection', function(req, res) {
                 callback(null, 'updated');
             },
             function(updated, callback) {
+
+                sectionbeacon.updateMany({
+                        'BeaconSection': ObjectId(UserObjectID)
+
+                    }, {
+                        '$unset': {
+                            'BeaconSection': 1,
+                        }
+                    }, {
+                        multi: true
+                    },
+                    function(err, result) {
+                        if (err) {
+                            throw err;
+                        } else {
+
+                        }
+                    }
+                );
+
+                console.log('Section Beacon Updated');
+                callback(null, 'removed');
+
+            },
+            function(update, callback) {
                 sectionbeacon.updateMany({
                         'BeaconID': {
                             $in: selectedBeacon
@@ -5733,7 +5913,7 @@ app.post('/updateSection', function(req, res) {
             },
             function(response, callback) {
                 resObj.IsSuccess = true;
-                resObj.message = "Section updated successfully.";
+                resObj.message = "Section has been Updated Successfully";
                 res.send(resObj);
                 db.close();
 
@@ -6105,3 +6285,167 @@ app.post('/getmanagerByStoreID', function(req, res) {
         ]);
     });
 });
+
+/// GET section available according to store only new API 15.04.2017
+
+
+/*Section Services start*/
+app.post('/getsectionInStore', function(req, res) {
+    var resObj = {};
+
+    var AssignedStore = req.body.AssignedStore;
+
+
+    if (!AssignedStore) {
+        resObj.IsSuccess = false;
+        resObj.message = "Invalid Store selected";
+        res.send(resObj);
+        return resObj;
+
+
+    }
+
+    console.log(AssignedStore);
+
+    console.log("Get Section in store Called================================================");
+
+
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        var devicelist = new Array();
+        var collection = db.collection('sections');
+        collection = collection.find({
+
+            'AssignedStore': ObjectId(AssignedStore)
+        }).toArray(function(err, sections) {
+            console.log(sections);
+            if (sections && sections.length > 0) {
+
+                for (var dvc in sections) {
+                    devicelist.push(sections[dvc]);
+                }
+
+
+                resObj.IsSuccess = true;
+                resObj.message = "Success";
+                resObj.data = devicelist;
+                console.log(resObj.data);
+
+                console.log('Get Section in store Called==============================================');
+                res.send(resObj);
+            } else {
+                resObj.IsSuccess = false;
+                resObj.message = "No record found.";
+                resObj.data = '';
+                res.send(resObj.data);
+            }
+        })
+        db.close();
+    });
+});
+
+
+
+
+function pushnotification_fcm_common(resObj, gcmToken, notification_user_id, MobileNo, title, messagebody, notificationtype, image_url) {
+    console.log(gcmToken);
+    console.log(notificationtype);
+
+    console.log(notification_user_id);
+    console.log('push notification called');
+    console.log(title);
+    var FCM = require('fcm-node');
+
+    var serverKey = 'AIzaSyCJ7BLdXAhonngXWKpqUtYK3fOdZFi8m_g';
+    var fcm = new FCM(serverKey);
+    if (!image_url) {
+        image_url = '';
+    }
+
+    async.waterfall([
+        function(callback) {
+
+            var request = require('request');
+
+
+
+
+
+
+
+            var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
+                registration_ids: gcmToken,
+
+                data: {
+                    'message': messagebody,
+                    'notification_user_id': notification_user_id,
+                    'badge': 1,
+                    'title': title,
+
+                    //'img_url': 'https://lh4.ggpht.com/mJDgTDUOtIyHcrb69WM0cpaxFwCNW6f0VQ2ExA7dMKpMDrZ0A6ta64OCX3H-NMdRd20=w300',
+                    // 'img_url': image_url,
+                    'notification_type': notificationtype,
+
+                }
+
+            };
+
+
+            fcm.send(message, function(err, response) {
+
+
+
+                if (err) {
+                    console.log("Something has gone wrong!");
+                } else {
+                    if (response != 'undefined') {
+                        try {
+
+                            var request = require('request');
+                            var gcmdata = JSON.stringify(gcmToken);
+
+
+
+
+
+                            request.post(lotusURL + 'employee/get_notification_entry', {
+
+                                    form: {
+                                        'android_device_token': gcmdata,
+                                        'notification_user_id': notification_user_id,
+                                        //'mobile_no': MobileNo,
+                                        'title': title,
+                                        'message': messagebody,
+                                        //  'notification_img': image_url,
+                                        'notification_type': notificationtype,
+
+                                    }
+
+                                },
+                                function(res2, err, body) {
+                                    console.log('=====notification inserted2222==========');
+                                    console.log('Data coming from service --> ' + JSON.stringify(body));
+                                    if (resObj) {
+                                        resObj.send(body);
+                                    }
+                                });
+                        } catch (err) { console.dir(err.message) }
+                    }
+
+                    console.log("Successfully sent with response: ", response);
+                }
+            })
+
+        }
+
+
+
+
+    ]);
+    //console.log(message);
+
+}

@@ -117,23 +117,36 @@ app.controller("appCtrl", ['$rootScope', '$scope', '$state', '$location', 'Flash
                 icon: "dashboard",
                 state: "dashboard"
             }, {
-                title: "Devices",
-                icon: "tablet",
+                title: "Customers in Store",
+                icon: "users",
                 state: "devices"
             }, {
-                title: "Devices History",
+                title: "Customers Visit History",
                 icon: "list-ul",
                 state: "deviceshistory"
-            }, {
-                title: "Beacons",
-                icon: "bluetooth",
-                state: "beacons"
-            }, {
+            },
+
+            {
                 title: "Stores",
                 icon: "empire ",
                 state: "stores"
-            }, {
-                title: "Users",
+            },
+
+
+
+             {
+                title: "Beacons",
+                icon: "bluetooth",
+                state: "beacons"
+            },
+             {
+                title: "Sections",
+                icon: "arrows",
+                state: "sections"
+            },
+
+              {
+                title: "Managers",
                 icon: "user",
                 state: "users"
             },
@@ -142,11 +155,7 @@ app.controller("appCtrl", ['$rootScope', '$scope', '$state', '$location', 'Flash
                 title: "Employees",
                 icon: "user",
                 state: "employees"
-            }, {
-                title: "Sections",
-                icon: "arrows",
-                state: "sections"
-            },
+            }, 
             {
                 title: "CRM",
                 icon: "user",

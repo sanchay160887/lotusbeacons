@@ -5,6 +5,8 @@ dashboard.controller("SettingController", function($rootScope, $scope, apiServic
     $scope.MinStayTimeOfCustomerForEmployee = 0;
     $scope.CustomerWelcomeMessage = 'Welcome «CUSTNAME», Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for';
     $scope.EmployeeCustomerIntimation = 'Check your «CUSTNAME» is nearby you';
+
+    $scope.isEditMode = false;
     $scope.FormInitialized = false;
 
     $scope.ListInitialized = false;
@@ -18,6 +20,8 @@ dashboard.controller("SettingController", function($rootScope, $scope, apiServic
             }
         });
     }
+
+
 
     $scope.connection = true;
     $scope.connection_msg = false;
@@ -61,7 +65,11 @@ dashboard.controller("SettingController", function($rootScope, $scope, apiServic
             $scope.MinStayTimeOfCustomerForEmployee = Number(settingData.MinStayTimeOfCustomerForEmployee);
             if (settingData.CustomerWelcomeMessage){
                 $scope.CustomerWelcomeMessage = settingData.CustomerWelcomeMessage;    
-            }            
+            }  
+
+             if (settingData.EmployeeCustomerIntimation){
+                $scope.EmployeeCustomerIntimation = settingData.EmployeeCustomerIntimation;    
+            }              
             $scope.userCurrentPage = 1;
             $scope.userPageSize = 10;
             $scope.FormInitialized = true;
@@ -69,6 +77,11 @@ dashboard.controller("SettingController", function($rootScope, $scope, apiServic
     }
 
     $scope.getAllSetting();
+
+       $scope.enableSetting = function() {
+          $scope.isEditMode = true;
+
+       }
 
 
 

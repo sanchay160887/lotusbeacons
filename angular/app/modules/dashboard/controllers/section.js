@@ -5,6 +5,8 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
     $scope.ConfPassword = '';
     $scope.Name = '';
 
+    $scope.isEditMode = false;
+
 
     //$scope.UserType = 2;
 
@@ -54,6 +56,35 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
 
     var vm = this;
 
+
+    $scope.enableBeacon = function() {
+
+        if ($scope.AssignedStore == '') {
+            // alert('1');
+            $scope.isEditMode = false;
+
+        } else {
+            // alert('2');
+            $scope.isEditMode = true;
+
+        }
+
+    }
+
+    /*
+        $scope.enableBeacon = function() {
+            if ($scope.AssignedStore = '') {
+                alert('1');
+                $scope.isEditMode = false;
+
+            } else {
+                  alert('2');
+
+                $scope.isEditMode = true;
+            }
+        }
+    */
+
     $scope.userCurrentPage = 1;
     $scope.userPageSize = 10;
     $scope.pageChangeHandler2 = function(num) {
@@ -85,11 +116,14 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
 
 
     $scope.$watchCollection('[AssignedStore]', function() {
+        $scope.isEditMode = false;
         if ($scope.FormInitialized) {
+
             apiService.beaconData($scope.AssignedStore).then(function(res) {
                 $scope.beaconData = res.data.data;
             });
         }
+
     });
 
 
@@ -126,12 +160,12 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
                     $scope.AssignedStore = SectionData[0].AssignedStore;
                     apiService.beaconData(SectionData[0].AssignedStore).then(function(res) {
                         $scope.beaconData = res.data.data;
-                        setTimeout(function(){
+                        setTimeout(function() {
                             $scope.selectedBeacon = SectionData[0].BeaconID;
                             $scope.FormInitialized = true;
-                        }, 300);                        
+                        }, 300);
                     });
-                    
+
                     //alert($scope.selectedBeacon);                    
                 } else {
                     $scope.UserObjectID = '';
@@ -152,13 +186,13 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
     $scope.processUser = function() {
         $scope.FormInitialized = false;
         if ($scope.button_name == 'Add') {
-            alert($scope.button_name);
+            // alert($scope.button_name);
             apiService.addSection($scope.SectionName, $scope.SectionDesc, $scope.AssignedStore, $scope.selectedBeacon)
                 .success(function(data, status, headers, config) {
 
 
                     if (data.IsSuccess) {
-                        alert('Section Added Successfully');
+                        alert(data.message);
                         $scope.getAllSections();
                     } else {
                         alert(data.message);
@@ -180,7 +214,7 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
                 .success(function(data, status, headers, config) {
                     // alert('hello123');
                     if (data.IsSuccess) {
-                        alert('Section Updated Successfully');
+                        alert(data.message);
                         $scope.getAllSections();
                     } else {
                         alert('else');
@@ -227,7 +261,7 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
     }
 
     $scope.deleteSection = function() {
-        var r = confirm("Are you sure to delete this record ?");
+        var r = confirm("Are You Sure to Delete this Record?");
         if (!r) {
             return;
         }
@@ -236,12 +270,26 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
             console.log(res);
             $scope.FormInitialized = true;
             if (res.IsSuccess) {
-                alert('Section Deleted Successfully');
+                alert('Section has been Deleted Successfully');
                 $scope.getAllSections();
             } else {
                 alert(res.message);
             }
         });
     }
+
+
+
+
+    $http({
+        method: "post",
+        url: "/getsectionInStore",
+        data: {
+
+            'AssignedStore': '57d26d3bcace8e0378b20404',
+
+        }
+    });
+
 
 })

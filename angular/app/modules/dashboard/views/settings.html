@@ -41,7 +41,7 @@ Date: 05 Jan 2016
 <section class="content-blocks">
     <section class="content-header">
         <h1>
-            Setting Data
+            Settings
         </h1>
         <ol class="breadcrumb">
             <!-- <li><a><i class="fa fa-dashboard"></i> Dashboard</a></li> -->
@@ -53,22 +53,29 @@ Date: 05 Jan 2016
         <div class="wait_block" ng-if="!FormInitialized">
             <p class="wait_text">Please Wait...</p>
         </div>
-        <h4>Update  Setting Data</h4>
-        <form ng-controller="SettingController">
-            <label>GeoFancingRange<span class="error">*</span></label>
-            <input type="number" class="form-control" ng-model="GeoFancingRange" name="GeoFancingRange" />
+        <h4><!-- Update  Setting Data --></h4>
+        <form ng-controller="SettingController"  >
+            <label>GeoFencing Range (In Meters) </label>
+            <input type="number" class="form-control" ng-model="GeoFancingRange" name="GeoFancingRange" ng-readonly='!isEditMode'  />
             <br>
-            <label>MinStayTime</label>
-            <input class="form-control" type="number" ng-model="MinStayTimeOfCustomerForEmployee" name="MinStayTimeOfCustomerForEmployee" />
+            <label>Minimum Stay Time (In Seconds)</label>
+            <input class="form-control" type="number" ng-model="MinStayTimeOfCustomerForEmployee" name="MinStayTimeOfCustomerForEmployee" ng-readonly='!isEditMode' />
             <br>
-            <label>Customer Welcome message</label>
-            <textarea class="form-control" ng-model="CustomerWelcomeMessage" name="CustomerWelcomeMessage"></textarea>
+            <label>Customer Welcome Message </label>
+            <textarea class="form-control" ng-model="CustomerWelcomeMessage" name="CustomerWelcomeMessage" ng-readonly='!isEditMode'></textarea>
             <br>
             <label>Employee Customer Intimation</label>
-            <textarea class="form-control" ng-model="EmployeeCustomerIntimation" name="EmployeeCustomerIntimation"></textarea>
+            <textarea class="form-control" ng-model="EmployeeCustomerIntimation" name="EmployeeCustomerIntimation" ng-readonly='!isEditMode'></textarea>
             <br>
+
+          <b>Note:</b>  Please include <b>«CUSTNAME»</b> for adding/updating message in <b>Customer Welcome Message</b> & <b>Employee Customer Intimation</b>
+          <br>
+          <br>
             <input type="submit" name="Update" id="Update" class="btn btn-primary" value="Save" 
-                ng-click="processSetting()">
+                ng-click="processSetting()"  ng-hide="!isEditMode">
+
+                 <input type="submit" name="Update" id="Update" class="btn btn-primary" value="Edit" 
+                ng-click="enableSetting()" ng-hide="isEditMode" >
         </form>
     </section>
     <!-- /.content -->

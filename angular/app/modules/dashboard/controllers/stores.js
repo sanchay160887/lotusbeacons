@@ -3,6 +3,7 @@
 //
 
 dashboard.controller("StoresController", function($rootScope, $scope, apiService, $http, $interval) { //
+    $scope.storeForm = {};
     $scope.Store_Id = '';
     $scope.Store_Name = '';
     $scope.Store_Descr = '';
@@ -67,8 +68,18 @@ dashboard.controller("StoresController", function($rootScope, $scope, apiService
         $scope.Store_Descr = '';
         $scope.Store_Lat = '';
         $scope.Store_Long = '';
+
+        $scope.storeForm.$setUntouched();
+        $scope.storeForm.$setDirty();
+        $scope.storeForm.$setPristine();
+
+
         $scope.button_name = 'Add';
+
     }
+
+    console.log($scope.storeForm);
+
 
     $scope.getStore = function(pStoreID) {
         $scope.FormInitialized = false;
@@ -108,7 +119,16 @@ dashboard.controller("StoresController", function($rootScope, $scope, apiService
 
 
     $scope.processStore = function() {
-        console.log($scope.button_name);
+        if ($scope.storeForm.$invalid) {
+            angular.forEach($scope.storeForm.$error, function(field) {
+                angular.forEach(field, function(errorField) {
+                    errorField.$setTouched();
+                })
+            });
+            //alert("Please check all values on Form.");
+            return;
+        }
+
         $scope.FormInitialized = false;
         if ($scope.button_name == 'Add') {
             apiService.addStores($scope.Store_Name, $scope.Store_Descr, $scope.Store_Lat, $scope.Store_Long)

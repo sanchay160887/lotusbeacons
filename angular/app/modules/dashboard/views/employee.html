@@ -66,15 +66,10 @@ Date: 05 Jan 2016
         <h4 ng-if="button_name=='Update'">Update Employee</h4>
         <ng-form name="employeeForm" id="employeeForm">
         
-        <label>User ID<span class="error">*</span></label>
-            <input class="form-control" type="text" name="UserID" id="UserID" ng-model="UserID" ng-pattern="useridregex" required="required" />
-            <span class="error" ng-show="employeeForm.UserID.$touched && employeeForm.UserID.$error.required">User ID required</span>
-            <span class="error" ng-show="employeeForm.UserID.$touched && employeeForm.UserID.$invalid && !employeeForm.UserID.$error.required">User ID must be lowercase and only alphabets</span>
-            <br>
-            
+       
             <label>Name<span class="error">*</span></label>
             <input class="form-control" type="text" name="Name" id="Name" ng-model="Name" required="required" />
-            <span class="error" ng-show="employeeForm.Name.$touched && employeeForm.Name.$invalid">Name required</span>
+            <span class="error" ng-show="employeeForm.Name.$touched && employeeForm.Name.$invalid">Please Enter Name</span>
             <br>
            
             <label>Assign Store<span class="error">*</span></label>
@@ -84,21 +79,20 @@ Date: 05 Jan 2016
                     {{device.StoreName}}</option>
             </select>
             <br>
-            <span class="error" ng-show="employeeForm.AssignedStore.$touched && employeeForm.AssignedStore.$invalid">Please assign any store</span>
-            <br>
- 			
-            
+            <span class="error" ng-show="employeeForm.AssignedStore.$touched && employeeForm.AssignedStore.$invalid">Please Assign Store</span>
+            <br>		
             
             <label>Assign Section<span class="error">*</span></label>
-            <select class="form-control col-md-4" ng-model="AssignedSection" id="AssignedSection" name="AssignedSection" required="required">
+            <select class="form-control col-md-4" ng-model="AssignedSection" id="AssignedSection" 
+                ng-disabled="!AssignedStore"  name="AssignedSection" required="required">
                 <option value="">Select Setion</option>
-                <option ng-repeat="device in sectionData | orderBy:SectionName" value="{{device._id}}">
+                <option ng-repeat="device in sectionInStore | orderBy:SectionName" value="{{device._id}}">
                     {{device.SectionName}}</option>
             </select> 
           <!--    <input class="form-control" type="text" name="AssignedSection" id="AssignedSection" ng-model="AssignedSection" required="required" /> -->
 
             <br>
-         <span class="error" ng-show="employeeForm.AssignedSection.$touched && employeeForm.AssignedSection.$invalid">Please assign any section</span>
+         <span class="error" ng-show="employeeForm.AssignedSection.$touched && employeeForm.AssignedSection.$invalid">Please Assign  Section</span>
             <br>
 
             
@@ -109,23 +103,35 @@ Date: 05 Jan 2016
             
             <br>
             
+             <label>Employee ID<span class="error">*</span></label>
+            <input class="form-control" type="text" name="UserID" id="UserID" ng-model="UserID" ng-pattern="useridregex" required="required" />
+            <span class="error" ng-show="employeeForm.UserID.$touched && employeeForm.UserID.$error.required">Please Enter Employee ID</span>
+            <span class="error" ng-show="employeeForm.UserID.$touched && employeeForm.UserID.$invalid && !employeeForm.UserID.$error.required">User ID must be lowercase and only alphabets</span>
+            <br>
+            
             
             
             
             <label>Password<span ng-show="button_name!='Update'" class="error">*</span></label>
-            <input class="form-control" type="password" id="Password" name="Password" ng-model="Password" ng-pattern="passwordregex" ng-required="button_name!='Update'" />
-            <span class="error" ng-show="employeeForm.Password.$touched && employeeForm.Password.$invalid && employeeForm.Password.$error.required">Password required</span>
-            <span class="error" ng-show="employeeForm.Password.$touched && employeeForm.Password.$invalid && !employeeForm.Password.$error.required">Password should be atleast 8 characters long
-            and should contain one number,one character and one special
-            character</span>
+            <input class="form-control" type="password" id="Password" name="Password"  ng-minlength="minlength"  ng-maxlength="maxlength" ng-model="Password" ng-pattern="passwordregex" ng-required="button_name!='Update'" />
+
+            <span class="error" ng-show="employeeForm.Password.$touched && employeeForm.Password.$invalid && employeeForm.Password.$error.required">Please Enter Password</span>
+
+            <span class="error" ng-show="employeeForm.Password.$touched && employeeForm.Password.$invalid && !employeeForm.Password.$error.required">Password must be in between 6-8 Characters</span>
             <br>
             <!-- compare-to="Password" -->
             <label>Confirm Password<span ng-show="button_name!='Update'" class="error">*</span></label>
-            <input class="form-control" type="password" id="ConfPassword" name="ConfPassword" ng-model="ConfPassword" ng-required="(button_name != 'Update' || Password)" />
-            <span class="error" ng-show="employeeForm.ConfPassword.$touched && employeeForm.ConfPassword.$invalid && employeeForm.ConfPassword.$error.required">Confirm Password required</span>
-            <span class="error" ng-show="employeeForm.confPassword.$touched && employeeForm.confPassword.$invalid && !employeeForm.confPassword.$error.required">Confirm password doesnot match with password</span>
+            <input class="form-control" type="password" id="ConfPassword" ng-minlength="minlength"  ng-maxlength="maxlength" name="ConfPassword" ng-model="ConfPassword" ng-required="(button_name != 'Update' || Password)" />
+            <span class="error" ng-show="employeeForm.ConfPassword.$touched && employeeForm.ConfPassword.$invalid && employeeForm.ConfPassword.$error.required">Please Enter Confirm Password</span>
+
+          <!--    <span class="error" ng-show="employeeForm.confPassword.$touched && employeeForm.confPassword.$invalid && !employeeForm.confPassword.$error.required">Confirm Password must be in between 6-8 Characters</span>
+            <br> -->
+
+
+            <span class="error" ng-show="employeeForm.confPassword.$touched && employeeForm.confPassword.$invalid && !employeeForm.confPassword.$error.required">Confirm Password does not Match with the Password</span>
             <span class="error">{{ employeeForm.confPassword }}</span>
             <br>
+
             <p ng-show="button_name=='Update'">Leave password field blank if you donot want to reset password.</p>
             <br>
             <button class="btn btn-primary" ng-bind="button_name" ng-click="processUser()">Add</button>
@@ -168,10 +174,7 @@ Date: 05 Jan 2016
         </div>
         <!-- Main content -->
         <table class="table">
-            <th ng-click="O=(O=='UserID' && '-UserID' || 'UserID' )">User ID
-                <span ng-show="O=='UserID'">▲</span>
-                <span ng-show="O=='-UserID'">▼</span>
-            </th>
+       
             <th ng-click="O=(O=='Name' && '-Name' || 'Name' )">Name
                 <span ng-show="O=='Name'">▲</span>
                 <span ng-show="O=='-Name'">▼</span>
@@ -192,12 +195,15 @@ Date: 05 Jan 2016
                 <span ng-show="O=='-Designation'">▼</span>
             </th>
 
+                 <th ng-click="O=(O=='UserID' && '-UserID' || 'UserID' )">Employee ID
+                <span ng-show="O=='UserID'">▲</span>
+                <span ng-show="O=='-UserID'">▼</span>
+            </th>
+
 
             <tr dir-paginate="u in employeeData | filter: (q.length > 1 ? {searchfield: q } : '') | orderBy : O | itemsPerPage:  userPageSize" current-page="userCurrentPage">
                 <!-- <tr ng-repeat=" | orderBy:Name "> -->
-                <td>
-                    <input class="form-control" type='text' ng-model="u.UserID" readonly />
-                </td>
+            
                 <td>
                     <input class="form-control" type='text' ng-model="u.Name" readonly />
                 </td>
@@ -213,6 +219,10 @@ Date: 05 Jan 2016
 
                   <td>
                     <input class="form-control" type='text' ng-model="u.Designation" readonly />
+                </td>
+
+                    <td>
+                    <input class="form-control" type='text' ng-model="u.UserID" readonly />
                 </td>
 
                 <td ng-click="getUser(u._id)"><span class="btn btn-primary">Edit</span></td>

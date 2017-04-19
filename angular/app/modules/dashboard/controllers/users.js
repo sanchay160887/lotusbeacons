@@ -36,6 +36,11 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
     $scope.AssignedStore = '';
     $scope.ResetPassword = false;
     $scope.UserObjectID = '';
+
+    $scope.minlength = 6;
+    $scope.maxlength = 8;
+
+    
     //$scope.emailregex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     $scope.emailregex = /^(?=[^@]{4,}@)([\w\.-]*[a-zA-Z0-9_]@(?=.{4,}\.[^.]*$)[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z])$/;
     $scope.useridregex = /[a-z]/;
@@ -168,15 +173,15 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
 
         if ($scope.button_name == 'Update') {
             if ($scope.Password != $scope.ConfPassword) {
-                alert('Confirm password doesnot match with password');
+                alert('Confirm Password doesnot Match with Password');
                 return;
             }
         } else {
             if (!$scope.Password && !$scope.ConfPassword) {
-                alert('Password should not be empty.');
+                alert('Please Enter Password');
                 return;
             } else if ($scope.Password != $scope.ConfPassword) {
-                alert('Confirm password doesnot match with password');
+                alert('Confirm Password doesnot Match with Password');
                 return;
             }
         }
@@ -187,7 +192,7 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
                     $scope.MobileNo, $scope.AssignedStore)
                 .success(function(data, status, headers, config) {
                     if (data.IsSuccess) {
-                        alert('User Added Successfully');
+                        alert(data.message);
                         $scope.getAllUsers();
                     } else {
                         alert(data.message);
@@ -206,7 +211,7 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
                     $scope.Designation, $scope.MobileNo, $scope.AssignedStore)
                 .success(function(data, status, headers, config) {
                     if (data.IsSuccess) {
-                        alert('User Updated Successfully');
+                        alert(data.message);
                         $scope.getAllUsers();
                     } else {
                         alert(data.message);
@@ -223,7 +228,7 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
     }
 
     $scope.deleteUser = function() {
-        var r = confirm("Are you sure to delete this record ?");
+        var r = confirm("Are You Sure to Delete this Record?");
         if (!r) {
             return;
         }
@@ -232,7 +237,7 @@ dashboard.controller("UserController", function($rootScope, $scope, apiService, 
             console.log(res);
             $scope.FormInitialized = true;
             if (res.IsSuccess) {
-                alert('User Deleted Successfully');
+                alert('Manager has been Deleted Successfully');
                 $scope.getAllUsers();
             } else {
                 alert(res.message);

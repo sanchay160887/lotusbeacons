@@ -1,4 +1,4 @@
-dashboard.controller("CrmController", function($rootScope,$scope, apiService, $http, $interval, $location) { //
+dashboard.controller("CrmController", function($rootScope, $scope, apiService, $http, $interval, $location) { //
     $scope.employeeForm = {};
     $scope.UserID = '';
     $scope.Password = '';
@@ -6,20 +6,20 @@ dashboard.controller("CrmController", function($rootScope,$scope, apiService, $h
     $scope.Name = '';
     $scope.Designation = '';
 
-    
-   
+    $scope.minlength = 6;
+    $scope.maxlength = 8;
+
+
+
+
+
     //$scope.UserType = 2;
-   
+
     $scope.AssignedStore = '';
-	
+
     $scope.ResetPassword = false;
     $scope.UserObjectID = '';
-    //$scope.emailregex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  /*  $scope.emailregex = /^(?=[^@]{4,}@)([\w\.-]*[a-zA-Z0-9_]@(?=.{4,}\.[^.]*$)[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z])$/;
-    $scope.useridregex = /[a-z]/;
-    $scope.passwordregex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,15}$/;
-    $scope.phoneregex = /^[0-9]*$/;
-*/
+   
     $scope.button_name = 'Add';
     $scope.ListInitialized = false;
     $scope.FormInitialized = true;
@@ -55,8 +55,8 @@ dashboard.controller("CrmController", function($rootScope,$scope, apiService, $h
         }
     });
 
-	
-		
+
+
     var vm = this;
 
     $scope.userCurrentPage = 1;
@@ -86,12 +86,12 @@ dashboard.controller("CrmController", function($rootScope,$scope, apiService, $h
     apiService.storeData().then(function(res) {
         $scope.storeData = res.data.data;
     });
-	
-	apiService.sectionData().then(function(res) {
+
+    apiService.sectionData().then(function(res) {
 
 
         $scope.sectionData = res.data.data;
-       
+
     });
 
     $scope.resetControls = function() {
@@ -100,10 +100,10 @@ dashboard.controller("CrmController", function($rootScope,$scope, apiService, $h
         $scope.ConfPassword = '';
         $scope.Name = '';
         $scope.Designation = '';
-     
-        
+
+
         $scope.AssignedStore = '';
-	   
+
         $scope.UserObjectID = '';
         $scope.button_name = "Add";
         $scope.ResetPassword = false;
@@ -123,11 +123,11 @@ dashboard.controller("CrmController", function($rootScope,$scope, apiService, $h
                     $scope.UserID = data.data[0].UserID;
                     $scope.Name = data.data[0].Name;
                     $scope.Designation = data.data[0].Designation;
-      
-                    
-                   // $scope.UserType = data.data[0].UserType;
+
+
+                    // $scope.UserType = data.data[0].UserType;
                     $scope.AssignedStore = data.data[0].AssignedStore;
-				
+
                 } else {
                     $scope.UserObjectID = '';
                     alert('User not found. Please refresh your page');
@@ -144,55 +144,9 @@ dashboard.controller("CrmController", function($rootScope,$scope, apiService, $h
 
 
     $scope.processUser = function() {
-		
-		//alert($scope.button_name);
-		
-		 $scope.FormInitialized = false;
-        if ($scope.button_name == 'Add') {
-			alert($scope.button_name);
-            apiService.addCustomer($scope.UserID,$scope.Password,$scope.Name,$scope.Designation, 
-			$scope.AssignedStore)
-                .success(function(data, status, headers, config) {
-					
-					
-                    if (data.IsSuccess) {
-                        alert('Customer executive Added Successfully');
-                        $scope.getAllUsers();
-                    } else {
-                        alert(data.message);
-                    }
-                    $scope.FormInitialized = true;
-                })
-                .error(function(data, status, headers, config) {
-                    console.log("failed.");
-					//alert(status);
-                    $scope.FormInitialized = true;
-                    return '';
-                });
-        } else {
-			
-            $scope.FormInitialized = false;
-            console.log($scope.Password);
-            apiService.updateCustomeExecutive($scope.UserObjectID, $scope.UserID,  $scope.Password,  $scope.Name,
-                  $scope.AssignedStore  , $scope.Designation )//($scope.Password && $scope.Password.length > 0)
-                .success(function(data, status, headers, config) {
-                    if (data.IsSuccess) {
-                        alert('Custome care executive Updated Successfully');
-                        $scope.getAllUsers();
-                    } else {
-                        alert(data.message);
-                    }
-                    $scope.FormInitialized = true;
-                })
-                .error(function(data, status, headers, config) {
-                    console.log("failed.");
-                    $scope.FormInitialized = true;
-                    return '';
-                });
-        }
 
-		
-        console.log($scope.button_name);
+        //alert($scope.button_name);
+
         if ($scope.employeeForm.$invalid) {
             angular.forEach($scope.employeeForm.$error, function(field) {
                 angular.forEach(field, function(errorField) {
@@ -203,26 +157,80 @@ dashboard.controller("CrmController", function($rootScope,$scope, apiService, $h
             return;
         }
 
+
         if ($scope.button_name == 'Update') {
             if ($scope.Password != $scope.ConfPassword) {
-                alert('Confirm password doesnot match with password');
+                alert('Confirm Password doesnot Match with Password');
                 return;
             }
         } else {
             if (!$scope.Password && !$scope.ConfPassword) {
-                alert('Password should not be empty.');
+                alert('Please Enter Password');
                 return;
             } else if ($scope.Password != $scope.ConfPassword) {
-                alert('Confirm password doesnot match with password');
+                alert('Confirm Password doesnot Match with Password');
                 return;
             }
         }
 
        
+        $scope.FormInitialized = false;
+        if ($scope.button_name == 'Add') {
+            //alert($scope.button_name); // change by arpit
+            apiService.addCustomer($scope.UserID, $scope.Password, $scope.Name, $scope.Designation,
+                    $scope.AssignedStore)
+                .success(function(data, status, headers, config) {
+
+
+                    if (data.IsSuccess) {
+                        alert(data.message);
+                        $scope.getAllCRM();
+                    }
+                   else {
+                        alert(data.message);
+                    }
+                   $scope.FormInitialized = true;
+                })
+                .error(function(data, status, headers, config) {
+                    console.log("failed.");
+                    //alert(status);
+                    $scope.FormInitialized = true;
+                    return '';
+                });
+        } else {
+
+            $scope.FormInitialized = false;
+            console.log($scope.Password);
+            apiService.updateCustomeExecutive($scope.UserObjectID, $scope.UserID, $scope.Password, $scope.Name,
+                    $scope.AssignedStore, $scope.Designation) //($scope.Password && $scope.Password.length > 0)
+                .success(function(data, status, headers, config) {
+                    if (data.IsSuccess) {
+                        alert(data.message);
+                        $scope.getAllUsers();
+                    } else {
+                        alert(data.message);
+                    }
+                    $scope.FormInitialized = true;
+                })
+                .error(function(data, status, headers, config) {
+                    console.log("failed.");
+                    $scope.FormInitialized = true;
+                    return '';
+                });
+        }
+
+
+        console.log($scope.button_name);
+
+
+       
+ 
+
+
     }
 
     $scope.deleteCrm = function() {
-        var r = confirm("Are you sure to delete this record ?");
+        var r = confirm("Are You Sure to Delete this Record?");
         if (!r) {
             return;
         }
@@ -231,16 +239,16 @@ dashboard.controller("CrmController", function($rootScope,$scope, apiService, $h
             console.log(res);
             $scope.FormInitialized = true;
             if (res.IsSuccess) {
-                alert('Employee Deleted Successfully');
+                alert('CRM User has been Deleted Successfully');
                 $scope.getAllCRM();
             } else {
                 alert(res.message);
             }
         });
     }
-	
-	
-	 $scope.getEmployee = function(pUserObjectID) {
+
+
+    $scope.getEmployee = function(pUserObjectID) {
         $scope.FormInitialized = false;
         apiService.getUser(pUserObjectID).
         success(function(data, status, headers, config) {
@@ -251,11 +259,11 @@ dashboard.controller("CrmController", function($rootScope,$scope, apiService, $h
                     $scope.UserID = data.data[0].UserID;
                     $scope.Name = data.data[0].Name;
                     $scope.Designation = data.data[0].Designation;
-      
-                    
-                   // $scope.UserType = data.data[0].UserType;
+
+
+                    // $scope.UserType = data.data[0].UserType;
                     $scope.AssignedStore = data.data[0].AssignedStore;
-				
+
                 } else {
                     $scope.UserObjectID = '';
                     alert('User not found. Please refresh your page');
@@ -271,43 +279,55 @@ dashboard.controller("CrmController", function($rootScope,$scope, apiService, $h
     }
 
 
-/*
+    /*
+        $http({
+            method: "post",
+            url: "/userLogin",
+            data: {
+                username: 'admin12345',
+                password: 'sis12345@',
+                fromApp: '1',
+                devicetoken:'APA91bHcxKvZbp5pcY_KeivI3qbHj1LF0KNct3Vx13jXVEFLzZDH5LMaE_1j08rClLhzAOwVJLp9Jmga0rPX3qndKOe6kK35sG8yDSYg4dipInhSZsgZOTU',
+            }
+        });
+    */
+    /*
+            $http({
+            method: "post",
+            url: "/getcustomerdata",
+            data: {
+                UserID: 'crm12345',
+                Password:'sis12345@'
+               
+            }
+        });
+
+    */
+
     $http({
         method: "post",
         url: "/userLogin",
         data: {
-            username: 'admin12345',
-            password: 'sis12345@',
-            fromApp: '1',
-            devicetoken:'APA91bHcxKvZbp5pcY_KeivI3qbHj1LF0KNct3Vx13jXVEFLzZDH5LMaE_1j08rClLhzAOwVJLp9Jmga0rPX3qndKOe6kK35sG8yDSYg4dipInhSZsgZOTU',
-        }
-    });
-*/
+            username: 'ankit1',
+            password: 'sis',
+            UserType: 3
 
-        $http({
-        method: "post",
-        url: "/getcustomerdata",
-        data: {
-            UserID: 'crm12345',
-            Password:'sis12345@'
-           
+
         }
     });
 
 
 
-
-    
-/*  $http({
-        method: "post",
-        url: "/getdata",
-        data: {
-            UserID: '58b696a3e690710a48c399ee',
-            
-             BeaconID: ["00:A0:50:B3:77:11"],
-        }
-    });
-*/
+    /*  $http({
+            method: "post",
+            url: "/getdata",
+            data: {
+                UserID: '58b696a3e690710a48c399ee',
+                
+                 BeaconID: ["00:A0:50:B3:77:11"],
+            }
+        });
+    */
 
 
     console.log('Login service called end');

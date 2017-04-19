@@ -50,7 +50,7 @@ Date: 05 Jan 2016
 <section class="content-blocks">
     <section class="content-header">
         <h1>
-            CRM Data
+            CRM Users
         </h1>
         <ol class="breadcrumb">
             <!-- <li><a><i class="fa fa-dashboard"></i> Dashboard</a></li> -->
@@ -62,49 +62,52 @@ Date: 05 Jan 2016
         <div class="wait_block" ng-if="!FormInitialized">
             <p class="wait_text">Please Wait...</p>
         </div>
-        <h4 ng-if="button_name!='Update'">Add Customer  Care Executive</h4>
-        <h4 ng-if="button_name=='Update'">Update  Customer  Care Executive</h4>
+        <h4 ng-if="button_name!='Update'">Add CRM User</h4>
+        <h4 ng-if="button_name=='Update'">Update CRM User</h4>
         <ng-form name="employeeForm" id="employeeForm">
-        
-        <label>User ID<span class="error">*</span></label>
-            <input class="form-control" type="text" name="UserID" id="UserID" ng-model="UserID" ng-pattern="useridregex" required="required" />
-            <span class="error" ng-show="employeeForm.UserID.$touched && employeeForm.UserID.$error.required">User ID required</span>
-            <span class="error" ng-show="employeeForm.UserID.$touched && employeeForm.UserID.$invalid && !employeeForm.UserID.$error.required">User ID must be lowercase and only alphabets</span>
-            <br>
-            
-            <label>Name<span class="error">*</span></label>
+
+         <label>Name<span class="error">*</span></label>
             <input class="form-control" type="text" name="Name" id="Name" ng-model="Name" required="required" />
-            <span class="error" ng-show="employeeForm.Name.$touched && employeeForm.Name.$invalid">Name required</span>
+            <span class="error" ng-show="employeeForm.Name.$touched && employeeForm.Name.$invalid">Please Enter Name</span>
             <br>
-           
-            <label>Assign Store<span class="error">*</span></label>
+
+             <label>Assign Store<span class="error">*</span></label>
             <select class="form-control col-md-4" ng-model="AssignedStore" id="AssignedStore" name="AssignedStore" required="required">
                 <option value="">Select Store</option>
                 <option ng-repeat="device in storeData | orderBy:StoreName" value="{{device._id}}">
                     {{device.StoreName}}</option>
             </select>
             <br>
-            <span class="error" ng-show="employeeForm.AssignedStore.$touched && employeeForm.AssignedStore.$invalid">Please assign any store</span>
+            <span class="error" ng-show="employeeForm.AssignedStore.$touched && employeeForm.AssignedStore.$invalid">Please Assign Store</span>
             <br>
-            
+
             <label>Designation</label>
             <input class="form-control" type="text" name="Designation" id="Designation" ng-model="Designation" />
             
             <br>
             
+           
+        
+        <label>CRM ID<span class="error">*</span></label>
+            <input class="form-control" type="text" name="UserID" id="UserID" ng-model="UserID" ng-pattern="useridregex" required="required" />
+            <span class="error" ng-show="employeeForm.UserID.$touched && employeeForm.UserID.$error.required">Please Enter CRM ID</span>
+            <span class="error" ng-show="employeeForm.UserID.$touched && employeeForm.UserID.$invalid && !employeeForm.UserID.$error.required">User ID must be lowercase and only alphabets</span>
+            <br>
+            
+           
+           
+           
          
             
             <label>Password<span ng-show="button_name!='Update'" class="error">*</span></label>
-            <input class="form-control" type="password" id="Password" name="Password" ng-model="Password" ng-pattern="passwordregex" ng-required="button_name!='Update'" />
-            <span class="error" ng-show="employeeForm.Password.$touched && employeeForm.Password.$invalid && employeeForm.Password.$error.required">Password required</span>
-            <span class="error" ng-show="employeeForm.Password.$touched && employeeForm.Password.$invalid && !employeeForm.Password.$error.required">Password should be atleast 8 characters long
-            and should contain one number,one character and one special
-            character</span>
+            <input class="form-control" type="password" id="Password" name="Password"  ng-minlength="minlength"  ng-maxlength="maxlength" ng-model="Password" ng-pattern="passwordregex" ng-required="button_name!='Update'" />
+            <span class="error" ng-show="employeeForm.Password.$touched && employeeForm.Password.$invalid && employeeForm.Password.$error.required">Please Enter Password</span>
+            <span class="error"  ng-show="employeeForm.Password.$touched && employeeForm.Password.$invalid && !employeeForm.Password.$error.required">Password must be in between 6-8 Characters</span>
             <br>
             <!-- compare-to="Password" -->
             <label>Confirm Password<span ng-show="button_name!='Update'" class="error">*</span></label>
-            <input class="form-control" type="password" id="ConfPassword" name="ConfPassword" ng-model="ConfPassword" ng-required="(button_name != 'Update' || Password)" />
-            <span class="error" ng-show="employeeForm.ConfPassword.$touched && employeeForm.ConfPassword.$invalid && employeeForm.ConfPassword.$error.required">Confirm Password required</span>
+            <input class="form-control" type="password" id="ConfPassword"  ng-minlength="minlength"  ng-maxlength="maxlength" name="ConfPassword"  ng-model="ConfPassword" ng-required="(button_name != 'Update' || Password)" />
+            <span class="error" ng-show="employeeForm.ConfPassword.$touched && employeeForm.ConfPassword.$invalid && employeeForm.ConfPassword.$error.required">Please Enter Confirm Password</span>
             <span class="error" ng-show="employeeForm.confPassword.$touched && employeeForm.confPassword.$invalid && !employeeForm.confPassword.$error.required">Confirm password doesnot match with password</span>
             <span class="error">{{ employeeForm.confPassword }}</span>
             <br>
@@ -120,7 +123,7 @@ Date: 05 Jan 2016
     <section class="content-body register_block_2">
         <div class="row">
             <div class="col-xs-5">
-                <h4>Registered Customer Executive</h4>
+                <h4>Registered CRM Users</h4>
             </div>
         </div>
         <div class="wait_block" ng-if="!ListInitialized">
@@ -151,13 +154,15 @@ Date: 05 Jan 2016
         </div>
         <!-- Main content -->
         <table class="table">
-            <th ng-click="O=(O=='UserID' && '-UserID' || 'UserID' )">User ID
-                <span ng-show="O=='UserID'">▲</span>
-                <span ng-show="O=='-UserID'">▼</span>
-            </th>
+          
             <th ng-click="O=(O=='Name' && '-Name' || 'Name' )">Name
                 <span ng-show="O=='Name'">▲</span>
                 <span ng-show="O=='-Name'">▼</span>
+            </th>
+
+              <th ng-click="O=(O=='StoreName' && '-StoreName' || 'StoreName' )">Assigned Store
+                <span ng-show="O=='StoreName'">▲</span>
+                <span ng-show="O=='-StoreName'">▼</span>
             </th>
             
                <th ng-click="O=(O=='Designation' && '-Designation' || 'Designation' )">Designation
@@ -165,28 +170,33 @@ Date: 05 Jan 2016
                 <span ng-show="O=='-Designation'">▼</span>
             </th>
 
-
-            <th ng-click="O=(O=='StoreName' && '-StoreName' || 'StoreName' )">Assigned Store
-                <span ng-show="O=='StoreName'">▲</span>
-                <span ng-show="O=='-StoreName'">▼</span>
+              <th ng-click="O=(O=='UserID' && '-UserID' || 'UserID' )">CRM ID
+                <span ng-show="O=='UserID'">▲</span>
+                <span ng-show="O=='-UserID'">▼</span>
             </th>
+
+
+          
             <tr dir-paginate="u in crmData | filter: (q.length > 1 ? {searchfield: q } : '') | orderBy : O | itemsPerPage:  userPageSize" current-page="userCurrentPage">
                 <!-- <tr ng-repeat=" | orderBy:Name "> -->
-                <td>
-                    <input class="form-control" type='text' ng-model="u.UserID" readonly />
-                </td>
+               
                 <td>
                     <input class="form-control" type='text' ng-model="u.Name" readonly />
+                </td>
+
+                
+                <td>
+                    <input class="form-control" type='text' ng-model="u.StoreName" readonly />
                 </td>
 
                  <td>
                     <input class="form-control" type='text' ng-model="u.Designation" readonly />
                 </td>
-                
-                
-                <td>
-                    <input class="form-control" type='text' ng-model="u.StoreName" readonly />
+
+                 <td>
+                    <input class="form-control" type='text' ng-model="u.UserID" readonly />
                 </td>
+          
                 <td ng-click="getUser(u._id)"><span class="btn btn-primary">Edit</span></td>
             </tr>
             <tr ng-show="!(crmData | filter: (q.length > 1 ? {searchfield: q } : '')).length">

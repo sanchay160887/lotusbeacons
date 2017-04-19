@@ -542,6 +542,21 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
     }
 
 
+     var sectionInStore = function(AssignedStore) {
+        return $http({
+            method: "post",
+            url: "/getsectionInStore",
+             data: {
+                
+                'AssignedStore': AssignedStore,
+              
+            }
+        });
+
+
+    }
+
+
     var addEmployee = function(UserID, Password, Name, Designation, AssignedStore, AssignedSection) {
 
 
@@ -609,6 +624,9 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
     apiService.employeeData = employeeData;
     apiService.updateEmployee = updateEmployee;
     apiService.deleteEmployee = deleteEmployee;
+
+
+    apiService.sectionInStore = sectionInStore;
 
     /*    var sectionData = function(data) {
             return $http.post('/getsectiondata', { headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;' } });

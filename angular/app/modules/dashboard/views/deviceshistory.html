@@ -166,10 +166,10 @@ Date: 05 Jan 2016
 <div ng-show="!connection" class="alert alert-danger">You're offline now. Please check your internet connection</div>
 <div ng-show="connection_msg" class="alert alert-success">Re-connected successfully</div>
 <section class="content-header">
-    <h1> Devices History </h1>
+    <h1> Customers Visit History </h1>
     <ol class="breadcrumb">
         <li><a ui-sref="app.dashboard"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-        <li class="active">Devices History</li>
+        <li class="active">Customers Visit History</li>
     </ol>
 </section>
 <div class="content-device_block">
@@ -280,7 +280,7 @@ Date: 05 Jan 2016
                             <div class="bcon_selection_block_right">
                                 <div class="bcon_selection push_btnn_block row">
                                     <div class="col-md-12">
-                                        <button type="button" class="btn btn-info btn_set" ng-click="checkClickedRecords()" data-toggle="modal" data-target="#graphic-message">Send Push Notification</button>
+                                        <button type="button" class="btn btn-info btn_set" ng-click="checkClickedRecords()" data-toggle="modal" data-target="#graphic-message">Send Notification</button>
                                     </div>
                                 </div>
                             </div>
@@ -289,11 +289,12 @@ Date: 05 Jan 2016
                     <tr>
                         <th><small><a href="javascript:;" ng-click="selectRecords()">Select</a>/
             <a href="javascript:;" ng-click="unselectRecords()">Unselect</a></small></th>
-                        <th>Device Name</th>
+                        <th>Customer Name</th>
                         <th>Mobile Number</th>
                         <th>Stay Time</th>
+                          <th>Section</th>
                         <th>Beacon</th>
-                        <th>Section</th>
+                      
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -306,8 +307,9 @@ Date: 05 Jan 2016
                         <td>{{ device.DeviceName }}</td>
                         <td>{{ device.DevicePhone }}</td>
                         <td>{{ device.StayTime}}</td>
+                             <td>{{ device.SectionName }}</td>
                         <td>{{ device.BeaconKey }}</td>
-                        <td>{{ device.SectionName }}</td>
+                   
                         <td>
                             <button type="button" class="btn btn-info btn-auto-width" data-toggle="modal" data-target="#search-history-detail" ng-click="deviceHistoryDetailCurrentPage = 1 && getDeviceSearchHistoryDetails(device.DeviceName, device.DevicePhone)">View Search History</button>
                             <button type="button" class="btn btn-info btn-auto-width" data-toggle="modal" data-target="#device-history-detail" ng-click="getDeviceHistoryDetails(device.DeviceName, device.BeaconKey, device.DevicePhone, device.BeaconID)">View Details</button>
@@ -385,7 +387,7 @@ Date: 05 Jan 2016
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Send Push Notification</h4>
+                <h4 class="modal-title">Send Notification</h4>
             </div>
             <div class="modal-body" ng-if="IsRecordSelected">
                 <div class="form-group clearfix">
@@ -420,7 +422,7 @@ Date: 05 Jan 2016
         </small>
             </div>
             <div class="modal-body" ng-show="!IsRecordSelected">
-                <h1>Sorry!!! No device selected</h1>
+                <h1>Please select atleast one customer</h1>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-info btn_set" data-dismiss="modal" ng-click="sendImageMessage()" ng-if="IsRecordSelected" id="sendpushnotification" disabled="disabled"> Send</button>

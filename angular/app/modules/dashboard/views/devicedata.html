@@ -169,10 +169,10 @@
 <div ng-show="!connection" class="alert alert-danger">You're offline now. Please check your internet connection</div>
 <div ng-show="connection_msg" class="alert alert-success">Re-connected successfully</div>
 <section class="content-header">
-    <h1> Devices </h1>
+    <h1> Customers in Store </h1>
     <ol class="breadcrumb">
         <li><a ui-sref="app.dashboard"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-        <li class="active">Devices</li>
+        <li class="active">Customers in Store</li>
     </ol>
 </section>
 <div class="content-device_block">
@@ -235,7 +235,7 @@
                         <!-- <button type="button" class="btn btn-info" data-toggle="modal" data-target="#text-message">Send Notification</button> -->
                     </div>
                     <div class="col-md-7">
-                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#graphic-message" ng-click="checkClickedRecords()">Send Push Notification</button>
+                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#graphic-message" ng-click="checkClickedRecords()">Send Notification</button>
                     </div>
                 </div>
             </div>
@@ -249,13 +249,17 @@
                     </tr>
                     <tr>
                         <th>Select</th>
-                        <th ng-click="sortDevicedata('DeviceName')">Device Name</th>
+                        <th ng-click="sortDevicedata('DeviceName')">Customer Name</th>
                         <th ng-click="sortDevicedata('DevicePhone')">Mobile Number</th>
+                         <th ng-click="sortDevicedata('StayTime')">Stay Time</th>
+                           <th ng-click="sortDevicedata('SectionName')">Section</th>
+
+                              <th ng-click="sortDevicedata('StoreName')" ng-show="selectedStore=='-1'">Store</th>
                         <th ng-click="sortDevicedata('Distance')">Distance</th>
-                        <th ng-click="sortDevicedata('StayTime')">Stay Time</th>
-                        <th ng-click="sortDevicedata('StoreName')" ng-show="selectedStore=='-1'">Store</th>
+                       
+                     
                         <th ng-click="sortDevicedata('BeaconKey')">Beacon</th>
-                        <th ng-click="sortDevicedata('SectionName')">Section</th>
+                      
                     </tr>
                 </thead>
                 <tbody>
@@ -266,13 +270,19 @@
                         <!-- <td>{{ device.DeviceID }}</td> -->
                         <td>{{ device.DeviceName }}</td>
                         <td>{{ device.DevicePhone }}</td>
+                          <td>{{ device.StayTime }}</td>
+                            <td>{{ device.SectionName }}</td>
+                              <td ng-show="selectedStore=='-1'">{{ device.StoreName }}</td>
+
+
+
                         <td>{{ (device.Distance
                             < 0) && ( "Out of range") || (device.Distance | numberEx:2) + ' meter(s)' }}</td>
                                 <!-- <td>{{ device.Distance | numberEx:2 }} meter</td> -->
-                        <td>{{ device.StayTime }}</td>
-                        <td ng-show="selectedStore=='-1'">{{ device.StoreName }}</td>
+                      
+                      
                         <td>{{ device.BeaconKey }}</td>
-                        <td>{{ device.SectionName }}</td>
+                      
                     </tr>
                     <tr ng-if="!(deviceData.length > 0)">
                         <td colspan="7" ng-show="selectedStore!='-1'">
@@ -327,7 +337,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Send Push Notification</h4>
+                <h4 class="modal-title">Send Notification</h4>
             </div>
             <div class="modal-body" ng-if="IsRecordSelected">
                 <div class="form-group clearfix">
@@ -362,7 +372,7 @@
         </small>
             </div>
             <div class="modal-body" ng-show="!IsRecordSelected">
-                <h1>Sorry!!! No device selected</h1>
+                <h1>Please select atleast one customer</h1>
             </div>
             <div class="modal-footer">
                 <button type="button" id="sendpushnotification" class="btn btn-info btn_set" data-dismiss="modal" ng-click="sendImageMessage()" ng-if="IsRecordSelected" disabled="disabled"> Send</button>

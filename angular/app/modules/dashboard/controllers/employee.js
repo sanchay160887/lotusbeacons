@@ -6,6 +6,9 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
     $scope.Name = '';
     $scope.Designation = '';
 
+      $scope.minlength = 6;
+       $scope.maxlength = 8;
+
     
    
     //$scope.UserType = 2;
@@ -73,12 +76,15 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
                 alert(res.data.message);
                 return;
             }
+
             $scope.employeeData = res.data.data;
             $scope.O = 'Name';
             $scope.userCurrentPage = 1;
             $scope.userPageSize = 10;
             $scope.resetControls();
             $scope.ListInitialized = true;
+
+
         });
     }
 
@@ -96,6 +102,25 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
         $scope.sectionData = res.data.data;
        
     });
+
+
+    // new code section display according to store
+       
+       $scope.$watchCollection('[AssignedStore]', function() {
+        if ($scope.FormInitialized) {
+            apiService.sectionInStore($scope.AssignedStore).then(function(res) {
+
+               // alert(res);
+                $scope.sectionInStore = res.data.data;
+            });
+        }
+    });
+  
+
+
+
+
+    ////////////////// end///////////////////
 
     $scope.resetControls = function() {
         $scope.UserID = '';
@@ -120,6 +145,7 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
         apiService.getUser(pUserObjectID).
         success(function(data, status, headers, config) {
                 if (data.data) {
+
                     $scope.button_name = 'Update';
 
                     $scope.UserObjectID = pUserObjectID;
@@ -131,6 +157,7 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
                    // $scope.UserType = data.data[0].UserType;
                     $scope.AssignedStore = data.data[0].AssignedStore;
 					$scope.AssignedSection = data.data[0].AssignedSection;
+                      alert($scope.AssignedSection);
                 } else {
                     $scope.UserObjectID = '';
                     alert('User not found. Please refresh your page');
@@ -149,16 +176,42 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
     $scope.processUser = function() {
 		
 		//alert($scope.button_name);
+
+        if ($scope.employeeForm.$invalid) {
+            angular.forEach($scope.employeeForm.$error, function(field) {
+                angular.forEach(field, function(errorField) {
+                    errorField.$setTouched();
+                })
+            });
+            //alert("Please check all values on Form.");
+            return;
+        }
+
+
+        if ($scope.button_name == 'Update') {
+            if ($scope.Password != $scope.ConfPassword) {
+                alert('Confirm Password doesnot Match with Password');
+                return;
+            }
+        } else {
+            if (!$scope.Password && !$scope.ConfPassword) {
+                alert('Please Enter Password');
+                return;
+            } else if ($scope.Password != $scope.ConfPassword) {
+                alert('Confirm Password doesnot Match with Password');
+                return;
+            }
+        }
 		
 		 $scope.FormInitialized = false;
         if ($scope.button_name == 'Add') {
-			alert($scope.button_name);
+		//	alert($scope.button_name); // change by arpit
             apiService.addEmployee($scope.UserID,$scope.Password,$scope.Name,$scope.Designation, 
 			$scope.AssignedStore,$scope.AssignedSection)
                 .success(function(data, status, headers, config) {
                     if (data.IsSuccess) {
-                        alert('Employee Added Successfully');
-                        $scope.getAllUsers();
+                        alert(data.message);
+                        $scope.getAllEmployees(); // change by Arpit
                     } else {
                         alert(data.message);
                     }
@@ -180,7 +233,7 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
 
                 .success(function(data, status, headers, config) {
                     if (data.IsSuccess) {
-                        alert('Employee Updated Successfully');
+                        alert(data.message);
                         $scope.getAllEmployees();// $scope.getAllUsers();
                     } else {
                         alert(data.message);
@@ -196,36 +249,13 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
 
 		
         console.log($scope.button_name);
-        if ($scope.employeeForm.$invalid) {
-            angular.forEach($scope.employeeForm.$error, function(field) {
-                angular.forEach(field, function(errorField) {
-                    errorField.$setTouched();
-                })
-            });
-            //alert("Please check all values on Form.");
-            return;
-        }
-
-        if ($scope.button_name == 'Update') {
-            if ($scope.Password != $scope.ConfPassword) {
-                alert('Confirm password doesnot match with password');
-                return;
-            }
-        } else {
-            if (!$scope.Password && !$scope.ConfPassword) {
-                alert('Password should not be empty.');
-                return;
-            } else if ($scope.Password != $scope.ConfPassword) {
-                alert('Confirm password doesnot match with password');
-                return;
-            }
-        }
+      
 
        
     }
 
     $scope.deleteEmployee = function() {
-        var r = confirm("Are you sure to delete this record ?");
+        var r = confirm("Are You Sure to Delete this Record?");
         if (!r) {
             return;
         }
@@ -237,7 +267,7 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
             console.log(res);
             $scope.FormInitialized = true;
             if (res.IsSuccess) {
-                alert('Employee Deleted Successfully');
+                alert('Employee has been Deleted Successfully');
                 $scope.getAllEmployees();
             } else {
                 alert(res.message);
@@ -277,19 +307,17 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
     }
 
 
-
-  /*  $http({
+/*
+   $http({
         method: "post",
-        url: "/userLogin",
+        url: "/getEmployeeDetails",
         data: {
-            username: 'admin12345',
-            password: 'sis12345@',
-            fromApp: '1',
-            devicetoken:'cswnMJAwqbM:APA91bGZhTovh5AlnvtJQMzZCx2q5Nv8KcFJV1GGkpRTh8offaq0YKXrGUBRDxILRWZcr9gdVIThRrIyiA1ADlHEiNro4HM46SycCD3LL3ZdQz87M7-3JIN4xGZ-S1U3QSwU0N6Etc_g',
+            EmployeeID: '58f1b37c0d6d3800117a66de',
+         
         }
-    });*/
+    });
 
-
+*/
 /*    $http({
         method: "post",
         url: "/fcmtest",
@@ -304,14 +332,14 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
 
 */
 
-        /*$http({
+        $http({
         method: "post",
         url: "/getEmployeeDetails",
         data: {
-            EmployeeID: 'admin12345',
+            EmployeeID: '58b696a3e690710a48c399ee',
            
         }
-    });*/
+    });
 
 
 
@@ -327,7 +355,7 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
         }
     });
 */
-$http({
+/*$http({
         method: "post",
         url: "/getCrmEmployee",
         data: {
@@ -336,19 +364,20 @@ $http({
             
         }
     });
-
-    /*
+*/
+  /*
      $http({
         method: "post",
         url: "/userLogin",
         data: {
-            username: 'crm12345',
-            password: 'sis12345@',
-            UserType : [1,2,4]
+            username: 'ankit1',
+            password: 'sis',
+            UserType : 3
            
            
         }
-    });*/
+    });
+*/
 
     console.log('Login service called end');
 

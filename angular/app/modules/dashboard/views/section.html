@@ -63,43 +63,42 @@ Date: 05 Jan 2016
             <p class="wait_text">Please Wait...</p>
         </div>
         <h4 ng-if="button_name!='Update'">Add Section</h4>
-        <h4 ng-if="button_name=='Update'">Update section</h4>
+        <h4 ng-if="button_name=='Update'">Update Section</h4>
         <ng-form name="sectionForm" id="sectionForm">
-            <!-- 
-           <label>Assign Store<span class="error">*</span></label>
-            <select class="form-control col-md-4" ng-model="AssignedStore" name="AssignedStore" id="AssignedStore" required="required">
-                <option value="">Select Store</option>
-                <option ng-repeat="device in storeData | orderBy:StoreName" value="{{device._id}}">
-                    {{device.StoreName}}</option>
-            </select>
+          
+
+
+          <label>Name<span class="error">*</span></label>
+            <input class="form-control" type="text" name="SectionName" id="SectionName" ng-model="SectionName" required="required" />
+            <span class="error" ng-show="sectionForm.SectionName.$touched && sectionForm.SectionName.$invalid">Please Enter Name</span>
             <br>
-            <span class="error" ng-show="sectionForm.AssignedStore.$touched && sectionForm.AssignedStore.$invalid">Please assign any store</span> -->
+
             <label>Assign Store<span class="error">*</span></label>
-            <select class="form-control col-md-4" ng-model="AssignedStore" id="AssignedStore" name="AssignedStore" required="required">
+            <select class="form-control col-md-4" ng-model="AssignedStore" id="AssignedStore" name="AssignedStore" required="required" >
                 <option value="">Select Store</option>
                 <option ng-repeat="device in storeData | orderBy:StoreName" value="{{device._id}}">
                     {{device.StoreName}}</option>
             </select>
             <br>
-            <label>Select Beacon<span class="error">*</span></label>
-            <select class="form-control col-md-4" multiple="multiple" ng-model="selectedBeacon" id="selectedBeacon" name="selectedBeacon" required="required">
-                <option value="">Select Beacon</option>
+            <span class="error" ng-show="sectionForm.AssignedStore.$touched && sectionForm.AssignedStore.$invalid">Please Assign Store</span>
+            <br>
+            <label>Assign Beacon<span class="error">*</span>  </label>
+            <select class="form-control col-md-4" multiple="multiple" ng-model="selectedBeacon" id="selectedBeacon" name="selectedBeacon" required="required" ng-disabled='!AssignedStore'>
+                <option value="">Please Assign Beacon</option>
                 <option ng-repeat="device in beaconData | orderBy:BeaconKey" value="{{device.BeaconID}}" ng-selected="selected">
                     {{device.BeaconKey}}</option>
             </select>
             <br>
-            <span class="error" ng-show="sectionForm.selectedBeacon.$touched && sectionForm.selectedBeacon.$invalid">Please assign any Beacon</span>
+            <span class="error" ng-show="sectionForm.selectedBeacon.$touched && sectionForm.selectedBeacon.$invalid">Please Assign Beacon</span>
             <br>
-            <label>Section Name<span class="error">*</span></label>
-            <input class="form-control" type="text" name="SectionName" id="SectionName" ng-model="SectionName" required="required" />
-            <span class="error" ng-show="sectionForm.SectionName.$touched && sectionForm.SectionName.$invalid">Section Name required</span>
-            <br>
-            <label>Section Description<span class="error">*</span></label>
+            
+            <label>Description</label>
             <!--<input class="form-control" type="text" name="SectionDesc" id="SectionDesc" ng-model="SectionDesc" required="required" />-->
             <textarea name="SectionDesc" id="SectionDesc" ng-model="SectionDesc" rows="5" cols="40" 
                 required="required"> </textarea>
             <br>
-            <span class="error" ng-show="sectionForm.SectionDesc.$touched && sectionForm.SectionDesc.$invalid">Section Description required</span>
+            <!-- <span class="error" ng-show="sectionForm.SectionDesc.$touched && sectionForm.SectionDesc.$invalid">Description required</span>
+            <br> -->
             <br>
             <button class="btn btn-primary" ng-bind="button_name" ng-click="processUser()">Add</button>
             <button class="btn btn-primary" ng-if="button_name=='Update' && UserType != 1" ng-click="deleteSection()">
@@ -142,14 +141,14 @@ Date: 05 Jan 2016
         </div>
         <!-- Main content -->
         <table class="table">
-            <th ng-click="O=(O=='SectionName' && '-SectionName' || 'SectionName' )">Section Name
+            <th ng-click="O=(O=='SectionName' && '-SectionName' || 'SectionName' )">Name
                 <span ng-show="O=='SectionName'">▲</span>
                 <span ng-show="O=='-SectionName'">▼</span>
             </th>
-            <th ng-click="O=(O=='SectionDesc' && '-SectionDesc' || 'SectionDesc' )">Section Desc
+           <!--  <th ng-click="O=(O=='SectionDesc' && '-SectionDesc' || 'SectionDesc' )">Section Desc
                 <span ng-show="O=='SectionDesc'">▲</span>
                 <span ng-show="O=='-SectionDesc'">▼</span>
-            </th>
+            </th> -->
             <th ng-click="O=(O=='StoreName' && '-StoreName' || 'StoreName' )">Assigned Store
                 <span ng-show="O=='StoreName'">▲</span>
                 <span ng-show="O=='-StoreName'">▼</span>
@@ -159,9 +158,9 @@ Date: 05 Jan 2016
                 <td>
                     <input class="form-control" type='text' ng-model="u.SectionName" readonly />
                 </td>
-                <td>
+               <!--  <td>
                     <input class="form-control" type='text' ng-model="u.SectionDesc" readonly />
-                </td>
+                </td> -->
                 <td>
                     <input class="form-control" type='text' ng-model="u.StoreName" readonly />
                 </td>

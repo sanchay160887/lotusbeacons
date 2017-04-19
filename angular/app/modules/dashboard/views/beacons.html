@@ -68,10 +68,12 @@ Date: 05 Jan 2016
         <br>
         <label>Select Store</label>
         <select class="form-control col-md-4" ng-model="Beacon_Store" ng-show="loggedInUser.UserType!=2" ng-readonly="loggedInUser.UserType==2">
+            <option value="">Select Store</option>
             <option ng-repeat="device in storeData | orderBy:StoreName" value="{{device._id}}">{{device.StoreName}}</option>
         </select>
         <input class="form-control" ng-show="loggedInUser.UserType==2" type="text" name="Beacon_Store_Name" ng-model="Beacon_Store_Name" ng-readonly="loggedInUser.UserType==2" />
         <br>
+
         <label>Description</label>
         <textarea class="form-control" name="beacon_description" ng-model="Beacon_Descr" ng-readonly="loggedInUser.UserType==2"></textarea>
         <br>

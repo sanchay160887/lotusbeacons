@@ -34,6 +34,9 @@
     font-style: italic;
     border: 1px solid #bce8f1;
 }
+.error {
+    color: red;
+}
 </style>
 <!--
 Author: Ranjithprabhu K
@@ -60,22 +63,35 @@ Date: 05 Jan 2016
         <h4 ng-if="loggedInUser.UserType == 2">View Beacon</h4>
         <h4 ng-if="button_name!='Update' && loggedInUser.UserType != 2">Add Stores</h4>
         <h4 ng-if="button_name=='Update' && loggedInUser.UserType != 2">Update Stores</h4>
-        <label>Store Name</label>
-        <input class="form-control" type="text" name="store_name" ng-model="Store_Name" ng-readonly="loggedInUser.UserType==2" />
+         <ng-form name="storeForm" id="storeForm">
+        <label>Name<span class="error">*</span></label>
+        <input class="form-control" type="text" name="store_name" ng-model="Store_Name" ng-readonly="loggedInUser.UserType==2" required="required" />
+        <span class="error" ng-show="storeForm.store_name.$touched && storeForm.store_name.$invalid">Please Enter Name</span>
         <br>
+        <label>Latitude<span class="error">*</span></label>
+        <input class="form-control" type="text" name="store_lat" ng-model="Store_Lat" ng-readonly="loggedInUser.UserType==2" required="required" />
+         
+      
+
+            <span class="error" ng-show="storeForm.store_lat.$touched && storeForm.store_lat.$invalid">Please Enter Latitude</span>
+        <br>
+
+        <label>Longitude<span class="error">*</span></label>
+        <input class="form-control" type="text" name="store_long" ng-model="Store_Long" ng-readonly="loggedInUser.UserType==2" required="required" />
+
+         <span class="error" ng-show="storeForm.store_long.$touched && storeForm.store_long.$invalid">Please Enter Longitude</span>
+        <br>
+
+
         <label>Description</label>
         <textarea class="form-control" name="store_descr" ng-model="Store_Descr" ng-readonly="loggedInUser.UserType==2"></textarea>
-        <br>
-        <label>Lat</label>
-        <input class="form-control" type="text" name="store_lat" ng-model="Store_Lat" ng-readonly="loggedInUser.UserType==2" />
-        <br>
-        <label>Long</label>
-        <input class="form-control" type="text" name="store_long" ng-model="Store_Long" ng-readonly="loggedInUser.UserType==2" />
         <br>
         <button class="btn btn-primary" ng-bind="button_name" ng-if="loggedInUser.UserType != 2" ng-click="processStore()">Add</button>
         <!-- <button class="btn btn-primary" ng-if="button_name=='Update' && loggedInUser.UserType != 2" ng-click="deleteStore()">Delete</button> -->
         <button class="btn btn-primary" ng-if="button_name=='Update' && loggedInUser.UserType != 2" ng-click="resetControls()">Cancel</button>
         <button class="btn btn-primary" ng-if="loggedInUser.UserType == 2" ng-click="resetControls()">Close</button>
+
+         </ng-form>
     </section>
     <section class="content-body register_block_2">
         <div class="row">
@@ -92,25 +108,27 @@ Date: 05 Jan 2016
         <!-- Main content -->
         <table class="table">
             <tr>
-                <th>Store Name</th>
-                <th>Description</th>
-                <th>Store Lat</th>
-                <th>Store Long</th>
+                <th>Name</th>
+               
+                <th>Latitude</th>
+                <th>Longitude</th>
+               <!--   <th>Description</th> -->
                 <th>Action</th>
             </tr>
             <tr ng-repeat="device in storeData | orderBy:StoreName ">
                 <td>
                     <input class="form-control" type='text' ng-model="device.StoreName" readonly />
                 </td>
-                <td>
-                    <input class="form-control" type='text' ng-model="device.StoreDescr" readonly />
-                </td>
+               
                 <td>
                     <input class="form-control" type='text' ng-model="device.StoreLat" readonly />
                 </td>
                 <td>
                     <input class="form-control" type='text' ng-model="device.StoreLong" readonly />
                 </td>
+                 <!-- <td>
+                    <input class="form-control" type='text' ng-model="device.StoreDescr" readonly />
+                </td> -->
                 <td ng-click="getStore(device._id)">
                     <span class="btn btn-primary" ng-if="loggedInUser.UserType == 2">View</span>
                     <span class="btn btn-primary" ng-if="loggedInUser.UserType != 2">Edit</span>
