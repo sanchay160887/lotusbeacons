@@ -5630,10 +5630,7 @@ app.post('/deleteSection', function(req, res) {
                             var image_url = '';
                             pushnotification_fcm_common(null, [token], UserObjectID, '', title, notifymessage, notificationtype, image_url);
 
-                        }
-
-                           callback(null, users);
-
+                        }                         
                     }
                      callback(null, users);
                  
