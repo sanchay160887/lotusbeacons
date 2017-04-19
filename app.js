@@ -2444,13 +2444,13 @@ app.post('/updatebeacon', function(req, res) {
 
                 collection.update({
                     'BeaconID': BeaconID
-                }, {
+                },{
                     '$set': {
-                        'BeaconID': BeaconID,
-                        'BeaconKey': BeaconKey,
-                        'BeaconWelcome': BeaconWelcome,
-                        'BeaconDescr': BeaconDescr,
-                        'BeaconStore': ObjectId(BeaconStore)
+                    'BeaconID': BeaconID,
+                    'BeaconKey': BeaconKey,
+                    'BeaconWelcome': BeaconWelcome,
+                    'BeaconDescr': BeaconDescr,
+                    'BeaconStore': ObjectId(BeaconStore)
                     }
                 });
                 console.log('Beacon updated');
@@ -5860,8 +5860,7 @@ app.post('/updateSection', function(req, res) {
 
                 callback(null, 'updated');
             },
-            function(updated, callback) {
-
+           function(updated, callback) {
                 sectionbeacon.updateMany({
                         'BeaconSection': ObjectId(UserObjectID)
 
