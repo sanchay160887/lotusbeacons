@@ -157,7 +157,7 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
                    // $scope.UserType = data.data[0].UserType;
                     $scope.AssignedStore = data.data[0].AssignedStore;
 					$scope.AssignedSection = data.data[0].AssignedSection;
-                      alert($scope.AssignedSection);
+                   //   alert($scope.AssignedSection);
                 } else {
                     $scope.UserObjectID = '';
                     alert('User not found. Please refresh your page');
@@ -226,7 +226,7 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
         } else {
 			
             $scope.FormInitialized = false;
-            console.log($scope.Password);
+            //console.log($scope.Password);
             apiService.updateEmployee($scope.UserObjectID, $scope.UserID, $scope.Password,  $scope.Name,
                    $scope.AssignedStore, $scope.AssignedSection,  $scope.Designation)
 
@@ -248,7 +248,7 @@ dashboard.controller("EmployeeController", function($rootScope,$scope, apiServic
         }
 
 		
-        console.log($scope.button_name);
+        //console.log($scope.button_name);
       
 
        

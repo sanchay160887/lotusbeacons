@@ -579,13 +579,7 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
 
 
     var updateEmployee = function(UserObjectID, UserID, Password, Name, AssignedStore, AssignedSection, Designation) {
-        //  alert(UserObjectID);
-        // alert(UserID);
-        //  alert(Password);
-        // alert(Name);
-        // alert(AssignedStore);
-        // alert(AssignedSection);
-        // alert(Designation);
+        
         return $http({
             method: "post",
             url: "/updateEmployee",

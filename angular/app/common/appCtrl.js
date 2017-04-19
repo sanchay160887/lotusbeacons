@@ -157,7 +157,7 @@ app.controller("appCtrl", ['$rootScope', '$scope', '$state', '$location', 'Flash
                 state: "employees"
             }, 
             {
-                title: "CRM",
+                title: "CRM Users",
                 icon: "user",
                 state: "crm"
             },
