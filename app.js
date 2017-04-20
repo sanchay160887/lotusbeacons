@@ -22,12 +22,14 @@ var session = require('express-session');
 querystring = require('querystring');
 require('timers');
 var devicecron = require('node-cron');
-//var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon'; Live Database
-var mongourl = 'mongodb://lotus:remote@ds137100.mlab.com:37100/lotusbeaconemployee'; //Staging Database
-//var lotusWebURL = 'https://www.lotuselectronics.com/v2/';
-var lotusWebURL = 'http://lampdemos.com/lotus15/v2/';
+var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon'; //Live Database
+//var mongourl = 'mongodb://lotus:remote@ds137100.mlab.com:37100/lotusbeaconemployee'; //Staging Database
+var lotusWebURL = 'https://www.lotuselectronics.com/v2/';
+//var lotusWebURL = 'http://lampdemos.com/lotus15/v2/';
 
-var lotusURL = 'http://lampdemos.com/lotus15/v2_emp/';
+var lotusURL = 'https://www.lotuselectronics.com/v2_emp/';
+
+//var lotusURL = 'http://lampdemos.com/lotus15/v2_emp/';
 
 //if change here also change it to device history and devicedata controller
 var loginexpiredmessage = 'Login Expired. Please reload and login again.';
@@ -544,13 +546,13 @@ function updateUser_Beacon_History(BeaconID, UserID, resObj) {
                         var usercollection = db.collection('users');
                         usercollection.find({ 'UserID': UserID, }).toArray(function(err, token) {
                             devicetoken = token[0].devicetoken;
+                            //End===================   find device toten on basis of user ID====================
+
+                            if (devicetoken) {
+                                notifresobj = {};
+                                sendpushnotification(notifresobj, [devicetoken], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
+                            }
                         });
-
-                        //End===================   find device toten on basis of user ID====================
-
-                        //sendpushnotification('', [DeviceID], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
-                        notifresobj = {};
-                        sendpushnotification(notifresobj, [devicetoken], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
                     }
                 }
                 console.log('Sending notification');
@@ -2444,13 +2446,13 @@ app.post('/updatebeacon', function(req, res) {
 
                 collection.update({
                     'BeaconID': BeaconID
-                },{
+                }, {
                     '$set': {
-                    'BeaconID': BeaconID,
-                    'BeaconKey': BeaconKey,
-                    'BeaconWelcome': BeaconWelcome,
-                    'BeaconDescr': BeaconDescr,
-                    'BeaconStore': ObjectId(BeaconStore)
+                        'BeaconID': BeaconID,
+                        'BeaconKey': BeaconKey,
+                        'BeaconWelcome': BeaconWelcome,
+                        'BeaconDescr': BeaconDescr,
+                        'BeaconStore': ObjectId(BeaconStore)
                     }
                 });
                 console.log('Beacon updated');
@@ -3779,11 +3781,12 @@ app.post('/userLogout', function(req, res) {
     var adminid = '';
     user = req.session.loggedInUser;
 
-
-    if (user != '') {
-        var adminid = user._id;
+    if (!user) {
+        res.redirect('/');
+        return;
     }
-    console.log(adminid);
+
+    var adminid = user._id;
 
     console.log("Logging out user.");
 
@@ -5630,10 +5633,10 @@ app.post('/deleteSection', function(req, res) {
                             var image_url = '';
                             pushnotification_fcm_common(null, [token], UserObjectID, '', title, notifymessage, notificationtype, image_url);
 
-                        }                         
+                        }
                     }
-                     callback(null, users);
-                 
+                    callback(null, users);
+
                 });
             },
             function(users, callback) {
@@ -5860,7 +5863,7 @@ app.post('/updateSection', function(req, res) {
 
                 callback(null, 'updated');
             },
-           function(updated, callback) {
+            function(updated, callback) {
                 sectionbeacon.updateMany({
                         'BeaconSection': ObjectId(UserObjectID)
 
