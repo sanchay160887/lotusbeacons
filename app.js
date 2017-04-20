@@ -849,19 +849,24 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                                     console.log('emplist called');
                                     if (emplist && emplist.length > 0) {
 
-                                          console.log(JSON.stringify(emplist));
-                                                console.log('==============Employee LIST Called ON live========');
+                                        console.log(JSON.stringify(emplist));
+                                        console.log('==============Employee LIST Called ON live========');
 
                                         var userid = emplist[0].UserID.toString();
                                         var empusers = db.collection('users');
                                         empusers.find(ObjectId(userid)).toArray(function(err, emplist2) {
                                             if (emplist2 && emplist2.length > 0) {
-                                               
+                                                console.log(JSON.stringify(emplist2));
+                                                console.log('=======@@@@@2=======Employee LIST2 Called ON live2==@@@@@@======');
+
+
                                                 var token = emplist2[0].devicetoken;
-                                              
+
                                                 mobile_nos = [];
                                                 mobile_nos.push('91' + MobileNo);
                                                 var data = JSON.stringify(mobile_nos);
+                                                console.log('Mobile Numbers');
+                                                console.log(JSON.stringify(data));
 
                                                 request.post(lotusWebURL + 'user/get_user_name_by_mobileno', {
                                                         form: {
@@ -869,6 +874,9 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                                                         }
                                                     },
                                                     function(res2, err, body) {
+
+                                                        console.log(JSON.stringify(body));
+                                                        console.log('=======@@@@@2=======BODY==@@@@@@======');
                                                         device_detail = [];
                                                         var reqbody = parse_JSON(body);
                                                         if (reqbody) {
@@ -877,6 +885,7 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                                                             for (var r in reqbody) {
                                                                 if (reqbody[r] != false && reqbody[r].name) {
                                                                     notifresobj = {};
+                                                                    console.log('=======@@@@@2=======SeND Push Notification==@@@@@@======');
                                                                     notifymessage = settings_EmpCustIntimate.replace('«CUSTNAME»', reqbody[r].name);
                                                                     sendpushnotification_fcm(null, [token], beacons[0].BeaconID, userid, MobileNo, notifymessage);
                                                                 }
