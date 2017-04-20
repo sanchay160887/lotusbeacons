@@ -848,16 +848,17 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                                     console.log(JSON.stringify(emplist));
                                     console.log('emplist called');
                                     if (emplist && emplist.length > 0) {
-                                        //var userid = emplist[0].UserID;
+
+                                          console.log(JSON.stringify(emplist));
+                                                console.log('==============Employee LIST Called ON live========');
+
                                         var userid = emplist[0].UserID.toString();
                                         var empusers = db.collection('users');
-                                        empusers.find(ObjectId(userid)).toArray(function(err, emplist) {
-                                            if (emplist && emplist.length > 0) {
-                                                console.log(JSON.stringify(emplist));
-                                                var token = emplist[0].devicetoken;
-                                                console.log(JSON.stringify(token));
-                                                console.log('Employee Device Token called');
-
+                                        empusers.find(ObjectId(userid)).toArray(function(err, emplist2) {
+                                            if (emplist2 && emplist2.length > 0) {
+                                               
+                                                var token = emplist2[0].devicetoken;
+                                              
                                                 mobile_nos = [];
                                                 mobile_nos.push('91' + MobileNo);
                                                 var data = JSON.stringify(mobile_nos);
