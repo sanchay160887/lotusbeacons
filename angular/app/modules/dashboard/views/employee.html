@@ -83,10 +83,10 @@ Date: 05 Jan 2016
             <br>		
             
             <label>Assign Section<span class="error">*</span></label>
-            <select class="form-control col-md-4" ng-model="AssignedSection" id="AssignedSection" 
-                ng-disabled="!AssignedStore"  name="AssignedSection" required="required">
+            <select class="form-control col-md-4" ng-model="AssignedSection" id="AssignedSection"    
+                name="AssignedSection" required="required">  
                 <option value="">Select Setion</option>
-                <option ng-repeat="device in sectionInStore | orderBy:SectionName" value="{{device._id}}">
+                <option ng-repeat="device in sectionData | orderBy:SectionName" value="{{device._id}}">
                     {{device.SectionName}}</option>
             </select> 
           <!--    <input class="form-control" type="text" name="AssignedSection" id="AssignedSection" ng-model="AssignedSection" required="required" /> -->
