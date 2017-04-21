@@ -10,9 +10,6 @@ dashboard.controller("CrmController", function($rootScope, $scope, apiService, $
     $scope.maxlength = 8;
 
 
-
-
-
     //$scope.UserType = 2;
 
     $scope.AssignedStore = '';

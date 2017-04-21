@@ -192,7 +192,7 @@ Date: 05 Jan 2016
         <div class="bcon_selection_section">
             <div class="bcon_selection_block_left">
                 <div class="bcon_selection row">
-                    <div class="bcon_selection_left_1 col-md-3 no-pad">
+                    <div class="bcon_selection_left_1 col-md-2 no-pad">
                         <div class="form-group">
                             <div class="col-md-12 no-pad">
                                 <label class="bcon-slect-title">Select Store</label>
@@ -203,7 +203,22 @@ Date: 05 Jan 2016
                             </div>
                         </div>
                     </div>
-                    <div class="bcon_selection_left_2 col-md-3">
+                    <div class="bcon_selection_left_1 col-md-2 no-pad">
+                        <div class="form-group">
+                            <div class="col-md-12 no-pad">
+                                <label class="bcon-slect-title">Select Section</label>
+                                <select class="form-control col-md-4" ng-show="!SectionInitialized">
+                                    <option value="">Please wait..</option>
+                                </select>
+                                <select class="form-control col-md-4" ng-model="selectedSection" ng-show="SectionInitialized">
+                                    <option value="">Select Section</option>
+                                    <option value="-1">All Section</option>
+                                    <option ng-repeat="device in sectionInStore | orderBy:StoreName" value="{{device._id}}">{{device.SectionName}}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bcon_selection_left_2 col-md-2">
                         <div class="form-group">
                             <div class="col-md-12 no-pad">
                                 <label class="bcon-slect-title">Select Beacon</label>
@@ -292,9 +307,8 @@ Date: 05 Jan 2016
                         <th>Customer Name</th>
                         <th>Mobile Number</th>
                         <th>Stay Time</th>
-                          <th>Section</th>
+                        <th>Section</th>
                         <th>Beacon</th>
-                      
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -307,12 +321,13 @@ Date: 05 Jan 2016
                         <td>{{ device.DeviceName }}</td>
                         <td>{{ device.DevicePhone }}</td>
                         <td>{{ device.StayTime}}</td>
-                             <td>{{ device.SectionName }}</td>
+                        <td>{{ device.SectionName }}</td>
                         <td>{{ device.BeaconKey }}</td>
-                   
                         <td>
-                            <button type="button" class="btn btn-info btn-auto-width" data-toggle="modal" data-target="#search-history-detail" ng-click="deviceHistoryDetailCurrentPage = 1 && getDeviceSearchHistoryDetails(device.DeviceName, device.DevicePhone)">View Search History</button>
-                            <button type="button" class="btn btn-info btn-auto-width" data-toggle="modal" data-target="#device-history-detail" ng-click="getDeviceHistoryDetails(device.DeviceName, device.BeaconKey, device.DevicePhone, device.BeaconID)">View Details</button>
+                            <button type="button" class="btn btn-info btn-auto-width" data-toggle="modal" data-target="#search-history-detail" ng-click="deviceHistoryDetailCurrentPage = 1 && getDeviceSearchHistoryDetails(device.DeviceName, device.DevicePhone)"><i class="fa fa-search-plus" aria-hidden="true"></i> History
+                            </button>
+                            <button type="button" class="btn btn-info btn-auto-width" data-toggle="modal" data-target="#device-history-detail" ng-click="getDeviceHistoryDetails(device.DeviceName, device.BeaconKey, device.DevicePhone, device.BeaconID, device.SectionID)"><i class="fa fa-info-circle" aria-hidden="true"></i>
+                            </button>
                         </td>
                     </tr>
                     <tr ng-if="!(deviceData.length > 0)">

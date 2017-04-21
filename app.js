@@ -26,9 +26,7 @@ var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon'; //L
 //var mongourl = 'mongodb://lotus:remote@ds137100.mlab.com:37100/lotusbeaconemployee'; //Staging Database
 var lotusWebURL = 'https://www.lotuselectronics.com/v2/';
 //var lotusWebURL = 'http://lampdemos.com/lotus15/v2/';
-
 var lotusURL = 'https://www.lotuselectronics.com/v2_emp/';
-
 //var lotusURL = 'http://lampdemos.com/lotus15/v2_emp/';
 
 //if change here also change it to device history and devicedata controller
@@ -545,12 +543,14 @@ function updateUser_Beacon_History(BeaconID, UserID, resObj) {
                         //========================find device token on basis of user ID====================
                         var usercollection = db.collection('users');
                         usercollection.find({ 'UserID': UserID, }).toArray(function(err, token) {
-                            devicetoken = token[0].devicetoken;
-                            //End===================   find device toten on basis of user ID====================
+                            if (token && token.length > 0) {
+                                devicetoken = token[0].devicetoken;
+                                //End===================   find device toten on basis of user ID====================
 
-                            if (devicetoken) {
-                                notifresobj = {};
-                                sendpushnotification(notifresobj, [devicetoken], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
+                                if (devicetoken) {
+                                    notifresobj = {};
+                                    sendpushnotification(notifresobj, [devicetoken], 'Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for');
+                                }
                             }
                         });
                     }
@@ -1636,7 +1636,9 @@ app.post('/getdata', function(req, res) {
 
 app.post('/getDeviceHistorydata', function(req, res) {
     BeaconID = req.body.BeaconID;
+    pBeaconID = BeaconID;
     StoreID = req.body.StoreID;
+    Section = req.body.Section;
 
     if (!req.session.loggedInUser) {
         var resObj = {};
@@ -1700,6 +1702,11 @@ app.post('/getDeviceHistorydata', function(req, res) {
                         'BeaconID': {
                             $in: BeaconID
                         }
+                    });
+                } else if (Section && Section.length == 24) {
+                    console.log('coming to store');
+                    beaconcollection = collection.find({
+                        'BeaconSection': ObjectId(Section)
                     });
                 } else if (StoreID && StoreID.length == 24) {
                     console.log('coming to store');
@@ -1771,6 +1778,27 @@ app.post('/getDeviceHistorydata', function(req, res) {
                 var devicelist = new Array();
 
                 if (beaconsIDs && beaconsIDs.length > 0) {
+
+                    var groupParam = {};
+                    if (Section && Section.length == 24 && (!pBeaconID || pBeaconID.length <= 0)) {
+                        groupParam = {
+                            _id: { DeviceID: '$DeviceID' },
+                            StayTime: { $sum: "$StayTime" },
+                            MobileNo: { $max: "$MobileNo" },
+                            SectionName: { $max: "$sections.SectionName" },
+                            SectionID: { $max: "$sections._id" }
+                        };
+
+                    } else {
+                        groupParam = {
+                            _id: { BeaconID: '$BeaconID', DeviceID: '$DeviceID' },
+                            StayTime: { $sum: "$StayTime" },
+                            MobileNo: { $max: "$MobileNo" },
+                            SectionName: { $max: "$sections.SectionName" },
+                            SectionID: { $max: "$sections._id" }
+                        };
+                    }
+
                     reccollection = collection.aggregate(
                         [{
                             $match: {
@@ -1806,15 +1834,10 @@ app.post('/getDeviceHistorydata', function(req, res) {
 
                         }, {
                             $unwind: {
-                                'path': "$beacons",
+                                'path': "$sections",
                             }
                         }, {
-                            $group: {
-                                _id: { BeaconID: '$BeaconID', DeviceID: '$DeviceID' },
-                                StayTime: { $sum: "$StayTime" },
-                                MobileNo: { $max: "$MobileNo" },
-                                SectionName: { $max: "$sections.SectionName" }
-                            }
+                            $group: groupParam
                         }]
                     )
 
@@ -1823,15 +1846,18 @@ app.post('/getDeviceHistorydata', function(req, res) {
                     }*/
 
                     reccollection.toArray(function(err, devices) {
+                        console.log('device history');
+                        console.log(JSON.stringify(devices));
                         for (var dvc in devices) {
                             devices[dvc].BeaconID = devices[dvc]._id.BeaconID;
+                            devices[dvc].SectionID = devices[dvc].SectionID;
                             devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
                             devices[dvc].DeviceID = devices[dvc]._id.DeviceID;
                             //devices[dvc].MobileNo = devices[dvc].MobileNo;
                             devices[dvc].UniqueKey = devices[dvc].MobileNo + '‖' + devices[dvc].BeaconID;
                             devices[dvc].StayTime = convertSecondsToStringTime(devices[dvc].StayTime);
                             if (devices[dvc].SectionName != undefined && devices[dvc].SectionName.length > 0) {
-                                devices[dvc].SectionName = devices[dvc].SectionName[0];
+                                devices[dvc].SectionName = devices[dvc].SectionName;
                             } else {
                                 devices[dvc].SectionName = '';
                             }
@@ -1955,6 +1981,7 @@ app.post('/getDeviceHistorydata', function(req, res) {
 app.post('/getDeviceHistoryDetailsdata', function(req, res) {
     MobileNo = req.body.MobileNo;
     BeaconID = req.body.BeaconID;
+    SectionID = req.body.Section;
 
     fromDate = 0;
     toDate = 0;
@@ -1966,6 +1993,7 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
     console.log('fromDate: ' + fromDate);
     console.log('toDate: ' + toDate);
     console.log('BeaconID : ' + BeaconID);
+    console.log('SectionID : ' + SectionID);
     console.log('MobileNo : ' + MobileNo);
 
     MongoClient.connect(mongourl, function(err, db) {
@@ -1980,11 +2008,18 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
                 var collection = db.collection('beacons');
                 var beaconcollection = {};
 
-                beaconcollection = collection.find({
-                    'BeaconID': BeaconID
-                });
+                if (!BeaconID) {
+                    beaconcollection = collection.find({
+                        'BeaconSection': ObjectId(SectionID)
+                    });
+                } else {
+                    beaconcollection = collection.find({
+                        'BeaconID': BeaconID
+                    });
+                }
 
                 beaconcollection.toArray(function(err, beacons) {
+                    console.log(JSON.stringify(beacons));
                     var beaconslist = [];
                     for (var b in beacons) {
                         beaconslist[beacons[b].BeaconID] = beacons[b].BeaconKey;
@@ -1995,14 +2030,9 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
             },
             function(beaconlist, callback) {
                 var collection = db.collection('device_history');
-                var devicelist = new Array();
+                var devicelist = new Array();                
 
-                var beacons = []
-                for (var b in beaconlist) {
-                    beacons.push(b);
-                }
-
-                if (beacons && beacons.length > 0) {
+                if (beaconsIDs && beaconsIDs.length > 0) {
                     /*devicecollection = collection.find({
                         'BeaconID': BeaconID,
                         'MobileNo': MobileNo,
@@ -2030,6 +2060,33 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
                         callback(null, 'records found');
                     })*/
 
+                    groupParams = {};
+                    if (!BeaconID) {
+                        groupParams = {
+                            _id: {
+                                SectionID: '$sections._id',
+                                DeviceID: '$DeviceID',
+                                startDate: { $ceil: { $divide: ["$Date", 360000] } },
+                                //endDate: { $floor: { $divide: ["$DateTo", 60000] } }
+                            },
+                            Date: { $min: "$Date" },
+                            DateTo: { $max: "$DateTo" },
+                            StayTime: { $sum: "$StayTime" }
+                        };
+                    } else {
+                        groupParams = {
+                            _id: {
+                                BeaconID: '$BeaconID',
+                                DeviceID: '$DeviceID',
+                                startDate: { $ceil: { $divide: ["$Date", 360000] } },
+                                //endDate: { $floor: { $divide: ["$DateTo", 60000] } }
+                            },
+                            Date: { $min: "$Date" },
+                            DateTo: { $max: "$DateTo" },
+                            StayTime: { $sum: "$StayTime" }
+                        };
+                    }
+
                     devicecollection = collection.aggregate(
                         [{
                             $match: {
@@ -2040,21 +2097,34 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
                                 'StayTime': {
                                     $gte: 2
                                 },
-                                'BeaconID': BeaconID,
+                                'BeaconID': { '$in': beaconsIDs },
                                 'MobileNo': MobileNo,
                             }
                         }, {
-                            $group: {
-                                _id: {
-                                    BeaconID: '$BeaconID',
-                                    DeviceID: '$DeviceID',
-                                    startDate: { $ceil: { $divide: ["$Date", 360000] } },
-                                    //endDate: { $floor: { $divide: ["$DateTo", 60000] } }
-                                },
-                                Date: { $min: "$Date" },
-                                DateTo: { $max: "$DateTo" },
-                                StayTime: { $sum: "$StayTime" }
+                            $lookup: {
+                                'from': "beacons",
+                                'localField': "BeaconID",
+                                'foreignField': "BeaconID",
+                                'as': "beacons"
                             }
+                        }, {
+                            $unwind: {
+                                'path': "$beacons",
+                            }
+                        }, {
+                            $lookup: {
+                                'from': "sections",
+                                'localField': "beacons.BeaconSection",
+                                'foreignField': "_id",
+                                'as': "sections",
+                            },
+
+                        }, {
+                            $unwind: {
+                                'path': "$sections",
+                            }
+                        }, {
+                            $group: groupParams
                         }, {
                             $sort: {
                                 'Date': -1
@@ -2062,8 +2132,6 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
                         }]
                     ).sort({ 'Date': -1 }).toArray(function(err, devices) {
                         devicedetaillist = [];
-
-                        console.log(devices);
 
                         var cnt = devices.length;
 
@@ -2101,8 +2169,6 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
                             devices[dvc].StayTime = convertSecondsToStringTime(devices[dvc].StayTime);
                             devicedetaillist.push(devices[dvc]);
                         }
-
-
 
                         res.send(devicedetaillist);
                         callback(null, 'records found');
@@ -2186,6 +2252,11 @@ app.post('/getbeacondata', function(req, res) {
         BeaconStore = "";
     }
 
+    BeaconSection = req.body.BeaconSection;
+    if (BeaconSection == "-1") {
+        BeaconSection = "";
+    }
+
     var resObj = {};
     /*if (!req.session.loggedInUser) {
         resObj.IsSuccess = false;
@@ -2196,7 +2267,6 @@ app.post('/getbeacondata', function(req, res) {
     }*/
 
     UserStore = getUserAllotedStore(req);
-
 
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
@@ -2233,16 +2303,37 @@ app.post('/getbeacondata', function(req, res) {
 
                 beaconcollection = '';
                 if (BeaconStore) {
-                    beaconcollection = collection.find({
-                        'BeaconStore': ObjectId(BeaconStore)
-                    })
-                } else {
-                    if (req.session.loggedInUser && req.session.loggedInUser.UserType == 2) {
+                    if (BeaconSection) {
                         beaconcollection = collection.find({
-                            'BeaconStore': ObjectId(UserStore)
-                        });
+                            'BeaconStore': ObjectId(BeaconStore),
+                            'BeaconSection': ObjectId(BeaconSection)
+                        })
                     } else {
-                        beaconcollection = collection.find();
+                        beaconcollection = collection.find({
+                            'BeaconStore': ObjectId(BeaconStore)
+                        })
+                    }
+
+                } else {
+                    if (BeaconSection) {
+                        if (req.session.loggedInUser && req.session.loggedInUser.UserType == 2) {
+                            beaconcollection = collection.find({
+                                'BeaconStore': ObjectId(UserStore),
+                                'BeaconSection': ObjectId(BeaconSection)
+                            });
+                        } else {
+                            beaconcollection = collection.find({
+                                'BeaconSection': ObjectId(BeaconSection)
+                            });
+                        }
+                    } else {
+                        if (req.session.loggedInUser && req.session.loggedInUser.UserType == 2) {
+                            beaconcollection = collection.find({
+                                'BeaconStore': ObjectId(UserStore)
+                            });
+                        } else {
+                            beaconcollection = collection.find();
+                        }
                     }
                 }
 

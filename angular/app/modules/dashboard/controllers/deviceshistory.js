@@ -26,6 +26,8 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.BeaconID = '';
     $scope.beaconData = [];
     $scope.selectedBeacon = '';
+    $scope.sectionInStore = [];
+    $scope.selectedSection = '';
     $scope.storeData = [];
     $scope.selectedStore = '';
     $scope.deviceData = [];
@@ -50,6 +52,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
     $scope.Initialized = false;
     $scope.BeaconInitialized = true;
+    $scope.SectionInitialized = true;
 
     $scope.InitializingHistoryDetails = false;
     $scope.HistoryDetailsData = [];
@@ -70,7 +73,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             $scope.fetchDeviceAnalysis();
         });
     }
-    
+
     if (!$rootScope.loggedInUser) {
         $scope.checkLoggedInUser();
         /*apiService.checkloginUser().then(function(res) {
@@ -89,7 +92,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             })
         }
     }
-    
+
 
     $scope.connection = true;
     $scope.connection_msg = false;
@@ -217,7 +220,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
 
     setTimeout(function() {
-        jQuery(".datepicker").datepicker({ 'dateFormat': 'dd/mm/yy', 'maxDate': '0', 'minDate':'-365' });
+        jQuery(".datepicker").datepicker({ 'dateFormat': 'dd/mm/yy', 'maxDate': '0', 'minDate': '-365' });
     }, 1000);
 
     var queriedUrl = $location.search();
@@ -246,6 +249,14 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     }
 
     $scope.$watchCollection('[selectedStore]', function() {
+        if ($scope.Initialized) {
+            $scope.currPage = 1;
+            $scope.getAllSection();
+            $scope.selectedSection = '';
+        }
+    });
+
+    $scope.$watchCollection('[selectedSection]', function() {
         if ($scope.Initialized) {
             $scope.currPage = 1;
             $scope.getAllBeacon();
@@ -302,7 +313,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.loadDataWithSearch = function() {
         $scope.currPage = 1;
         var searchval = '';
-        if ($scope.searchNameNumber.length > 1){
+        if ($scope.searchNameNumber.length > 1) {
             searchval = $scope.searchNameNumber;
         } else {
             searchval = '';
@@ -310,6 +321,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         $location.search({
             'store': $scope.selectedStore,
             'beacon': $scope.selectedBeacon,
+            'section': $scope.selectedSection,
             'dateFrom': $scope.selectedDateFrom,
             'dateTo': $scope.selectedDateTo,
             'page': $scope.currPage,
@@ -360,6 +372,13 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             selectedBeacon = $scope.selectedBeacon;
         } else if (typeof(queriedUrl.beacon) != 'undefined' && queriedUrl.beacon) {
             selectedBeacon = queriedUrl.beacon;
+        }
+
+        var selectedSection = '';
+        if ($scope.selectedSection) {
+            selectedSection = $scope.selectedSection;
+        } else if (typeof(queriedUrl.beacon) != 'undefined' && queriedUrl.beacon) {
+            selectedSection = queriedUrl.section;
         }
 
         var selectedDateFrom = '';
@@ -425,7 +444,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         } else {
             searchNameNumber = $scope.searchNameNumber;
         }
-        if (searchNameNumber.length <= 1){
+        if (searchNameNumber.length <= 1) {
             searchNameNumber = '';
         }
 
@@ -434,10 +453,10 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
         if ((beaconlist && beaconlist.length > 0) || selectedStore) {
             $scope.Initialized = false;
-            apiService.deviceHistoryData(beaconlist, selectedStore, selectedDateFrom, selectedDateTo, currentPage, pageLimit, searchNameNumber).then(function(res) {
+            apiService.deviceHistoryData(beaconlist, selectedStore, selectedSection, selectedDateFrom, selectedDateTo, currentPage, pageLimit, searchNameNumber).then(function(res) {
                 var checkedlist = [];
 
-                if (!res.data.IsSuccess && res.data.message == 'Login Expired. Please reload and login again.'){
+                if (!res.data.IsSuccess && res.data.message == 'Login Expired. Please reload and login again.') {
                     alert('Login Expired.');
                     $location.path("/");
                     return;
@@ -497,7 +516,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     };
 
 
-    $scope.getDeviceHistoryDetails = function(PersonName, BeaconKey, MobileNo, BeaconID) {
+    $scope.getDeviceHistoryDetails = function(PersonName, BeaconKey, MobileNo, BeaconID, SectionID) {
         $scope.HistoryPersonName = PersonName;
         $scope.HistoryOfPlace = BeaconKey;
 
@@ -551,7 +570,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             return;
         }
 
-        apiService.deviceHistoryDetailsData(MobileNo, BeaconID, selectedDateFrom, selectedDateTo)
+        apiService.deviceHistoryDetailsData(MobileNo, BeaconID, SectionID, selectedDateFrom, selectedDateTo)
             .then(function(res) {
                 console.log(res);
                 $scope.HistoryDetailsData = [];
@@ -641,7 +660,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
                 $scope.HistorySearchDetailsData = [];
                 $scope.searchHistoryCurrentPage = 1;
                 $scope.searchHistoryPageSize = 10;
-                $scope.HistorySearchDetailsData = res.data;                
+                $scope.HistorySearchDetailsData = res.data;
                 $scope.O = '-datetimestamp';
                 $scope.q = '';
                 document.getElementById('search').value = '';
@@ -660,16 +679,32 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
 
     $scope.getAllBeacon = function() {
         var selectedStore = $scope.selectedStore;
+        var selectedSection = $scope.selectedSection;
         console.log(selectedStore);
-        if (selectedStore) {
+        if (selectedStore && selectedSection) {
             $scope.BeaconInitialized = false;
-            apiService.beaconData(selectedStore).then(function(res) {
+            apiService.beaconData(selectedStore, selectedSection).then(function(res) {
                 $scope.beaconData = res.data.data;
                 if (typeof(queriedUrl.beacon) != 'undefined' && queriedUrl.beacon) {
                     $scope.selectedBeacon = queriedUrl.beacon;
                 }
                 $scope.BeaconInitialized = true;
             });
+        } else {
+            $scope.beaconData = [];
+        }
+    }
+
+    $scope.getAllSection = function() {
+        var selectedStore = $scope.selectedStore;
+        console.log(selectedStore);
+        if (selectedStore) {
+            $scope.SectionInitialized = false;
+            apiService.sectionInStore(selectedStore).then(function(res) {
+                $scope.sectionInStore = res.data.data;
+                $scope.selectedSection = -1;
+                $scope.SectionInitialized = true;
+            });            
         } else {
             $scope.beaconData = [];
         }

@@ -100,13 +100,14 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
     }
 
 
-    var deviceHistoryData = function(selectedBeacon, selectedStore, selectedDateFrom, selectedDateTo, currpage, limit, search = '') {
+    var deviceHistoryData = function(selectedBeacon, selectedStore, selectedSection, selectedDateFrom, selectedDateTo, currpage, limit, search = '') {
         return $http({
             method: "post",
             url: '/getDeviceHistorydata',
             data: {
                 'BeaconID': selectedBeacon,
                 'StoreID': selectedStore,
+                'Section': selectedSection,
                 'DateFrom': selectedDateFrom,
                 'DateTo': selectedDateTo,
                 'PageNo': currpage,
@@ -116,13 +117,14 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
         });
     }
 
-    var deviceHistoryDetailsData = function(selectedMobileNo, selectedBeacon, selectedDateFrom, selectedDateTo) {
+    var deviceHistoryDetailsData = function(selectedMobileNo, selectedBeacon, selectedSection, selectedDateFrom, selectedDateTo) {
         return $http({
             method: "post",
             url: '/getDeviceHistoryDetailsdata',
             data: {
                 'MobileNo': selectedMobileNo,
                 'BeaconID': selectedBeacon,
+                'Section' : selectedSection,
                 'DateFrom': selectedDateFrom,
                 'DateTo': selectedDateTo
             }
@@ -192,14 +194,14 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
 
 
     /*Beacon device start*/
-    var beaconData = function(BeaconStore) {
+    var beaconData = function(BeaconStore, BeaconSection) {
         // alert(BeaconStore);
         // alert('beacon');
         return $http({
             method: "post",
             url: "/getbeacondata",
             data: {
-                'BeaconStore': BeaconStore
+                'BeaconStore': BeaconStore, 'BeaconSection': BeaconSection
             }
         });
     }
@@ -542,14 +544,14 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
     }
 
 
-     var sectionInStore = function(AssignedStore) {
+    var sectionInStore = function(AssignedStore) {
         return $http({
             method: "post",
             url: "/getsectionInStore",
-             data: {
-                
+            data: {
+
                 'AssignedStore': AssignedStore,
-              
+
             }
         });
 
@@ -579,7 +581,7 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
 
 
     var updateEmployee = function(UserObjectID, UserID, Password, Name, AssignedStore, AssignedSection, Designation) {
-        
+
         return $http({
             method: "post",
             url: "/updateEmployee",
