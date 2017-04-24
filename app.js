@@ -2030,7 +2030,7 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
             },
             function(beaconlist, callback) {
                 var collection = db.collection('device_history');
-                var devicelist = new Array();                
+                var devicelist = new Array();
 
                 if (beaconsIDs && beaconsIDs.length > 0) {
                     /*devicecollection = collection.find({
@@ -4607,13 +4607,9 @@ app.post('/addSection', function(req, res) {
 
                 collection.insert({
                     'SectionName': SectionName,
-
                     'SectionDesc': SectionDesc,
-                    'AssignedStore': AssignedStore,
+                    'AssignedStore': ObjectId(AssignedStore),
                     'BeaconID': selectedBeacon,
-
-
-
 
                 }, function(err, records) {
                     console.log(JSON.stringify(records));
@@ -5950,7 +5946,6 @@ app.post('/updateSection', function(req, res) {
                 }, {
                     '$set': {
 
-
                         'AssignedStore': ObjectId(AssignedStore),
                         'SectionName': SectionName,
                         'SectionDesc': SectionDesc,
@@ -6410,8 +6405,8 @@ app.post('/getsectionInStore', function(req, res) {
         var devicelist = new Array();
         var collection = db.collection('sections');
         collection = collection.find({
-            'AssignedStore': AssignedStore
-            //'AssignedStore': ObjectId(AssignedStore)
+            //'AssignedStore': AssignedStore
+            'AssignedStore': ObjectId(AssignedStore)
         }).toArray(function(err, sections) {
             console.log(sections);
             if (sections && sections.length > 0) {
@@ -6431,7 +6426,7 @@ app.post('/getsectionInStore', function(req, res) {
                 res.send(resObj.data);
             }
             db.close();
-        })       
+        })
     });
 });
 
@@ -6457,12 +6452,6 @@ function pushnotification_fcm_common(resObj, gcmToken, notification_user_id, Mob
         function(callback) {
 
             var request = require('request');
-
-
-
-
-
-
 
             var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
                 registration_ids: gcmToken,

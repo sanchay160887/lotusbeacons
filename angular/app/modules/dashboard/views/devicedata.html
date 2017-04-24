@@ -7,22 +7,6 @@
     width: 98%;
 }
 
-.block_title_1 {
-    border-bottom: 1px solid;
-    font-size: 15px;
-    margin-bottom: 0;
-    padding: 3px 0;
-    text-align: center;
-}
-
-.block_title_2 {
-    border-bottom: 1px solid;
-    font-size: 12px;
-    margin-bottom: 0;
-    padding: 3px 0;
-    min-height: 40px;
-    word-wrap: break-word;
-}
 
 .block_title_3 {
     border-bottom: 1px solid;
@@ -31,23 +15,6 @@
     padding: 3px 0;
     min-height: 40px;
 }
-
-.bcon-slect-title {
-    margin-bottom: 0;
-    padding: 7% 0;
-}
-
-
-/*.wait_text {
-    background-color: #d9edf7;
-    border-radius: 3px;
-    color: #31708f;
-    font-size: 15px;
-    font-weight: 500;
-    padding: 8px 10px;
-    font-style: italic;
-    border: 1px solid #bce8f1;
-}*/
 
 .bcon_selection_block_left {
     border-radius: 3px;
@@ -63,18 +30,12 @@
     vertical-align: top;
 }
 
-.bcon_selection_left_1 {
-    display: inline-block;
-    width: 42%;
-}
-
-.bcon_selection_left_2 {
-    display: inline-block;
-    width: 37%;
-}
-
 .no-pad {
     padding: 0 2px;
+}
+
+.btn-margin-top {
+    margin-top: 24px;
 }
 
 .bcon_selection_section {
@@ -88,11 +49,6 @@
 .pad_box {
     padding-top: 20px;
 }
-
-
-/*.btn-info {
-    width: 100%;
-}*/
 
 .btn_set {
     margin-top: 20px;
@@ -163,7 +119,6 @@
     color: #555299;
     margin-bottom: 10px;
 }
-
 </style>
 <!-- Content Header (Page header) -->
 <div ng-show="!connection" class="alert alert-danger">You're offline now. Please check your internet connection</div>
@@ -194,12 +149,10 @@
         <div class="bcon_selection_section">
             <div class="bcon_selection_block_left">
                 <div class="bcon_selection row">
-                    <div class="bcon_selection_left_1">
+                    <div class="col-md-3">
                         <div class="form-group">
-                            <div class="col-md-3 no-pad">
-                                <label class="bcon-slect-title">Select Store</label>
-                            </div>
-                            <div class="col-md-8 no-pad">
+                            <div class="col-md-12 no-pad">
+                                <label>Select Store</label>
                                 <select class="form-control col-md-4" ng-model="selectedStore">
                                     <option value="">Select Store</option>
                                     <option value="-1" ng-show="loggedInUser.UserType == 1">All Store</option>
@@ -208,12 +161,25 @@
                             </div>
                         </div>
                     </div>
-                    <div class="bcon_selection_left_2">
+                    <div class="col-md-3">
                         <div class="form-group">
-                            <div class="col-md-4 no-pad">
-                                <label class="bcon-slect-title">Select Beacon</label>
+                            <div class="col-md-12 no-pad">
+                                <label>Select Section</label>
+                                <select class="form-control col-md-4" ng-show="!SectionInitialized">
+                                    <option value="">Please wait..</option>
+                                </select>
+                                <select class="form-control col-md-4" ng-model="selectedSection" ng-show="SectionInitialized">
+                                    <option value="">Select Section</option>
+                                    <option value="-1">All Section</option>
+                                    <option ng-repeat="device in sectionInStore | orderBy:StoreName" value="{{device._id}}">{{device.SectionName}}</option>
+                                </select>
                             </div>
-                            <div class="col-md-7 no-pad">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="col-md-12 no-pad">
+                                <label>Select Beacon</label>
                                 <select class="form-control" ng-show="!BeaconInitialized">
                                     <option value="">Please wait..</option>
                                 </select>
@@ -222,10 +188,10 @@
                                     <option ng-repeat="beacon in beaconData | orderBy:BeaconKey" value="{{beacon.BeaconID}}">{{beacon.BeaconKey}}</option>
                                 </select>
                             </div>
-                            <div class="col-md-1 no-pad">
-                                <button type="button" class="btn btn-info" ng-click="loadData()">Show</button>
-                            </div>
                         </div>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-info btn-margin-top" ng-click="loadData()">Show</button>
                     </div>
                 </div>
             </div>
@@ -235,7 +201,7 @@
                         <!-- <button type="button" class="btn btn-info" data-toggle="modal" data-target="#text-message">Send Notification</button> -->
                     </div>
                     <div class="col-md-7">
-                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#graphic-message" ng-click="checkClickedRecords()">Send Notification</button>
+                        <button type="button" class="btn btn-info btn-margin-top pull-right" data-toggle="modal" data-target="#graphic-message" ng-click="checkClickedRecords()">Send Notification</button>
                     </div>
                 </div>
             </div>
@@ -251,15 +217,11 @@
                         <th>Select</th>
                         <th ng-click="sortDevicedata('DeviceName')">Customer Name</th>
                         <th ng-click="sortDevicedata('DevicePhone')">Mobile Number</th>
-                         <th ng-click="sortDevicedata('StayTime')">Stay Time</th>
-                           <th ng-click="sortDevicedata('SectionName')">Section</th>
-
-                              <th ng-click="sortDevicedata('StoreName')" ng-show="selectedStore=='-1'">Store</th>
+                        <th ng-click="sortDevicedata('StayTime')">Stay Time</th>
+                        <th ng-click="sortDevicedata('SectionName')">Section</th>
+                        <th ng-click="sortDevicedata('StoreName')" ng-show="selectedStore=='-1'">Store</th>
                         <th ng-click="sortDevicedata('Distance')">Distance</th>
-                       
-                     
                         <th ng-click="sortDevicedata('BeaconKey')">Beacon</th>
-                      
                     </tr>
                 </thead>
                 <tbody>
@@ -270,19 +232,13 @@
                         <!-- <td>{{ device.DeviceID }}</td> -->
                         <td>{{ device.DeviceName }}</td>
                         <td>{{ device.DevicePhone }}</td>
-                          <td>{{ device.StayTime }}</td>
-                            <td>{{ device.SectionName }}</td>
-                              <td ng-show="selectedStore=='-1'">{{ device.StoreName }}</td>
-
-
-
+                        <td>{{ device.StayTime }}</td>
+                        <td>{{ device.SectionName }}</td>
+                        <td ng-show="selectedStore=='-1'">{{ device.StoreName }}</td>
                         <td>{{ (device.Distance
                             < 0) && ( "Out of range") || (device.Distance | numberEx:2) + ' meter(s)' }}</td>
                                 <!-- <td>{{ device.Distance | numberEx:2 }} meter</td> -->
-                      
-                      
-                        <td>{{ device.BeaconKey }}</td>
-                      
+                                <td>{{ device.BeaconKey }}</td>
                     </tr>
                     <tr ng-if="!(deviceData.length > 0)">
                         <td colspan="7" ng-show="selectedStore!='-1'">

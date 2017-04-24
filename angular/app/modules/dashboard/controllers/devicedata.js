@@ -18,6 +18,7 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
     $scope.orderbyfield = 'Distance';
     $scope.Initialized = false;
     $scope.BeaconInitialized = true;
+    $scope.SectionInitialized = true;
     $scope.InvalidInputs = false;
     $scope.deviceAnalysis = {};
 
@@ -121,15 +122,15 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         //console.log($scope.deviceData);
     };
 
-    $scope.$watchCollection('[selectedStore]', function() {
+    /*$scope.$watchCollection('[selectedStore]', function() {
         if ($scope.Initialized) {
             $location.search({ 'store': $scope.selectedStore });
             $scope.getAllBeacon();
             $scope.selectedBeacon = '';
         }
-    });
+    });*/
 
-    /*$scope.$watchCollection('[selectedStore]', function() {
+    $scope.$watchCollection('[selectedStore]', function() {
         if ($scope.Initialized) {
             $scope.currPage = 1;
             $location.search({ 'store': $scope.selectedStore });
@@ -144,10 +145,10 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
             $scope.getAllBeacon();
             $scope.selectedBeacon = '';
         }
-    });*/
+    });
 
     $scope.$watchCollection('[selectedBeacon]', function() {
-        $location.search({ 'store': $scope.selectedStore, 'beacon': $scope.selectedBeacon });
+        $location.search({ 'store': $scope.selectedStore, 'section': $scope.selectedSection, 'beacon': $scope.selectedBeacon });
     });
 
     $scope.checkPushNotificationValidition = function() {
@@ -178,9 +179,6 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
     }
 
     $scope.getAllDevices = function() {
-
-        //$scope.checkLoggedInUser();
-
         var queriedUrl = $location.search();
 
         var selectedStore = '';
@@ -195,6 +193,17 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         /*if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store) {
             selectedStore = queriedUrl.store;
         }*/
+
+        var selectedSection = '';
+        if ($scope.selectedSection) {
+            selectedSection = $scope.selectedSection;
+        } else if (typeof(queriedUrl.section) != 'undefined' && queriedUrl.section) {
+            selectedSection = queriedUrl.section;
+        } else {
+            $scope.InvalidInputs = true;
+            return;
+        }
+
 
         var selectedBeacon = '';
         if (typeof(queriedUrl.beacon) != 'undefined' && queriedUrl.beacon) {
@@ -239,6 +248,19 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
 
     }
 
+    $scope.getAllSection = function() {
+        var selectedStore = $scope.selectedStore;
+        if (selectedStore) {
+            $scope.SectionInitialized = false;
+            apiService.sectionInStore(selectedStore).then(function(res) {
+                $scope.sectionInStore = res.data.data;
+                $scope.selectedSection = -1;
+                $scope.SectionInitialized = true;
+            });            
+        } else {
+            $scope.beaconData = [];
+        }
+    }
 
     $scope.getAllBeacon = function() {
         selectedStore = '';
@@ -247,9 +269,14 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
             selectedStore = queriedUrl.store;
         }
 
+        var selectedSection = '';
+        if (typeof(queriedUrl.section) != 'undefined' && queriedUrl.section) {
+            selectedSection = queriedUrl.section;
+        }
+
         if (selectedStore) {
             $scope.BeaconInitialized = false;
-            apiService.beaconData(selectedStore).then(function(res) {
+            apiService.beaconData(selectedStore, selectedSection).then(function(res) {
                 $scope.beaconData = res.data.data;
                 if (typeof(queriedUrl.beacon) != 'undefined' && queriedUrl.beacon) {
                     $scope.selectedBeacon = queriedUrl.beacon;
@@ -259,7 +286,6 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         } else {
             $scope.beaconData = [];
         }
-
     }
 
     socket.on('updateDevice_response', function(response) {
