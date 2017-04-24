@@ -679,6 +679,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.getAllBeacon = function() {
         var selectedStore = $scope.selectedStore;
         var selectedSection = $scope.selectedSection;
+        console.log(selectedSection);
         if (selectedStore && selectedSection) {
             $scope.BeaconInitialized = false;
             apiService.beaconData(selectedStore, selectedSection).then(function(res) {

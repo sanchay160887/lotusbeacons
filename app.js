@@ -1379,6 +1379,8 @@ app.post('/getdata', function(req, res) {
         StoreID = req.body.StoreID;
     }
 
+    SectionID = req.body.SectionID;
+
     console.log('Beacon Parameter on start');
     console.log(BeaconID);
     console.log('Store Parameter on start');
@@ -1408,6 +1410,11 @@ app.post('/getdata', function(req, res) {
                 } else if (StoreID && StoreID != "-1") {
                     beaconcollection = collection.find({
                         'BeaconStore': ObjectId(StoreID)
+                    });
+                } else if (StoreID == "-1" && SectionID != "-1") {
+                    beaconcollection = collection.find({
+                        'BeaconStore': ObjectId(StoreID),
+                        'BeaconSection': ObjectId(SectionID)
                     });
                 } else if (StoreID == "-1") {
                     beaconcollection = collection.aggregate([{
@@ -1534,7 +1541,7 @@ app.post('/getdata', function(req, res) {
                             if (devicehistory[devices[dvc].MobileNo] != undefined && devicehistory[devices[dvc].MobileNo][devices[dvc].BeaconID] != undefined) {
                                 devices[dvc].StayTime = convertSecondsToStringTime(devicehistory[devices[dvc].MobileNo][devices[dvc].BeaconID]);
                             } else {
-                                devices[dvc].StayTime = 0;
+                                devices[dvc].StayTime = 'Just Entered';
                             }
                             if (devices[dvc].sections != undefined && devices[dvc].sections.length > 0) {
                                 devices[dvc].SectionName = devices[dvc].sections[0].SectionName;

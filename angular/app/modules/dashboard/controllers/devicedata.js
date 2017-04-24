@@ -96,8 +96,8 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         $scope.storeData = res.data.data;
         if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store) {
             $scope.selectedStore = queriedUrl.store;
-        }
-        $scope.getAllBeacon();
+            $scope.getAllSection();
+        }        
         $scope.Initialized = true;
     });
 
@@ -133,7 +133,7 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
     $scope.$watchCollection('[selectedStore]', function() {
         if ($scope.Initialized) {
             $scope.currPage = 1;
-            $location.search({ 'store': $scope.selectedStore });
+            //$location.search({ 'store': $scope.selectedStore });
             $scope.getAllSection();
             $scope.selectedSection = '';
         }
@@ -144,12 +144,13 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
             $scope.currPage = 1;
             $scope.getAllBeacon();
             $scope.selectedBeacon = '';
+            //$location.search({ 'store': $scope.selectedStore, 'section': $scope.selectedSection });
         }
     });
 
-    $scope.$watchCollection('[selectedBeacon]', function() {
+    /*$scope.$watchCollection('[selectedBeacon]', function() {
         $location.search({ 'store': $scope.selectedStore, 'section': $scope.selectedSection, 'beacon': $scope.selectedBeacon });
-    });
+    });*/
 
     $scope.checkPushNotificationValidition = function() {
         var PNtitle = document.getElementById('push-title').value;
@@ -174,7 +175,8 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
     }
 
     $scope.loadData = function() {
-        $location.search({ 'store': $scope.selectedStore, 'beacon': $scope.selectedBeacon });
+        //$location.search({ 'store': $scope.selectedStore, 'beacon': $scope.selectedBeacon });
+        $location.search({ 'store': $scope.selectedStore, 'section': $scope.selectedSection, 'beacon': $scope.selectedBeacon });
         $scope.getAllDevices();
     }
 
@@ -258,23 +260,40 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
                 $scope.SectionInitialized = true;
             });            
         } else {
-            $scope.beaconData = [];
+            $scope.sectionInStore = [];
         }
     }
 
     $scope.getAllBeacon = function() {
         selectedStore = '';
         var queriedUrl = $location.search();
-        if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store) {
+        /*if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store) {
             selectedStore = queriedUrl.store;
+        }*/
+
+        var selectedStore = '';
+        if ($scope.selectedStore) {
+            selectedStore = $scope.selectedStore;
+        } else if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store) {
+            selectedStore = queriedUrl.store;
+        } else {
+            $scope.InvalidInputs = true;
+            return;
         }
 
         var selectedSection = '';
-        if (typeof(queriedUrl.section) != 'undefined' && queriedUrl.section) {
+        if ($scope.selectedSection) {
+            selectedSection = $scope.selectedSection;
+        } else if (typeof(queriedUrl.section) != 'undefined' && queriedUrl.section) {
             selectedSection = queriedUrl.section;
+        } else {
+            $scope.InvalidInputs = true;
+            return;
         }
 
-        if (selectedStore) {
+        console.log(selectedStore, ' ' , selectedSection);
+
+        if (selectedStore && selectedSection) {
             $scope.BeaconInitialized = false;
             apiService.beaconData(selectedStore, selectedSection).then(function(res) {
                 $scope.beaconData = res.data.data;
