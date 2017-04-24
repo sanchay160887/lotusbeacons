@@ -2072,7 +2072,6 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
                         groupParams = {
                             _id: {
                                 SectionID: '$sections._id',
-                                DeviceID: '$DeviceID',
                                 startDate: { $ceil: { $divide: ["$Date", 360000] } },
                                 //endDate: { $floor: { $divide: ["$DateTo", 60000] } }
                             },
@@ -2084,7 +2083,6 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
                         groupParams = {
                             _id: {
                                 BeaconID: '$BeaconID',
-                                DeviceID: '$DeviceID',
                                 startDate: { $ceil: { $divide: ["$Date", 360000] } },
                                 //endDate: { $floor: { $divide: ["$DateTo", 60000] } }
                             },
@@ -2096,13 +2094,26 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
 
                     devicecollection = collection.aggregate(
                         [{
+                            $project: {
+                                'cmpDate': { '$cmp': ["$Date", "$DateTo"] },
+                                'Date': 1,
+                                'DateTo': 1,
+                                'BeaconID': 1,
+                                'MobileNo': 1,
+                                'StayTime': 1,
+                                '_id': 1
+                            }
+                        }, {
                             $match: {
                                 'Date': {
                                     '$gte': fromDate,
-                                    '$lte': toDate
+                                    '$lte': toDate,
                                 },
                                 'StayTime': {
                                     $gte: 2
+                                },
+                                'cmpDate': {
+                                    '$lte': 0
                                 },
                                 'BeaconID': { '$in': beaconsIDs },
                                 'MobileNo': MobileNo,
@@ -2125,7 +2136,6 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
                                 'foreignField': "_id",
                                 'as': "sections",
                             },
-
                         }, {
                             $unwind: {
                                 'path': "$sections",
@@ -2140,12 +2150,15 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
                     ).sort({ 'Date': -1 }).toArray(function(err, devices) {
                         devicedetaillist = [];
 
-                        var cnt = devices.length;
+                        var cnt = 0;
+                        if (devices) {
+                            cnt = devices.length;
+                        }
 
                         for (i = 0; i < cnt; i++) {
                             if (devices[i + 1] !== undefined) {
-                                if (devices[i].Date - devices[i + 1].DateTo <= 180000) {
-                                    devices[i].Date = devices[i + 1].Date;
+                                if (devices[i].DateTo - devices[i + 1].Date <= 180000) {
+                                    devices[i].DateTo = devices[i + 1].DateTo;
                                     devices[i].StayTime = devices[i].StayTime + devices[i + 1].StayTime;
                                     devices.splice((i + 1), 1);
                                     cnt = devices.length;
@@ -2157,8 +2170,8 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
 
                         for (i = 0; i < cnt; i++) {
                             if (devices[i + 1] !== undefined) {
-                                if (devices[i].Date - devices[i + 1].DateTo <= 180000) {
-                                    devices[i].Date = devices[i + 1].Date;
+                                if (devices[i].DateTo - devices[i + 1].Date <= 180000) {
+                                    devices[i].DateTo = devices[i + 1].DateTo;
                                     devices[i].StayTime = devices[i].StayTime + devices[i + 1].StayTime;
                                     devices.splice((i + 1), 1);
                                     cnt = devices.length;
