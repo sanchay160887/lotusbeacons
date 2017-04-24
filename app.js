@@ -1460,6 +1460,17 @@ app.post('/getdata', function(req, res) {
                 var collection = db.collection('device_history');
                 collection.aggregate(
                     [{
+                        $project: {
+                            'cmpDate': { '$cmp': ["$Date", "$DateTo"] },
+                            'Date': 1,
+                            'DateTo': 1,
+                            'BeaconID': 1,
+                            'MobileNo': 1,
+                            'StayTime': 1,
+                            'DeviceID': 1,
+                            '_id': 1
+                        }
+                    }, {
                         $match: {
                             'Date': {
                                 '$gte': fromDate,
@@ -1469,6 +1480,9 @@ app.post('/getdata', function(req, res) {
                             },
                             'StayTime': {
                                 $gte: 2
+                            },
+                            'cmpDate': {
+                                '$lte': 0
                             }
                         }
                     }, {
@@ -1808,6 +1822,17 @@ app.post('/getDeviceHistorydata', function(req, res) {
 
                     reccollection = collection.aggregate(
                         [{
+                            $project: {
+                                'cmpDate': { '$cmp': ["$Date", "$DateTo"] },
+                                'Date': 1,
+                                'DateTo': 1,
+                                'BeaconID': 1,
+                                'MobileNo': 1,
+                                'StayTime': 1,
+                                'DeviceID': 1,
+                                '_id': 1
+                            }
+                        }, {
                             $match: {
                                 'Date': {
                                     '$gte': fromDate,
@@ -1818,6 +1843,9 @@ app.post('/getDeviceHistorydata', function(req, res) {
                                 },
                                 'StayTime': {
                                     $gte: 2
+                                },
+                                'cmpDate': {
+                                    '$lte': 0
                                 }
                             }
                         }, {
@@ -6424,10 +6452,15 @@ app.post('/getsectionInStore', function(req, res) {
 
         var devicelist = new Array();
         var collection = db.collection('sections');
-        collection = collection.find({
-            //'AssignedStore': AssignedStore
-            'AssignedStore': ObjectId(AssignedStore)
-        }).toArray(function(err, sections) {
+        collectionRows = {};
+        if (AssignedStore == '-1') {
+            collectionRows = collection.find()
+        } else {
+            collectionRows = collection.find({
+                'AssignedStore': ObjectId(AssignedStore)
+            })
+        }
+        collectionRows.toArray(function(err, sections) {
             console.log(sections);
             if (sections && sections.length > 0) {
 
