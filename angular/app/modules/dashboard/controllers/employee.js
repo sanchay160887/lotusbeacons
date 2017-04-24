@@ -9,15 +9,13 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
     $scope.minlength = 6;
     $scope.maxlength = 8;
 
-
-
     //$scope.UserType = 2;
 
     $scope.AssignedStore = '';
     $scope.AssignedSection = '';
     $scope.ResetPassword = false;
     $scope.UserObjectID = '';
-    $scope.useridregex = /[a-z][0-9]/;
+    $scope.useridregex = /^[A-Za-z0-9]*$/;
     //$scope.emailregex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     /*  $scope.emailregex = /^(?=[^@]{4,}@)([\w\.-]*[a-zA-Z0-9_]@(?=.{4,}\.[^.]*$)[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z])$/;
     $scope.useridregex = /[a-z]/;
@@ -96,30 +94,23 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
     });
 
     apiService.sectionData().then(function(res) {
-
-
-
-
         $scope.sectionData = res.data.data;
-
     });
 
 
     // new code section display according to store
-
+    $scope.InitializingSection = false;
     $scope.$watchCollection('[AssignedStore]', function() {
         if ($scope.FormInitialized) {
+            $scope.InitializingSection = true;
             apiService.sectionInStore($scope.AssignedStore).then(function(res) {
-
                 // alert(res);
-                $scope.sectionInStore = res.data.data;
+                //$scope.sectionInStore = res.data.data;
+                $scope.sectionData = res.data.data; //Ali
+                $scope.InitializingSection = false;
             });
         }
     });
-
-
-
-
 
     ////////////////// end///////////////////
 
@@ -204,6 +195,8 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
                 return;
             }
         }
+
+        $scope.UserID = $scope.UserID.trim();
 
         $scope.FormInitialized = false;
         if ($scope.button_name == 'Add') {

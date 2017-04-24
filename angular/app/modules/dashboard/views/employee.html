@@ -83,9 +83,12 @@ Date: 05 Jan 2016
             <br>		
             
             <label>Assign Section<span class="error">*</span></label>
+            <select class="form-control col-md-4" ng-show="InitializingSection">
+                <option value="">Please wait...</option>
+            </select>
             <select class="form-control col-md-4" ng-model="AssignedSection" id="AssignedSection"    
-                name="AssignedSection" required="required">  
-                <option value="">Select Setion</option>
+                name="AssignedSection" required="required" ng-disabled="!AssignedStore" ng-show="!InitializingSection">  
+                <option value="">Select Section</option>
                 <option ng-repeat="device in sectionData | orderBy:SectionName" value="{{device._id}}">
                     {{device.SectionName}}</option>
             </select> 

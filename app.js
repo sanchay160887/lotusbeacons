@@ -6395,21 +6395,12 @@ app.post('/getsectionInStore', function(req, res) {
 
     var AssignedStore = req.body.AssignedStore;
 
-
     if (!AssignedStore) {
         resObj.IsSuccess = false;
         resObj.message = "Invalid Store selected";
         res.send(resObj);
         return resObj;
-
-
     }
-
-    console.log(AssignedStore);
-
-    console.log("Get Section in store Called================================================");
-
-
 
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
@@ -6419,8 +6410,8 @@ app.post('/getsectionInStore', function(req, res) {
         var devicelist = new Array();
         var collection = db.collection('sections');
         collection = collection.find({
-
-            'AssignedStore': ObjectId(AssignedStore)
+            'AssignedStore': AssignedStore
+            //'AssignedStore': ObjectId(AssignedStore)
         }).toArray(function(err, sections) {
             console.log(sections);
             if (sections && sections.length > 0) {
@@ -6429,13 +6420,9 @@ app.post('/getsectionInStore', function(req, res) {
                     devicelist.push(sections[dvc]);
                 }
 
-
                 resObj.IsSuccess = true;
                 resObj.message = "Success";
                 resObj.data = devicelist;
-                console.log(resObj.data);
-
-                console.log('Get Section in store Called==============================================');
                 res.send(resObj);
             } else {
                 resObj.IsSuccess = false;
@@ -6443,8 +6430,8 @@ app.post('/getsectionInStore', function(req, res) {
                 resObj.data = '';
                 res.send(resObj.data);
             }
-        })
-        db.close();
+            db.close();
+        })       
     });
 });
 

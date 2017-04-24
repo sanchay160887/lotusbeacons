@@ -5,6 +5,8 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
     $scope.selectedBeacon = '';
     $scope.storeData = [];
     $scope.selectedStore = '';
+    $scope.sectionInStore = [];
+    $scope.selectedSection = '';
     $scope.deviceData = [];
     $scope.selectedTokens = {};
     $scope.TM_title = '';
@@ -126,6 +128,23 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
             $scope.selectedBeacon = '';
         }
     });
+
+    /*$scope.$watchCollection('[selectedStore]', function() {
+        if ($scope.Initialized) {
+            $scope.currPage = 1;
+            $location.search({ 'store': $scope.selectedStore });
+            $scope.getAllSection();
+            $scope.selectedSection = '';
+        }
+    });
+
+    $scope.$watchCollection('[selectedSection]', function() {
+        if ($scope.Initialized) {
+            $scope.currPage = 1;
+            $scope.getAllBeacon();
+            $scope.selectedBeacon = '';
+        }
+    });*/
 
     $scope.$watchCollection('[selectedBeacon]', function() {
         $location.search({ 'store': $scope.selectedStore, 'beacon': $scope.selectedBeacon });
