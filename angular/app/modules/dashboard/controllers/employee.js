@@ -57,8 +57,6 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
         }
     });
 
-
-
     var vm = this;
 
     $scope.userCurrentPage = 1;
@@ -145,18 +143,22 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
                     $scope.Name = data.data[0].Name;
                     $scope.Designation = data.data[0].Designation;
 
-
                     // $scope.UserType = data.data[0].UserType;
                     $scope.AssignedStore = data.data[0].AssignedStore;
-					$scope.AssignedSection = data.data[0].AssignedSection;
-                   //   alert($scope.AssignedSection);
-
+                    apiService.sectionInStore($scope.AssignedStore).then(function(res) {
+                        $scope.sectionData = res.data.data;
+                        setTimeout(function() {
+                            $scope.AssignedSection = data.data[0].AssignedSection;
+                            $scope.FormInitialized = true;
+                        }, 300);                        
+                    });                    
+                    //   alert($scope.AssignedSection);
                 } else {
                     $scope.UserObjectID = '';
                     alert('User not found. Please refresh your page');
                     $scope.button_name = 'add';
                 }
-                $scope.FormInitialized = true;
+                
             })
             .error(function(data, status, headers, config) {
                 console.log("failed.");
@@ -222,9 +224,9 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
 
             $scope.FormInitialized = false;
             //console.log($scope.Password);
-            apiService.updateEmployee($scope.UserObjectID, $scope.UserID, $scope.Password,  $scope.Name,
-                   $scope.AssignedStore, $scope.AssignedSection,  $scope.Designation)
-            .success(function(data, status, headers, config) {
+            apiService.updateEmployee($scope.UserObjectID, $scope.UserID, $scope.Password, $scope.Name,
+                    $scope.AssignedStore, $scope.AssignedSection, $scope.Designation)
+                .success(function(data, status, headers, config) {
                     if (data.IsSuccess) {
                         alert(data.message);
                         $scope.getAllEmployees(); // $scope.getAllUsers();
