@@ -203,7 +203,7 @@ dashboard.controller("CrmController", function($rootScope, $scope, apiService, $
                 .success(function(data, status, headers, config) {
                     if (data.IsSuccess) {
                         alert(data.message);
-                        $scope.getAllUsers();
+                        $scope.getAllCRM();
                     } else {
                         alert(data.message);
                     }
