@@ -93,14 +93,22 @@
                     </a>
                 </li>
             </ul>
-            <ul class="sidebar-menu" ng-if="loggedInUser.UserType != 2">
+          
+             <ul class="sidebar-menu" ng-if="loggedInUser.UserType == 1">
                 <li class="treeview" ui-sref-active="active" ng-click="vm.sideBar();" data-ng-repeat="menu in vm.menuItems">
                     <a ui-sref="app.{{menu.state}}">
                         <i class="fa fa-{{menu.icon}}"></i> <span>{{menu.title}}</span>
                     </a>
                 </li>
                  <li class="treeview" ng-if="loggedInUser.crmToken">
-                    <a href="https://www.lotuselectronics.com/admin/crm_dashboard/{{ loggedInUser.crmToken }}" target="_blank">
+                    <a href="http://lampdemos.com/lotus15/admin/crm_dashboard/{{ loggedInUser.crmToken }}" target="_blank">
+                        <i class="fa fa-tachometer""></i> <span>Go to CRM</span>
+                    </a>
+                </li>
+            </ul> 
+           <ul class="sidebar-menu" ng-if="loggedInUser.UserType == 4">
+                 <li class="treeview" ng-if="loggedInUser.crmToken">
+                    <a href="http://lampdemos.com/lotus15/admin/crm_dashboard/{{ loggedInUser.crmToken }}" target="_blank">
                         <i class="fa fa-tachometer""></i> <span>Go to CRM</span>
                     </a>
                 </li>
