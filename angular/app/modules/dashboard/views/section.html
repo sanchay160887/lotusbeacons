@@ -58,23 +58,20 @@ Date: 05 Jan 2016
             <li class="active">Sections</li>
         </ol>
     </section>
-    <section class="content-body register_block_1">
+    <section class="content-body register_block_1" ng-show="loggedInUser.UserType == 1 || button_name == 'Update'">
         <div class="wait_block" ng-if="!FormInitialized">
             <p class="wait_text">Please Wait...</p>
         </div>
-        <h4 ng-if="button_name!='Update'">Add Section</h4>
-        <h4 ng-if="button_name=='Update'">Update Section</h4>
+        <h4 ng-if="button_name!='Update' && loggedInUser.UserType != 1">View Section</h4>
+        <h4 ng-if="button_name!='Update' && loggedInUser.UserType == 1">Add Section</h4>
+        <h4 ng-if="button_name=='Update' && loggedInUser.UserType == 1">Update Section</h4>
         <ng-form name="sectionForm" id="sectionForm">
-          
-
-
-          <label>Name<span class="error">*</span></label>
-            <input class="form-control" type="text" name="SectionName" id="SectionName" ng-model="SectionName" required="required" />
+            <label>Name<span class="error">*</span></label>
+            <input class="form-control" type="text" name="SectionName" id="SectionName" ng-model="SectionName" required="required" ng-readonly="loggedInUser.UserType!=1" />
             <span class="error" ng-show="sectionForm.SectionName.$touched && sectionForm.SectionName.$invalid">Please Enter Name</span>
             <br>
-
             <label>Assign Store<span class="error">*</span></label>
-            <select class="form-control col-md-4" ng-model="AssignedStore" id="AssignedStore" name="AssignedStore" required="required" >
+            <select class="form-control col-md-4" ng-model="AssignedStore" id="AssignedStore" name="AssignedStore" required="required" ng-readonly="loggedInUser.UserType!=1">
                 <option value="">Select Store</option>
                 <option ng-repeat="device in storeData | orderBy:StoreName" value="{{device._id}}">
                     {{device.StoreName}}</option>
@@ -82,8 +79,8 @@ Date: 05 Jan 2016
             <br>
             <span class="error" ng-show="sectionForm.AssignedStore.$touched && sectionForm.AssignedStore.$invalid">Please Assign Store</span>
             <br>
-            <label>Assign Beacon<span class="error">*</span>  </label>
-            <select class="form-control col-md-4" multiple="multiple" ng-model="selectedBeacon" id="selectedBeacon" name="selectedBeacon" required="required" ng-disabled='!AssignedStore'>
+            <label>Assign Beacon<span class="error">*</span> </label>
+            <select class="form-control col-md-4" multiple="multiple" ng-model="selectedBeacon" id="selectedBeacon" name="selectedBeacon" required="required" ng-disabled='!AssignedStore' ng-readonly="loggedInUser.UserType!=1">
                 <option value="">Please Assign Beacon</option>
                 <option ng-repeat="device in beaconData | orderBy:BeaconKey" value="{{device.BeaconID}}" ng-selected="selected">
                     {{device.BeaconKey}}</option>
@@ -91,19 +88,18 @@ Date: 05 Jan 2016
             <br>
             <span class="error" ng-show="sectionForm.selectedBeacon.$touched && sectionForm.selectedBeacon.$invalid">Please Assign Beacon</span>
             <br>
-            
             <label>Description</label>
             <!--<input class="form-control" type="text" name="SectionDesc" id="SectionDesc" ng-model="SectionDesc" required="required" />-->
-            <textarea name="SectionDesc" id="SectionDesc" ng-model="SectionDesc" rows="5" cols="40" 
-                required="required"> </textarea>
+            <textarea name="SectionDesc" id="SectionDesc" ng-model="SectionDesc" rows="5" cols="40" required="required" ng-readonly="loggedInUser.UserType!=1"></textarea>
             <br>
             <!-- <span class="error" ng-show="sectionForm.SectionDesc.$touched && sectionForm.SectionDesc.$invalid">Description required</span>
             <br> -->
             <br>
-            <button class="btn btn-primary" ng-bind="button_name" ng-click="processUser()">Add</button>
-            <button class="btn btn-primary" ng-if="button_name=='Update' && UserType != 1" ng-click="deleteSection()">
+            <button class="btn btn-primary" ng-bind="button_name" ng-if="loggedInUser.UserType == 1" ng-click="processUser()">Add</button>
+            <button class="btn btn-primary" ng-if="button_name=='Update' && UserType != 1 && loggedInUser.UserType == 1" ng-click="deleteSection()">
                 Delete</button>
-            <button class="btn btn-primary" ng-if="button_name=='Update'" ng-click="resetControls()">Cancel</button>
+            <button class="btn btn-primary" ng-if="button_name=='Update' && loggedInUser.UserType == 1" ng-click="resetControls()">Cancel</button>
+            <button class="btn btn-primary" ng-if="loggedInUser.UserType != 1" ng-click="resetControls()">Close</button>
             <p ng-show="UserType == 1">Admin account cannot be deleted, Only updated.</p>
         </ng-form>
     </section>
@@ -114,6 +110,9 @@ Date: 05 Jan 2016
             </div>
         </div>
         <div class="wait_block" ng-if="!ListInitialized">
+            <p class="wait_text">Please Wait...</p>
+        </div>
+        <div class="wait_block" ng-if="!FormInitialized && loggedInUser.UserType != 1">
             <p class="wait_text">Please Wait...</p>
         </div>
         <div class="row">
@@ -145,7 +144,7 @@ Date: 05 Jan 2016
                 <span ng-show="O=='SectionName'">▲</span>
                 <span ng-show="O=='-SectionName'">▼</span>
             </th>
-           <!--  <th ng-click="O=(O=='SectionDesc' && '-SectionDesc' || 'SectionDesc' )">Section Desc
+            <!--  <th ng-click="O=(O=='SectionDesc' && '-SectionDesc' || 'SectionDesc' )">Section Desc
                 <span ng-show="O=='SectionDesc'">▲</span>
                 <span ng-show="O=='-SectionDesc'">▼</span>
             </th> -->
@@ -158,13 +157,16 @@ Date: 05 Jan 2016
                 <td>
                     <input class="form-control" type='text' ng-model="u.SectionName" readonly />
                 </td>
-               <!--  <td>
+                <!--  <td>
                     <input class="form-control" type='text' ng-model="u.SectionDesc" readonly />
                 </td> -->
                 <td>
                     <input class="form-control" type='text' ng-model="u.StoreName" readonly />
                 </td>
-                <td ng-click="getSection(u._id)"><span class="btn btn-primary">Edit</span></td>
+                <td ng-click="getSection(u._id)">
+                <span class="btn btn-primary" ng-if="loggedInUser.UserType == 1">Edit</span>
+                <span class="btn btn-primary" ng-if="loggedInUser.UserType != 1">View</span>
+                </td>
             </tr>
             <tr ng-show="!(secData | filter: (q.length > 1 ? {searchfield: q } : '')).length">
                 <td colspan="4">No Record Found</td>

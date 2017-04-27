@@ -68,8 +68,8 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
     $scope.getAllEmployees = function() {
         $scope.ListInitialized = false;
         apiService.employeeData().then(function(res) {
-
             if (!res.data.IsSuccess) {
+                $scope.ListInitialized = true;
                 alert(res.data.message);
                 return;
             }
@@ -80,8 +80,6 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
             $scope.userPageSize = 10;
             $scope.resetControls();
             $scope.ListInitialized = true;
-
-
         });
     }
 
@@ -150,15 +148,15 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
                         setTimeout(function() {
                             $scope.AssignedSection = data.data[0].AssignedSection;
                             $scope.FormInitialized = true;
-                        }, 300);                        
-                    });                    
+                        }, 300);
+                    });
                     //   alert($scope.AssignedSection);
                 } else {
                     $scope.UserObjectID = '';
                     alert('User not found. Please refresh your page');
                     $scope.button_name = 'add';
                 }
-                
+
             })
             .error(function(data, status, headers, config) {
                 console.log("failed.");

@@ -9,14 +9,13 @@ dashboard.controller("CrmController", function($rootScope, $scope, apiService, $
     $scope.minlength = 6;
     $scope.maxlength = 8;
 
-
     //$scope.UserType = 2;
 
     $scope.AssignedStore = '';
 
     $scope.ResetPassword = false;
     $scope.UserObjectID = '';
-   
+
     $scope.button_name = 'Add';
     $scope.ListInitialized = false;
     $scope.FormInitialized = true;
@@ -66,6 +65,7 @@ dashboard.controller("CrmController", function($rootScope, $scope, apiService, $
         $scope.ListInitialized = false;
         apiService.crmData().then(function(res) {
             if (!res.data.IsSuccess) {
+                $scope.ListInitialized = true;
                 alert(res.data.message);
                 return;
             }
@@ -170,7 +170,7 @@ dashboard.controller("CrmController", function($rootScope, $scope, apiService, $
             }
         }
 
-       
+
         $scope.FormInitialized = false;
         if ($scope.button_name == 'Add') {
             //alert($scope.button_name); // change by arpit
@@ -182,11 +182,10 @@ dashboard.controller("CrmController", function($rootScope, $scope, apiService, $
                     if (data.IsSuccess) {
                         alert(data.message);
                         $scope.getAllCRM();
-                    }
-                   else {
+                    } else {
                         alert(data.message);
                     }
-                   $scope.FormInitialized = true;
+                    $scope.FormInitialized = true;
                 })
                 .error(function(data, status, headers, config) {
                     console.log("failed.");
@@ -220,8 +219,8 @@ dashboard.controller("CrmController", function($rootScope, $scope, apiService, $
         console.log($scope.button_name);
 
 
-       
- 
+
+
 
 
     }

@@ -6,11 +6,7 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
     $scope.Name = '';
 
     $scope.isEditMode = false;
-
-
     //$scope.UserType = 2;
-
-
 
     var temporaryBeacon = [];
     $scope.AssignedSection = '';
@@ -52,38 +48,7 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
         }
     });
 
-
-
     var vm = this;
-
-
-    $scope.enableBeacon = function() {
-
-        if ($scope.AssignedStore == '') {
-            // alert('1');
-            $scope.isEditMode = false;
-
-        } else {
-            // alert('2');
-            $scope.isEditMode = true;
-
-        }
-
-    }
-
-    /*
-        $scope.enableBeacon = function() {
-            if ($scope.AssignedStore = '') {
-                alert('1');
-                $scope.isEditMode = false;
-
-            } else {
-                  alert('2');
-
-                $scope.isEditMode = true;
-            }
-        }
-    */
 
     $scope.userCurrentPage = 1;
     $scope.userPageSize = 10;

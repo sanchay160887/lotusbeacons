@@ -15,13 +15,14 @@ dashboard.controller("SettingController", function($rootScope, $scope, apiServic
         apiService.checkloginUser().then(function(res) {
             if (typeof(res.data.user) != undefined && res.data.user) {
                 $rootScope.loggedInUser = res.data.user;
+                if ($rootScope.loggedInUser.UserType != 1){
+                    $location.path("/");    
+                }
             } else {
                 $location.path("/");
             }
         });
     }
-
-
 
     $scope.connection = true;
     $scope.connection_msg = false;

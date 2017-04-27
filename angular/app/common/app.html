@@ -82,7 +82,7 @@
         <!-- sidebar -->
         <section class="sidebar">
             <ul class="sidebar-menu" ng-if="loggedInUser.UserType == 2">
-                <li class="treeview" ui-sref-active="active" ng-click="vm.sideBar();" data-ng-repeat="menu in vm.menuItems" ng-if="menu.state != 'users'">
+                <li class="treeview" ui-sref-active="active" ng-click="vm.sideBar();" data-ng-repeat="menu in vm.menuItems" ng-if="menu.state != 'users' && menu.state != 'settings'">
                     <a ui-sref="app.{{menu.state}}">
                         <i class="fa fa-{{menu.icon}}"></i> <span>{{menu.title}}</span>
                     </a>

@@ -4977,10 +4977,6 @@ app.post('/getcustomerdata', function(req, res) {
                 collection.find({
                     'UserID': UserID
                 }).toArray(function(err, users) {
-
-
-                    console.log('=============user called====================');
-
                     ID = users[0].UserID;
                     var dbpassword = users[0].Password;
 
@@ -4995,7 +4991,6 @@ app.post('/getcustomerdata', function(req, res) {
                     // console.log(resObj);
 
                     if (ID == UserID && isPasswordMatch == 'true') {
-                        console.log('====================hiiii=========================');
                         resObj.IsSuccess = true;
                         resObj.message = "success";
                         resObj.data = users;
@@ -5009,9 +5004,6 @@ app.post('/getcustomerdata', function(req, res) {
                     }
                     db.close();
 
-                    // var pass = users[0].Password;
-
-
                 });
             },
 
@@ -5022,8 +5014,6 @@ app.post('/getcustomerdata', function(req, res) {
 
 
 app.post('/addCustomer', function(req, res) {
-
-
     console.log(req);
 
     UserID = req.body.UserID;
@@ -5039,8 +5029,6 @@ app.post('/addCustomer', function(req, res) {
     Name = Name.toLowerCase();
     Designation = Designation.toLowerCase();
     AssignedStore = AssignedStore.toLowerCase();
-
-
 
     var resObj = {};
     if (!req.session.loggedInUser) {
@@ -5153,11 +5141,26 @@ app.post('/getEmployeedata', function(req, res) {
         return;
     }
 
-    if (req.session.loggedInUser.UserType == 2) {
+    UserStore = getUserAllotedStore(req);
+
+    //if (req.session.loggedInUser.UserType == 2) {
+    if (req.session.loggedInUser.UserType != 1 && !UserStore) {
         resObj.IsSuccess = false;
         resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
         res.send(resObj);
         return;
+    }
+
+    var userMatchExp = {};
+    if (req.session.loggedInUser.UserType == 2) {
+        userMatchExp = {
+            'UserType': 3,
+            'AssignedStore': ObjectId(UserStore)
+        };
+    } else {
+        userMatchExp = {
+            'UserType': 3
+        };
     }
 
     MongoClient.connect(mongourl, function(err, db) {
@@ -5169,9 +5172,7 @@ app.post('/getEmployeedata', function(req, res) {
             function(callback) {
                 var usercollection = db.collection('users');
                 usercollection.aggregate([{
-                    $match: {
-                        'UserType': 3
-                    }
+                    $match: userMatchExp
                 }, {
                     $lookup: {
                         from: 'stores',
@@ -5331,7 +5332,10 @@ app.post('/getCrmData', function(req, res) {
         return;
     }
 
-    if (req.session.loggedInUser.UserType == 2) {
+    UserStore = getUserAllotedStore(req);
+
+    //if (req.session.loggedInUser.UserType == 2) {
+    if (req.session.loggedInUser.UserType != 1 && !UserStore) {
         resObj.IsSuccess = false;
         resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
         res.send(resObj);
@@ -5341,6 +5345,18 @@ app.post('/getCrmData', function(req, res) {
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
             return console.dir(err);
+        }
+
+        var crmMatchExp = {};
+        if (req.session.loggedInUser.UserType == 2) {
+            crmMatchExp = {
+                'UserType': 4,
+                'AssignedStore': ObjectId(UserStore)
+            };
+        } else {
+            crmMatchExp = {
+                'UserType': 4
+            };
         }
 
         async.waterfall([
@@ -5360,10 +5376,7 @@ app.post('/getCrmData', function(req, res) {
             function(storelist, callback) {
                 var collection = db.collection('users');
                 /*{ "UserType": 2 }*/
-                collection.find({
-                    'UserType': 4
-
-                }).toArray(function(err, users) {
+                collection.find(crmMatchExp).toArray(function(err, users) {
                     var userlist = [];
                     if (users && users.length > 0) {
                         for (var u in users) {
@@ -5375,12 +5388,6 @@ app.post('/getCrmData', function(req, res) {
                         resObj.IsSuccess = true;
                         resObj.message = "Success";
                         resObj.data = userlist;
-                        console.log('===========CRM list Start======================');
-
-                        console.log(resObj);
-
-                        console.log('===========CRM list called======================');
-
                         res.send(resObj);
                     } else {
                         resObj.IsSuccess = false;
@@ -5402,9 +5409,6 @@ app.post('/getCrmData', function(req, res) {
 
 app.post('/deleteCrm', function(req, res) {
     UserObjectID = req.body.UserObjectID;
-
-    console.log(UserObjectID);
-    console.log('============== Called===========EEEE==');
 
     var resObj = {};
     if (!req.session.loggedInUser) {
@@ -5452,14 +5456,7 @@ app.post('/deleteCrm', function(req, res) {
 
 
 app.post('/getallsections', function(req, res) {
-
-
     pUserObjectID = req.body.pUserObjectID;
-    console.log('=======================pobid  START CALLED=======================');
-
-    console.log(pUserObjectID);
-    console.log('=======================pobid called=======================');
-
 
     var resObj = {};
 
@@ -5472,7 +5469,10 @@ app.post('/getallsections', function(req, res) {
         return;
     }
 
-    if (req.session.loggedInUser.UserType == 2) {
+    UserStore = getUserAllotedStore(req);
+
+    //if (req.session.loggedInUser.UserType == 2) {
+    if (req.session.loggedInUser.UserType != 1 && !UserStore) {
         resObj.IsSuccess = false;
         resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
         res.send(resObj);
@@ -5482,6 +5482,13 @@ app.post('/getallsections', function(req, res) {
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
             return console.dir(err);
+        }
+
+        var sectionMatchExp = {};
+        if (req.session.loggedInUser.UserType != 1) {
+            sectionMatchExp = {
+                'AssignedStore': ObjectId(UserStore)
+            };
         }
 
         async.waterfall([
@@ -5501,7 +5508,7 @@ app.post('/getallsections', function(req, res) {
             function(storelist, callback) {
                 var collection = db.collection('sections');
 
-                collection.find().toArray(function(err, sections) {
+                collection.find(sectionMatchExp).toArray(function(err, sections) {
                     var userlist = [];
 
                     if (sections && sections.length > 0) {
@@ -5510,21 +5517,11 @@ app.post('/getallsections', function(req, res) {
                             sections[u].searchfield =
                                 sections[u].SectionName + ' ' + sections[u].SectionDesc + ' ' + sections[u].StoreName;
 
-
-
-
-
                             userlist.push(sections[u]);
                         }
                         resObj.IsSuccess = true;
                         resObj.message = "Success";
                         resObj.data = userlist;
-                        console.log('===========Sections list Start======================');
-
-                        console.log(resObj);
-
-                        console.log('===========Sections list called End======================');
-
                         res.send(resObj);
                     } else {
                         resObj.IsSuccess = false;
@@ -5539,19 +5536,10 @@ app.post('/getallsections', function(req, res) {
                 db.close();
             }
         ]);
-
     });
-
-
 });
 
-
-
-
 app.post('/updateCustomeExecutive', function(req, res) {
-
-    console.log('==============jhhgjhjhj======update CRM called=fdfdfdffddf=========================');
-
     UserID = req.body.UserID;
     ResetPassword = req.body.ResetPassword;
     Password = req.body.Password;
