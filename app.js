@@ -4622,37 +4622,22 @@ app.post('/addSection', function(req, res) {
 
         async.waterfall([
             function(callback) {
-                collection.find().toArray(function(err, sections) {
+                collection.find({
+                    'SectionName': SectionName,
+                    AssignedStore: ObjectId(AssignedStore)
+                }).toArray(function(err, sections) {
                     var cnt = sections.length;
-
-                    for (var u in sections) {
-                        if (sections[u].SectionName == SectionName && sections[u].AssignedStore == AssignedStore) { //&& sections[u].AssignedStore == AssignedStorechanged by arpit
-                            resObj.IsSuccess = false;
-                            resObj.message = "Section already exists";
-                            res.send(resObj);
-                            return 0;
-                        }
-
+                    if (sections.length > 0) {
+                        resObj.IsSuccess = false;
+                        resObj.message = "Section already exists";
+                        res.send(resObj);
+                        return;
+                    } else {
+                        callback(null, sections);
                     }
-                    callback(null, sections);
                 });
             },
-            /*  function(sections, callback) {
-                  collection.insert({
-                      'SectionName': SectionName,
-
-                      'SectionDesc': SectionDesc,
-
-
-
-                  });
-                  console.log('Section inserted');
-
-                  callback(null, 'inserted');
-              },*/
-
             function(sections, callback) {
-
                 collection.insert({
                     'SectionName': SectionName,
                     'SectionDesc': SectionDesc,
@@ -5626,7 +5611,6 @@ app.post('/updateCustomeExecutive', function(req, res) {
                 });
             },
             function(userdata, callback) {
-
                 console.log(userdata);
                 /*bcrypt.genSalt(10, function(err, salt) {
                     if (err)
@@ -5640,8 +5624,6 @@ app.post('/updateCustomeExecutive', function(req, res) {
                 callback(null, hashedPassword);
             },
             function(hashedpassword, callback) {
-                /*console.log(ResetPassword);
-                console.log(hashedpassword);*/
                 if (ResetPassword) {
                     collection.update({
                         '_id': ObjectId(UserObjectID)
@@ -5649,12 +5631,8 @@ app.post('/updateCustomeExecutive', function(req, res) {
                         '$set': {
                             'UserID': UserID,
                             'Name': Name,
-
-
                             'Password': hashedpassword,
-
                             'AssignedStore': ObjectId(AssignedStore),
-
                             'Designation': Designation
                         }
                     });
@@ -5666,18 +5644,12 @@ app.post('/updateCustomeExecutive', function(req, res) {
                     }, {
                         '$set': {
                             'UserID': UserID,
-
                             'Name': Name,
-
-
                             'AssignedStore': ObjectId(AssignedStore),
-
                             'Designation': Designation,
                         }
                     });
                 }
-
-                console.log('======================CRM updated=======================================');
 
                 callback(null, 'updated');
             },
@@ -5773,10 +5745,6 @@ app.post('/deleteSection', function(req, res) {
                 });
             },
             function(users, callback) {
-                console.log('====user called===');
-                console.log(users);
-
-                console.log('====End called===');
                 usercollection.updateMany({
                         'AssignedSection': ObjectId(UserObjectID)
 
@@ -5895,7 +5863,6 @@ app.post('/getSection', function(req, res) {
 
 app.post('/updateSection', function(req, res) {
 
-    console.log('==============jhhgjhjhj======update Section called=fdfdfdffddf=========================');
     UserObjectID = req.body.UserObjectID;
 
     AssignedStore = req.body.AssignedStore;
@@ -5904,16 +5871,8 @@ app.post('/updateSection', function(req, res) {
     SectionDesc = req.body.SectionDesc;
     selectedBeacon = req.body.selectedBeacon;
 
-    console.log(UserObjectID);
-    console.log(AssignedStore);
-    console.log(SectionName);
-    console.log(SectionDesc);
-    console.log(selectedBeacon);
-
     SectionName = SectionName.toLowerCase();
     SectionDesc = SectionDesc.toLowerCase();
-
-
 
     var resObj = {};
     if (!req.session.loggedInUser) {
@@ -5940,14 +5899,14 @@ app.post('/updateSection', function(req, res) {
 
     if (!AssignedStore) {
         resObj.IsSuccess = false;
-        resObj.message = "Please select User";
+        resObj.message = "Please select Store";
         res.send(resObj);
         return;
     }
 
     if (AssignedStore.length != 24) {
         resObj.IsSuccess = false;
-        resObj.message = "Invalid User selected";
+        resObj.message = "Invalid Store selected";
         res.send(resObj);
         return;
     }
@@ -5965,40 +5924,38 @@ app.post('/updateSection', function(req, res) {
         async.waterfall([
             function(callback) {
                 collection.find({
-                    '_id': ObjectId(UserObjectID)
+                    'SectionName': SectionName,
+                    AssignedStore: ObjectId(AssignedStore),
+                    '_id': { $ne: ObjectId(UserObjectID) }
                 }).toArray(function(err, sections) {
-
-                    callback(null, sections);
+                    var cnt = sections.length;
+                    if (sections.length > 0) {
+                        resObj.IsSuccess = false;
+                        resObj.message = "Section already exists";
+                        res.send(resObj);
+                        return;
+                    } else {
+                        callback(null, true);
+                    }
                 });
             },
             function(userdata, callback) {
-                console.log('Userdata Callback====================Called');
-
-                console.log(userdata);
-
-                console.log(ObjectId(UserObjectID));
                 collection.update({
                     '_id': ObjectId(UserObjectID)
                 }, {
                     '$set': {
-
                         'AssignedStore': ObjectId(AssignedStore),
                         'SectionName': SectionName,
                         'SectionDesc': SectionDesc,
                         'BeaconID': selectedBeacon,
-
                     }
                 });
-
-
-                console.log('======================Employee updated=======================================');
 
                 callback(null, 'updated');
             },
             function(updated, callback) {
                 sectionbeacon.updateMany({
                         'BeaconSection': ObjectId(UserObjectID)
-
                     }, {
                         '$unset': {
                             'BeaconSection': 1,
@@ -6047,13 +6004,9 @@ app.post('/updateSection', function(req, res) {
                 resObj.message = "Section has been Updated Successfully";
                 res.send(resObj);
                 db.close();
-
-
             }
         ]);
     });
-
-
 });
 
 // Get Employee Data For PHP through curl in CRM module
