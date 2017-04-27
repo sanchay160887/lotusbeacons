@@ -82,8 +82,7 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
 
     $scope.$watchCollection('[AssignedStore]', function() {
         $scope.isEditMode = false;
-        if ($scope.FormInitialized) {
-
+        if ($scope.FormInitialized && $scope.AssignedStore) {
             apiService.beaconData($scope.AssignedStore).then(function(res) {
                 $scope.beaconData = res.data.data;
             });
@@ -109,9 +108,6 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
     }
 
     $scope.getSection = function(pUserObjectID) {
-        //alert(pUserObjectID);
-        //alert('hii');
-
         $scope.FormInitialized = false;
         apiService.getSection(pUserObjectID).
         success(function(data, status, headers, config) {
@@ -130,8 +126,6 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
                             $scope.FormInitialized = true;
                         }, 300);
                     });
-
-                    //alert($scope.selectedBeacon);                    
                 } else {
                     $scope.UserObjectID = '';
                     alert('Section not found. Please refresh your page');
@@ -149,13 +143,25 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
 
 
     $scope.processUser = function() {
+
+        if ($scope.sectionForm.$invalid) {
+            angular.forEach($scope.sectionForm.$error, function(field) {
+                angular.forEach(field, function(errorField) {
+                    errorField.$setTouched();
+                })
+            });
+            return;
+        }
+
+        if ($scope.selectedBeacon.length <= 0) {
+            alert('Please select atleast one Beacon for a Section');
+            return;
+        }
+
         $scope.FormInitialized = false;
         if ($scope.button_name == 'Add') {
-            // alert($scope.button_name);
             apiService.addSection($scope.SectionName, $scope.SectionDesc, $scope.AssignedStore, $scope.selectedBeacon)
                 .success(function(data, status, headers, config) {
-
-
                     if (data.IsSuccess) {
                         alert(data.message);
                         $scope.getAllSections();
@@ -171,19 +177,14 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
                     return '';
                 });
         } else {
-
-            //,$scope.selectedBeacon,
             $scope.FormInitialized = false;
             console.log($scope.SectionName);
             apiService.updateSection($scope.UserObjectID, $scope.AssignedStore, $scope.selectedBeacon, $scope.SectionName, $scope.SectionDesc)
                 .success(function(data, status, headers, config) {
-                    // alert('hello123');
                     if (data.IsSuccess) {
                         alert(data.message);
                         $scope.getAllSections();
                     } else {
-                        alert('else');
-
                         alert(data.message);
                     }
                     $scope.FormInitialized = true;
@@ -194,35 +195,6 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
                     return '';
                 });
         }
-
-
-        console.log($scope.button_name);
-        if ($scope.sectionForm.$invalid) {
-            angular.forEach($scope.sectionForm.$error, function(field) {
-                angular.forEach(field, function(errorField) {
-                    errorField.$setTouched();
-                })
-            });
-            //alert("Please check all values on Form.");
-            return;
-        }
-
-        /*  if ($scope.button_name == 'Update') {
-              if ($scope.Password != $scope.ConfPassword) {
-                  alert('Confirm password doesnot match with password');
-                  return;
-              }
-          } else {
-              if (!$scope.Password && !$scope.ConfPassword) {
-                  alert('Password should not be empty.');
-                  return;
-              } else if ($scope.Password != $scope.ConfPassword) {
-                  alert('Confirm password doesnot match with password');
-                  return;
-              }
-          }*/
-
-
     }
 
     $scope.deleteSection = function() {
@@ -243,10 +215,7 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
         });
     }
 
-
-
-
-    $http({
+    /*$http({
         method: "post",
         url: "/getsectionInStore",
         data: {
@@ -254,7 +223,7 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
             'AssignedStore': '57d26d3bcace8e0378b20404',
 
         }
-    });
+    });*/
 
 
 })
