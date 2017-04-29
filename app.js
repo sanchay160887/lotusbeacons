@@ -5624,7 +5624,7 @@ app.post('/updateCustomeExecutive', function(req, res) {
                 callback(null, hashedPassword);
             },
             function(hashedpassword, callback) {
-                if (ResetPassword) {
+                if (Password) {
                     collection.update({
                         '_id': ObjectId(UserObjectID)
                     }, {
