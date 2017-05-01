@@ -5596,7 +5596,7 @@ app.post('/updateCustomeExecutive', function(req, res) {
                     for (var u in users) {
                         if (users[u].UserID == UserID) {
                             resObj.IsSuccess = false;
-                            resObj.msage = "This ID Already Exists in the Portal";
+                            resObj.message = "This ID Already Exists in the Portal";
                             res.send(resObj);
                             return 0;
                         }
