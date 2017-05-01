@@ -6013,6 +6013,7 @@ app.post('/updateSection', function(req, res) {
 app.post('/getCrmEmployee', function(req, res) {
 
     var UserType = req.body.UserType;
+   var AssignedStore = req.body.AssignedStore;
     var resObj = {};
 
 
@@ -6066,7 +6067,8 @@ app.post('/getCrmEmployee', function(req, res) {
                 var SectionName = '';
                 /*{ "UserType": 2 }*/
                 collection.find({
-                    'UserType': 3
+                    'UserType': 3,
+                     'AssignedStore': ObjectId(AssignedStore),
 
                 }).toArray(function(err, users) {
                     var userlist = [];
