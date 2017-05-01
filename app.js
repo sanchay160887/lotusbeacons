@@ -6126,6 +6126,128 @@ app.post('/getCrmEmployee', function(req, res) {
     });
 });
 
+
+
+
+// Get Employee List For Admin
+app.post('/getCrmEmployeeListByAdmin', function(req, res) {
+
+    var UserType = req.body.UserType;
+ 
+    var resObj = {};
+
+
+
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        var sectionlist = [];
+        async.waterfall([
+            function(callback) {
+
+
+                var SectionName = '';
+
+                var sectioncollection = db.collection('sections');
+
+
+
+                var sectcollection = {};
+                sectcollection = sectioncollection.find();
+                sectcollection.toArray(function(err, sections) {
+
+
+                    for (var b in sections) {
+                        sectionlist[sections[b]._id] = sections[b].SectionName;
+                    }
+
+                    callback(null, sectionlist);
+                });
+            },
+
+            function(sectionlist, callback) {
+                var collection = db.collection('stores');
+
+                var storecollection = {};
+                storecollection = collection.find();
+                storecollection.toArray(function(err, stores) {
+                    var storelist = [];
+                    for (var b in stores) {
+                        storelist[stores[b]._id] = stores[b].StoreName;
+                    }
+                    callback(null, storelist);
+                });
+            },
+            function(storelist, callback) {
+                var collection = db.collection('users');
+
+
+                var SectionName = '';
+                /*{ "UserType": 2 }*/
+                collection.find({
+                    'UserType':  Number(UserType)
+                    
+
+                }).toArray(function(err, users) {
+                    
+                     console.log('====@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=======Get CRM employee list Start======================');
+
+                        console.log(users);
+
+                        console.log('===========Get CRM employee list END======================');
+                    var userlist = [];
+
+                    if (users && users.length > 0) {
+
+
+
+
+
+
+                        for (var u in users) {
+                            //var  AssignedSection = users[0].AssignedSection;
+                            users[u].StoreName = storelist[ObjectId(users[u].AssignedStore)];
+                            users[u].SectionName = sectionlist[ObjectId(users[u].AssignedSection)];
+                            users[u].searchfield =
+                                users[u].Name + ' ' + users[u].UserID + ' ' + users[u].Designation + ' ' + users[u].StoreName + ' ' + users[u].SectionName;
+
+
+
+
+                            userlist.push(users[u]);
+                        }
+                        resObj.IsSuccess = true;
+                        resObj.message = "Success";
+                        resObj.data = userlist;
+                        console.log('===========employee list Start======================');
+
+                        console.log(resObj);
+
+                        console.log('===========employee list END======================');
+
+                        res.send(resObj);
+                    } else {
+                        resObj.IsSuccess = false;
+                        resObj.message = "No record found.";
+                        resObj.data = '';
+                        res.send(resObj);
+                    }
+                    callback(null, userlist);
+                });
+            },
+            function(userlist, callback) {
+                db.close();
+            }
+        ]);
+
+    });
+});
+
+
+
+
 app.post('/getStore_DeviceCount', function(req, res) {
     resObj = {};
     console.log(req.session);
