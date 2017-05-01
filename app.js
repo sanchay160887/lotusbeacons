@@ -6072,6 +6072,12 @@ app.post('/getCrmEmployee', function(req, res) {
                      'AssignedStore': ObjectId(AssignedStore),
 
                 }).toArray(function(err, users) {
+                    
+                     console.log('====@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=======Get CRM employee list Start======================');
+
+                        console.log(users);
+
+                        console.log('===========Get CRM employee list END======================');
                     var userlist = [];
 
                     if (users && users.length > 0) {
