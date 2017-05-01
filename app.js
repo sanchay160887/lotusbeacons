@@ -6069,7 +6069,7 @@ app.post('/getCrmEmployee', function(req, res) {
                 /*{ "UserType": 2 }*/
                 collection.find({
                     'UserType': 3,
-                     'AssignedStore' : ObjectId(57d26d3bcace8e0378b20404),
+                     'AssignedStore': ObjectId(AssignedStore),
 
                 }).toArray(function(err, users) {
                     var userlist = [];
