@@ -365,6 +365,20 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
         }
     });
 */
+    $http({
+        method: "post",
+        url: "/getCrmEmployee",
+        data: {
+            UserType: '3',
+            AssignedStore: '57d26d3bcace8e0378b20404'
+            
+            
+        }
+    });
+
+    
+    
+    
 
     console.log('Login service called end');
 
