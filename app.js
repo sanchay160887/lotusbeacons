@@ -4075,6 +4075,7 @@ app.post('/userLogin', function(req, res) {
                         'Email': userRecord.Email,
                         'Name': userRecord.Name,
                         'UserType': userRecord.UserType,
+                        'AssignedStore': userRecord.AssignedStore.toString(),
                         'id': userRecord._id.toString()
                     };
 
