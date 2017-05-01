@@ -152,6 +152,8 @@ Date: 05 Jan 2016
                 <span ng-show="O=='StoreName'">▲</span>
                 <span ng-show="O=='-StoreName'">▼</span>
             </th>
+            
+              <th>Action  </th>
             <tr dir-paginate="u in secData | filter: (q.length > 1 ? {searchfield: q } : '') | orderBy : O | itemsPerPage:  userPageSize" current-page="userCurrentPage">
                 <!-- <tr ng-repeat=" | orderBy:Name "> -->
                 <td>
