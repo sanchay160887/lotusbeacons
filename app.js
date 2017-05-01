@@ -6068,7 +6068,7 @@ app.post('/getCrmEmployee', function(req, res) {
                 var SectionName = '';
                 /*{ "UserType": 2 }*/
                 collection.find({
-                    'UserType': 3,
+                    'UserType':  Number(UserType),
                      'AssignedStore': ObjectId(AssignedStore),
 
                 }).toArray(function(err, users) {
