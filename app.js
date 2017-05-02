@@ -3363,7 +3363,6 @@ app.post('/api/photo', function(req, res) {
             console.log(err);
             return res.end("Error uploading file.");
         }
-        //console.log(req);
         var filename = '';
         if (req.file) {
             filename = req.file.destination + req.file.filename;
@@ -3395,7 +3394,6 @@ app.post('/getdeviceidentity', function(req, res) {
 app.post('/getUserdata', function(req, res) {
     var resObj = {};
 
-    console.log(req.session);
     if (!req.session.loggedInUser) {
         resObj.IsSuccess = false;
         resObj.message = loginexpiredmessage;
@@ -4288,8 +4286,6 @@ app.post('/getAllNotifications', function(req, res) {
 
 app.post('/addEmployee', function(req, res) {
 
-    console.log(req);
-
     UserID = req.body.UserID;
     Password = req.body.Password;
 
@@ -4498,8 +4494,6 @@ app.post('/getsectiondata', function(req, res) {
 
 
 app.post('/addSection', function(req, res) {
-
-    console.log(req);
 
     SectionName = req.body.SectionName;
     SectionDesc = req.body.SectionDesc;
@@ -4934,8 +4928,6 @@ app.post('/getcustomerdata', function(req, res) {
 
 
 app.post('/addCustomer', function(req, res) {
-    console.log(req);
-
     UserID = req.body.UserID;
     Password = req.body.Password;
 
@@ -5052,7 +5044,6 @@ app.post('/addCustomer', function(req, res) {
 app.post('/getEmployeedata', function(req, res) {
     var resObj = {};
 
-    console.log(req.session);
     if (!req.session.loggedInUser) {
         resObj.IsSuccess = false;
         resObj.message = loginexpiredmessage;
@@ -5236,7 +5227,6 @@ app.post('/deleteEmployee', function(req, res) {
 app.post('/getCrmData', function(req, res) {
     var resObj = {};
 
-    console.log(req.session);
     if (!req.session.loggedInUser) {
         resObj.IsSuccess = false;
         resObj.message = loginexpiredmessage;
@@ -5373,7 +5363,6 @@ app.post('/getallsections', function(req, res) {
 
     var resObj = {};
 
-    console.log(req.session);
     if (!req.session.loggedInUser) {
         resObj.IsSuccess = false;
         resObj.message = loginexpiredmessage;
@@ -6161,7 +6150,6 @@ app.post('/getCrmEmployeeListByAdmin', function(req, res) {
 
 app.post('/getStore_DeviceCount', function(req, res) {
     resObj = {};
-    console.log(req.session);
     if (!req.session.loggedInUser) {
         resObj.IsSuccess = false;
         resObj.message = loginexpiredmessage;
