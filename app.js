@@ -269,7 +269,7 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, resObj) {
                 }
 
                 collection.find({
-                    'DeviceID': DeviceID
+                    'MobileNo': MobileNo
                 }).toArray(function(err, devices) {
                     if (devices && devices.length > 0 && BeaconID != '') {
                         updateDeviceHistory(devices[0].BeaconID, devices[0].DeviceID, MobileNo);
@@ -326,17 +326,13 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, resObj) {
 
 /// Employe function for update user Active start
 function updateUser_Active(BeaconID, UserID, Distance, resObj) {
-    console.log('updateUser_Active function calling')
     var UserID = ObjectId(UserID);
-
     console.log('Update User Active called');
     console.log(UserID);
     console.log('==============================');
-
     console.log('Beacon ID ' + BeaconID);
     console.log('User ID ' + UserID);
     console.log('Distance ' + Distance);
-
 
     var BeaconStoreID = '';
 
@@ -364,8 +360,6 @@ function updateUser_Active(BeaconID, UserID, Distance, resObj) {
         }
         return;
     }
-
-    console.log('Update user active called');
 
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
@@ -421,10 +415,6 @@ function updateUser_Active(BeaconID, UserID, Distance, resObj) {
                 });
             },
             function(user_beacons_data, callback) {
-                console.log(user_beacons_data);
-                console.log('user beacon data called');
-                console.log(user_beacons_data);
-
                 if (BeaconID != '') {
                     collection.update({
                         'UserID': ObjectId(UserID) //It should be oid
@@ -487,8 +477,6 @@ function updateUser_Beacon_History(BeaconID, UserID, resObj) {
     datestring = seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate();
     fromDate = new Date(datestring).getTime();
     toDate = new Date(datestring + ' 23:59:59').getTime();
-
-    console.log('Update user history called');
 
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
@@ -649,21 +637,16 @@ function updateUser_Beacon_History(BeaconID, UserID, resObj) {
             }
         ]);
     });
-
-
-
-
 }
 
 
 function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
-    if (MobileNo && MobileNo == '9584010456') {
-        console.log('------------Updating device History--------------');
-        console.log('Beacon ID ' + BeaconID);
-        console.log('Device ID ' + DeviceID);
-        console.log('Mobile No ' + MobileNo);
-        console.log('------------Updating device History--------------');
-    }
+    console.log('------------Updating device History--------------');
+    console.log('Beacon ID ' + BeaconID);
+    console.log('Device ID ' + DeviceID);
+    console.log('Mobile No ' + MobileNo);
+    console.log('------------Updating device History--------------');
+
     var resObjVal = {};
     if (!(BeaconID && DeviceID && MobileNo)) {
         return;
@@ -775,9 +758,8 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                 })
             },
             function(devicelist, callback) {
-
                 if (!(devicelist && devicelist.length > 0)) {
-                    console.log(JSON.stringify(beacons[0]));
+                	console.log('762 -- ' + beacons[0].BeaconWelcome);
                     if (typeof(beacons[0].BeaconWelcome) != 'undefined' && beacons[0].BeaconWelcome) {
                         mobile_nos = [];
                         mobile_nos.push('91' + MobileNo);
@@ -985,7 +967,6 @@ io.on('connection', function(socket) {
 
 
     socket.on('updateUser_Active', function(data) {
-        console.log('updateUser_Active socket calling');
         io.emit('updateUser_Active_response', {
             'IsSuccess': true,
             'message': 'Socket is calling from yourside'
@@ -1407,16 +1388,19 @@ app.post('/getdata', function(req, res) {
                             $in: BeaconID
                         }
                     });
-                } else if (StoreID && StoreID != "-1") {
+                } else if (StoreID && Number(StoreID) != -1) {
                     beaconcollection = collection.find({
                         'BeaconStore': ObjectId(StoreID)
                     });
-                } else if (StoreID == "-1" && SectionID != "-1") {
+                } else if (Number(StoreID) == -1 && Number(SectionID) != -1) {
+					console.log(1396);
+                	console.log(StoreID);
+                	console.log(SectionID);
                     beaconcollection = collection.find({
                         'BeaconStore': ObjectId(StoreID),
                         'BeaconSection': ObjectId(SectionID)
                     });
-                } else if (StoreID == "-1") {
+                } else if (Number(StoreID) == -1) {
                     beaconcollection = collection.aggregate([{
                         $lookup: {
                             from: 'stores',
@@ -1430,8 +1414,6 @@ app.post('/getdata', function(req, res) {
                 }
 
                 beaconcollection.toArray(function(err, beacons) {
-                    console.log('Store list');
-                    console.dir(beacons);
                     var beaconslist = [];
                     for (var b in beacons) {
                         beaconslist[beacons[b].BeaconID] = {};
@@ -2296,12 +2278,12 @@ app.post('/getDeviceSearchHistoryDetailsdata', function(req, res) {
 /*Beacon Services start*/
 app.post('/getbeacondata', function(req, res) {
     BeaconStore = req.body.BeaconStore;
-    if (BeaconStore == "-1") {
+    if (Number(BeaconStore) == -1) {
         BeaconStore = "";
     }
 
     BeaconSection = req.body.BeaconSection;
-    if (BeaconSection == "-1") {
+    if (Number(BeaconSection) == -1) {
         BeaconSection = "";
     }
 
@@ -6014,7 +5996,7 @@ app.post('/updateSection', function(req, res) {
 app.post('/getCrmEmployee', function(req, res) {
 
     var UserType = req.body.UserType;
-   var AssignedStore = req.body.AssignedStore;
+    var AssignedStore = req.body.AssignedStore;
     var resObj = {};
 
 
@@ -6068,34 +6050,18 @@ app.post('/getCrmEmployee', function(req, res) {
                 var SectionName = '';
                 /*{ "UserType": 2 }*/
                 collection.find({
-                    'UserType':  Number(UserType),
-                     'AssignedStore': ObjectId(AssignedStore),
+                    'UserType': Number(UserType),
+                    'AssignedStore': ObjectId(AssignedStore),
 
                 }).toArray(function(err, users) {
-                    
-                     console.log('====@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=======Get CRM employee list Start======================');
-
-                        console.log(users);
-
-                        console.log('===========Get CRM employee list END======================');
                     var userlist = [];
-
                     if (users && users.length > 0) {
-
-
-
-
-
-
                         for (var u in users) {
                             //var  AssignedSection = users[0].AssignedSection;
                             users[u].StoreName = storelist[ObjectId(users[u].AssignedStore)];
                             users[u].SectionName = sectionlist[ObjectId(users[u].AssignedSection)];
                             users[u].searchfield =
                                 users[u].Name + ' ' + users[u].UserID + ' ' + users[u].Designation + ' ' + users[u].StoreName + ' ' + users[u].SectionName;
-
-
-
 
                             userlist.push(users[u]);
                         }
@@ -6133,7 +6099,7 @@ app.post('/getCrmEmployee', function(req, res) {
 app.post('/getCrmEmployeeListByAdmin', function(req, res) {
 
     var UserType = req.body.UserType;
- 
+
     var resObj = {};
 
 
@@ -6187,16 +6153,16 @@ app.post('/getCrmEmployeeListByAdmin', function(req, res) {
                 var SectionName = '';
                 /*{ "UserType": 2 }*/
                 collection.find({
-                    'UserType':  Number(UserType)
-                    
+                    'UserType': Number(UserType)
+
 
                 }).toArray(function(err, users) {
-                    
-                     console.log('====@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=======Get CRM employee list Start======================');
 
-                        console.log(users);
+                    console.log('====@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=======Get CRM employee list Start======================');
 
-                        console.log('===========Get CRM employee list END======================');
+                    console.log(users);
+
+                    console.log('===========Get CRM employee list END======================');
                     var userlist = [];
 
                     if (users && users.length > 0) {
@@ -6525,7 +6491,7 @@ app.post('/getsectionInStore', function(req, res) {
         var devicelist = new Array();
         var collection = db.collection('sections');
         collectionRows = {};
-        if (AssignedStore == '-1') {
+        if (Number(AssignedStore) == -1) {
             collectionRows = collection.find()
         } else {
             collectionRows = collection.find({

@@ -88,13 +88,14 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
         });
     }
 
-    var deviceData = function(selectedBeacon, selectedStore) {
+    var deviceData = function(selectedBeacon, selectedStore, selectedSection) {
         return $http({
             method: "post",
             url: '/getdata',
             data: {
                 'BeaconID': selectedBeacon,
-                'StoreID': selectedStore
+                'StoreID': selectedStore,
+                'SectionID':selectedSection
             }
         });
     }
