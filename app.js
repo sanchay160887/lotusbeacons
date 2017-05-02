@@ -326,7 +326,6 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, resObj) {
 }
 
 
-
 /// Employe function for update user Active start
 function updateUser_Active(BeaconID, UserID, Distance, resObj) {
     var UserID = ObjectId(UserID);
