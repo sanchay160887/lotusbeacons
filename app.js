@@ -3204,6 +3204,7 @@ function sendpushnotification_mobileno(res, gcmMobiles, title, description, imag
                 })
         },
         function(devicetokens, callback) {
+        	console.log('sendpushnotification_mobileno -->>>' + JSON.stringify(devicetokens));
             sendpushnotification(res, devicetokens, not_title, not_descr, not_image);
         }
     ]);
