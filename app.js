@@ -14,6 +14,9 @@ var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var GcmGoogleKey = 'AIzaSyAUxc6EwlgRP6MITCynw3_vsYatPI4iZuw';
 var FcmGoogleKeyEmp = 'AIzaSyBG65mkyorOX8uzdzcmMY8DOC183OcQozo';
+var FCM = require('fcm-node');
+var serverKey = 'AIzaSyCJ7BLdXAhonngXWKpqUtYK3fOdZFi8m_g';
+var fcm = new FCM(serverKey);
 var gcm = require('android-gcm');
 var request = require('request');
 var forEach = require('async-foreach').forEach;
@@ -780,7 +783,7 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                                     for (var r in reqbody) {
                                         if (reqbody[r] != false && reqbody[r].name) {
                                             notifymessage = settings_welcomeMessage.replace('«CUSTNAME»', reqbody[r].name);
-                                            sendpushnotification_mobileno(null, [MobileNo], notifymessage);
+                                            sendpushnotification_mobileno(null, [MobileNo], 'Welcome', notifymessage);
                                             break;
                                         }
                                     }
@@ -839,8 +842,6 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                                         empusers.find(ObjectId(userid)).toArray(function(err, emplist2) {
                                             if (emplist2 && emplist2.length > 0) {
                                                 console.log(JSON.stringify(emplist2));
-                                                console.log('=======@@@@@2=======Employee LIST2 Called ON live2==@@@@@@======');
-
 
                                                 var token = emplist2[0].devicetoken;
 
@@ -856,9 +857,7 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                                                         }
                                                     },
                                                     function(res2, err, body) {
-
                                                         console.log(JSON.stringify(body));
-                                                        console.log('=======@@@@@2=======BODY==@@@@@@======');
                                                         device_detail = [];
                                                         var reqbody = parse_JSON(body);
                                                         if (reqbody) {
@@ -867,9 +866,8 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                                                             for (var r in reqbody) {
                                                                 if (reqbody[r] != false && reqbody[r].name) {
                                                                     notifresobj = {};
-                                                                    console.log('=======@@@@@2=======SeND Push Notification==@@@@@@======');
                                                                     notifymessage = settings_EmpCustIntimate.replace('«CUSTNAME»', reqbody[r].name);
-                                                                    sendpushnotification_fcm(null, [token], beacons[0].BeaconID, userid, MobileNo, notifymessage);
+                                                                    sendpushnotification_fcm(null, [token], beacons[0].BeaconID, userid, MobileNo, 'Attain', notifymessage);
                                                                 }
                                                             }
                                                         }
@@ -3010,8 +3008,8 @@ app.post('/getstore', function(req, res) {
 
 app.post('/sendpushnotification_test', function(req, res) {
     var gcm = require('android-gcm');
-    //var gcmObject = new gcm.AndroidGcm('AIzaSyAUxc6EwlgRP6MITCynw3_vsYatPI4iZuw');
-    var gcmObject = new gcm.AndroidGcm(FcmGoogleKeyEmp);
+    var gcmObject = new gcm.AndroidGcm('AIzaSyAUxc6EwlgRP6MITCynw3_vsYatPI4iZuw');
+    //var gcmObject = new gcm.AndroidGcm(FcmGoogleKeyEmp);
 
     // initialize new androidGcm object 
     var message = new gcm.Message({
@@ -3265,53 +3263,20 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
 
 
 function sendpushnotification_fcm(resObj, gcmToken, BeaconID, notification_user_id, MobileNo, title, messagebody, image_url) {
-    console.log(gcmToken);
-    console.log(BeaconID);
-    console.log(notification_user_id);
-    console.log('push notification called');
-    console.log(title);
-    var FCM = require('fcm-node');
-
-    var serverKey = 'AIzaSyCJ7BLdXAhonngXWKpqUtYK3fOdZFi8m_g';
-    var fcm = new FCM(serverKey);
     if (!image_url) {
         image_url = '';
     }
 
     async.waterfall([
         function(callback) {
-
-            var request = require('request');
-
-            request.post(lotusWebURL + 'user/get_name_by_mobileno', {
-                    form: {
-
-                        'mobile_no': MobileNo
-                    }
-                },
-
-                function(res2, err, body) {
-
-                    callback(null, body);
-
-                });
-
-        },
-
-        function(response, callback) {
-
             var reqbody = parse_JSON(response);
-
             var data = reqbody.data;
-
-            var name = data.name;
-
 
             var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
                 registration_ids: gcmToken,
 
                 data: {
-                    'message': 'Check ' + name + ' nearest to you',
+                    'message': messagebody,
                     'notification_user_id': notification_user_id,
                     'badge': 1,
                     'title': title,
@@ -3319,44 +3284,30 @@ function sendpushnotification_fcm(resObj, gcmToken, BeaconID, notification_user_
                     //'img_url': 'https://lh4.ggpht.com/mJDgTDUOtIyHcrb69WM0cpaxFwCNW6f0VQ2ExA7dMKpMDrZ0A6ta64OCX3H-NMdRd20=w300',
                     // 'img_url': image_url,
                     'notification_type': 7,
-
                 }
             };
 
             fcm.send(message, function(err, response) {
-
-
-
                 if (err) {
                     console.log("Something has gone wrong!");
                 } else {
-                    if (response != 'undefined') {
+                    if (typeof(response) != 'undefined') {
                         try {
-
                             var request = require('request');
                             var gcmdata = JSON.stringify(gcmToken);
-
-
-
-
-
                             request.post(lotusURL + 'employee/get_notification_entry', {
-
                                     form: {
                                         'android_device_token': gcmdata,
                                         'notification_user_id': notification_user_id,
                                         'mobile_no': MobileNo,
                                         'title': title,
                                         'BeaconID': BeaconID,
-                                        'message': 'Check ' + name + ' nearest to you',
+                                        'message': messagebody,
                                         //  'notification_img': image_url,
                                         'notification_type': 7,
-
                                     }
-
                                 },
                                 function(res2, err, body) {
-                                    console.log('=====notification inserted2222==========');
                                     console.log('Data coming from service --> ' + JSON.stringify(body));
                                     if (resObj) {
                                         resObj.send(body);
@@ -5248,21 +5199,14 @@ app.post('/deleteEmployee', function(req, res) {
                     '_id': ObjectId(UserObjectID)
 
                 }).toArray(function(err, users) {
-
                     if (users[0].devicetoken != '') {
-
-
                         var token = '';
-
                         var token = users[0].devicetoken;
                         var notifymessage = 'Your account is temporarily closed. Please contact to your store manager';
                         var notificationtype = '8';
                         var title = 'Account Closed';
                         var image_url = '';
-
-
                         pushnotification_fcm_common(null, [token], UserObjectID, '', title, notifymessage, notificationtype, image_url);
-
                     }
                     callback(null, users);
                 });
@@ -6526,16 +6470,7 @@ app.post('/getsectionInStore', function(req, res) {
 
 
 function pushnotification_fcm_common(resObj, gcmToken, notification_user_id, MobileNo, title, messagebody, notificationtype, image_url) {
-    console.log(gcmToken);
-    console.log(notificationtype);
-
-    console.log(notification_user_id);
-    console.log('push notification called');
-    console.log(title);
-    var FCM = require('fcm-node');
-
-    var serverKey = 'AIzaSyCJ7BLdXAhonngXWKpqUtYK3fOdZFi8m_g';
-    var fcm = new FCM(serverKey);
+    
     if (!image_url) {
         image_url = '';
     }
@@ -6611,9 +6546,10 @@ function pushnotification_fcm_common(resObj, gcmToken, notification_user_id, Mob
         }
 
 
-
-
     ]);
     //console.log(message);
 
 }
+
+//sendpushnotification(null, ["APA91bGICXHqn2da36Srtkld3nmIV0_o94tpWTv9y3F2JDJJq_lnbxoZTxiDsRLAsVibM9hMamtoE-5yuVSLh5cpnmU67uEShxFOJoZqesypsNYcUhs2Ats"], 'check notification', 'message body', '');
+
