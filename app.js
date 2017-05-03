@@ -3929,7 +3929,7 @@ app.post('/userLogin', function(req, res) {
                 } else {
                     dataParam = {
                         "UserID": username,
-                        "UserType": { "$in": [1, 2, 4] },
+                        "UserType": { "$in": [1, 2, 4, 5] },
                     }
                 }
 
