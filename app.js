@@ -3924,12 +3924,12 @@ app.post('/userLogin', function(req, res) {
                 if (isCallingFromApp) {
                     dataParam = {
                         "UserID": username,
-                        "UserType": 3,
+                        "UserType": { "$in": [3, 5] },
                     }
                 } else {
                     dataParam = {
                         "UserID": username,
-                        "UserType": { "$in": [1, 2, 4, 5] },
+                        "UserType": { "$in": [1, 2, 4] },
                     }
                 }
 
