@@ -6540,3 +6540,100 @@ function pushnotification_fcm_common(resObj, gcmToken, notification_user_id, Mob
 
 //sendpushnotification(null, ["APA91bGICXHqn2da36Srtkld3nmIV0_o94tpWTv9y3F2JDJJq_lnbxoZTxiDsRLAsVibM9hMamtoE-5yuVSLh5cpnmU67uEShxFOJoZqesypsNYcUhs2Ats"], 'check notification', 'message body', '');
 
+
+
+//Get Empoloyee details By Department Manager
+
+
+app.post('/getEmployeeDetailsByDeptManager', function(req, res) {
+    DepartmentID = req.body.DepartmentID;
+
+    console.log(DepartmentID);
+    console.log('Employee Details Called -----=========');
+
+    var resObj = {};
+
+    if (!DepartmentID) {
+        resObj.IsSuccess = false;
+        resObj.message = "Invalid Department selected";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+
+        var collection = db.collection('users');
+
+        async.waterfall([
+            function(callback) {
+                collection.find(ObjectId(DepartmentID)
+                    ).toArray(function(err, devices) {
+                    callback(null, devices);
+                });
+
+            },
+            function(devices, callback) {
+                if (devices && devices.length > 0) {
+                   
+             
+                   var assignedEmployee = devices[0].AssignedEmployee;
+                   var employeecollection = [];
+                  // var  emplist = [];
+
+                   for(var b in assignedEmployee)
+                   {
+
+
+
+                       employeecollection.push(ObjectId(assignedEmployee[b]));
+
+                   }
+
+                    
+
+                   
+                 var  emplist = collection.find({
+                        '_id': {
+                            $in: employeecollection
+                        }
+                    }).toArray(function(err, employeelist) {
+
+                  
+  console.log('--------------------console for department manager@@@@@@@@@@@-------------------------');
+                    console.log(employeelist);
+                       callback(null, employeelist); 
+                  
+                });
+
+                    
+                    
+
+                    
+                } else {
+                    resObj.IsSuccess = false;
+                    resObj.message = "Employee not found";
+                    callback(null, false);
+                }
+
+               
+
+            },
+            function(workdone, callback) {
+                 resObj.IsSuccess = true;
+               resObj.data = workdone;
+
+                   console.log('--------------------console for department manager@@@@@@@@@@@-------------------------');
+                    console.log(resObj);
+                    console.log('--------------------console for department manager@@@@@@@@@@@@@@-------------------------');
+                    res.send(resObj);
+                 
+                db.close();
+            }
+        ]);
+    });
+});
+
