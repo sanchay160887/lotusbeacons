@@ -154,8 +154,8 @@ Date: 05 Jan 2016
         </div>
         <div class="row">
             <div class="col-xs-2" style="margin-top: 10px;">
-                <small style="margin-top: 10px;" ng-show="(employeeData | filter: (q.length > 1 ? q : '')).length > 1"><b>{{ (employeeData | filter: (q.length > 1 ? q : '')).length || 0 }} Records</b></small>
-                <small style="margin-top: 10px;" ng-show="(employeeData | filter: (q.length > 1 ? q : '')).length == 1"><b>1 Record</b></small>
+                <small style="margin-top: 10px;" ng-show="(employeeData | filter: (q.length > 1 ? {searchfield: q } : '')).length > 1"><b>{{ (employeeData | filter: (q.length > 1 ? {searchfield: q } : '')).length || 0 }} Records</b></small>
+                <small style="margin-top: 10px;" ng-show="(employeeData | filter: (q.length > 1 ? {searchfield: q } : '')).length == 1"><b>1 Record</b></small>
             </div>
         </div>
         <!-- Main content -->
