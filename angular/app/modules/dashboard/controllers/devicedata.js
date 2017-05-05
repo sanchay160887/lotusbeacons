@@ -274,20 +274,22 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         var selectedStore = '';
         if ($scope.selectedStore) {
             selectedStore = $scope.selectedStore;
-        } else if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store) {
-            selectedStore = queriedUrl.store;
+        /*} else if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store) {
+            selectedStore = queriedUrl.store;*/
         } else {
             $scope.InvalidInputs = true;
+            $scope.beaconData = [];
             return;
         }
 
         var selectedSection = '';
         if ($scope.selectedSection) {
             selectedSection = $scope.selectedSection;
-        } else if (typeof(queriedUrl.section) != 'undefined' && queriedUrl.section) {
-            selectedSection = queriedUrl.section;
+        /*} else if (typeof(queriedUrl.section) != 'undefined' && queriedUrl.section) {
+            selectedSection = queriedUrl.section;*/
         } else {
             $scope.InvalidInputs = true;
+            $scope.beaconData = [];
             return;
         }
 

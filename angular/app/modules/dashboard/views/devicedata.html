@@ -169,7 +169,7 @@
                                 </select>
                                 <select class="form-control col-md-4" ng-model="selectedSection" ng-show="SectionInitialized">
                                     <option value="">Select Section</option>
-                                    <option value="-1">All Section</option>
+                                    <option value="-1" ng-show="selectedStore">All Section</option>
                                     <option ng-repeat="device in sectionInStore | orderBy:StoreName" value="{{device._id}}">{{device.SectionName}}</option>
                                 </select>
                             </div>
@@ -183,7 +183,7 @@
                                     <option value="">Please wait..</option>
                                 </select>
                                 <select class="form-control" ng-model="selectedBeacon" ng-show="BeaconInitialized">
-                                    <option value="">All</option>
+                                    <option value="" ng-show="selectedSection">All</option>
                                     <option ng-repeat="beacon in beaconData | orderBy:BeaconKey" value="{{beacon.BeaconID}}">{{beacon.BeaconKey}}</option>
                                 </select>
                             </div>

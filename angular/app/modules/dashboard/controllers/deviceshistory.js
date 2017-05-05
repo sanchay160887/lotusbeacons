@@ -705,7 +705,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
                 $scope.SectionInitialized = true;
             });            
         } else {
-            $scope.beaconData = [];
+            $scope.sectionInStore = [];
         }
     }
 
