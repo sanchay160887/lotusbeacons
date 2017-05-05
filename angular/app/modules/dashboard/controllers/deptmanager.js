@@ -1,5 +1,5 @@
-dashboard.controller("EmployeeController", function($rootScope, $scope, apiService, $http, $interval, $location) { //
-    $scope.employeeForm = {};
+dashboard.controller("DeptMangController", function($rootScope, $scope, apiService, $http, $interval, $location) { //
+    $scope.deptmangForm = {};
     $scope.UserID = '';
     $scope.Password = '';
     $scope.ConfPassword = '';
@@ -12,16 +12,10 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
     //$scope.UserType = 2;
 
     $scope.AssignedStore = '';
-    $scope.AssignedSection = '';
+    $scope.AssignedEmployee = '';
     $scope.ResetPassword = false;
     $scope.UserObjectID = '';
-    $scope.useridregex = /^[A-Za-z0-9]*$/;
-    //$scope.emailregex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    /*  $scope.emailregex = /^(?=[^@]{4,}@)([\w\.-]*[a-zA-Z0-9_]@(?=.{4,}\.[^.]*$)[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z])$/;
-    $scope.useridregex = /[a-z]/;
-    $scope.passwordregex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,15}$/;
-    $scope.phoneregex = /^[0-9]*$/;
-*/
+
     $scope.button_name = 'Add';
     $scope.ListInitialized = false;
     $scope.FormInitialized = true;
@@ -57,6 +51,8 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
         }
     });
 
+
+
     var vm = this;
 
     $scope.userCurrentPage = 1;
@@ -65,50 +61,46 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
         console.log('going to page ' + num);
     };
 
-    $scope.getAllEmployees = function() {
+    $scope.getAllDeptManagerData = function() {
         $scope.ListInitialized = false;
-        apiService.employeeData().then(function(res) {
+        apiService.deptmanagerData().then(function(res) {
+
             if (!res.data.IsSuccess) {
                 $scope.ListInitialized = true;
                 alert(res.data.message);
                 return;
             }
 
-            $scope.employeeData = res.data.data;
+            $scope.deptmanagerData = res.data.data;
             $scope.O = 'Name';
             $scope.userCurrentPage = 1;
             $scope.userPageSize = 10;
             $scope.resetControls();
             $scope.ListInitialized = true;
+
+
         });
     }
 
-    $scope.getAllEmployees();
+    $scope.getAllDeptManagerData();
 
     apiService.storeData().then(function(res) {
         $scope.storeData = res.data.data;
     });
 
-    apiService.sectionData().then(function(res) {
-        $scope.sectionData = res.data.data;
-    });
-
-
     // new code section display according to store
-    $scope.InitializingSection = false;
     $scope.$watchCollection('[AssignedStore]', function() {
+        //  alert($scope.AssignedStore);
         if ($scope.FormInitialized) {
-            $scope.InitializingSection = true;
-            apiService.sectionInStore($scope.AssignedStore).then(function(res) {
-                // alert(res);
-                //$scope.sectionInStore
-                $scope.sectionData = res.data.data; //Ali
-                $scope.AssignedSection = '';
-                $scope.InitializingSection = false;
-            });
+            if ($scope.AssignedStore != '') {
+                apiService.EmployeeDataByStore($scope.AssignedStore).then(function(res) {
+
+                    //  alert(res);
+                    $scope.EmployeeDataByStore = res.data.data;
+                });
+            }
         }
     });
-
     ////////////////// end///////////////////
 
     $scope.resetControls = function() {
@@ -117,16 +109,14 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
         $scope.ConfPassword = '';
         $scope.Name = '';
         $scope.Designation = '';
-
-
         $scope.AssignedStore = '';
-        $scope.AssignedSection = '';
+        $scope.AssignedEmployee = '';
         $scope.UserObjectID = '';
         $scope.button_name = "Add";
         $scope.ResetPassword = false;
-        $scope.employeeForm.$setUntouched();
-        $scope.employeeForm.$setDirty();
-        $scope.employeeForm.$setPristine();
+        $scope.deptmangForm.$setUntouched();
+        $scope.deptmangForm.$setDirty();
+        $scope.deptmangForm.$setPristine();
     }
 
     $scope.getUser = function(pUserObjectID) {
@@ -142,22 +132,28 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
                     $scope.Name = data.data[0].Name;
                     $scope.Designation = data.data[0].Designation;
 
+
                     // $scope.UserType = data.data[0].UserType;
                     $scope.AssignedStore = data.data[0].AssignedStore;
-                    apiService.sectionInStore($scope.AssignedStore).then(function(res) {
-                        $scope.sectionData = res.data.data;
+
+                    apiService.EmployeeDataByStore(data.data[0].AssignedStore).then(function(res) {
+                        $scope.EmployeeDataByStore = res.data.data;
                         setTimeout(function() {
-                            $scope.AssignedSection = data.data[0].AssignedSection;
+                            $scope.AssignedEmployee = data.data[0].AssignedEmployee;
+
                             $scope.FormInitialized = true;
                         }, 300);
                     });
-                    //   alert($scope.AssignedSection);
+
+
+                    // $scope.AssignedEmployee = data.data[0].AssignedEmployee;
+                    //   alert($scope.AssignedEmployee);
                 } else {
                     $scope.UserObjectID = '';
                     alert('User not found. Please refresh your page');
                     $scope.button_name = 'add';
                 }
-
+                $scope.FormInitialized = true;
             })
             .error(function(data, status, headers, config) {
                 console.log("failed.");
@@ -171,8 +167,8 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
 
         //alert($scope.button_name);
 
-        if ($scope.employeeForm.$invalid) {
-            angular.forEach($scope.employeeForm.$error, function(field) {
+        if ($scope.deptmangForm.$invalid) {
+            angular.forEach($scope.deptmangForm.$error, function(field) {
                 angular.forEach(field, function(errorField) {
                     errorField.$setTouched();
                 })
@@ -197,17 +193,15 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
             }
         }
 
-        $scope.UserID = $scope.UserID.trim();
-
         $scope.FormInitialized = false;
         if ($scope.button_name == 'Add') {
             //  alert($scope.button_name); // change by arpit
-            apiService.addEmployee($scope.UserID, $scope.Password, $scope.Name, $scope.Designation,
-                    $scope.AssignedStore, $scope.AssignedSection)
+            apiService.addDeptManager($scope.UserID, $scope.Password, $scope.Name, $scope.Designation,
+                    $scope.AssignedStore, $scope.AssignedEmployee)
                 .success(function(data, status, headers, config) {
                     if (data.IsSuccess) {
                         alert(data.message);
-                        $scope.getAllEmployees(); // change by Arpit
+                        $scope.getAllDeptManagerData(); // change by Arpit
                     } else {
                         alert(data.message);
                     }
@@ -223,12 +217,14 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
 
             $scope.FormInitialized = false;
             //console.log($scope.Password);
-            apiService.updateEmployee($scope.UserObjectID, $scope.UserID, $scope.Password, $scope.Name,
-                    $scope.AssignedStore, $scope.AssignedSection, $scope.Designation)
-                .success(function(data, status, headers, config) {
+            apiService.updateDeptManager($scope.UserObjectID, $scope.UserID, $scope.Password, $scope.Name, $scope.Designation,
+                $scope.AssignedStore, $scope.AssignedEmployee)
+
+
+            .success(function(data, status, headers, config) {
                     if (data.IsSuccess) {
                         alert(data.message);
-                        $scope.getAllEmployees(); // $scope.getAllUsers();
+                        $scope.getAllDeptManagerData(); // $scope.getAllUsers();
                     } else {
                         alert(data.message);
                     }
@@ -240,9 +236,15 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
                     return '';
                 });
         }
+
+
+        //console.log($scope.button_name);
+
+
+
     }
 
-    $scope.deleteEmployee = function() {
+    $scope.deleteDepartmentManager = function() {
         var r = confirm("Are You Sure to Delete this Record?");
         if (!r) {
             return;
@@ -251,12 +253,12 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
 
         $scope.FormInitialized = false;
 
-        apiService.deleteEmployee($scope.UserObjectID).success(function(res) {
+        apiService.deleteDepartmentManager($scope.UserObjectID).success(function(res) {
             console.log(res);
             $scope.FormInitialized = true;
             if (res.IsSuccess) {
-                alert('Employee has been Deleted Successfully');
-                $scope.getAllEmployees();
+                alert('Department Manager has been Deleted Successfully');
+                $scope.getAllDeptManagerData();
             } else {
                 alert(res.message);
             }
@@ -279,7 +281,7 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
 
                     // $scope.UserType = data.data[0].UserType;
                     $scope.AssignedStore = data.data[0].AssignedStore;
-                    $scope.AssignedSection = data.data[0].AssignedSection;
+                    $scope.AssignedEmployee = data.data[0].AssignedEmployee;
                 } else {
                     $scope.UserObjectID = '';
                     alert('User not found. Please refresh your page');
@@ -320,14 +322,14 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
 
     */
 
-    /*$http({
+    $http({
         method: "post",
         url: "/getEmployeeDetails",
         data: {
             EmployeeID: '58b696a3e690710a48c399ee',
 
         }
-    });*/
+    });
 
 
 
@@ -343,16 +345,17 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
             }
         });
     */
-    /*$http({
-            method: "post",
-            url: "/getCrmEmployee",
-            data: {
-                UserType: '3',
-                
-                
-            }
-        });
-    */
+    $http({
+        method: "post",
+        url: "/getCrmEmployee",
+        data: {
+            UserType: '3',
+            AssignedStore: '57d26d3bcace8e0378b20404'
+
+
+        }
+    });
+
     /*
      $http({
         method: "post",
@@ -366,20 +369,6 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
         }
     });
 */
-    /*$http({
-        method: "post",
-        url: "/getCrmEmployee",
-        data: {
-            UserType: '3',
-            AssignedStore: '57d26d3bcace8e0378b20404'
-            
-            
-        }
-    });*/
-
-    
-    
-    
 
     console.log('Login service called end');
 

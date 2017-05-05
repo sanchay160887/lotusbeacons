@@ -151,6 +151,12 @@ app.controller("appCtrl", ['$rootScope', '$scope', '$state', '$location', 'Flash
                 state: "users"
             },
 
+             {
+                title: "HOD",
+                icon: "user",
+                state: "departmentmanager"
+            },
+
             {
                 title: "Employees",
                 icon: "user",

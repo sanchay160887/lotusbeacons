@@ -848,6 +848,98 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
     apiService.updateSettingData = updateSettingData;
 
 
+    
+
+       var EmployeeDataByStore = function(AssignedStore) {
+      //  alert(AssignedStore);
+        
+        return $http({
+            method: "post",
+            url: "/getCrmEmployee",
+            data: {
+            'UserType': 3, 
+             'AssignedStore': AssignedStore,
+            }
+        });
+    }
+
+
+    var addDeptManager = function(UserID, Password, Name, Designation, AssignedStore, AssignedEmployee) {
+
+
+
+        return $http({
+            method: "post",
+            url: "/addDeptManager",
+            data: {
+                'UserID': UserID,
+                'Password': Password,
+                'Name': Name,
+                'Designation': Designation,
+
+                'AssignedStore': AssignedStore,
+                'AssignedEmployee': AssignedEmployee,
+            }
+        });
+    }
+
+      var updateDeptManager = function(UserObjectID,UserID, Password, Name, Designation, AssignedStore, AssignedEmployee) {
+
+
+
+        return $http({
+            method: "post",
+            url: "/updateDeptManager",
+            data: {
+                'UserObjectID':UserObjectID,
+                'UserID': UserID,
+                'Password': Password,
+                'Name': Name,
+                'Designation': Designation,
+
+                'AssignedStore': AssignedStore,
+                'AssignedEmployee': AssignedEmployee,
+            }
+        });
+    }
+
+
+ var deptmanagerData = function() {
+        return $http({
+            method: "post",
+            url: "/getDeptManagerData"
+        });
+
+
+    }
+
+
+    var deleteDepartmentManager = function(UserObjectID) {
+
+        return $http({
+            method: "post",
+            url: "/deleteDepartmentManager",
+            data: {
+                'UserObjectID': UserObjectID,
+            }
+        });
+    }
+
+
+
+
+
+
+
+
+    apiService.EmployeeDataByStore = EmployeeDataByStore;
+     apiService.addDeptManager = addDeptManager;
+
+      apiService.deptmanagerData = deptmanagerData;
+      apiService.updateDeptManager = updateDeptManager;
+        apiService.deleteDepartmentManager = deleteDepartmentManager;
+
+
     return apiService;
 
 }]);

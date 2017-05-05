@@ -258,6 +258,18 @@ dashboard.config(["$stateProvider", function($stateProvider) {
         }
     });
 
+    
+    $stateProvider.state('app.departmentmanager', {
+        url: '/departmentmanager',
+        templateUrl: 'app/modules/dashboard/views/deptmanager.html',
+        controller: 'DeptMangController',
+        controllerAs: 'vm',
+        data: {
+            pageTitle: 'Dept manager List'
+        }
+    });
+
+
 
 
 

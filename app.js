@@ -1589,10 +1589,10 @@ app.post('/getdata', function(req, res) {
                             },
                             'BeaconID': {
                                 $in: beacons,
-                            },
+                            }/*,
                             'StayTime': {
                                 $gte: 2
-                            },
+                            }*/,
                             'cmpDate': {
                                 '$lte': 0
                             }
@@ -4971,9 +4971,6 @@ app.post('/getEmployeeDetails', function(req, res) {
 
                         resObj.IsSuccess = true;
                         resObj.message = "success";
-                        console.log('==================check response of employee details==============');
-                        console.log(resObj.beacons);
-                        console.log('==================check response of employee details==============');
                         res.send(resObj);
                         callback(null, true);
                     });
@@ -6819,5 +6816,473 @@ app.post('/getEmployeeByStoreSectionUserType', function(req, res) {
 
             }
         ]);
+    });
+});
+
+
+
+//Add Department Manager
+
+
+app.post('/addDeptManager', function(req, res) {
+
+    console.log(req);
+
+    UserID = req.body.UserID;
+    Password = req.body.Password;
+
+    Name = req.body.Name;
+    Designation = req.body.Designation;
+    AssignedStore = req.body.AssignedStore;
+    AssignedSection = req.body.AssignedSection;
+
+    UserID = UserID.toLowerCase();
+
+    Name = Name.toLowerCase();
+    Designation = Designation.toLowerCase();
+    AssignedStore = AssignedStore.toLowerCase();
+    //AssignedSection = AssignedSection.toLowerCase();
+
+
+    var resObj = {};
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = loginexpiredmessage;
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
+
+    if (!(UserID && Password && Name)) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please enter appropriate informations";
+        res.send(resObj);
+        return;
+    }
+
+    if (!AssignedStore) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please select Store";
+        res.send(resObj);
+        return;
+    }
+
+    if (AssignedStore.length != 24) {
+        resObj.IsSuccess = false;
+        resObj.message = "Invalid store selected";
+        res.send(resObj);
+        return;
+    }
+    //<!------- Assigned Section -------->
+    //  
+    //   if (!AssignedSection) {
+    //        resObj.IsSuccess = false;
+    //        resObj.message = "Please select Store";
+    //        res.send(resObj);
+    //        return;
+    //    }
+    //
+    //    if (AssignedSection.length != 24) {
+    //        resObj.IsSuccess = false;
+    //        resObj.message = "Invalid store selected";
+    //        res.send(resObj);
+    //        return;
+    //    }
+
+
+
+    //<!------ Assigned Section end --->
+
+
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        assert.equal(null, err);
+
+        var collection = db.collection('users');
+
+        async.waterfall([
+            function(callback) {
+                collection.find().toArray(function(err, users) {
+                    var cnt = users.length;
+                    for (var u in users) {
+                        if (users[u].UserID == UserID) {
+                            resObj.IsSuccess = false;
+                            resObj.message = "This ID Already Exists in the Portal";
+                            res.send(resObj);
+                            return 0;
+                        }
+                        /*else if (users[u].Name == Name) {
+                            resObj.IsSuccess = false;
+                            resObj.message = "Name already exists";
+                            res.send(resObj);
+                            return 0;
+                        }*/
+                    }
+                    callback(null, users);
+                });
+            },
+            function(userdata, callback) {
+                /*bcrypt.genSalt(10, function(err, salt) {
+                    if (err)
+                        return callback(err);
+
+                    bcrypt.hash(Password, salt, function(err, hash) {
+                        return callback(null, hash);
+                    });
+                });*/
+                var hashedPassword = passwordHash.generate(Password);
+                callback(null, hashedPassword);
+            },
+            function(hashedpassword, callback) {
+                collection.insert({
+                    'UserID': UserID,
+
+                    'Name': Name,
+
+                    'Password': hashedpassword,
+                    'Designation': Designation,
+
+                    'AssignedStore': ObjectId(AssignedStore),
+                    'AssignedSection': AssignedSection,
+                    'UserType': 5,
+
+
+                });
+                console.log('Employee inserted');
+
+                callback(null, 'inserted');
+            },
+            function(response, callback) {
+                db.close();
+                resObj.IsSuccess = true;
+                resObj.message = "Department Manager has been Added Successfully";
+                res.send(resObj);
+                callback(null, response);
+            }
+        ]);
+    });
+
+});
+
+
+// Update Department Manage
+
+
+
+app.post('/updateDeptManager', function(req, res) {
+    UserID = req.body.UserID;
+    //ResetPassword = req.body.ResetPassword;
+    Password = req.body.Password;
+
+    Name = req.body.Name;
+    Designation = req.body.Designation;
+
+    AssignedStore = req.body.AssignedStore;
+    AssignedEmployee = req.body.AssignedEmployee;
+    UserObjectID = req.body.UserObjectID;
+
+    UserID = UserID.toLowerCase();
+
+    Name = Name.toLowerCase();
+    Designation = Designation.toLowerCase();
+
+
+    var resObj = {};
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = loginexpiredmessage;
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
+
+    if (!(UserID && Name && UserObjectID)) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please enter appropriate informations";
+        res.send(resObj);
+        return;
+    }
+
+    if (!AssignedStore) {
+        resObj.IsSuccess = false;
+        resObj.message = "Please select User";
+        res.send(resObj);
+        return;
+    }
+
+    if (AssignedStore.length != 24) {
+        resObj.IsSuccess = false;
+        resObj.message = "Invalid store selected";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        assert.equal(null, err);
+
+        var collection = db.collection('users');
+
+        async.waterfall([
+            function(callback) {
+                collection.find({
+                    '_id': { $ne: ObjectId(UserObjectID) }
+                }).toArray(function(err, users) {
+                    var cnt = users.length;
+                    for (var u in users) {
+                        if (users[u].UserID == UserID) {
+                            resObj.IsSuccess = false;
+                            resObj.message = "This ID Already Exists in the Portal";
+                            res.send(resObj);
+                            return 0;
+                        }
+                        /*else if (users[u].Name == Name) {
+                            resObj.IsSuccess = false;
+                            resObj.message = "Name already exists";
+                            res.send(resObj);
+                            return 0;
+                        }*/
+                    }
+                    callback(null, users);
+                });
+            },
+            function(userdata, callback) {
+                /*bcrypt.genSalt(10, function(err, salt) {
+                    if (err)
+                        return callback(err);
+
+                    bcrypt.hash(Password, salt, function(err, hash) {
+                        return callback(null, hash);
+                    });
+                });*/
+                var hashedPassword = passwordHash.generate(Password);
+                callback(null, hashedPassword);
+            },
+            function(hashedpassword, callback) {
+                /*console.log(ResetPassword);
+                console.log(hashedpassword);*/
+                if (Password) {
+                    collection.update({
+                        '_id': ObjectId(UserObjectID)
+                    }, {
+                        '$set': {
+                            'UserID': UserID,
+                            'Name': Name,
+                            'Password': hashedpassword,
+                            'AssignedStore': ObjectId(AssignedStore),
+                            'AssignedEmployee': AssignedEmployee,
+                            'Designation': Designation
+                        }
+                    });
+                } else {
+                    console.log(ObjectId(UserObjectID));
+                    collection.update({
+                        '_id': ObjectId(UserObjectID)
+                    }, {
+                        '$set': {
+                            'UserID': UserID,
+                            'Name': Name,
+                            'AssignedStore': ObjectId(AssignedStore),
+                            'AssignedEmployee': AssignedEmployee,
+                            'Designation': Designation,
+                        }
+                    });
+                }
+
+                callback(null, 'updated');
+            },
+            function(response, callback) {
+                db.close();
+                resObj.IsSuccess = true;
+                resObj.message = "Department Manager has been Updated Successfully";
+                res.send(resObj);
+                callback(null, response);
+            }
+        ]);
+    });
+});
+
+
+app.post('/getDeptManagerData', function(req, res) {
+    var resObj = {};
+
+    console.log(req.session);
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = loginexpiredmessage;
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    UserStore = getUserAllotedStore(req);
+
+    //if (req.session.loggedInUser.UserType == 2) {
+    if (req.session.loggedInUser.UserType != 1 && !UserStore) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+
+        async.waterfall([
+            function(callback) {
+                var usercollection = db.collection('users');
+
+                var hodMatchExp = {};
+                if (req.session.loggedInUser.UserType == 2) {
+                    hodMatchExp = {
+                        'UserType': 5,
+                        'AssignedStore': ObjectId(UserStore)
+                    };
+                } else {
+                    hodMatchExp = {
+                        'UserType': 5
+                    };
+                }
+
+                usercollection.aggregate([{
+                    $match: hodMatchExp
+                }, {
+                    $lookup: {
+                        from: 'stores',
+                        localField: 'AssignedStore',
+                        foreignField: '_id',
+                        as: 'store_docs'
+
+                    }
+                }]).toArray(function(err, users) {
+                    var userlist = [];
+                    if (users && users.length > 0) {
+                        for (var u in users) {
+                            if (users[u].store_docs.length > 0) {
+                                users[u].StoreName = users[u].store_docs[0].StoreName;
+                            } else {
+                                users[u].StoreName = '';
+                            }
+
+                            /*if (users[u].section_docs.length > 0) {
+                                users[u].SectionName = users[u].section_docs[0].SectionName;
+                            } else {
+                                users[u].SectionName = '';
+                            }*/
+
+                            users[u].searchfield =
+                                users[u].Name + ' ' + users[u].UserID + ' ' + users[u].Designation + ' ' + users[u].StoreName;
+
+
+                            userlist.push(users[u]);
+                        }
+                        resObj.IsSuccess = true;
+                        resObj.message = "Success";
+                        resObj.data = userlist;
+
+                        res.send(resObj);
+                    } else {
+                        resObj.IsSuccess = false;
+                        resObj.message = "No record found.";
+                        resObj.data = '';
+                        res.send(resObj);
+                    }
+                    callback(null, userlist);
+                });
+            },
+            function(userlist, callback) {
+                db.close();
+            }
+        ]);
+
+    });
+});
+
+app.post('/deleteDepartmentManager', function(req, res) {
+    UserObjectID = req.body.UserObjectID;
+
+    var resObj = {};
+    if (!req.session.loggedInUser) {
+        resObj.IsSuccess = false;
+        resObj.message = loginexpiredmessage;
+        resObj.data = '';
+        res.send(resObj);
+        return;
+    }
+
+    if (req.session.loggedInUser.UserType == 2) {
+        resObj.IsSuccess = false;
+        resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
+        res.send(resObj);
+        return;
+    }
+
+    if (!UserObjectID) {
+        resObj.IsSuccess = false;
+        resObj.message = "Invalid User Selected";
+        res.send(resObj);
+        return;
+    }
+
+    MongoClient.connect(mongourl, function(err, db) {
+        if (err) {
+            return console.dir(err);
+        }
+        assert.equal(null, err);
+        var collection = db.collection('users');
+
+        async.waterfall([
+            function(callback) {
+                collection.find({
+                    '_id': ObjectId(UserObjectID)
+                }).toArray(function(err, users) {
+                    if (users[0].devicetoken != '') {
+                        var token = '';
+                        var token = users[0].devicetoken;
+                        var notifymessage = 'Your account is temporarily closed. Please contact to your store manager';
+                        var notificationtype = '8';
+                        var title = 'Account Closed';
+                        var image_url = '';
+                        pushnotification_fcm_common(null, [token], UserObjectID, '', title, notifymessage, notificationtype, image_url);
+                    }
+                    callback(null, users);
+                });
+            },
+            function(response, callback) {
+                collection.deleteMany({
+                    '_id': ObjectId(UserObjectID),
+                    'UserType': 5
+                });
+                resObj.IsSuccess = true;
+                resObj.message = "Department Manager has been Deleted Successfully";
+                res.send(resObj);
+
+                db.close();
+            }
+        ]);
+
     });
 });
