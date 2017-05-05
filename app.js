@@ -753,7 +753,7 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                     'MobileNo': MobileNo,
                     'Date': {
                         $gte: fromDate,
-                        $lte: toDate,
+                        //$lte: toDate,
                     }
                 }).sort({ 'Date': -1 }).toArray(function(err, devicelist) {
                     callback(null, devicelist);
@@ -761,7 +761,7 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
             },
             function(devicelist, callback) {
                 if (!(devicelist && devicelist.length > 0)) {
-                	console.log('762 -- ' + beacons[0].BeaconWelcome);
+                    console.log('762 -- ' + beacons[0].BeaconWelcome);
                     if (typeof(beacons[0].BeaconWelcome) != 'undefined' && beacons[0].BeaconWelcome) {
                         mobile_nos = [];
                         mobile_nos.push('91' + MobileNo);
@@ -803,22 +803,6 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                     if (devices[0].BeaconID == BeaconID) {
                         StayTime = Math.max(((todaysdate - devices[0].Date) / 1000), 0);
                         if (StayTime >= 1) {
-                            collection.update({
-                                    _id: ObjectId(devices[0]._id)
-                                }, {
-                                    '$set': {
-                                        'Date': todaysdate,
-                                        'StayTime': StayTime,
-                                    }
-                                },
-                                function(err, result) {
-                                    if (err) {
-                                        throw err;
-                                    } else {
-                                        callback(null, 'updated');
-                                        return 0;
-                                    }
-                                });
 
                             console.log('Checking Staytime ', StayTime, ' ', settings_StayTime);
 
@@ -829,26 +813,20 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                                 empcollection.find({
                                     'BeaconID': BeaconID
                                 }).sort({ 'Distance': -1 }).toArray(function(err, emplist) {
-                                    console.log(JSON.stringify(emplist));
-                                    console.log('emplist called');
                                     if (emplist && emplist.length > 0) {
 
-                                        console.log(JSON.stringify(emplist));
-                                        console.log('==============Employee LIST Called ON live========');
-
                                         var userid = emplist[0].UserID.toString();
+                                        console.log(userid);
                                         var empusers = db.collection('users');
                                         empusers.find(ObjectId(userid)).toArray(function(err, emplist2) {
                                             if (emplist2 && emplist2.length > 0) {
-                                                console.log(JSON.stringify(emplist2));
 
                                                 var token = emplist2[0].devicetoken;
+                                                token = [token];
 
                                                 mobile_nos = [];
                                                 mobile_nos.push('91' + MobileNo);
                                                 var data = JSON.stringify(mobile_nos);
-                                                console.log('Mobile Numbers');
-                                                console.log(JSON.stringify(data));
 
                                                 request.post(lotusWebURL + 'user/get_user_name_by_mobileno', {
                                                         form: {
@@ -856,25 +834,180 @@ function updateDeviceHistory(BeaconID, DeviceID, MobileNo, resObj) {
                                                         }
                                                     },
                                                     function(res2, err, body) {
-                                                        console.log(JSON.stringify(body));
                                                         device_detail = [];
                                                         var reqbody = parse_JSON(body);
                                                         if (reqbody) {
                                                             reqbody = reqbody.data;
                                                             var mobileno = '';
                                                             for (var r in reqbody) {
-                                                                if (reqbody[r] != false && reqbody[r].name) {
-                                                                    notifresobj = {};
+                                                                if (reqbody[r] && reqbody[r].name) {
                                                                     notifymessage = settings_EmpCustIntimate.replace('«CUSTNAME»', reqbody[r].name);
-                                                                    sendpushnotification_fcm(null, [token], beacons[0].BeaconID, userid, MobileNo, 'Attain', notifymessage);
+                                                                    //sendpushnotification_fcm(null, [token], beacons[0].BeaconID, userid, MobileNo, 'Attain', notifymessage);
+
+                                                                    var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
+                                                                        registration_ids: token,
+                                                                        data: {
+                                                                            'message': notifymessage,
+                                                                            'notification_user_id': userid,
+                                                                            'badge': 1,
+                                                                            'title': 'Attain',
+                                                                            'BeaconID': beacons[0].BeaconID,
+                                                                            'notification_type': 7,
+                                                                        }
+                                                                    };
+
+                                                                    fcm.send(message, function(err, response) {
+                                                                        if (err) {
+                                                                            console.log("Something gone wrong!");
+                                                                            collection.update({
+                                                                                    _id: ObjectId(devices[0]._id)
+                                                                                }, {
+                                                                                    '$set': {
+                                                                                        'Date': todaysdate,
+                                                                                        'StayTime': StayTime,
+                                                                                    }
+                                                                                },
+                                                                                function(err, result) {
+                                                                                    if (err) {
+                                                                                        throw err;
+                                                                                    } else {
+                                                                                        callback(null, 'updated');
+                                                                                        return 0;
+                                                                                    }
+                                                                                });
+                                                                        } else {
+                                                                            if (typeof(response) != 'undefined') {
+                                                                                var request = require('request');
+                                                                                var gcmdata = JSON.stringify(token);
+                                                                                request.post(lotusURL + 'employee/get_notification_entry', {
+                                                                                        form: {
+                                                                                            'android_device_token': gcmdata,
+                                                                                            'notification_user_id': userid,
+                                                                                            'mobile_no': MobileNo,
+                                                                                            'title': 'Attain',
+                                                                                            'BeaconID': beacons[0].BeaconID,
+                                                                                            'message': notifymessage,
+                                                                                            //  'notification_img': image_url,
+                                                                                            'notification_type': 7,
+                                                                                        }
+                                                                                    },
+                                                                                    function(res2, err, body) {
+                                                                                        console.log('Data coming from employee service --> ' + JSON.stringify(body));
+                                                                                        collection.update({
+                                                                                                _id: ObjectId(devices[0]._id)
+                                                                                            }, {
+                                                                                                '$set': {
+                                                                                                    'Date': todaysdate,
+                                                                                                    'StayTime': StayTime,
+                                                                                                }
+                                                                                            },
+                                                                                            function(err, result) {
+                                                                                                if (err) {
+                                                                                                    throw err;
+                                                                                                } else {
+                                                                                                    callback(null, 'updated');
+                                                                                                    return 0;
+                                                                                                }
+                                                                                            });
+                                                                                    });
+                                                                            } else {
+                                                                                collection.update({
+                                                                                        _id: ObjectId(devices[0]._id)
+                                                                                    }, {
+                                                                                        '$set': {
+                                                                                            'Date': todaysdate,
+                                                                                            'StayTime': StayTime,
+                                                                                        }
+                                                                                    },
+                                                                                    function(err, result) {
+                                                                                        if (err) {
+                                                                                            throw err;
+                                                                                        } else {
+                                                                                            callback(null, 'updated');
+                                                                                            return 0;
+                                                                                        }
+                                                                                    });
+                                                                            }
+                                                                            console.log("Successfully sent with Employee response: ", response);
+                                                                        }
+                                                                    });
+
+                                                                } else {
+                                                                    collection.update({
+                                                                            _id: ObjectId(devices[0]._id)
+                                                                        }, {
+                                                                            '$set': {
+                                                                                'Date': todaysdate,
+                                                                                'StayTime': StayTime,
+                                                                            }
+                                                                        },
+                                                                        function(err, result) {
+                                                                            if (err) {
+                                                                                throw err;
+                                                                            } else {
+                                                                                callback(null, 'updated');
+                                                                                return 0;
+                                                                            }
+                                                                        });
                                                                 }
                                                             }
                                                         }
                                                     })
+                                            } else {
+                                                collection.update({
+                                                        _id: ObjectId(devices[0]._id)
+                                                    }, {
+                                                        '$set': {
+                                                            'Date': todaysdate,
+                                                            'StayTime': StayTime,
+                                                        }
+                                                    },
+                                                    function(err, result) {
+                                                        if (err) {
+                                                            throw err;
+                                                        } else {
+                                                            callback(null, 'updated');
+                                                            return 0;
+                                                        }
+                                                    });
                                             }
                                         })
+                                    } else {
+                                        collection.update({
+                                                _id: ObjectId(devices[0]._id)
+                                            }, {
+                                                '$set': {
+                                                    'Date': todaysdate,
+                                                    'StayTime': StayTime,
+                                                }
+                                            },
+                                            function(err, result) {
+                                                if (err) {
+                                                    throw err;
+                                                } else {
+                                                    callback(null, 'updated');
+                                                    return 0;
+                                                }
+                                            });
                                     }
                                 })
+                            } else {
+                                collection.update({
+                                        _id: ObjectId(devices[0]._id)
+                                    }, {
+                                        '$set': {
+                                            'Date': todaysdate,
+                                            'StayTime': StayTime,
+                                        }
+                                    },
+                                    function(err, result) {
+                                        if (err) {
+                                            throw err;
+                                        } else {
+                                            callback(null, 'updated');
+                                            return 0;
+                                        }
+                                    });
                             }
                         }
                     } else {
@@ -1390,9 +1523,9 @@ app.post('/getdata', function(req, res) {
                         'BeaconStore': ObjectId(StoreID)
                     });
                 } else if (Number(StoreID) == -1 && Number(SectionID) != -1) {
-					console.log(1396);
-                	console.log(StoreID);
-                	console.log(SectionID);
+                    console.log(1396);
+                    console.log(StoreID);
+                    console.log(SectionID);
                     beaconcollection = collection.find({
                         'BeaconStore': ObjectId(StoreID),
                         'BeaconSection': ObjectId(SectionID)
@@ -2365,7 +2498,6 @@ app.post('/getbeacondata', function(req, res) {
                 }
 
                 beaconcollection.sort({ 'BeaconKey': 1 }).toArray(function(err, beacons) {
-                    console.log(beacons);
                     console.log('Beacon list called');
                     var beaconlist = [];
                     if (beacons && beacons.length > 0) {
@@ -2387,8 +2519,6 @@ app.post('/getbeacondata', function(req, res) {
                 });
             },
             function(beaconlist, callback) {
-
-
                 db.close();
             }
         ]);
@@ -3201,7 +3331,7 @@ function sendpushnotification_mobileno(res, gcmMobiles, title, description, imag
                 })
         },
         function(devicetokens, callback) {
-        	console.log('sendpushnotification_mobileno -->>>' + JSON.stringify(devicetokens));
+            console.log('sendpushnotification_mobileno -->>>' + JSON.stringify(devicetokens));
             sendpushnotification(res, devicetokens, not_title, not_descr, not_image);
         }
     ]);
@@ -3268,8 +3398,8 @@ function sendpushnotification_fcm(resObj, gcmToken, BeaconID, notification_user_
 
     async.waterfall([
         function(callback) {
-            var reqbody = parse_JSON(response);
-            var data = reqbody.data;
+            /*var reqbody = parse_JSON(response);
+            var data = reqbody.data;*/
 
             var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
                 registration_ids: gcmToken,
@@ -6457,7 +6587,7 @@ app.post('/getsectionInStore', function(req, res) {
 
 
 function pushnotification_fcm_common(resObj, gcmToken, notification_user_id, MobileNo, title, messagebody, notificationtype, image_url) {
-    
+
     if (!image_url) {
         image_url = '';
     }
@@ -6570,67 +6700,65 @@ app.post('/getEmployeeDetailsByDeptManager', function(req, res) {
 
         async.waterfall([
             function(callback) {
-                collection.find(ObjectId(DepartmentID)
-                    ).toArray(function(err, devices) {
+                collection.find(ObjectId(DepartmentID)).toArray(function(err, devices) {
                     callback(null, devices);
                 });
 
             },
             function(devices, callback) {
                 if (devices && devices.length > 0) {
-                   
-             
-                   var assignedEmployee = devices[0].AssignedEmployee;
-                   var employeecollection = [];
-                  // var  emplist = [];
-
-                   for(var b in assignedEmployee)
-                   {
 
 
+                    var assignedEmployee = devices[0].AssignedEmployee;
+                    var employeecollection = [];
+                    // var  emplist = [];
 
-                       employeecollection.push(ObjectId(assignedEmployee[b]));
+                    for (var b in assignedEmployee) {
 
-                   }
 
-                    
 
-                   
-                 var  emplist = collection.find({
+                        employeecollection.push(ObjectId(assignedEmployee[b]));
+
+                    }
+
+
+
+
+                    var emplist = collection.find({
                         '_id': {
                             $in: employeecollection
                         }
                     }).toArray(function(err, employeelist) {
 
-                  
-  console.log('--------------------console for department manager@@@@@@@@@@@-------------------------');
-                    console.log(employeelist);
-                       callback(null, employeelist); 
-                  
-                });
 
-                    
-                    
+                        console.log('--------------------console for department manager@@@@@@@@@@@-------------------------');
+                        console.log(employeelist);
+                        callback(null, employeelist);
 
-                    
+                    });
+
+
+
+
+
                 } else {
                     resObj.IsSuccess = false;
                     resObj.message = "Employee not found";
                     callback(null, false);
                 }
 
-               
+
 
             },
             function(workdone, callback) {
-                 resObj.IsSuccess = true;
-               resObj.data = workdone;
+                resObj.IsSuccess = true;
+                resObj.data = workdone;
 
-                   console.log('--------------------console for department manager@@@@@@@@@@@-------------------------');
-                    console.log(resObj);
-                    console.log('--------------------console for department manager@@@@@@@@@@@@@@-------------------------');
-                    res.send(resObj);
-                 
+                console.log('--------------------console for department manager@@@@@@@@@@@-------------------------');
+                console.log(resObj);
+                console.log('--------------------console for department manager@@@@@@@@@@@@@@-------------------------');
+                res.send(resObj);
+
                 db.close();
             }
         ]);
@@ -6647,8 +6775,8 @@ app.post('/getEmployeeDetailsByDeptManager', function(req, res) {
 app.post('/getEmployeeByStoreSectionUserType', function(req, res) {
 
     var AssignedStore = req.body.AssignedStore;
-     var AssignedSection = req.body.AssignedSection;
-     var UserType =  req.body.UserType;
+    var AssignedSection = req.body.AssignedSection;
+    var UserType = req.body.UserType;
 
     var resObj = {};
     if (!AssignedStore) {
@@ -6688,7 +6816,7 @@ app.post('/getEmployeeByStoreSectionUserType', function(req, res) {
                     resObj.message = "No Record Found";
                 }
                 console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-                 console.log(resObj);
+                console.log(resObj);
 
                 console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
 
@@ -6699,6 +6827,3 @@ app.post('/getEmployeeByStoreSectionUserType', function(req, res) {
         ]);
     });
 });
-
-
-
