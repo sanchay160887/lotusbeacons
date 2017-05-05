@@ -34,6 +34,9 @@
     font-style: italic;
     border: 1px solid #bce8f1;
 }
+.error {
+    color: red;
+}
 </style>
 <!--
 Author: Ranjithprabhu K
@@ -60,13 +63,13 @@ Date: 05 Jan 2016
         <h4 ng-if="loggedInUser.UserType == 2">View Beacon</h4>
         <h4 ng-if="button_name!='Update' && loggedInUser.UserType != 2">Add Beacon</h4>
         <h4 ng-if="button_name=='Update' && loggedInUser.UserType != 2">Update Beacon</h4>
-        <label>Beacon ID</label>
+        <label>Beacon ID<span class="error">*</span></label>
         <input class="form-control" type="text" name="beacon_id" ng-model="Beacon_ID" ng-readonly="button_name=='Update'" ng-readonly="loggedInUser.UserType==2" />
         <br>
-        <label>Beacon Key</label>
+        <label>Beacon Key<span class="error">*</span></label>
         <input class="form-control" type="text" name="beacon_key" ng-model="Beacon_Key" ng-readonly="loggedInUser.UserType==2" />
         <br>
-        <label>Select Store</label>
+        <label>Select Store<span class="error">*</span></label>
         <select class="form-control col-md-4" ng-model="Beacon_Store" ng-show="loggedInUser.UserType!=2" ng-readonly="loggedInUser.UserType==2">
             <option value="">Select Store</option>
             <option ng-repeat="device in storeData | orderBy:StoreName" value="{{device._id}}">{{device.StoreName}}</option>
