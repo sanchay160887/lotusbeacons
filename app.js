@@ -6131,12 +6131,6 @@ app.post('/getCrmEmployee', function(req, res) {
                         resObj.IsSuccess = true;
                         resObj.message = "Success";
                         resObj.data = userlist;
-                        console.log('===========employee list Start======================');
-
-                        console.log(resObj);
-
-                        console.log('===========employee list END======================');
-
                         res.send(resObj);
                     } else {
                         resObj.IsSuccess = false;
