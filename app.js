@@ -6704,7 +6704,7 @@ app.post('/getEmployeeDetailsByDeptManager', function(req, res) {
                     var employeecollection = [];
                     // var  emplist = [];
 
-                   if (assignedEmployee.length > 0) {
+                   if (assignedEmployee && assignedEmployee.length > 0) {
                         for (var b in assignedEmployee) {
                             employeecollection.push(ObjectId(assignedEmployee[b]));
                         }
