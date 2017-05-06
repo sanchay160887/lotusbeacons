@@ -6667,7 +6667,7 @@ function pushnotification_fcm_common(resObj, gcmToken, notification_user_id, Mob
 
 
 app.post('/getEmployeeDetailsByDeptManager', function(req, res) {
-    DepartmentID = req.body.DepartmentID;
+    var DepartmentID = req.body.DepartmentID;
 
     console.log(DepartmentID);
     console.log('Employee Details Called -----=========');
@@ -6704,12 +6704,10 @@ app.post('/getEmployeeDetailsByDeptManager', function(req, res) {
                     var employeecollection = [];
                     // var  emplist = [];
 
-                    for (var b in assignedEmployee) {
-
-
-
-                        employeecollection.push(ObjectId(assignedEmployee[b]));
-
+                   if (assignedEmployee.length > 0) {
+                        for (var b in assignedEmployee) {
+                            employeecollection.push(ObjectId(assignedEmployee[b]));
+                        }
                     }
 
 
