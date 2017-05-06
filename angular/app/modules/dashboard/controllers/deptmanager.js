@@ -192,6 +192,15 @@ dashboard.controller("DeptMangController", function($rootScope, $scope, apiServi
                 return;
             }
         }
+        
+        
+if($scope.AssignedEmployee == '')
+{
+
+   alert('Please Assign Employee');
+     return;
+}
+
 
         $scope.FormInitialized = false;
         if ($scope.button_name == 'Add') {
