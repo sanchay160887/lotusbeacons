@@ -6008,7 +6008,7 @@ app.post('/updateSection', function(req, res) {
 
                 callback(null, 'updated');
             },
-            function(updated, callback) {
+           function(updated, callback) {
                 sectionbeacon.updateMany({
                         'BeaconSection': ObjectId(UserObjectID)
 
@@ -6032,29 +6032,7 @@ app.post('/updateSection', function(req, res) {
                 callback(null, 'removed');
 
             },
-           /* function(update, callback) {
-                sectionbeacon.updateMany({
-                        'BeaconID': {
-                            $in: selectedBeacon
-                        }
-                    }, {
-                        '$set': {
-                            'BeaconSection': ObjectId(UserObjectID),
-                        }
-                    },
-                    function(err, result) {
-                        if (err) {
-                            throw err;
-                        } else {
-
-                        }
-                    }
-                );
-
-                console.log('Section Beacon Updated');
-                callback(null, 'rec');
-
-            },*/
+          
             function(response, callback) {
                 resObj.IsSuccess = true;
                 resObj.message = "Section has been Updated Successfully";
