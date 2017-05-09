@@ -63,8 +63,8 @@ Date: 05 Jan 2016
             <p class="wait_text">Please Wait...</p>
         </div>
         <h4 ng-if="button_name!='Update' && loggedInUser.UserType != 1">View Manager</h4>
-        <h4 ng-if="button_name!='Update' && loggedInUser.UserType == 1">Add Manager</h4>
-        <h4 ng-if="button_name=='Update' && loggedInUser.UserType == 1">Update Manager</h4>
+        <h4 ng-if="button_name!='Update' && loggedInUser.UserType == 1">Add Department Manager</h4>
+        <h4 ng-if="button_name=='Update' && loggedInUser.UserType == 1">Update Department Manager</h4>
         <ng-form name="deptmangForm" id="deptmangForm">
             <label>Name<span class="error">*</span></label>
             <input class="form-control" type="text" name="Name" id="Name" ng-model="Name" required="required" />
