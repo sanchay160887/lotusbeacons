@@ -94,7 +94,7 @@ Date: 05 Jan 2016
             <br>
             <label>Manager ID<span class="error">*</span></label>
             <input class="form-control" type="text" name="UserID" id="UserID" ng-model="UserID" ng-pattern="useridregex" required="required" ng-readonly="loggedInUser.UserType!=1" />
-            <span class="error" ng-show="deptmangForm.UserID.$touched && deptmangForm.UserID.$error.required">Please Enter Employee ID</span>
+            <span class="error" ng-show="deptmangForm.UserID.$touched && deptmangForm.UserID.$error.required">Please Enter Department Manager ID</span>
             <span class="error" ng-show="deptmangForm.UserID.$touched && deptmangForm.UserID.$invalid && !deptmangForm.UserID.$error.required">User ID must be lowercase and only alphabets</span>
             <br>
             <label>Password<span ng-show="button_name!='Update'" class="error">*</span></label>
