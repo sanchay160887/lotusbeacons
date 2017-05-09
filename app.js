@@ -6019,7 +6019,7 @@ app.post('/updateSection', function(req, res) {
                 callback(null, 'removed');
 
             },
-            function(update, callback) {
+            /*function(update, callback) {
                 sectionbeacon.updateMany({
                         'BeaconID': {
                             $in: selectedBeacon
@@ -6041,7 +6041,7 @@ app.post('/updateSection', function(req, res) {
                 console.log('Section Beacon Updated');
                 callback(null, 'rec');
 
-            },
+            },*/
             function(response, callback) {
                 resObj.IsSuccess = true;
                 resObj.message = "Section has been Updated Successfully";
