@@ -80,8 +80,9 @@ Date: 05 Jan 2016
             <span class="error" ng-show="deptmangForm.AssignedStore.$touched && deptmangForm.AssignedStore.$invalid">Please Assign Store</span>
             <br>
             <label>Assign Employees<span class="error">*</span></label>
+              <span ng-show="AssignedEmployee.length > 0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ AssignedEmployee && AssignedEmployee.length || 0 }} Employee Selected</span>
             <select class="form-control col-md-4" ng-model="AssignedEmployee" id="AssignedEmployee" name="AssignedEmployee" required="required" multiple="multiple" ng-readonly="loggedInUser.UserType!=1">
-                <option value="">Select Employees</option>
+                <!--<option value="">Select Employees</option>-->
                 <option ng-repeat="device in EmployeeDataByStore | orderBy:'Name'" value="{{device._id}}" ng-selected="selected">
                     {{device.Name}}</option>
             </select>
