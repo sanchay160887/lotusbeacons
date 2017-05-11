@@ -80,6 +80,7 @@ Date: 05 Jan 2016
             <span class="error" ng-show="sectionForm.AssignedStore.$touched && sectionForm.AssignedStore.$invalid">Please Assign Store</span>
             <br>
             <label>Assign Beacon(s)<span class="error">*</span> </label>
+             <span ng-show="selectedBeacon.length > 0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ selectedBeacon && selectedBeacon.length || 0 }} Beacon Selected</span>
             <select class="form-control col-md-4" multiple="multiple" ng-model="selectedBeacon" id="selectedBeacon" name="selectedBeacon" required="required" ng-disabled='!AssignedStore' ng-readonly="loggedInUser.UserType!=1">
                 <!-- <option value="">Please Assign Beacon</option> -->
                 <option ng-repeat="device in beaconData | orderBy:BeaconKey" value="{{device.BeaconID}}" ng-selected="selected">
