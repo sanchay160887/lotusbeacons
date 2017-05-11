@@ -50,7 +50,7 @@ Date: 05 Jan 2016
 <section class="content-blocks">
     <section class="content-header">
         <h1>
-            Managers
+           Store Managers
         </h1>
         <ol class="breadcrumb">
             <!-- <li><a><i class="fa fa-dashboard"></i> Dashboard</a></li> -->
@@ -62,8 +62,8 @@ Date: 05 Jan 2016
         <div class="wait_block" ng-if="!FormInitialized">
             <p class="wait_text">Please Wait...</p>
         </div>
-        <h4 ng-if="button_name!='Update'">Add Manager</h4>
-        <h4 ng-if="button_name=='Update'">Update Manager</h4>
+        <h4 ng-if="button_name!='Update'">Add Store Manager</h4>
+        <h4 ng-if="button_name=='Update'">Update Store Manager</h4>
         <ng-form name="userForm" id="userForm">
             <label>Name<span class="error">*</span></label>
             <input class="form-control" type="text" name="Name" id="Name" ng-model="Name" required="required" />
@@ -120,7 +120,7 @@ Date: 05 Jan 2016
     <section class="content-body register_block_2">
         <div class="row">
             <div class="col-xs-5">
-                <h4>Registered Managers</h4>
+                <h4>Registered Store Managers</h4>
             </div>
         </div>
         <div class="wait_block" ng-if="!ListInitialized">
