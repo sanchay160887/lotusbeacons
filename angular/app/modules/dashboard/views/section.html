@@ -80,7 +80,7 @@ Date: 05 Jan 2016
           
             <span class="error" ng-show="sectionForm.AssignedStore.$touched && sectionForm.AssignedStore.$invalid">Please Assign Store</span>
             <br>
-            <label>Assign Beacon(s)<span class="error">*</span> </label>
+            <label style="margin-top:18px;">Assign Beacon(s)<span class="error">*</span> </label>
              <span ng-show="selectedBeacon.length > 0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ selectedBeacon && selectedBeacon.length || 0 }} Beacon Selected</span>
             <select class="form-control col-md-4" multiple="multiple" ng-model="selectedBeacon" id="selectedBeacon" name="selectedBeacon" required="required" ng-disabled='!AssignedStore' ng-readonly="loggedInUser.UserType!=1">
                 <!-- <option value="">Please Assign Beacon</option> -->
@@ -91,7 +91,7 @@ Date: 05 Jan 2016
             
             <span class="error" ng-show="sectionForm.selectedBeacon.$touched && sectionForm.selectedBeacon.$invalid">Please Assign Beacon</span>
             <br>
-            <label>Description</label>
+            <label style="margin-top:18px;">Description</label>
             <!--<input class="form-control" type="text" name="SectionDesc" id="SectionDesc" ng-model="SectionDesc" required="required" />-->
             <textarea name="SectionDesc" id="SectionDesc" ng-model="SectionDesc" rows="5" cols="47" ng-readonly="loggedInUser.UserType!=1"></textarea>
             <br>
