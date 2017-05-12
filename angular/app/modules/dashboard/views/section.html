@@ -76,6 +76,7 @@ Date: 05 Jan 2016
                 <option ng-repeat="device in storeData | orderBy:StoreName" value="{{device._id}}">
                     {{device.StoreName}}</option>
             </select>
+             <br>
           
             <span class="error" ng-show="sectionForm.AssignedStore.$touched && sectionForm.AssignedStore.$invalid">Please Assign Store</span>
             <br>
@@ -86,6 +87,7 @@ Date: 05 Jan 2016
                 <option ng-repeat="device in beaconData | orderBy:BeaconKey" value="{{device.BeaconID}}" ng-selected="selected">
                     {{device.BeaconKey}}</option>
             </select>
+             <br>
             
             <span class="error" ng-show="sectionForm.selectedBeacon.$touched && sectionForm.selectedBeacon.$invalid">Please Assign Beacon</span>
             <br>
