@@ -25,8 +25,8 @@ var session = require('express-session');
 querystring = require('querystring');
 require('timers');
 var devicecron = require('node-cron');
-var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon'; //Live Database
-//var mongourl = 'mongodb://lotus:remote@ds137100.mlab.com:37100/lotusbeaconemployee'; //Staging Database
+//var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon'; //Live Database
+var mongourl = 'mongodb://lotus:remote@ds137100.mlab.com:37100/lotusbeaconemployee'; //Staging Database
 var lotusWebURL = 'https://www.lotuselectronics.com/v2/';
 //var lotusWebURL = 'http://lampdemos.com/lotus15/v2/';
 var lotusURL = 'https://www.lotuselectronics.com/v2_emp/';
