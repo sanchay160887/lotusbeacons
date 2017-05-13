@@ -5021,12 +5021,12 @@ app.post('/getEmployeedata', function(req, res) {
             'UserType': 3
         };
 
-        if (StoreID && Number(StoreID) != -1){
+        if (StoreID && Number(StoreID) != -1) {
             userMatchExp.AssignedStore = ObjectId(StoreID);
         }
     }
 
-    if (SectionID && Number(SectionID) != -1){
+    if (SectionID && Number(SectionID) != -1) {
         userMatchExp.AssignedSection = ObjectId(SectionID);
     }
     console.log(JSON.stringify(userMatchExp));
@@ -6455,14 +6455,14 @@ function pushnotification_fcm_common(resObj, gcmToken, notification_user_id, Mob
         function(callback) {
 
             var request = require('request');
-             var uJSON = JSON.stringify(notification_user_id);
+            var uJSON = JSON.stringify(notification_user_id);
 
             var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
                 registration_ids: gcmToken,
 
                 data: {
                     'message': messagebody,
-                    'notification_user_id': uJSON,//notification_user_id,
+                    'notification_user_id': uJSON, //notification_user_id,
                     'badge': 1,
                     'title': title,
 
@@ -6476,30 +6476,21 @@ function pushnotification_fcm_common(resObj, gcmToken, notification_user_id, Mob
 
 
             fcm.send(message, function(err, response) {
-
-
-
                 if (err) {
-                     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
                     console.log("Something has gone wrong!");
                     console.dir(err);
-                        console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
                 } else {
                     if (response != 'undefined') {
                         try {
-
                             var request = require('request');
                             var gcmdata = JSON.stringify(gcmToken);
 
-
-                         var userJSON = JSON.stringify(notification_user_id);
-
-
+                            var userJSON = JSON.stringify(notification_user_id);
                             request.post(lotusURL + 'employee/get_notification_entry', {
 
                                     form: {
                                         'android_device_token': gcmdata,
-                                        'notification_user_id': userJSON,//notification_user_id,
+                                        'notification_user_id': userJSON, //notification_user_id,
                                         //'mobile_no': MobileNo,
                                         'title': title,
                                         'message': messagebody,
