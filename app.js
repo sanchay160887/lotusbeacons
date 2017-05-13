@@ -197,7 +197,7 @@ function parse_JSON(responsecontent) {
     }
 }
 
-var settings_StayTime = 20; //90;
+var settings_StayTime = 90;
 var settings_welcomeMessage = 'Welcome «CUSTNAME», Greetings from Lotus Electronics. Look out for latest deals for the products you are shopping for';
 var settings_EmpCustIntimate = 'Check your «CUSTNAME» is nearby you';
 
@@ -210,7 +210,7 @@ MongoClient.connect(mongourl, function(err, db) {
     var settingsCol = db.collection('settings');
     settingsCol.find().toArray(function(err, settings) {
         if (settings && settings.length > 0) {
-            //settings_StayTime = settings[0].MinStayTimeOfCustomerForEmployee;
+            settings_StayTime = settings[0].MinStayTimeOfCustomerForEmployee;
             settings_welcomeMessage = settings[0].CustomerWelcomeMessage;
             settings_EmpCustIntimate = settings[0].EmployeeCustomerIntimation
         }
