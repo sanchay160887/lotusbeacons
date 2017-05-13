@@ -531,19 +531,20 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
     //apiService.base_url = 'http://lotuslive.herokuapp.com';
     //apiService.base_url = 'http://52.205.143.53:3000';
 
-    var employeeData = function() {
+    var employeeData = function(storeID, SectionID) {
         return $http({
             method: "post",
-            url: "/getEmployeedata"
+            url: "/getEmployeedata",
+            data : {
+                'StoreID' : storeID,
+                'SectionID' : SectionID
+            }
         });
-
-
     }
-    var sectionData = function(data) {
 
+    var sectionData = function(data) {
         return $http.post('/getsectiondata', { headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;' } });
     }
-
 
     var sectionInStore = function(AssignedStore) {
         return $http({
@@ -938,6 +939,24 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
       apiService.deptmanagerData = deptmanagerData;
       apiService.updateDeptManager = updateDeptManager;
         apiService.deleteDepartmentManager = deleteDepartmentManager;
+
+
+        
+    var sendEmpNotification_image = function(gcmTokens, notification_user_id, title, description, image_url) {
+
+        return $http({
+            method: "post",
+            url: "/EmployeeOfficialNotification",
+            data: {
+                'gcmTokens': gcmTokens,
+                'notification_user_id' : notification_user_id,
+                'description': description,
+                'title': title,
+                'image_url': image_url
+            }
+        });
+    }
+    apiService.sendEmpNotification_image = sendEmpNotification_image;
 
 
     return apiService;

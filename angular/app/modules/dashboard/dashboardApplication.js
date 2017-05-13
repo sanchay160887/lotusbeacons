@@ -271,6 +271,21 @@ dashboard.config(["$stateProvider", function($stateProvider) {
 
 
 
+    $stateProvider.state('app.empnotification', {
+        url: '/employeenotification',
+        templateUrl: 'app/modules/dashboard/views/employeenotification.html',
+        controller: 'EmployeeNotification',
+        controllerAs: 'vm',
+        data: {
+            pageTitle: 'Employee Notification LIST'
+        }
+    });
+
+
+
+
+
+
 
 
 }]);

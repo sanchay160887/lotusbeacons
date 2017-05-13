@@ -162,6 +162,12 @@ app.controller("appCtrl", ['$rootScope', '$scope', '$state', '$location', 'Flash
                 icon: "user",
                 state: "employees"
             }, 
+                 {
+                title: "Employee Notification",
+                icon: "bell",
+                state: "empnotification"
+            },
+
             {
                 title: "CRM Users",
                 icon: "user",

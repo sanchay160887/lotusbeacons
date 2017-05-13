@@ -2697,22 +2697,8 @@ app.post('/getbeacon', function(req, res) {
 app.post('/getstoredata', function(req, res) {
 
     var resObj = {};
-    /*if (!req.session.loggedInUser) {
-        sObj.IsSuccess = false;
-        resObj.message = "You are not logged in.";
-        resObj.data = '';
-        res.send(resObj);
-        return;
-    }*/
 
     UserStore = getUserAllotedStore(req);
-
-    /*if (!req.session.loggedInUser) {
-        resObj.IsSuccess = false;
-        resObj.message = "No record found.";
-        resObj.data = '';
-        res.send(resObj);
-    }*/
 
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
@@ -2728,7 +2714,6 @@ app.post('/getstoredata', function(req, res) {
         }
 
         collection.sort({ 'StoreName': 1 }).toArray(function(err, devices) {
-
 
             if (devices && devices.length > 0) {
                 for (var dvc in devices) {
@@ -4424,24 +4409,6 @@ app.post('/addEmployee', function(req, res) {
 app.post('/getsectiondata', function(req, res) {
 
     var resObj = {};
-    /*if (!req.session.loggedInUser) {
-        resObj.IsSuccess = false;
-        resObj.message = "You are not logged in.";
-        resObj.data = '';
-        res.send(resObj);
-        return;
-    }*/
-
-    //UserSection = getUserAllotedSection(req);
-
-    /*if (!req.session.loggedInUser) {
-        resObj.IsSuccess = false;
-        resObj.message = "No record found.";
-        resObj.data = '';
-        res.send(resObj);
-    }*/
-
-    console.log("Get Section Called================================================");
 
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
@@ -4460,9 +4427,7 @@ app.post('/getsectiondata', function(req, res) {
                 resObj.IsSuccess = true;
                 resObj.message = "Success";
                 resObj.data = devicelist;
-                console.log(resObj.data);
 
-                console.log('==== Section Data Called=======================');
                 res.send(resObj);
             } else {
                 resObj.IsSuccess = false;
@@ -5042,6 +5007,9 @@ app.post('/getEmployeedata', function(req, res) {
         return;
     }
 
+    StoreID = req.body.StoreID;
+    SectionID = req.body.SectionID;
+
     var userMatchExp = {};
     if (req.session.loggedInUser.UserType == 2) {
         userMatchExp = {
@@ -5052,7 +5020,16 @@ app.post('/getEmployeedata', function(req, res) {
         userMatchExp = {
             'UserType': 3
         };
+
+        if (StoreID && Number(StoreID) != -1){
+            userMatchExp.AssignedStore = ObjectId(StoreID);
+        }
     }
+
+    if (SectionID && Number(SectionID) != -1){
+        userMatchExp.AssignedSection = ObjectId(SectionID);
+    }
+    console.log(JSON.stringify(userMatchExp));
 
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
@@ -6448,6 +6425,24 @@ app.post('/getsectionInStore', function(req, res) {
 });
 
 
+app.post('/EmployeeOfficialNotification', function(req, res) {
+
+    var resObj = {};
+
+    var gcmToken = req.body.gcmTokens;
+    var notification_user_id = req.body.notification_user_id;
+
+    var MobileNo = '';
+
+    var title = req.body.title;
+    var messagebody = req.body.description;
+    var notificationtype = '10';
+    var image_url = req.body.image_url;
+
+
+    pushnotification_fcm_common(res, gcmToken, notification_user_id, MobileNo, title, messagebody, notificationtype, image_url);
+
+});
 
 
 function pushnotification_fcm_common(resObj, gcmToken, notification_user_id, MobileNo, title, messagebody, notificationtype, image_url) {
@@ -6460,13 +6455,14 @@ function pushnotification_fcm_common(resObj, gcmToken, notification_user_id, Mob
         function(callback) {
 
             var request = require('request');
+             var uJSON = JSON.stringify(notification_user_id);
 
             var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
                 registration_ids: gcmToken,
 
                 data: {
                     'message': messagebody,
-                    'notification_user_id': notification_user_id,
+                    'notification_user_id': uJSON,//notification_user_id,
                     'badge': 1,
                     'title': title,
 
@@ -6484,7 +6480,10 @@ function pushnotification_fcm_common(resObj, gcmToken, notification_user_id, Mob
 
 
                 if (err) {
+                     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
                     console.log("Something has gone wrong!");
+                    console.dir(err);
+                        console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
                 } else {
                     if (response != 'undefined') {
                         try {
@@ -6493,14 +6492,14 @@ function pushnotification_fcm_common(resObj, gcmToken, notification_user_id, Mob
                             var gcmdata = JSON.stringify(gcmToken);
 
 
-
+                         var userJSON = JSON.stringify(notification_user_id);
 
 
                             request.post(lotusURL + 'employee/get_notification_entry', {
 
                                     form: {
                                         'android_device_token': gcmdata,
-                                        'notification_user_id': notification_user_id,
+                                        'notification_user_id': userJSON,//notification_user_id,
                                         //'mobile_no': MobileNo,
                                         'title': title,
                                         'message': messagebody,
