@@ -1,0 +1,381 @@
+<style>
+.content-device_block {
+    border: 1px solid grey;
+    margin: 2% auto;
+    min-height: 300px;
+    padding: 2% 0;
+    width: 98%;
+}
+
+.block_title_3 {
+    border-bottom: 1px solid;
+    font-size: 16px;
+    margin-bottom: 0;
+    padding: 3px 0;
+    min-height: 40px;
+}
+
+.bcon_selection_block_left {
+    border-radius: 3px;
+    width: 70%;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.bcon_selection_block_right {
+    border-radius: 3px;
+    width: 29%;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.no-pad {
+    padding: 0 2px;
+}
+
+.btn-margin-top {
+    margin-top: 24px;
+}
+
+.bcon_selection_section {
+    padding: 0 0 24px 12px;
+}
+
+.push_btnn_block {
+    text-align: right;
+}
+
+.pad_box {
+    padding-top: 20px;
+}
+
+.btn_set {
+    margin-top: 20px;
+    width: 200px !important;
+}
+
+.error_text {
+    background-color: #d9edf7;
+    border-radius: 3px;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 8px 10px;
+    font-style: italic;
+    border: 1px solid #bce8f1;
+}
+
+.error_text {
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    color: #a94442;
+}
+
+.wait_text {
+    background-color: #d9edf7;
+    border-radius: 3px;
+    color: #31708f;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 8px 10px;
+    font-style: italic;
+    border: 1px solid #bce8f1;
+}
+
+#graphic-message .modal-footer {
+    text-align: center;
+}
+
+#graphic-message .modal-header {
+    background: #2E96F2;
+    color: #fff;
+}
+
+#graphic-message .modal-title {
+    font-weight: bold;
+}
+
+.input-icon.right textarea,
+.input-icon.right:input[type="text"] {
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    resize: none;
+}
+
+#graphic-message .modal-body > small {
+    font-weight: bold;
+    font-size: 14px;
+    color: #1D8DF1;
+}
+
+#graphic-message .close {
+    color: #fff;
+    font-size: 34px;
+    opacity: 1;
+}
+
+.active-users {
+    color: #555299;
+    margin-bottom: 10px;
+}
+</style>
+<!-- Content Header (Page header) -->
+<div ng-show="!connection" class="alert alert-danger">You're offline now. Please check your internet connection</div>
+<div ng-show="connection_msg" class="alert alert-success">Re-connected successfully</div>
+<section class="content-header">
+    <h1> Employee Official Notification </h1>
+    <ol class="breadcrumb">
+        <li><a ui-sref="app.dashboard"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li class="active">Employee Official Notification</li>
+    </ol>
+</section>
+<div class="content-device_block">
+    <div class="container-fluid">
+        <div class="wait_block" ng-if="InvalidInputs">
+            <p class="error_text">Please select Store for getting list of employees.</p>
+        </div>
+        <div class="wait_block" ng-if="!Initialized">
+            <p class="wait_text">Please Wait...</p>
+        </div>
+        <div class="bcon_selection_section">
+            <div class="bcon_selection_block_left">
+                <div class="bcon_selection row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="col-md-12 no-pad">
+                                <label>Select Store</label>
+                                <select class="form-control col-md-4" ng-model="selectedStore">
+                                    <option value="">Select Store</option>
+                                    <option value="-1" ng-show="loggedInUser.UserType == 1">All Store</option>
+                                    <option ng-repeat="device in storeData | orderBy:StoreName" value="{{device._id}}">{{device.StoreName}}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="col-md-12 no-pad">
+                                <label>Select Section</label>
+                                <select class="form-control col-md-4" ng-show="!SectionInitialized">
+                                    <option value="">Please wait..</option>
+                                </select>
+                                <select class="form-control col-md-4" ng-model="selectedSection" ng-show="SectionInitialized">
+                                    <option value="">Select Section</option>
+                                    <option value="-1" ng-show="selectedStore">All Section</option>
+                                    <option ng-repeat="device in sectionInStore | orderBy:StoreName" value="{{device._id}}">{{device.SectionName}}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-info btn-margin-top" ng-click="getAllEmployees()">Show</button>
+                    </div>
+                </div>
+            </div>
+            <div class="bcon_selection_block_right">
+                <div class="bcon_selection row">
+                    <div class="col-md-7">
+                        <button type="button" class="btn btn-info btn-margin-top pull-right" data-toggle="modal" data-target="#graphic-message" ng-click="checkClickedRecords()">Send Notification</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th colspan="5"><small><a href="javascript:;" ng-click="selectRecords()">Select All</a>/
+            <a href="javascript:;" ng-click="unselectRecords()">Unselect All</a></small></th>
+                    </tr>
+                    <tr>
+                        <th>Select</th>
+                        <th ng-click="sortDevicedata('Name')">Employee Name</th>
+                        <th ng-click="sortDevicedata('Designation')">Designation</th>
+                        <th ng-click="sortDevicedata('UserID')">Employee ID</th>
+                        <th ng-click="sortDevicedata('SectionName')">Section</th>
+                        <th ng-click="sortDevicedata('StoreName')">Store</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr dir-paginate="device in employeeData | orderBy : orderbyfield | itemsPerPage: searchHistoryPageSize" current-page="searchHistoryCurrentPage" pagination-id="employee-listing">
+                        <td>
+                            <input type="checkbox" value="{{ device.devicetoken }}" ng-click="ShowSelectedTokens()" ng-model="device.checked">
+                        </td>
+                        <td>{{ device.Name }}</td>
+                        <td>{{ device.Designation }}</td>
+                        <td>{{ device.UserID }}</td>
+                        <td>{{ device.SectionName }}</td>
+                        <td>{{ device.StoreName }}</td>
+                    </tr>
+                    <tr ng-if="!(employeeData.length > 0)">
+                        <td colspan="7" ng-show="selectedStore!='-1'">
+                            No Record Found
+                        </td>
+                        <td colspan="8" ng-show="selectedStore=='-1'">
+                            No Record Found
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="text-center ">
+                <dir-pagination-controls boundary-links="true" template-url="app/modules/dashboard/views/dirPagination.tpl.html " pagination-id="employee-listing" current-page="searchHistoryCurrentPage"></dir-pagination-controls>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div id="text-message" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Send Text Message</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group clearfix">
+                    <label for="inputEmail3" class="col-sm-4 control-label">Title</label>
+                    <div class="col-sm-8">
+                        <div class="input-icon right">
+                            <input class="form-control tag-inpt" ng-model="TM_title" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group clearfix">
+                    <label for="inputEmail3" class="col-sm-4 control-label">Description</label>
+                    <div class="col-sm-8">
+                        <div class="input-icon right">
+                            <textarea ng-model="TM_descr" style="width:100%"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="sendTextMessage()"> Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div id="graphic-message" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header" ng-show="IsRecordSelected">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Send Notification</h4>
+            </div>
+            <div class="modal-header" ng-show="!IsRecordSelected" style="background-color: red;">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" style="color: #fff;">Send Notification</h4>
+            </div>
+            <div class="modal-body" ng-if="IsRecordSelected">
+                <div class="form-group clearfix">
+                    <label for="inputEmail3" class="col-sm-4 control-label">Title</label>
+                    <div class="col-sm-8">
+                        <div class="input-icon right">
+                            <input class="form-control tag-inpt" id="push-title" ng-model="GM_title" ng-change="checkPushNotificationValidition()" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group clearfix">
+                    <label for="inputEmail3" class="col-sm-4 control-label">Description</label>
+                    <div class="col-sm-8">
+                        <div class="input-icon right">
+                            <textarea ng-model="GM_descr" id="push-description" style="width:100%" ng-change="checkPushNotificationValidition()"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group clearfix">
+                    <label for="inputEmail3" class="col-sm-4 control-label">Upload Image</label>
+                    <div class="col-sm-8">
+                        <form id="uploadForm" enctype="multipart/form-data" action="/api/photo" method="post">
+                            <input type="file" id="uploadfileinput" name="userPhoto" accept="image/*" />
+                            <input type="submit" value="Upload Image" name="submit" class="btn btn-info btn_set" onclick="return uploadimage(this)">
+                            <img src="#" width="50px" height="50px" id="imagepreview">
+                            <span id="status"></span>
+                        </form>
+                    </div>
+                </div>
+                <small>
+          Note: Please click on Upload button after making Image selection with Browse button if you want to send image notification
+        </small>
+            </div>
+            <div class="modal-body" ng-show="!IsRecordSelected">
+                <h1>Please select atleast one Customer</h1>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="sendpushnotification" class="btn btn-info btn_set" data-dismiss="modal" ng-click="sendImageMessage()" ng-if="IsRecordSelected" disabled="disabled"> Send</button>
+                <button type="button" class="btn btn-info btn_set" data-dismiss="modal" ng-show="IsRecordSelected"> Close </button>
+                <button type="button" class="btn btn-danger btn_set" data-dismiss="modal" ng-show="!IsRecordSelected" style="background-color: red;"> Close </button>
+                <!-- <input type="submit" value="Submit"> -->
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+$(document).ready(function() {
+    $("#imagepreview").hide();
+    /*$('#uploadForm').submit(function() {
+        $("#status").empty().text("Image is uploading...");
+        $(this).ajaxSubmit({
+
+            error: function(xhr) {
+                status('Error: ' + xhr.status);
+            },
+
+            success: function(response) {
+                if (response != 'Error uploading file.') {
+                    $("#status").empty();
+                    $("#imagepreview").attr('src', response);
+                    $("#imagepreview").show();
+                    var scope = angular.element($("#imagepreview")).scope();
+                    scope.$apply(function() {
+                        scope.GM_ImageFilePath = response;
+                    });
+                } else {
+                    $("#status").empty().text(response);
+                    $("#imagepreview").hide();
+                }
+                console.log(response);
+
+            }
+        });
+        //Very important line, it disable the page refresh.
+        return false;
+    });*/
+});
+
+function uploadimage(object) {
+    var uploadedfile = $('#uploadfileinput').val();
+    if (!uploadedfile) {
+        alert('No file selected.');
+        return false;
+    }
+    $("#status").empty().text("Image is uploading...");
+    $('#uploadForm').ajaxSubmit({
+
+        error: function(xhr) {
+            status('Error: ' + xhr.status);
+        },
+
+        success: function(response) {
+            if (response != 'Error uploading file.') {
+                $("#status").empty();
+                $("#imagepreview").attr('src', response);
+                $("#imagepreview").show();
+                var scope = angular.element($("#imagepreview")).scope();
+                scope.$apply(function() {
+                    scope.GM_ImageFilePath = response;
+                });
+            } else {
+                $("#status").empty().text(response);
+                $("#imagepreview").hide();
+            }
+            console.log(response);
+        }
+    });
+    //Very important line, it disable the page refresh.
+    return false;
+}
+</script>
