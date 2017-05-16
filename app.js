@@ -1693,6 +1693,7 @@ app.post('/getDeviceHistorydata', function(req, res) {
             function(callback) {
                 var collection = db.collection('beacons');
                 var beaconcollection = [];
+                var HavingCollection = true;
                 if (BeaconID && BeaconID.length > 0) {
                     console.log('coming to beacon list');
                     beaconcollection = collection.find({
@@ -1713,10 +1714,11 @@ app.post('/getDeviceHistorydata', function(req, res) {
                 } else {
                     /*console.log('coming to all part');
                     beaconcollection = collection.find();*/
+                    HavingCollection = false;
                     beaconcollection = {};
                 }
 
-                if (beaconcollection) {
+                if (HavingCollection) {
                     beaconcollection.toArray(function(err, beacons) {
                         var beaconslist = [];
                         for (var b in beacons) {
