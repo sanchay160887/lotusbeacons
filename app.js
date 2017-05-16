@@ -27,7 +27,8 @@ require('timers');
 var devicecron = require('node-cron');
 //var mongourl = 'mongodb://lotusbeacon:remote@ds161255.mlab.com:61255/lotusbeacon'; //Live Database
 //var mongourl = 'mongodb://lotus:remote@ds137100.mlab.com:37100/lotusbeaconemployee'; //Staging Database
-var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon'; //Live Database Ali Account
+//var mongourl = 'mongodb://lotus:remote@ds161255.mlab.com:61255/lotusbeacon'; //Live Database Ali Account
+var mongourl = 'mongodb://lotus:remote@ds145071-a0.mlab.com:45071,ds145071-a1.mlab.com:45071/lotusbeaconlive?replicaSet=rs-ds145071'; //Live Database Syscraft Info Account paid cluster
 
 var lotusWebURL = 'https://www.lotuselectronics.com/v2/';
 //var lotusWebURL = 'http://lampdemos.com/lotus15/v2/';
