@@ -225,11 +225,11 @@ MongoClient.connect(mongourl, function(err, db) {
 function updateDevice(BeaconID, DeviceID, Distance, MobileNo, CustName, resObj) {
     console.log('Update Device called to check socket');
     //if (MobileNo && MobileNo == '9584010456') {
-        console.log('Beacon ID ' + BeaconID);
-        console.log('Device ID ' + DeviceID);
-        console.log('Distance ' + Distance);
-        console.log('Mobile No ' + MobileNo);
-        console.log('Customer ' + CustName);        
+    console.log('Beacon ID ' + BeaconID);
+    console.log('Device ID ' + DeviceID);
+    console.log('Distance ' + Distance);
+    console.log('Mobile No ' + MobileNo);
+    console.log('Customer ' + CustName);
     //}
     var BeaconStoreID = '';
 
@@ -1716,14 +1716,18 @@ app.post('/getDeviceHistorydata', function(req, res) {
                     beaconcollection = {};
                 }
 
-                beaconcollection.toArray(function(err, beacons) {
-                    var beaconslist = [];
-                    for (var b in beacons) {
-                        beaconslist[beacons[b].BeaconID] = beacons[b].BeaconKey;
-                        beaconsIDs.push(beacons[b].BeaconID);
-                    }
-                    callback(null, beaconslist);
-                });
+                if (beaconcollection) {
+                    beaconcollection.toArray(function(err, beacons) {
+                        var beaconslist = [];
+                        for (var b in beacons) {
+                            beaconslist[beacons[b].BeaconID] = beacons[b].BeaconKey;
+                            beaconsIDs.push(beacons[b].BeaconID);
+                        }
+                        callback(null, beaconslist);
+                    });
+                } else {
+                    callback(null, []);
+                }
             },
             /* Total record count now not needed. Its done beneath
             function(beaconlist, callback) {
