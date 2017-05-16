@@ -224,12 +224,13 @@ MongoClient.connect(mongourl, function(err, db) {
 /* General Supportive Function End <<-- */
 function updateDevice(BeaconID, DeviceID, Distance, MobileNo, CustName, resObj) {
     console.log('Update Device called to check socket');
-    if (MobileNo && MobileNo == '9584010456') {
+    //if (MobileNo && MobileNo == '9584010456') {
         console.log('Beacon ID ' + BeaconID);
         console.log('Device ID ' + DeviceID);
         console.log('Distance ' + Distance);
         console.log('Mobile No ' + MobileNo);
-    }
+        console.log('Customer ' + CustName);        
+    //}
     var BeaconStoreID = '';
 
     if (!CustName) {
@@ -950,6 +951,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('updateDevice', function(data) {
+        console.log(JSON.stringify(data));
         updateDevice(data.BeaconID, data.DeviceID, data.Distance, data.MobileNo, data.CustName);
         //return "Update device called : " + data.BeaconID + ' Mobile No : ' + data.MobileNo;
         //sendDevices();
