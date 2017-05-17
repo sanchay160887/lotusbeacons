@@ -234,7 +234,7 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, CustName, resObj) 
     var BeaconStoreID = '';
 
     if (!CustName) {
-        CustName = 'Unknown';
+        CustName = 'Customer';
     }
 
     var resObjVal = {};
@@ -527,8 +527,9 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                                                             console.dir(err);
                                                             callback(null, devices);
                                                         } else {
-                                                            if (typeof(response) != 'undefined') {
-                                                            	isNotificationSent = 1;
+                                                        	isNotificationSent = 1;
+                                                        	console.log('Notification sent to employees');
+                                                            if (typeof(response) != 'undefined') {                                                            	
                                                                 var request = require('request');
                                                                 var gcmdata = JSON.stringify(deviceTokens);
                                                                 var userJSON = JSON.stringify(userIds);
@@ -610,6 +611,7 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
             },
             function(devices, callback) {
                 if (updateStayTimeWithSame && devices.length > 0) {
+                	console.log('Is Notification sent : ' + isNotificationSent);
                     collection.update({
                             _id: ObjectId(devices[0]._id)
                         }, {
