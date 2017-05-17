@@ -178,7 +178,6 @@ dashboard.controller("DeptMangController", function($rootScope, $scope, apiServi
             return;
         }
 
-
         if ($scope.button_name == 'Update') {
             if ($scope.Password != $scope.ConfPassword) {
                 alert('Confirm Password doesnot Match with Password');
@@ -193,14 +192,11 @@ dashboard.controller("DeptMangController", function($rootScope, $scope, apiServi
                 return;
             }
         }
-        
-        
-if($scope.AssignedEmployee == '')
-{
 
-   alert('Please Assign Employee');
-     return;
-}
+        if ($scope.AssignedEmployee == '') {
+            alert('Please Assign Employee');
+            return;
+        }
 
 
         $scope.FormInitialized = false;
