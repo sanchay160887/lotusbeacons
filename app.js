@@ -385,6 +385,7 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
 
     var updateStayTimeWithSame = false;
     var updateStayTimeValue = 0;
+    var isNotificationSent = 0;
 
     console.log('Update device history called');
 
@@ -463,8 +464,9 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                             updateStayTimeValue = StayTime;
 
                             console.log('Checking Staytime ', StayTime, ' ', settings_StayTime);
-
-                            if (StayTime >= settings_StayTime) {
+                            //NotificationSent
+                            if (StayTime >= settings_StayTime && 
+                            	!devices[0].NotificationSent) {
 
                                 collection.find({
                                     'MobileNo': MobileNo,
@@ -526,6 +528,7 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                                                             callback(null, devices);
                                                         } else {
                                                             if (typeof(response) != 'undefined') {
+                                                            	isNotificationSent = 1;
                                                                 var request = require('request');
                                                                 var gcmdata = JSON.stringify(deviceTokens);
                                                                 var userJSON = JSON.stringify(userIds);
@@ -613,6 +616,7 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                             '$set': {
                                 'DateTo': todaysdate,
                                 'StayTime': updateStayTimeValue,
+                                'NotificationSent' : isNotificationSent
                             }
                         },
                         function(err, result) {
