@@ -79,26 +79,25 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
         $scope.storeData = res.data.data;
     });
 
-
+    $scope.BeaconInitialized = true;
     $scope.$watchCollection('[AssignedStore]', function() {
         $scope.isEditMode = false;
         if ($scope.FormInitialized && $scope.AssignedStore) {
+            $scope.BeaconInitialized = false;
+            $scope.selectedBeacon = [];
             apiService.beaconData($scope.AssignedStore).then(function(res) {
                 $scope.beaconData = res.data.data;
+                $scope.BeaconInitialized = true;
             });
         }
 
     });
 
-
     $scope.resetControls = function() {
         $scope.SectionName = '';
         $scope.SectionDesc = '';
-
-        $scope.selectedBeacon = '';
-
+        $scope.selectedBeacon = [];
         $scope.AssignedStore = '';
-
         $scope.UserObjectID = '';
         $scope.button_name = "Add";
         $scope.ResetPassword = false;
@@ -119,11 +118,13 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
                     $scope.SectionName = data.data[0].SectionName;
                     $scope.SectionDesc = data.data[0].SectionDesc;
                     $scope.AssignedStore = SectionData[0].AssignedStore;
+                    $scope.BeaconInitialized = false;
                     apiService.beaconData(SectionData[0].AssignedStore).then(function(res) {
                         $scope.beaconData = res.data.data;
                         setTimeout(function() {
                             $scope.selectedBeacon = SectionData[0].BeaconID;
                             $scope.FormInitialized = true;
+                            $scope.BeaconInitialized = true;
                         }, 300);
                     });
                 } else {
@@ -143,7 +144,6 @@ dashboard.controller("SectionController", function($rootScope, $scope, apiServic
 
 
     $scope.processUser = function() {
-
         if ($scope.sectionForm.$invalid) {
             angular.forEach($scope.sectionForm.$error, function(field) {
                 angular.forEach(field, function(errorField) {

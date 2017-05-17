@@ -5818,11 +5818,6 @@ app.post('/updateSection', function(req, res) {
                 });
             },
             function(userdata, callback) {
-                console.log('Userdata Callback====================Called');
-
-                console.log(userdata);
-
-                console.log(ObjectId(UserObjectID));
                 collection.update({
                     '_id': ObjectId(UserObjectID)
                 }, {
@@ -5836,9 +5831,6 @@ app.post('/updateSection', function(req, res) {
 
                     }
                 });
-
-
-                console.log('======================Employee updated=======================================');
 
                 callback(null, 'updated');
             },
