@@ -6064,21 +6064,8 @@ app.post('/getCrmEmployeeListByAdmin', function(req, res) {
 
 
                 }).toArray(function(err, users) {
-
-                    console.log('====@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=======Get CRM employee list Start======================');
-
-                    console.log(users);
-
-                    console.log('===========Get CRM employee list END======================');
                     var userlist = [];
-
                     if (users && users.length > 0) {
-
-
-
-
-
-
                         for (var u in users) {
                             //var  AssignedSection = users[0].AssignedSection;
                             users[u].StoreName = storelist[ObjectId(users[u].AssignedStore)];
@@ -6086,20 +6073,11 @@ app.post('/getCrmEmployeeListByAdmin', function(req, res) {
                             users[u].searchfield =
                                 users[u].Name + ' ' + users[u].UserID + ' ' + users[u].Designation + ' ' + users[u].StoreName + ' ' + users[u].SectionName;
 
-
-
-
                             userlist.push(users[u]);
                         }
                         resObj.IsSuccess = true;
                         resObj.message = "Success";
                         resObj.data = userlist;
-                        console.log('===========employee list Start======================');
-
-                        console.log(resObj);
-
-                        console.log('===========employee list END======================');
-
                         res.send(resObj);
                     } else {
                         resObj.IsSuccess = false;

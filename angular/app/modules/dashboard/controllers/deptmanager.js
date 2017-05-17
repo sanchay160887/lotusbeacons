@@ -1,5 +1,4 @@
 dashboard.controller("DeptMangController", function($rootScope, $scope, apiService, $http, $interval, $location) { //
-    console.log('department manager');
     $scope.deptmangForm = {};
     $scope.UserID = '';
     $scope.Password = '';
@@ -13,7 +12,7 @@ dashboard.controller("DeptMangController", function($rootScope, $scope, apiServi
     //$scope.UserType = 2;
 
     $scope.AssignedStore = '';
-    $scope.AssignedEmployee = '';
+    $scope.AssignedEmployee = [];
     $scope.ResetPassword = false;
     $scope.UserObjectID = '';
 
@@ -52,8 +51,6 @@ dashboard.controller("DeptMangController", function($rootScope, $scope, apiServi
         }
     });
 
-
-
     var vm = this;
 
     $scope.userCurrentPage = 1;
@@ -78,8 +75,6 @@ dashboard.controller("DeptMangController", function($rootScope, $scope, apiServi
             $scope.userPageSize = 10;
             $scope.resetControls();
             $scope.ListInitialized = true;
-
-
         });
     }
 
@@ -89,15 +84,17 @@ dashboard.controller("DeptMangController", function($rootScope, $scope, apiServi
         $scope.storeData = res.data.data;
     });
 
+    $scope.EmployeeInitialized = true;
+
     // new code section display according to store
     $scope.$watchCollection('[AssignedStore]', function() {
-        //  alert($scope.AssignedStore);
         if ($scope.FormInitialized) {
-            if ($scope.AssignedStore != '') {
+            if ($scope.AssignedStore) {
+                $scope.EmployeeInitialized = false;
+                $scope.AssignedEmployee = [];
                 apiService.EmployeeDataByStore($scope.AssignedStore).then(function(res) {
-
-                    //  alert(res);
                     $scope.EmployeeDataByStore = res.data.data;
+                    $scope.EmployeeInitialized = true;
                 });
             }
         }
@@ -111,7 +108,8 @@ dashboard.controller("DeptMangController", function($rootScope, $scope, apiServi
         $scope.Name = '';
         $scope.Designation = '';
         $scope.AssignedStore = '';
-        $scope.AssignedEmployee = '';
+        $scope.EmployeeDataByStore = [];
+        $scope.AssignedEmployee = [];
         $scope.UserObjectID = '';
         $scope.button_name = "Add";
         $scope.ResetPassword = false;
@@ -125,30 +123,22 @@ dashboard.controller("DeptMangController", function($rootScope, $scope, apiServi
         apiService.getUser(pUserObjectID).
         success(function(data, status, headers, config) {
                 if (data.data) {
-
                     $scope.button_name = 'Update';
-
                     $scope.UserObjectID = pUserObjectID;
                     $scope.UserID = data.data[0].UserID;
                     $scope.Name = data.data[0].Name;
                     $scope.Designation = data.data[0].Designation;
-
+                    $scope.AssignedEmployee = [];
 
                     // $scope.UserType = data.data[0].UserType;
                     $scope.AssignedStore = data.data[0].AssignedStore;
-
                     apiService.EmployeeDataByStore(data.data[0].AssignedStore).then(function(res) {
                         $scope.EmployeeDataByStore = res.data.data;
                         setTimeout(function() {
                             $scope.AssignedEmployee = data.data[0].AssignedEmployee;
-
                             $scope.FormInitialized = true;
-                        }, 300);
+                        }, 500);
                     });
-
-
-                    // $scope.AssignedEmployee = data.data[0].AssignedEmployee;
-                    //   alert($scope.AssignedEmployee);
                 } else {
                     $scope.UserObjectID = '';
                     alert('User not found. Please refresh your page');
@@ -193,7 +183,7 @@ dashboard.controller("DeptMangController", function($rootScope, $scope, apiServi
             }
         }
 
-        if ($scope.AssignedEmployee == '') {
+        if (!$scope.AssignedEmployee || $scope.AssignedEmployee.length <= 0) {
             alert('Please Assign Employee');
             return;
         }
@@ -301,83 +291,5 @@ dashboard.controller("DeptMangController", function($rootScope, $scope, apiServi
                 return '';
             });
     }
-
-
-    /*
-       $http({
-            method: "post",
-            url: "/getEmployeeDetails",
-            data: {
-                EmployeeID: '58f1b37c0d6d3800117a66de',
-             
-            }
-        });
-
-    */
-    /*    $http({
-            method: "post",
-            url: "/fcmtest",
-             data: {
-                'message': 'Sanchay Description',
-                'badge': 1,
-                'title': 'Notification Title',
-                'img_url': 'https://lh4.ggpht.com/mJDgTDUOtIyHcrb69WM0cpaxFwCNW6f0VQ2ExA7dMKpMDrZ0A6ta64OCX3H-NMdRd20=w300',
-                'notification_type': 6,
-            }
-        });
-
-    */
-
-    $http({
-        method: "post",
-        url: "/getEmployeeDetails",
-        data: {
-            EmployeeID: '58b696a3e690710a48c399ee',
-
-        }
-    });
-
-
-
-
-    /*    
-     $http({
-            method: "post",
-            url: "/getEmployeedata",
-            data: {
-                UserType: '3',
-                
-                
-            }
-        });
-    */
-    $http({
-        method: "post",
-        url: "/getCrmEmployee",
-        data: {
-            UserType: '3',
-            AssignedStore: '57d26d3bcace8e0378b20404'
-
-
-        }
-    });
-
-    /*
-     $http({
-        method: "post",
-        url: "/userLogin",
-        data: {
-            username: 'ankit1',
-            password: 'sis',
-            UserType : 3
-           
-           
-        }
-    });
-*/
-
-    console.log('Login service called end');
-
-
 
 })

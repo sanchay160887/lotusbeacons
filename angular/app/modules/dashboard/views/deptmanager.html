@@ -80,13 +80,15 @@ Date: 05 Jan 2016
             <span class="error" ng-show="deptmangForm.AssignedStore.$touched && deptmangForm.AssignedStore.$invalid">Please Assign Store</span>
             <br>
             <label>Assign Employees<span class="error">*</span></label>
-              <span ng-show="AssignedEmployee.length > 0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ AssignedEmployee && AssignedEmployee.length || 0 }} Employee Selected</span>
-            <select class="form-control col-md-4" ng-model="AssignedEmployee" id="AssignedEmployee" name="AssignedEmployee" required="required" multiple="multiple" ng-readonly="loggedInUser.UserType!=1">
+            <span ng-show="AssignedEmployee.length > 0" class="pull-right">{{ AssignedEmployee && AssignedEmployee.length || 0 }} Employee Selected</span>
+            <select class="form-control col-md-4" ng-model="AssignedEmployee" id="AssignedEmployee" name="AssignedEmployee" required="required" multiple="multiple" ng-readonly="loggedInUser.UserType!=1" ng-show="EmployeeInitialized">
                 <!--<option value="">Select Employees</option>-->
                 <option ng-repeat="device in EmployeeDataByStore | orderBy:'Name'" value="{{device._id}}" ng-selected="selected">
                     {{device.Name}}</option>
             </select>
-            <!--    <input class="form-control" type="text" name="AssignedEmployee" id="AssignedEmployee" ng-model="AssignedEmployee" required="required" /> -->
+            <select class="form-control col-md-4" ng-show="!EmployeeInitialized">
+                <option>Please wait...</option>
+            </select>
             <br>
             <span class="error" ng-show="deptmangForm.AssignedEmployee.$touched && deptmangForm.AssignedEmployee.$invalid">Please Assign  Employee</span>
             <br>
@@ -196,8 +198,8 @@ Date: 05 Jan 2016
                     <input class="form-control" type='text' ng-model="u.UserID" readonly />
                 </td>
                 <td ng-click="getUser(u._id)">
-                <span class="btn btn-primary" ng-if="loggedInUser.UserType == 1">Edit</span>
-                <span class="btn btn-primary" ng-if="loggedInUser.UserType != 1">View</span>
+                    <span class="btn btn-primary" ng-if="loggedInUser.UserType == 1">Edit</span>
+                    <span class="btn btn-primary" ng-if="loggedInUser.UserType != 1">View</span>
                 </td>
             </tr>
             <tr ng-show="!(deptmanagerData | filter: (q.length > 1 ? {searchfield: q } : '')).length">
