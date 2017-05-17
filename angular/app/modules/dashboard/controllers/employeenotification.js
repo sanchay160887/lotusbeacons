@@ -13,10 +13,13 @@ dashboard.controller("EmployeeNotification", function($rootScope, $scope, apiSer
     $scope.GM_ImageFilePath = '';
     $scope.baseUrl = apiService.base_url;
     $scope.orderbyfield = 'Name';
+    $scope.searchNameNumber = '';
     $scope.Initialized = false;
     $scope.SectionInitialized = true;
     $scope.InvalidInputs = false;
     $scope.deviceAnalysis = {};
+    $scope.pageLimit = 10;
+    $scope.empcurrpage = 1;
     $rootScope.loggedInUser = {};
 
     $scope.$watchCollection('[InvalidInputs]', function() {

@@ -17,14 +17,14 @@
 
 .bcon_selection_block_left {
     border-radius: 3px;
-    width: 70%;
+    /*width: 70%;*/
     display: inline-block;
     vertical-align: top;
 }
 
 .bcon_selection_block_right {
     border-radius: 3px;
-    width: 29%;
+    /*width: 29%;*/
     display: inline-block;
     vertical-align: top;
 }
@@ -126,7 +126,7 @@
     <h1> Employee Official Notification </h1>
     <ol class="breadcrumb">
         <li><a ui-sref="app.dashboard"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-        <li class="active">Employee Official Notification</li>
+        <li class="active">Employee Notification</li>
     </ol>
 </section>
 <div class="content-device_block">
@@ -140,7 +140,7 @@
         <div class="bcon_selection_section">
             <div class="bcon_selection_block_left">
                 <div class="bcon_selection row">
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <div class="col-md-12 no-pad">
                                 <label>Select Store</label>
@@ -152,7 +152,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <div class="col-md-12 no-pad">
                                 <label>Select Section</label>
@@ -172,12 +172,32 @@
                     </div>
                 </div>
             </div>
-            <div class="bcon_selection_block_right">
+            <div class="bcon_selection_block_right pull-right">
                 <div class="bcon_selection row">
-                    <div class="col-md-7">
+                    <div class="col-md-12">
                         <button type="button" class="btn btn-info btn-margin-top pull-right" data-toggle="modal" data-target="#graphic-message" ng-click="checkClickedRecords()">Send Notification</button>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-4" style="padding-right: 0;">
+                    <!-- <label class="bcon-slect-title">Search</label> -->
+                    <label for="search">Search: <small style="color:purple;">(Please enter atleast 2 characters to get results)</small></label>
+                    <input type="text" ng-model="searchNameNumber" id="searchNameNumber" class="form-control" placeholder="Search Employee">
+                    <!-- <small style="color:purple;">Please enter atleast 2 characters to get results</small> -->
+                </div>
+                <div class="col-md-1 pull-right">
+                    <label class="bcon-slect-title"><small>Records/Page</small></label>
+                    <select ng-model="pageLimit" class="form-control">
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="30">30</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
             </div>
         </div>
         <div class="row">
@@ -197,7 +217,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr dir-paginate="device in employeeData | orderBy : orderbyfield | itemsPerPage: searchHistoryPageSize" current-page="searchHistoryCurrentPage" pagination-id="employee-listing">
+                    <tr dir-paginate="device in employeeData | filter: (searchNameNumber.length > 1 ? {searchfield: searchNameNumber } : '') | orderBy : orderbyfield | itemsPerPage: pageLimit" 
+                    current-page="empcurrpage" pagination-id="employee-listing">
                         <td>
                             <input type="checkbox" value="{{ device.devicetoken }}" ng-click="ShowSelectedTokens()" ng-model="device.checked">
                         </td>
@@ -302,7 +323,7 @@
         </small>
             </div>
             <div class="modal-body" ng-show="!IsRecordSelected">
-                <h1>Please select atleast one Customer</h1>
+                <h1>Please select atleast one Employee</h1>
             </div>
             <div class="modal-footer">
                 <button type="button" id="sendpushnotification" class="btn btn-info btn_set" data-dismiss="modal" ng-click="sendImageMessage()" ng-if="IsRecordSelected" disabled="disabled"> Send</button>

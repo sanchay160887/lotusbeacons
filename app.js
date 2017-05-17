@@ -1042,7 +1042,6 @@ function beaconDisconnect(BeaconID, DeviceID, MobileNo) {
                     var DeleteMe = false;
                     if (devices && devices.length > 0) {
                         console.log('going to Delete record >>>>>>>>>>>>');
-                        console.log(JSON.stringify(devices));
                         for (var d in devices) {
                             if (devices[d].Distance < 0) {
                                 DeleteMe = true;
@@ -1259,7 +1258,6 @@ app.post('/userDisconnected', function(req, res) {
             });
         },
         function(userlist, callback) {
-            console.log(JSON.stringify(userlist));
             if (userlist && userlist.length > 0) {
                 userDisconnect(userlist[0].BeaconID, userlist[0].UserID._id);
             }
@@ -1614,7 +1612,6 @@ app.post('/getdata', function(req, res) {
                             }
                         }
 
-                        console.log(JSON.stringify(devicelist));
                         console.log('called');
 
                         if (UserID && !devicelist) {
@@ -1870,7 +1867,6 @@ app.post('/getDeviceHistorydata', function(req, res) {
 
                     reccollection.toArray(function(err, devices) {
                         console.log('device history');
-                        console.log(JSON.stringify(devices));
                         for (var dvc in devices) {
                             devices[dvc].BeaconID = devices[dvc]._id.BeaconID;
                             devices[dvc].SectionID = devices[dvc].SectionID;
@@ -2042,7 +2038,6 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
                 }
 
                 beaconcollection.toArray(function(err, beacons) {
-                    console.log(JSON.stringify(beacons));
                     var beaconslist = [];
                     for (var b in beacons) {
                         beaconslist[beacons[b].BeaconID] = beacons[b].BeaconKey;
@@ -2933,9 +2928,9 @@ app.post('/deletestore', function(req, res) {
 
         var collection = db.collection('stores');
 
-        collection.find(ObjectId(StoreID)).toArray(function(err, devices) {
+        /*collection.find(ObjectId(StoreID)).toArray(function(err, devices) {
             console.log(JSON.stringify(devices));
-        });
+        });*/
 
         collection.deleteMany({
             _id: ObjectId(StoreID)
@@ -4540,16 +4535,8 @@ app.post('/addSection', function(req, res) {
                     'BeaconID': selectedBeacon,
 
                 }, function(err, records) {
-                    console.log(JSON.stringify(records));
-                    console.log(records.ops[0]._id);
-
-                    // console.log(json_decode(records));
-
                     SectionID = records.ops[0]._id;
-
-
                     callback(null, 'inserted');
-
                     console.log('Section inserted');
                 });
 
@@ -5046,7 +5033,6 @@ app.post('/getEmployeedata', function(req, res) {
     if (SectionID && Number(SectionID) != -1) {
         userMatchExp.AssignedSection = ObjectId(SectionID);
     }
-    console.log(JSON.stringify(userMatchExp));
 
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
