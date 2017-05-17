@@ -465,8 +465,8 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
 
                             console.log('Checking Staytime ', StayTime, ' ', settings_StayTime);
                             //NotificationSent
-                            if (StayTime >= settings_StayTime && 
-                            	!devices[0].NotificationSent) {
+                            if (StayTime >= settings_StayTime &&
+                                !devices[0].NotificationSent) {
 
                                 collection.find({
                                     'MobileNo': MobileNo,
@@ -527,9 +527,9 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                                                             console.dir(err);
                                                             callback(null, devices);
                                                         } else {
-                                                        	isNotificationSent = 1;
-                                                        	console.log('Notification sent to employees');
-                                                            if (typeof(response) != 'undefined') {                                                            	
+                                                            isNotificationSent = 1;
+                                                            console.log('Notification sent to employees');
+                                                            if (typeof(response) != 'undefined') {
                                                                 var request = require('request');
                                                                 var gcmdata = JSON.stringify(deviceTokens);
                                                                 var userJSON = JSON.stringify(userIds);
@@ -611,14 +611,14 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
             },
             function(devices, callback) {
                 if (updateStayTimeWithSame && devices.length > 0) {
-                	console.log('Is Notification sent : ' + isNotificationSent);
+                    console.log('Is Notification sent : ' + isNotificationSent);
                     collection.update({
                             _id: ObjectId(devices[0]._id)
                         }, {
                             '$set': {
                                 'DateTo': todaysdate,
                                 'StayTime': updateStayTimeValue,
-                                'NotificationSent' : isNotificationSent
+                                'NotificationSent': isNotificationSent
                             }
                         },
                         function(err, result) {
@@ -6468,15 +6468,11 @@ function pushnotification_fcm_common(resObj, gcmToken, notification_user_id, Mob
                     'notification_user_id': uJSON, //notification_user_id,
                     'badge': 1,
                     'title': title,
-
                     //'img_url': 'https://lh4.ggpht.com/mJDgTDUOtIyHcrb69WM0cpaxFwCNW6f0VQ2ExA7dMKpMDrZ0A6ta64OCX3H-NMdRd20=w300',
-                    // 'img_url': image_url,
+                    'img_url': image_url,
                     'notification_type': notificationtype,
-
                 }
-
             };
-
 
             fcm.send(message, function(err, response) {
                 if (err) {
@@ -6504,7 +6500,6 @@ function pushnotification_fcm_common(resObj, gcmToken, notification_user_id, Mob
 
                                 },
                                 function(res2, err, body) {
-                                    console.log('=====notification inserted2222==========');
                                     console.log('Data coming from service --> ' + JSON.stringify(body));
                                     if (resObj) {
                                         resObj.send(body);

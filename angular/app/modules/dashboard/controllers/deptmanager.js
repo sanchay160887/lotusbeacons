@@ -1,4 +1,5 @@
 dashboard.controller("DeptMangController", function($rootScope, $scope, apiService, $http, $interval, $location) { //
+    console.log('department manager');
     $scope.deptmangForm = {};
     $scope.UserID = '';
     $scope.Password = '';
