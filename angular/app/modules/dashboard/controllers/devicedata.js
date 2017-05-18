@@ -316,7 +316,8 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         console.log(response.StoreID == queriedUrl.store);
 
         var selectedStore = '';
-        if (typeof(queriedUrl.store) != undefined && queriedUrl.store) {
+
+        if (queriedUrl.store == '-1' || (typeof(queriedUrl.store) != undefined && queriedUrl.store)) {
             selectedStore = queriedUrl.store;
             if (response.IsSuccess && response.StoreID && response.StoreID == selectedStore) {
                 $scope.loadData();
