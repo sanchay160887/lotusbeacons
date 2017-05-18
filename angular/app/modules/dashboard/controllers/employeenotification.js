@@ -242,13 +242,20 @@ dashboard.controller("EmployeeNotification", function($rootScope, $scope, apiSer
         }
 
         var ImageFilePath = document.getElementById('imagepreview').src;
+        var ImageWithoutBU = ImageFilePath.replace(apiService.base_url, '');
+        console.log(ImageWithoutBU);
+        if (!ImageWithoutBU || ImageWithoutBU == '#' || ImageWithoutBU.length <= 10){
+            ImageFilePath = '';
+        }
         var title = document.getElementById('push-title').value;
         var description = document.getElementById('push-description').value;
 
         if (checkedlist && checkedlist.length > 0) {
             apiService.sendEmpNotification_image(checkedlist, user_id, title, description, ImageFilePath).then(function(res) {
                 alert('Notification sent successfully');
-                $scope.resetNotificationDialogue();
+                setTimeout(function(){
+                    $scope.resetNotificationDialogue();
+                }, 500);                
             });
         } else {
             alert('No device selected');

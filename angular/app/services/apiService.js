@@ -526,9 +526,9 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
     apiService.updateDevice = updateDevice;
     apiService.updateDeviceHistory = updateDeviceHistory;
 
-    //apiService.base_url = 'http://localhost:3000';
-    apiService.base_url = 'http://lotusbeacon.herokuapp.com';
-    //apiService.base_url = 'http://lotuslive.herokuapp.com';
+    //apiService.base_url = 'http://localhost:5000';
+    //apiService.base_url = 'http://lotusbeacon.herokuapp.com';
+    apiService.base_url = 'http://lotuslive.herokuapp.com';
     //apiService.base_url = 'http://52.205.143.53:3000';
 
     var employeeData = function(storeID, SectionID) {
