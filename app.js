@@ -471,7 +471,7 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                                 collection.find({
                                     'MobileNo': MobileNo,
                                     '_id': { $ne: ObjectId(devices[0]._id) },
-                                    'Date': {
+                                    'DateTo': {
                                         $gte: customerEmployeeIntervalStart,
                                     }
                                 }).sort({ 'DateTo': -1 }).toArray(function(err, devicelist) {
@@ -520,14 +520,15 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                                                         }
                                                     };
 
+                                                    isNotificationSent = 1;
+
                                                     fcm.send(message, function(err, response) {
                                                         if (err) {
                                                             console.log("Something gone wrong!");
                                                             console.log(JSON.stringify(deviceTokens));
                                                             console.dir(err);
                                                             callback(null, devices);
-                                                        } else {
-                                                            isNotificationSent = 1;
+                                                        } else {                                                            
                                                             console.log('Notification sent to employees');
                                                             if (typeof(response) != 'undefined') {
                                                                 var request = require('request');
@@ -567,6 +568,9 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                                     }
                                 })
                             } else {
+                            	if (devices[0].NotificationSent){
+                            		isNotificationSent = 1;
+                            	}
                                 callback(null, devices);
                             }
                         }
