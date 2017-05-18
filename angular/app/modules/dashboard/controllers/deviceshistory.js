@@ -83,6 +83,8 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
                 $location.path("/");                
             }
         });*/
+    } else {
+        $scope.fetchDeviceAnalysis();
     }
 
     $scope.fetchDeviceAnalysis = function() {

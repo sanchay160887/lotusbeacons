@@ -7,7 +7,7 @@
     s.no      date    author     description     
  ===========================================================*/
 
-app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, appSettings) {
+app.service('apiService', ['$http', '$q', 'appSettings', '$location', function($http, $q, appSettings, $location) {
 
     var apiService = {};
     var apiBase = appSettings.apiBase;
@@ -525,6 +525,8 @@ app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, app
     apiService.sendNotification_image_everyone = sendNotification_image_everyone;
     apiService.updateDevice = updateDevice;
     apiService.updateDeviceHistory = updateDeviceHistory;
+
+    console.log($location.$$absUrl);
 
     //apiService.base_url = 'http://localhost:5000';
     //apiService.base_url = 'http://lotusbeacon.herokuapp.com';

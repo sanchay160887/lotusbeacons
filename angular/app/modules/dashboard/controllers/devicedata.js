@@ -62,6 +62,8 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
                 $location.path("/");
             }
         });*/
+    } else {
+        $scope.fetchDeviceAnalysis();
     }
 
     var queriedUrl = $location.search();
