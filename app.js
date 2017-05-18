@@ -340,6 +340,7 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, CustName, resObj) 
                     'BeaconID': BeaconID,
                     'StoreID': BeaconStoreID,
                     'MobileNo': MobileNo,
+                    'CustName': CustName,
                     'message': 'Data inserted successfully'
                 });
 
@@ -381,11 +382,14 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
     fromDate = new Date(datestring).getTime();
     //toDate = fromDate + 60000;
 
-    customerEmployeeIntervalStart = getCurrentTime() - 600000;
+    var staydiffForNextNotification = 900000; //15 Minute
+
+    customerEmployeeIntervalStart = getCurrentTime() - staydiffForNextNotification;
 
     var updateStayTimeWithSame = false;
     var updateStayTimeValue = 0;
     var isNotificationSent = 0;
+    var NotificationSentTime = 0;
 
     console.log('Update device history called');
 
@@ -462,19 +466,28 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                         if (StayTime >= 1) {
                             updateStayTimeWithSame = true;
                             updateStayTimeValue = StayTime;
+                            NotificationSentTime = devices[0].NotificationSentTime;
+                            isNotificationSent = devices[0].NotificationSent;
 
-                            console.log('Checking Staytime ', StayTime, ' ', settings_StayTime);
+                            console.log('Checking Staytime ', StayTime, ' ', settings_StayTime, ' ', NotificationSentTime);
                             //NotificationSent
                             if (StayTime >= settings_StayTime &&
-                                !devices[0].NotificationSent) {
+                                (!isNotificationSent || 
+                                	(!NotificationSentTime || 
+                                		(todaysdate - NotificationSentTime >= staydiffForNextNotification) ))) {
+
+                            	console.log(customerEmployeeIntervalStart + ' Going for sending noifications....');
 
                                 collection.find({
                                     'MobileNo': MobileNo,
+                                    'BeaconID' : BeaconID,
                                     '_id': { $ne: ObjectId(devices[0]._id) },
+                                    'StayTime' : { $gte : 2 },
                                     'DateTo': {
                                         $gte: customerEmployeeIntervalStart,
                                     }
                                 }).sort({ 'DateTo': -1 }).toArray(function(err, devicelist) {
+                                	console.log('Checking device listing' + JSON.stringify(devicelist));
                                     if (!devicelist || devicelist.length <= 0) {
                                         var empcollection = db.collection('user_beacons_active');
 
@@ -521,11 +534,11 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                                                     };
 
                                                     isNotificationSent = 1;
+                                                    NotificationSentTime = getCurrentTime();
 
                                                     fcm.send(message, function(err, response) {
                                                         if (err) {
                                                             console.log("Something gone wrong!");
-                                                            console.log(JSON.stringify(deviceTokens));
                                                             console.dir(err);
                                                             callback(null, devices);
                                                         } else {                                                            
@@ -568,9 +581,6 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                                     }
                                 })
                             } else {
-                            	if (devices[0].NotificationSent){
-                            		isNotificationSent = 1;
-                            	}
                                 callback(null, devices);
                             }
                         }
@@ -622,7 +632,8 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                             '$set': {
                                 'DateTo': todaysdate,
                                 'StayTime': updateStayTimeValue,
-                                'NotificationSent': isNotificationSent
+                                'NotificationSent': isNotificationSent,
+                                'NotificationSentTime' : NotificationSentTime
                             }
                         },
                         function(err, result) {
@@ -640,6 +651,7 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                     'BeaconID': BeaconID,
                     'StoreID': BeaconStore,
                     'MobileNo': MobileNo,
+                    'CustName': CustName,
                     'message': 'Data updated successfully'
                 });
                 console.log('coming to last callback');
