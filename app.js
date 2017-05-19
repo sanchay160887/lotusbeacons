@@ -472,22 +472,22 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                             console.log('Checking Staytime ', StayTime, ' ', settings_StayTime, ' ', NotificationSentTime);
                             //NotificationSent
                             if (StayTime >= settings_StayTime &&
-                                (!isNotificationSent || 
-                                	(!NotificationSentTime || 
-                                		(todaysdate - NotificationSentTime >= staydiffForNextNotification) ))) {
+                                (!isNotificationSent ||
+                                    (!NotificationSentTime ||
+                                        (todaysdate - NotificationSentTime >= staydiffForNextNotification)))) {
 
-                            	console.log(customerEmployeeIntervalStart + ' Going for sending noifications....');
+                                console.log(customerEmployeeIntervalStart + ' Going for sending noifications....');
 
                                 collection.find({
                                     'MobileNo': MobileNo,
-                                    'BeaconID' : BeaconID,
+                                    'BeaconID': BeaconID,
                                     '_id': { $ne: ObjectId(devices[0]._id) },
-                                    'StayTime' : { $gte : 2 },
+                                    'StayTime': { $gte: 2 },
                                     'DateTo': {
                                         $gte: customerEmployeeIntervalStart,
                                     }
                                 }).sort({ 'DateTo': -1 }).toArray(function(err, devicelist) {
-                                	console.log('Checking device listing' + JSON.stringify(devicelist));
+                                    console.log('Checking device listing' + JSON.stringify(devicelist));
                                     if (!devicelist || devicelist.length <= 0) {
                                         var empcollection = db.collection('user_beacons_active');
 
@@ -529,6 +529,7 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                                                             'badge': 1,
                                                             'title': 'Attain',
                                                             'BeaconID': BeaconObj.BeaconID,
+                                                            'img_url': '',
                                                             'notification_type': 7,
                                                         }
                                                     };
@@ -541,7 +542,7 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                                                             console.log("Something gone wrong!");
                                                             console.dir(err);
                                                             callback(null, devices);
-                                                        } else {                                                            
+                                                        } else {
                                                             console.log('Notification sent to employees');
                                                             if (typeof(response) != 'undefined') {
                                                                 var request = require('request');
@@ -633,7 +634,7 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                                 'DateTo': todaysdate,
                                 'StayTime': updateStayTimeValue,
                                 'NotificationSent': isNotificationSent,
-                                'NotificationSentTime' : NotificationSentTime
+                                'NotificationSentTime': NotificationSentTime
                             }
                         },
                         function(err, result) {
@@ -3283,7 +3284,7 @@ function sendpushnotification_fcm(resObj, gcmToken, BeaconID, notification_user_
                     'title': title,
                     'BeaconID': BeaconID,
                     //'img_url': 'https://lh4.ggpht.com/mJDgTDUOtIyHcrb69WM0cpaxFwCNW6f0VQ2ExA7dMKpMDrZ0A6ta64OCX3H-NMdRd20=w300',
-                    // 'img_url': image_url,
+                    'img_url': image_url,
                     'notification_type': 7,
                 }
             };
