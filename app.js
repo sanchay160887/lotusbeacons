@@ -57,6 +57,9 @@ var app = express();
 
 app.use('/', express.static(__dirname + '/angular/'));
 app.use(session({
+    cookie: {
+        maxAge: 24 * 60 * 60 * 1000
+    },
     secret: '2C44-4D44-WppQ38S',
     resave: true,
     saveUninitialized: true
@@ -382,7 +385,8 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
     fromDate = new Date(datestring).getTime();
     //toDate = fromDate + 60000;
 
-    var staydiffForNextNotification = 900000; //15 Minute
+    //var staydiffForNextNotification = 900000; //15 Minute
+    var staydiffForNextNotification = 300000; //5 Minute for testing purpose    
 
     customerEmployeeIntervalStart = getCurrentTime() - staydiffForNextNotification;
 
@@ -455,7 +459,6 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                 callback(null, devicelist);
             },
             function(devices, callback) {
-                console.log('Inserting records over device history');
                 var IsInsertRecord = false;
                 currtime = getCurrentTime();
 
@@ -470,6 +473,7 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                             isNotificationSent = devices[0].NotificationSent;
 
                             console.log('Checking Staytime ', StayTime, ' ', settings_StayTime, ' ', NotificationSentTime);
+                            console.log('check diff %s - %s = %s (%s) ', todaysdate, NotificationSentTime, (todaysdate - NotificationSentTime), staydiffForNextNotification);
                             //NotificationSent
                             if (StayTime >= settings_StayTime &&
                                 (!isNotificationSent ||
@@ -478,22 +482,25 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
 
                                 console.log(customerEmployeeIntervalStart + ' Going for sending noifications....');
 
-                                collection.find({
-                                    'MobileNo': MobileNo,
-                                    'BeaconID': BeaconID,
-                                    '_id': { $ne: ObjectId(devices[0]._id) },
-                                    'StayTime': { $gte: 2 },
-                                    'DateTo': {
-                                        $gte: customerEmployeeIntervalStart,
+                                collection.aggregate([{
+                                    $match: {
+                                        'MobileNo': MobileNo,
+                                        'BeaconID': BeaconID,
+                                        '_id': { $ne: ObjectId(devices[0]._id) },
+                                        'NotificationSentTime': {
+                                            $gte: (customerEmployeeIntervalStart - 60000),
+                                        },
                                     }
-                                }).sort({ 'DateTo': -1 }).toArray(function(err, devicelist) {
-                                    console.log('Checking device listing' + JSON.stringify(devicelist));
-                                    if (!devicelist || devicelist.length <= 0) {
+                                }, {
+                                    $group: {
+                                        _id: { BeaconID: '$BeaconID', MobileNo: '$MobileNo' },
+                                        maxNotificationSentTime: { $max: "$NotificationSentTime" }
+                                    }
+                                }]).toArray(function(err, notifhistory) {
+                                    console.log('Checking device listing' + JSON.stringify(notifhistory));
+                                    if (!notifhistory || !notifhistory.maxNotificationSentTime ||
+                                        notifhistory.maxNotificationSentTime <= customerEmployeeIntervalStart) {
                                         var empcollection = db.collection('user_beacons_active');
-
-                                        /*empcollection.find({
-                                            'BeaconID': BeaconID
-                                        })*/
 
                                         empcollection.aggregate([{
                                             $match: {
