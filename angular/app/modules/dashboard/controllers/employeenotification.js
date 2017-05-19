@@ -242,9 +242,8 @@ dashboard.controller("EmployeeNotification", function($rootScope, $scope, apiSer
         }
 
         var ImageFilePath = document.getElementById('imagepreview').src;
-        var ImageWithoutBU = ImageFilePath.replace(apiService.base_url, '');
-        console.log(ImageWithoutBU);
-        if (!ImageWithoutBU || ImageWithoutBU == '#' || ImageWithoutBU.length <= 10){
+        var ImageWithoutBU = ImageFilePath.replace(apiService.base_urlwohttp, '');
+        if (!ImageWithoutBU || ImageWithoutBU == '#' || ImageWithoutBU.length <= 15){
             ImageFilePath = '';
         }
         var title = document.getElementById('push-title').value;

@@ -7,7 +7,7 @@
     s.no      date    author     description     
  ===========================================================*/
 
-app.service('apiService', ['$http', '$q', 'appSettings', '$location', function($http, $q, appSettings, $location) {
+app.service('apiService', ['$http', '$q', 'appSettings', function($http, $q, appSettings) {
 
     var apiService = {};
     var apiBase = appSettings.apiBase;
@@ -526,11 +526,10 @@ app.service('apiService', ['$http', '$q', 'appSettings', '$location', function($
     apiService.updateDevice = updateDevice;
     apiService.updateDeviceHistory = updateDeviceHistory;
 
-    console.log($location.$$absUrl);
-
     //apiService.base_url = 'http://localhost:5000';
     //apiService.base_url = 'http://lotusbeacon.herokuapp.com';
     apiService.base_url = 'http://lotuslive.herokuapp.com';
+    apiService.base_urlwohttp = apiService.base_url.replace('https:','').replace('http:','');
     //apiService.base_url = 'http://52.205.143.53:3000';
 
     var employeeData = function(storeID, SectionID) {
