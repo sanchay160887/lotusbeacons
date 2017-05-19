@@ -383,10 +383,9 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
     seldate = new Date(todaysdate);
     datestring = seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate();
     fromDate = new Date(datestring).getTime();
-    //toDate = fromDate + 60000;
 
-    //var staydiffForNextNotification = 900000; //15 Minute
-    var staydiffForNextNotification = 300000; //5 Minute for testing purpose    
+    var staydiffForNextNotification = 900000; //15 Minute
+    //var staydiffForNextNotification = 300000; //5 Minute for testing purpose    
 
     customerEmployeeIntervalStart = getCurrentTime() - staydiffForNextNotification;
 
@@ -403,7 +402,6 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
         }
         assert.equal(null, err);
 
-        //var collection = db.collection('test_device_history');
         var collection = db.collection('device_history');
 
         async.waterfall([
@@ -480,7 +478,7 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                                     (!NotificationSentTime ||
                                         (todaysdate - NotificationSentTime >= staydiffForNextNotification)))) {
 
-                                console.log(customerEmployeeIntervalStart + ' Going for sending noifications....');
+                                console.log('Going for sending noifications....');
 
                                 collection.aggregate([{
                                     $match: {
