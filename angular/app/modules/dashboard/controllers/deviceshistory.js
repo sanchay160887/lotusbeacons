@@ -62,6 +62,14 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.HistorySearchDetailsData = [];
     $scope.deviceAnalysis = {};
 
+    $scope.fetchDeviceAnalysis = function() {
+        if ($rootScope.loggedInUser.UserType == 1) {
+            apiService.deviceAnalysis().then(function(res) {
+                $scope.deviceAnalysis = res.data.records;
+            })
+        }
+    }
+
     $scope.checkLoggedInUser = function() {
         apiService.checkloginUser().then(function(res) {
             if (typeof(res.data.user) != undefined && res.data.user) {
@@ -86,15 +94,6 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     } else {
         $scope.fetchDeviceAnalysis();
     }
-
-    $scope.fetchDeviceAnalysis = function() {
-        if ($rootScope.loggedInUser.UserType == 1) {
-            apiService.deviceAnalysis().then(function(res) {
-                $scope.deviceAnalysis = res.data.records;
-            })
-        }
-    }
-
 
     $scope.connection = true;
     $scope.connection_msg = false;
