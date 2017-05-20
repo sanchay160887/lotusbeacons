@@ -103,9 +103,9 @@ function sendTime() {
     });
 }
 
-io.on('receiveTime', function(data) {
+/*io.on('receiveTime', function(data) {
     console.log('Data coming from client :: ');
-})
+})*/
 
 /* General Supportive Function start */
 function isNumeric(n) {
@@ -188,7 +188,7 @@ function convertSecondsToStringTime2(seconds) {
 
 function getCurrentTime() {
     var d = new Date();
-    console.log('Time zone offset: ' + d.getTimezoneOffset());
+    //console.log('Time zone offset: ' + d.getTimezoneOffset());
     var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
     //India Time +5:30
     utc = utc + 19800000;
@@ -226,13 +226,13 @@ MongoClient.connect(mongourl, function(err, db) {
 
 /* General Supportive Function End <<-- */
 function updateDevice(BeaconID, DeviceID, Distance, MobileNo, CustName, resObj) {
-    console.log('Update Device called to check socket');
+    //console.log('Update Device called to check socket');
     //if (MobileNo && MobileNo == '9584010456') {
-    console.log('Beacon ID ' + BeaconID);
-    console.log('Device ID ' + DeviceID);
-    console.log('Distance ' + Distance);
-    console.log('Mobile No ' + MobileNo);
-    console.log('Customer ' + CustName);
+    //console.log('Beacon ID ' + BeaconID);
+    //console.log('Device ID ' + DeviceID);
+    //console.log('Distance ' + Distance);
+    //console.log('Mobile No ' + MobileNo);
+    //console.log('Customer ' + CustName);
     //}
     var BeaconStoreID = '';
 
@@ -242,7 +242,7 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, CustName, resObj) 
 
     var resObjVal = {};
     if (!(DeviceID && Distance && MobileNo)) {
-        console.log('Invalid data passing');
+        //console.log('Invalid data passing');
         io.emit('updateDevice_response', {
             'IsSuccess': false,
             'message': 'Invalid data passing'
@@ -265,7 +265,7 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, CustName, resObj) 
         return;
     }
 
-    console.log('Update device called');
+    //console.log('Update device called');
 
     var comingFromLatLong = false;
     if (!BeaconID) {
@@ -303,15 +303,6 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, CustName, resObj) 
                     BeaconStoreID = beacons.BeaconStore;
                 }
 
-                /*collection.find({
-                    'MobileNo': MobileNo
-                }).toArray(function(err, devices) {
-                    if (devices && devices.length > 0 && BeaconID != '') {
-                        updateDeviceHistory(beacons, devices[0].DeviceID, MobileNo);
-                    }
-                    callback(null, devices);
-                });*/
-
                 if (BeaconID != '') {
                     updateDeviceHistory(callback, beacons, DeviceID, MobileNo, CustName);
                 } else {
@@ -332,7 +323,7 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, CustName, resObj) 
                     }, {
                         'upsert': true,
                     }, function(err, result) {
-                        console.log('Device updated or inserted');
+                        //console.log('Device updated or inserted');
                         callback(null, 'updated or inserted');
                     });
                 }
@@ -366,11 +357,11 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, CustName, resObj) 
 }
 
 function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName, resObj) {
-    console.log('------------Updating device History--------------');
-    console.log('Beacon ID ' + BeaconObj.BeaconID);
-    console.log('Device ID ' + DeviceID);
-    console.log('Mobile No ' + MobileNo);
-    console.log('------------Updating device History--------------');
+    //console.log('------------Updating device History--------------');
+    //console.log('Beacon ID ' + BeaconObj.BeaconID);
+    //console.log('Device ID ' + DeviceID);
+    //console.log('Mobile No ' + MobileNo);
+    //console.log('------------Updating device History--------------');
     var BeaconID = BeaconObj.BeaconID;
     var BeaconStore = BeaconObj.BeaconStore;
 
@@ -394,7 +385,7 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
     var isNotificationSent = 0;
     var NotificationSentTime = 0;
 
-    console.log('Update device history called');
+    //console.log('Update device history called');
 
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
@@ -429,7 +420,7 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                             callback(null, 'next callback');
                         }
                     } else {
-                        console.log('old records not found');
+                        //console.log('old records not found');
                         callback(null, 'next callback');
                     }
                 });
@@ -470,15 +461,15 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                             NotificationSentTime = devices[0].NotificationSentTime;
                             isNotificationSent = devices[0].NotificationSent;
 
-                            console.log('Checking Staytime ', StayTime, ' ', settings_StayTime, ' ', NotificationSentTime);
-                            console.log('check diff %s - %s = %s (%s) ', todaysdate, NotificationSentTime, (todaysdate - NotificationSentTime), staydiffForNextNotification);
+                            //console.log('Checking Staytime ', StayTime, ' ', settings_StayTime, ' ', NotificationSentTime);
+                            //console.log('check diff %s - %s = %s (%s) ', todaysdate, NotificationSentTime, (todaysdate - NotificationSentTime), staydiffForNextNotification);
                             //NotificationSent
                             if (StayTime >= settings_StayTime &&
                                 (!isNotificationSent ||
                                     (!NotificationSentTime ||
                                         (todaysdate - NotificationSentTime >= staydiffForNextNotification)))) {
 
-                                console.log('Going for sending noifications....');
+                                //console.log('Going for sending noifications....');
 
                                 collection.aggregate([{
                                     $match: {
@@ -495,7 +486,7 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                                         maxNotificationSentTime: { $max: "$NotificationSentTime" }
                                     }
                                 }]).toArray(function(err, notifhistory) {
-                                    console.log('Checking device listing' + JSON.stringify(notifhistory));
+                                    //console.log('Checking device listing' + JSON.stringify(notifhistory));
                                     if (!notifhistory || !notifhistory.maxNotificationSentTime ||
                                         notifhistory.maxNotificationSentTime <= customerEmployeeIntervalStart) {
                                         var empcollection = db.collection('user_beacons_active');
@@ -544,11 +535,11 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
 
                                                     fcm.send(message, function(err, response) {
                                                         if (err) {
-                                                            console.log("Something gone wrong!");
+                                                            //console.log("Something gone wrong!");
                                                             console.dir(err);
                                                             callback(null, devices);
                                                         } else {
-                                                            console.log('Notification sent to employees');
+                                                            //console.log('Notification sent to employees');
                                                             if (typeof(response) != 'undefined') {
                                                                 var request = require('request');
                                                                 var gcmdata = JSON.stringify(deviceTokens);
@@ -566,13 +557,13 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                                                                         }
                                                                     },
                                                                     function(res2, err, body) {
-                                                                        console.log('Data coming from employee service --> ' + JSON.stringify(body));
+                                                                        //console.log('Data coming from employee service --> ' + JSON.stringify(body));
                                                                         callback(null, devices);
                                                                     });
                                                             } else {
                                                                 callback(null, devices);
                                                             }
-                                                            console.log("Successfully sent with Employee response: ", response);
+                                                            //console.log("Successfully sent with Employee response: ", response);
                                                         }
                                                     });
                                                 } else {
@@ -625,13 +616,13 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                         'DateTo': todaysdate
                     }, function(err, records) {
                         callback(null, devices);
-                        console.log('Device History inserted Mobile No:' + MobileNo);
+                        //console.log('Device History inserted Mobile No:' + MobileNo);
                     });
                 }
             },
             function(devices, callback) {
                 if (updateStayTimeWithSame && devices.length > 0) {
-                    console.log('Is Notification sent : ' + isNotificationSent);
+                    //console.log('Is Notification sent : ' + isNotificationSent);
                     collection.update({
                             _id: ObjectId(devices[0]._id)
                         }, {
@@ -660,7 +651,7 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                     'CustName': CustName,
                     'message': 'Data updated successfully'
                 });
-                console.log('coming to last callback');
+                //console.log('coming to last callback');
                 db.close();
                 if (resObj) {
                     var obj = {
@@ -684,12 +675,12 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
 /// Employe function for update user Active start
 function updateUser_Active(BeaconID, UserID, Distance, resObj) {
     var UserID = ObjectId(UserID);
-    console.log('Update User Active called');
-    console.log(UserID);
-    console.log('==============================');
-    console.log('Beacon ID ' + BeaconID);
-    console.log('User ID ' + UserID);
-    console.log('Distance ' + Distance);
+    //console.log('Update User Active called');
+    //console.log(UserID);
+    //console.log('==============================');
+    //console.log('Beacon ID ' + BeaconID);
+    //console.log('User ID ' + UserID);
+    //console.log('Distance ' + Distance);
 
     var BeaconStoreID = '';
 
@@ -703,7 +694,7 @@ function updateUser_Active(BeaconID, UserID, Distance, resObj) {
     }
 
     if (!(UserID && Distance)) {
-        console.log('Invalid data passing');
+        //console.log('Invalid data passing');
         io.emit('updateUser_Active_response', {
             'IsSuccess': false,
             'message': 'Invalid data passing'
@@ -752,7 +743,7 @@ function updateUser_Active(BeaconID, UserID, Distance, resObj) {
                             resObjVal.message = "Device not available";
                             resObj.send(resObjVal);
                         }
-                        console.log('Invalid User ' + UserID);
+                        //console.log('Invalid User ' + UserID);
                     } else {
                         callback(null, beacons);
                     }
@@ -772,14 +763,6 @@ function updateUser_Active(BeaconID, UserID, Distance, resObj) {
 
                 beacons = beacons[0];
 
-                /*collection.find({
-                    'UserID': ObjectId(UserID)
-                }).toArray(function(err, user_beacons) {
-                    if (user_beacons && user_beacons.length > 0 && BeaconID != '') {
-                        updateUser_Beacon_History(user_beacons[0].BeaconID, user_beacons[0].UserID);
-                    }
-                    callback(null, user_beacons);
-                });*/
                 updateUser_Beacon_History(beacons, ObjectId(UserID), callback);
             },
             function(user_beacons_data, callback) {
@@ -793,7 +776,7 @@ function updateUser_Active(BeaconID, UserID, Distance, resObj) {
                 }, {
                     'upsert': true,
                 }, function(err, result) {
-                    console.log('Employee updated or inserted');
+                    //console.log('Employee updated or inserted');
                     callback(null, 'updated or inserted');
                 });
             },
@@ -828,10 +811,10 @@ function updateUser_Beacon_History(BeaconObj, UserID, pcallback, resObj) {
     var BeaconID = BeaconObj.BeaconID;
     var BeaconStore = BeaconObj.BeaconStore;
 
-    console.log('------------Updating User employee History--------------');
-    console.log('Beacon ID ' + BeaconID);
-    console.log('User ID ' + UserID);
-    console.log('------------Updating User employee History--------------');
+    //console.log('------------Updating User employee History--------------');
+    //console.log('Beacon ID ' + BeaconID);
+    //console.log('User ID ' + UserID);
+    //console.log('------------Updating User employee History--------------');
 
     var resObjVal = {};
     if (!(BeaconID && UserID)) {
@@ -872,7 +855,7 @@ function updateUser_Beacon_History(BeaconObj, UserID, pcallback, resObj) {
                 })
             },
             function(devices, callback) {
-                console.log('Inserting records over device history');
+                //console.log('Inserting records over device history');
                 var IsInsertRecord = false;
                 currtime = getCurrentTime();
 
@@ -932,7 +915,7 @@ function updateUser_Beacon_History(BeaconObj, UserID, pcallback, resObj) {
                         'DateTo': todaysdate
                     }, function(err, records) {
                         callback(null, 'inserted');
-                        console.log('Device History inserted Mobile No:' + UserID);
+                        //console.log('Device History inserted Mobile No:' + UserID);
                     });
                 }
             },
@@ -945,7 +928,7 @@ function updateUser_Beacon_History(BeaconObj, UserID, pcallback, resObj) {
                     // 'MobileNo': MobileNo,
                     'message': 'Data updated successfully'
                 });
-                console.log('coming to last callback');
+                //console.log('coming to last callback');
                 db.close();
                 if (resObj) {
                     var obj = {
@@ -975,14 +958,12 @@ io.on('connection', function(socket) {
 
     // Hitting from Client 
     socket.on('receiveTime', function(data) {
-        console.log('Coming with Data :: ' + JSON.stringify(data));
+        //console.log('Coming with Data :: ' + JSON.stringify(data));
     });
 
     socket.on('updateDevice', function(data) {
-        console.log(JSON.stringify(data));
+        //console.log(JSON.stringify(data));
         updateDevice(data.BeaconID, data.DeviceID, data.Distance, data.MobileNo, data.CustName);
-        //return "Update device called : " + data.BeaconID + ' Mobile No : ' + data.MobileNo;
-        //sendDevices();
     });
 
     //Employee socket start from here
@@ -992,8 +973,6 @@ io.on('connection', function(socket) {
             'message': 'Socket is calling from yourside'
         });
         updateUser_Active(data.BeaconID, data.UserID, data.Distance);
-        //return "Update device called : " + data.BeaconID + ' UserID : ' + data.UserID;
-        //sendDevices();
     });
 
 });
@@ -1022,13 +1001,13 @@ app.post('/updateUser_Active', function(req, res) {
 //// end
 
 app.post('/updateDeviceHistory', function(req, res) {
-    console.log('service calling');
+    //console.log('service calling');
     updateDeviceHistory(req.body.BeaconID, req.body.DeviceID, req.body.MobileNo, res);
 });
 
 
 function beaconDisconnect(BeaconID, DeviceID, MobileNo) {
-    console.log('-------------------Beacon disconnected------------- ');
+    //console.log('-------------------Beacon disconnected------------- ');
 
     updateDevice(BeaconID, DeviceID, -1, MobileNo, '');
 
@@ -1063,17 +1042,17 @@ function beaconDisconnect(BeaconID, DeviceID, MobileNo) {
                 function(devices, callback) {
                     var DeleteMe = false;
                     if (devices && devices.length > 0) {
-                        console.log('going to Delete record >>>>>>>>>>>>');
+                        //console.log('going to Delete record >>>>>>>>>>>>');
                         for (var d in devices) {
                             if (devices[d].Distance < 0) {
                                 DeleteMe = true;
-                                console.log('Record Deleted >>>>>>> ' + DeleteMe);
+                                //console.log('Record Deleted >>>>>>> ' + DeleteMe);
                                 break;
                             }
                         }
                     }
                     if (DeleteMe) {
-                        console.log('Deleting records from mongo >>>>>>> ' + DeleteMe + ' Device Id ' + DeviceID);
+                        //console.log('Deleting records from mongo >>>>>>> ' + DeleteMe + ' Device Id ' + DeviceID);
                         collection.deleteMany({
                             'DeviceID': DeviceID
                         });
@@ -1116,14 +1095,14 @@ function beaconDisconnect(BeaconID, DeviceID, MobileNo) {
 }
 
 app.post('/beaconDisconnected', function(req, res) {
-    console.log('-------------------Beacon disconnected------------- ');
+    //console.log('-------------------Beacon disconnected------------- ');
     BeaconID = req.body.BeaconID;
     DeviceID = req.body.DeviceID;
     MobileNo = req.body.MobileNo;
-    console.log('Beacon ID ' + BeaconID);
-    console.log('Device ID ' + DeviceID);
-    console.log('Mobile No ' + MobileNo);
-    console.log('------------Beacon disconnected--------------');
+    //console.log('Beacon ID ' + BeaconID);
+    //console.log('Device ID ' + DeviceID);
+    //console.log('Mobile No ' + MobileNo);
+    //console.log('------------Beacon disconnected--------------');
     async.waterfall([
         function(callback) {
             MongoClient.connect(mongourl, function(err, db) {
@@ -1144,10 +1123,6 @@ app.post('/beaconDisconnected', function(req, res) {
                     })
                 }
 
-                /*collection.find({
-                    "MobileNo": MobileNo,
-                    /*"DeviceID": DeviceID,*/
-                /*})*/
                 filteredcollection.toArray(function(err, devices) {
                     devicelist = [];
                     for (var dvc in devices) {
@@ -1180,7 +1155,7 @@ function userDisconnect(BeaconID, UserID) {
             assert.equal(null, err);
 
             var collection = db.collection('user_beacons_active');
-            console.log('Getting Collection');
+            //console.log('Getting Collection');
 
             async.waterfall([
                 function(callback) {
@@ -1192,21 +1167,21 @@ function userDisconnect(BeaconID, UserID) {
                     });
                 },
                 function(users, callback) {
-                    console.log('Deleting Collection ' + JSON.stringify(users));
+                    //console.log('Deleting Collection ' + JSON.stringify(users));
                     var DeleteMe = false;
                     if (users && users.length > 0) {
-                        console.log('going to Delete record >>>>>>>>>>>>');
-                        console.log(JSON.stringify(users));
+                        //console.log('going to Delete record >>>>>>>>>>>>');
+                        //console.log(JSON.stringify(users));
                         for (var u in users) {
                             if (users[u].Distance < 0) {
                                 DeleteMe = true;
-                                console.log('Record Deleted >>>>>>> ' + DeleteMe);
+                                //console.log('Record Deleted >>>>>>> ' + DeleteMe);
                                 break;
                             }
                         }
                     }
                     if (DeleteMe) {
-                        console.log('Deleting records from mongo >>>>>>> ' + DeleteMe + ' User Id ' + UserID);
+                        //console.log('Deleting records from mongo >>>>>>> ' + DeleteMe + ' User Id ' + UserID);
                         collection.deleteMany({
                             'UserID': ObjectId(UserID)
                         });
@@ -1248,13 +1223,13 @@ function userDisconnect(BeaconID, UserID) {
 }
 
 app.post('/userDisconnected', function(req, res) {
-    console.log('-------------------Beacon disconnected------------- ');
+    //console.log('-------------------Beacon disconnected------------- ');
     BeaconID = req.body.BeaconID;
     UserID = req.body.UserID;
-    console.log('Beacon ID ' + BeaconID);
-    console.log('Device ID ' + UserID);
-    console.log('Mobile No ' + MobileNo);
-    console.log('------------Beacon disconnected--------------');
+    //console.log('Beacon ID ' + BeaconID);
+    //console.log('Device ID ' + UserID);
+    //console.log('Mobile No ' + MobileNo);
+    //console.log('------------Beacon disconnected--------------');
     async.waterfall([
         function(callback) {
             MongoClient.connect(mongourl, function(err, db) {
@@ -1302,7 +1277,7 @@ devicecron.schedule('* * * * *', function() {
 
                 var collection = db.collection('device');
                 var devicelist = new Array();
-                console.log('Device Cron executed on ' + outofrangelimit);
+                //console.log('Device Cron executed on ' + outofrangelimit);
                 collection.find({
                     "connectiontime": { "$lte": outofrangelimit },
                 }).toArray(function(err, devices) {
@@ -1324,7 +1299,7 @@ devicecron.schedule('* * * * *', function() {
             function(result, callback) {
                 var ucollection = db.collection('user_beacons_active');
                 var userlist = new Array();
-                console.log('Employee Cron executed on ' + outofrangelimit);
+                //console.log('Employee Cron executed on ' + outofrangelimit);
                 ucollection.find({
                     "connectiontime": { "$lte": outofrangelimit },
                 }).toArray(function(err, users) {
@@ -1363,7 +1338,7 @@ app.post('/getdata', function(req, res) {
     UserID = req.body.UserID;
 
     if (!UserID && !req.session.loggedInUser) {
-        console.log('login expired');
+        //console.log('login expired');
         var resObj = {};
         resObj.IsSuccess = false;
         resObj.message = loginexpiredmessage;
@@ -1379,11 +1354,6 @@ app.post('/getdata', function(req, res) {
     }
 
     SectionID = req.body.SectionID;
-
-    console.log('Beacon Parameter on start');
-    console.log(BeaconID);
-    console.log('Store Parameter on start');
-    console.log(StoreID);
 
     if (typeof(BeaconID) == 'string') {
         BeaconID = BeaconID.split(',');
@@ -1411,9 +1381,6 @@ app.post('/getdata', function(req, res) {
                         'BeaconStore': ObjectId(StoreID)
                     });
                 } else if (Number(StoreID) == -1 && Number(SectionID) != -1) {
-                    console.log(1396);
-                    console.log(StoreID);
-                    console.log(SectionID);
                     beaconcollection = collection.find({
                         'BeaconStore': ObjectId(StoreID),
                         'BeaconSection': ObjectId(SectionID)
@@ -1511,12 +1478,6 @@ app.post('/getdata', function(req, res) {
                 }
 
                 if (beacons && beacons.length > 0) {
-                    /*devicecollection = collection.find({
-                        'BeaconID': {
-                            '$in': beacons
-                        }
-                    });*/
-
                     devicecollection = collection.aggregate([{
                         $match: {
                             'BeaconID': {
@@ -1569,13 +1530,6 @@ app.post('/getdata', function(req, res) {
                         callback(null, devicelist);
                     })
                 } else {
-                    /*collection.find().toArray(function(err, devices) {
-                        for (var dvc in devices) {
-                            devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
-                            devicelist.push(devices[dvc]);
-                        }
-                        callback(null, devicelist);
-                    })*/
                     callback(null, []);
                 }
             },
@@ -1588,7 +1542,7 @@ app.post('/getdata', function(req, res) {
 
                 var request = require('request');
                 var data = JSON.stringify(devices);
-                //console.log(data);
+                ////console.log(data);
 
                 //request.post('http://lampdemos.com/lotus15/v2/user/get_user_name', {
                 request.post(lotusWebURL + 'user/get_user_name_by_mobileno', {
@@ -1607,10 +1561,6 @@ app.post('/getdata', function(req, res) {
                             for (var r in reqbody) {
                                 if (reqbody[r] != false) {
                                     for (var d in devicelist) {
-                                        /*if (devicelist[d].DeviceID == reqbody[r].device_token) {
-                                            devicelist[d].DeviceName = reqbody[r].name;
-                                            devicelist[d].DevicePhone = reqbody[r].mobile_no;
-                                        }*/
                                         if (typeof(devicelist[d].MobileNo) != 'undefined' && devicelist[d].MobileNo) {
                                             mobileno = '91' + devicelist[d].MobileNo;
                                         } else {
@@ -1633,8 +1583,6 @@ app.post('/getdata', function(req, res) {
                                 devicelist.splice(i, 1);
                             }
                         }
-
-                        console.log('called');
 
                         if (UserID && !devicelist) {
                             var resObj = {};
@@ -1704,8 +1652,8 @@ app.post('/getDeviceHistorydata', function(req, res) {
     seldate = new Date(req.body.DateTo);
     toDate = new Date(seldate.getFullYear() + '/' + (seldate.getMonth() + 1) + '/' + (seldate.getDate()) + ' 23:59:59').getTime();
 
-    console.log('fromDate: ' + fromDate);
-    console.log('toDate: ' + toDate);
+    //console.log('fromDate: ' + fromDate);
+    //console.log('toDate: ' + toDate);
 
     var beaconsIDs = [];
 
@@ -1720,25 +1668,20 @@ app.post('/getDeviceHistorydata', function(req, res) {
                 var beaconcollection = [];
                 var HavingCollection = true;
                 if (BeaconID && BeaconID.length > 0) {
-                    console.log('coming to beacon list');
                     beaconcollection = collection.find({
                         'BeaconID': {
                             $in: BeaconID
                         }
                     });
                 } else if (Section && Section.length == 24) {
-                    console.log('coming to store');
                     beaconcollection = collection.find({
                         'BeaconSection': ObjectId(Section)
                     });
                 } else if (StoreID && StoreID.length == 24) {
-                    console.log('coming to store');
                     beaconcollection = collection.find({
                         'BeaconStore': ObjectId(StoreID)
                     });
                 } else {
-                    /*console.log('coming to all part');
-                    beaconcollection = collection.find();*/
                     HavingCollection = false;
                     beaconcollection = {};
                 }
@@ -1756,50 +1699,6 @@ app.post('/getDeviceHistorydata', function(req, res) {
                     callback(null, []);
                 }
             },
-            /* Total record count now not needed. Its done beneath
-            function(beaconlist, callback) {
-                console.log('======BL=====');
-                console.log(beaconlist);
-                console.log('=============');
-
-                if (SearchNameNumber || 1 == 1) {
-                    resObjVal.NoOfRecords = 1;
-                    callback(null, beaconlist);
-                    return 0;
-                }
-
-                if (beaconsIDs && beaconsIDs.length > 0) {
-                    var collection = db.collection('device_history');
-
-                    reccount = collection.aggregate(
-                        [{
-                            $match: {
-                                'Date': {
-                                    '$gte': fromDate,
-                                    '$lte': toDate
-                                },
-                                'BeaconID': {
-                                    $in: beaconsIDs,
-                                },
-                                'StayTime': {
-                                    $gte: 2
-                                }
-                            }
-                        }, {
-                            $group: {
-                                _id: { BeaconID: '$BeaconID', DeviceID: '$DeviceID' },
-                                StayTime: { $sum: "$StayTime" }
-                            }
-                        }]
-                    ).toArray(function(err, devices) {
-                        resObjVal.NoOfRecords = devices.length;
-                        callback(null, beaconlist);
-                    })
-                } else {
-                    resObjVal.NoOfRecords = 0;
-                    callback(null, []);
-                }
-            },*/
             function(beaconlist, callback) {
                 //var collection = db.collection('test_device_history');
                 var collection = db.collection('device_history');
@@ -1888,13 +1787,11 @@ app.post('/getDeviceHistorydata', function(req, res) {
                     }*/
 
                     reccollection.toArray(function(err, devices) {
-                        console.log('device history');
                         for (var dvc in devices) {
                             devices[dvc].BeaconID = devices[dvc]._id.BeaconID;
                             devices[dvc].SectionID = devices[dvc].SectionID;
                             devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
                             devices[dvc].DeviceID = devices[dvc]._id.DeviceID;
-                            //devices[dvc].MobileNo = devices[dvc].MobileNo;
                             devices[dvc].UniqueKey = devices[dvc].MobileNo + '‖' + devices[dvc].BeaconID;
                             devices[dvc].StayTime = convertSecondsToStringTime(devices[dvc].StayTime);
                             if (devices[dvc].SectionName != undefined && devices[dvc].SectionName.length > 0) {
@@ -1916,7 +1813,6 @@ app.post('/getDeviceHistorydata', function(req, res) {
             function(devicelist, callback) {
                 var devices = [];
                 for (var d in devicelist) {
-                    //devices.push(devicelist[d].DeviceID);
                     devices.push('91' + devicelist[d].MobileNo);
                 }
                 var request = require('request');
@@ -1925,13 +1821,11 @@ app.post('/getDeviceHistorydata', function(req, res) {
                 //request.post('http://lampdemos.com/lotus15/v2/user/get_user_name', {
                 request.post(lotusWebURL + 'user/get_user_name_by_mobileno', {
                         form: {
-                            //'android_device_token': data
                             'mobile_nos': data
                         }
                     },
                     function(res2, err, body) {
                         device_detail = [];
-                        //var reqbody = JSON.parse(body);
                         var reqbody = parse_JSON(body);
                         if (reqbody) {
                             reqbody = reqbody.data;
@@ -1939,10 +1833,6 @@ app.post('/getDeviceHistorydata', function(req, res) {
                                 for (var r in reqbody) {
                                     if (reqbody[r] != false) {
                                         for (var d in devicelist) {
-                                            /*if (devicelist[d].DeviceID == reqbody[r].device_token) {
-                                                devicelist[d].DeviceName = reqbody[r].name;
-                                                devicelist[d].DevicePhone = reqbody[r].mobile_no;
-                                            }*/
                                             if (typeof(devicelist[d].MobileNo) != 'undefined' && devicelist[d].MobileNo) {
                                                 mobileno = '91' + devicelist[d].MobileNo;
                                             } else {
@@ -1982,8 +1872,6 @@ app.post('/getDeviceHistorydata', function(req, res) {
                                         devicelist.splice(i, 1);
                                     }
                                 }
-
-                                console.log(devicelist);
                             }
 
                             resObjVal.NoOfRecords = devicelist.length;
@@ -2002,10 +1890,8 @@ app.post('/getDeviceHistorydata', function(req, res) {
                                 }
                             }
                             devicelist = finaldevicelist;
-                            /*}*/
                         }
 
-                        //console.log(devicelist);
                         resObjVal.Records = devicelist;
                         res.send(resObjVal);
                         callback(null, devicelist);
@@ -2031,11 +1917,11 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
     seldate = new Date(req.body.DateTo);
     toDate = new Date(seldate.getFullYear() + '/' + (seldate.getMonth() + 1) + '/' + (seldate.getDate()) + ' 23:59:59').getTime();
 
-    console.log('fromDate: ' + fromDate);
-    console.log('toDate: ' + toDate);
-    console.log('BeaconID : ' + BeaconID);
-    console.log('SectionID : ' + SectionID);
-    console.log('MobileNo : ' + MobileNo);
+    //console.log('fromDate: ' + fromDate);
+    //console.log('toDate: ' + toDate);
+    //console.log('BeaconID : ' + BeaconID);
+    //console.log('SectionID : ' + SectionID);
+    //console.log('MobileNo : ' + MobileNo);
 
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
@@ -2073,33 +1959,6 @@ app.post('/getDeviceHistoryDetailsdata', function(req, res) {
                 var devicelist = new Array();
 
                 if (beaconsIDs && beaconsIDs.length > 0) {
-                    /*devicecollection = collection.find({
-                        'BeaconID': BeaconID,
-                        'MobileNo': MobileNo,
-                        'Date': {
-                            $gte: fromDate,
-                            $lte: toDate,
-                        }
-                    }).sort({ 'Date': -1 }).toArray(function(err, devices) {
-                        console.log(devices);
-                        devicedetaillist = [];
-                        var cnt = 1;
-                        for (var dvc in devices) {
-                            devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID];
-                            if (typeof(devices[dvc].DateTo) == 'undefined' || !devices[dvc].DateTo) {
-                                devices[dvc].DateTo = devices[dvc].Date + (devices[dvc].StayTime * 1000);
-                            }
-                            devices[dvc].StayTime = convertSecondsToStringTime(devices[dvc].StayTime);
-                            devices[dvc].srno = cnt;
-                            devices[dvc].page = Math.ceil(cnt / PageLimit, 2);
-                            cnt++;
-                            devicedetaillist.push(devices[dvc]);
-                        }
-
-                        res.send(devicedetaillist);
-                        callback(null, 'records found');
-                    })*/
-
                     groupParams = {};
                     if (!BeaconID) {
                         groupParams = {
@@ -2250,9 +2109,9 @@ app.post('/getDeviceSearchHistoryDetailsdata', function(req, res) {
     seldate = new Date(req.body.DateTo);
     toDate = seldate.getFullYear() + '-' + (seldate.getMonth() + 1) + '-' + seldate.getDate();
 
-    console.log('fromDate: ' + fromDate);
-    console.log('toDate: ' + toDate);
-    console.log('MobileNo : ' + MobileNo);
+    //console.log('fromDate: ' + fromDate);
+    //console.log('toDate: ' + toDate);
+    //console.log('MobileNo : ' + MobileNo);
 
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
@@ -2391,7 +2250,6 @@ app.post('/getbeacondata', function(req, res) {
                 }
 
                 beaconcollection.sort({ 'BeaconKey': 1 }).toArray(function(err, beacons) {
-                    console.log('Beacon list called');
                     var beaconlist = [];
                     if (beacons && beacons.length > 0) {
                         for (var b in beacons) {
@@ -2510,12 +2368,12 @@ app.post('/addbeacon', function(req, res) {
                     'BeaconDescr': BeaconDescr,
                     'BeaconStore': ObjectId(BeaconStore)
                 });
-                console.log('Beacon inserted');
+                //console.log('Beacon inserted');
 
                 callback(null, 'inserted');
             },
             function(response, callback) {
-                console.log('coming to last callback');
+                //console.log('coming to last callback');
                 db.close();
                 resObj.IsSuccess = true;
                 resObj.message = "Beacon registered successfully.";
@@ -2606,12 +2464,12 @@ app.post('/updatebeacon', function(req, res) {
                         'BeaconStore': ObjectId(BeaconStore)
                     }
                 });
-                console.log('Beacon updated');
+                //console.log('Beacon updated');
 
                 callback(null, 'updated');
             },
             function(response, callback) {
-                console.log('coming to last callback');
+                //console.log('coming to last callback');
                 db.close();
                 resObj.IsSuccess = true;
                 resObj.message = "Beacon updated successfully.";
@@ -2792,7 +2650,6 @@ app.post('/addstore', function(req, res) {
     }
 
     if (!StoreName) {
-        console.log(StoreName);
         resObj.IsSuccess = false;
         resObj.message = "Please enter Store Name";
         res.send(resObj);
@@ -2800,7 +2657,6 @@ app.post('/addstore', function(req, res) {
     }
 
     if (!StoreLat || !isNumeric(StoreLat) || !StoreLong || !isNumeric(StoreLong)) {
-        console.log(StoreName);
         resObj.IsSuccess = false;
         resObj.message = "Please fill appropriate lattitude and longitude";
         res.send(resObj);
@@ -2838,12 +2694,10 @@ app.post('/addstore', function(req, res) {
                     'StoreLat': StoreLat,
                     'StoreLong': StoreLong
                 });
-                console.log('Store inserted');
 
                 callback(null, 'inserted');
             },
             function(response, callback) {
-                console.log('coming to last callback');
                 db.close();
                 resObj.IsSuccess = true;
                 resObj.message = "Store added successfully.";
@@ -2886,7 +2740,7 @@ app.post('/updatestore', function(req, res) {
     }
 
     if (!StoreLat || !isNumeric(StoreLat) || !StoreLong || !isNumeric(StoreLong)) {
-        console.log(StoreName);
+        //console.log(StoreName);
         resObj.IsSuccess = false;
         resObj.message = "Please fill appropriate lattitude and longitude";
         res.send(resObj);
@@ -2949,10 +2803,6 @@ app.post('/deletestore', function(req, res) {
         assert.equal(null, err);
 
         var collection = db.collection('stores');
-
-        /*collection.find(ObjectId(StoreID)).toArray(function(err, devices) {
-            console.log(JSON.stringify(devices));
-        });*/
 
         collection.deleteMany({
             _id: ObjectId(StoreID)
@@ -3032,9 +2882,9 @@ app.post('/sendpushnotification_test', function(req, res) {
 
     gcmObject.send(message, function(err, response) {
         if (err) {
-            console.log('Something went wrong :: ' + err);
+            //console.log('Something went wrong :: ' + err);
         } else {
-            console.log(response);
+            //console.log(response);
         }
         res.send();
     });
@@ -3118,7 +2968,7 @@ app.post('/sendpushnotification_image_everyone', function(req, res) {
                             }
                         }]
                     ).toArray(function(err, devices) {
-                        console.log(devices)
+                        //console.log(devices)
                         callback(null, devices);
                     })
                 } else {
@@ -3209,15 +3059,12 @@ function sendpushnotification_mobileno(res, gcmMobiles, title, description, imag
                 })
         },
         function(devicetokens, callback) {
-            console.log('sendpushnotification_mobileno -->>>' + JSON.stringify(devicetokens));
             sendpushnotification(res, devicetokens, not_title, not_descr, not_image);
         }
     ]);
 }
 
 function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
-    console.log(gcmToken);
-    console.log('push notification called');
     var gcmObject = new gcm.AndroidGcm(GcmGoogleKey);
     if (!image_url) {
         image_url = '';
@@ -3236,13 +3083,10 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
         }
     });
 
-
-    //console.log(message);
-
     gcmObject.send(message, function(err, response) {
-        console.log(response);
+        //console.log(response);
         if (err) {
-            console.log('Something went wrong :: ' + err);
+            //console.log('Something went wrong :: ' + err);
         } else {
             if (response.success) {
                 var request = require('request');
@@ -3257,7 +3101,7 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
                     },
 
                     function(res2, err, body) {
-                        console.log('Data coming from service --> ' + JSON.stringify(body));
+                        //console.log('Data coming from service --> ' + JSON.stringify(body));
                         if (resObj) {
                             resObj.send(body);
                         }
@@ -3268,7 +3112,6 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
 }
 
 
-
 function sendpushnotification_fcm(resObj, gcmToken, BeaconID, notification_user_id, MobileNo, title, messagebody, image_url) {
     if (!image_url) {
         image_url = '';
@@ -3276,8 +3119,6 @@ function sendpushnotification_fcm(resObj, gcmToken, BeaconID, notification_user_
 
     async.waterfall([
         function(callback) {
-            /*var reqbody = parse_JSON(response);
-            var data = reqbody.data;*/
 
             var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
                 registration_ids: gcmToken,
@@ -3296,7 +3137,7 @@ function sendpushnotification_fcm(resObj, gcmToken, BeaconID, notification_user_
 
             fcm.send(message, function(err, response) {
                 if (err) {
-                    console.log("Something has gone wrong!");
+                    //console.log("Something has gone wrong!");
                 } else {
                     if (typeof(response) != 'undefined') {
                         try {
@@ -3315,15 +3156,13 @@ function sendpushnotification_fcm(resObj, gcmToken, BeaconID, notification_user_
                                     }
                                 },
                                 function(res2, err, body) {
-                                    console.log('Data coming from service --> ' + JSON.stringify(body));
+                                    //console.log('Data coming from service --> ' + JSON.stringify(body));
                                     if (resObj) {
                                         resObj.send(body);
                                     }
                                 });
                         } catch (err) { console.dir(err.message) }
                     }
-
-                    console.log("Successfully sent with response: ", response);
                 }
             });
 
@@ -3331,8 +3170,6 @@ function sendpushnotification_fcm(resObj, gcmToken, BeaconID, notification_user_
 
 
     ]);
-    //console.log(message);
-
 }
 
 
@@ -3341,7 +3178,6 @@ function sendpushnotification_fcm(resObj, gcmToken, BeaconID, notification_user_
 var multer = require('multer');
 var storage = multer.diskStorage({
     destination: function(req, file, callback) {
-        //callback(null, './angular/images/notificationuploads/');
         callback(null, notificationImagesdirectory);
     },
     filename: function(req, file, callback) {
@@ -3354,7 +3190,6 @@ var upload = multer({
     fileFilter: function(req, file, cb) {
         var imagetype = file.mimetype.split('/');
         if (!(imagetype[0] == 'image')) {
-            console.log('not image');
             return cb(new Error('Only Images are allowed.'))
         }
         cb(null, true)
@@ -3367,7 +3202,7 @@ app.post('/api/photo', function(req, res) {
         if (err == 'Only Images are allowed') {
             return res.end(err);
         } else if (err) {
-            console.log(err);
+            //console.log(err);
             return res.end("Error uploading file.");
         }
         var filename = '';
@@ -3392,7 +3227,7 @@ app.post('/getdeviceidentity', function(req, res) {
             }
         },
         function(res, err, body) {
-            console.log(body);
+            //console.log(body);
         })
     res.send();
 });
@@ -3437,7 +3272,6 @@ app.post('/getUserdata', function(req, res) {
             },
             function(storelist, callback) {
                 var collection = db.collection('users');
-                /*{ "UserType": 2 }*/
                 collection.find({ "UserType": 2 }).toArray(function(err, users) { //{ "UserType": 2 } changed by arpit
                     var userlist = [];
                     if (users && users.length > 0) {
@@ -3586,7 +3420,7 @@ app.post('/addUser', function(req, res) {
                     'AssignedStore': ObjectId(AssignedStore),
                     'UserType': 2
                 });
-                console.log('User inserted');
+                //console.log('User inserted');
 
                 callback(null, 'inserted');
             },
@@ -3710,8 +3544,6 @@ app.post('/updateUser', function(req, res) {
                 callback(null, hashedPassword);
             },
             function(hashedpassword, callback) {
-                /*console.log(ResetPassword);
-                console.log(hashedpassword);*/
                 if (ResetPassword) {
                     collection.update({
                         '_id': ObjectId(UserObjectID)
@@ -3728,7 +3560,6 @@ app.post('/updateUser', function(req, res) {
                     });
 
                 } else {
-                    console.log(ObjectId(UserObjectID));
                     collection.update({
                         '_id': ObjectId(UserObjectID)
                     }, {
@@ -3742,8 +3573,6 @@ app.post('/updateUser', function(req, res) {
                         }
                     });
                 }
-
-                console.log('User updated');
 
                 callback(null, 'updated');
             },
@@ -3876,7 +3705,7 @@ app.post('/userLogout', function(req, res) {
 
     var adminid = user._id;
 
-    console.log("Logging out user.");
+    //console.log("Logging out user.");
 
     req.session.destroy(function() {
         var request = require('request');
@@ -3887,7 +3716,6 @@ app.post('/userLogout', function(req, res) {
             },
             function(res2, err, body) {
 
-                console.log(body);
             });
         res.redirect('/');
     });
@@ -3906,7 +3734,6 @@ app.post('/userLogin', function(req, res) {
         var collection = db.collection('users');
         var AllotedSection = '';
         // to find beacon id for lotus employee App.
-
 
         var userRecord = {};
 
@@ -3957,7 +3784,7 @@ app.post('/userLogin', function(req, res) {
                     }
 
                     if (users && users.length > 0 && users[0].hasOwnProperty('section_docs') && users[0].section_docs.length > 0) {
-                        console.log(users[0].section_docs);
+                        //console.log(users[0].section_docs);
                         SectionName = users[0].section_docs[0].SectionName;
                         resObj.SectionName = SectionName;
                     }
@@ -4119,7 +3946,6 @@ app.post('/getstoreuserscount', function(req, res) {
                             });
                         },
                         function(beaconsIDs, callback2) {
-                            //console.log(beaconsIDs);
                             var devicecollection = db.collection('device_history');
                             devicecollection.aggregate(
                                     [{
@@ -4153,11 +3979,9 @@ app.post('/getstoreuserscount', function(req, res) {
                     ]);
                 }, function(notAborted, arr) {
                     callback(null, storelist);
-                    console.log("done", notAborted, arr);
                 });
             },
             function(storelist, callback) {
-                //console.log(storelist);
                 res.send(storelist);
             }
         ]);
@@ -4420,7 +4244,7 @@ app.post('/addEmployee', function(req, res) {
 
 
                 });
-                console.log('Employee inserted');
+                //console.log('Employee inserted');
 
                 callback(null, 'inserted');
             },
@@ -4559,7 +4383,7 @@ app.post('/addSection', function(req, res) {
                 }, function(err, records) {
                     SectionID = records.ops[0]._id;
                     callback(null, 'inserted');
-                    console.log('Section inserted');
+                    //console.log('Section inserted');
                 });
 
 
@@ -4589,7 +4413,7 @@ app.post('/addSection', function(req, res) {
 
 
 
-                console.log('Section Beacon inserted');
+                //console.log('Section Beacon inserted');
                 callback(null, 'rec');
 
             },
@@ -4705,8 +4529,8 @@ app.post('/updateEmployee', function(req, res) {
                 callback(null, hashedPassword);
             },
             function(hashedpassword, callback) {
-                /*console.log(ResetPassword);
-                console.log(hashedpassword);*/
+                /*//console.log(ResetPassword);
+                //console.log(hashedpassword);*/
                 if (Password) {
                     collection.update({
                         '_id': ObjectId(UserObjectID)
@@ -4721,7 +4545,7 @@ app.post('/updateEmployee', function(req, res) {
                         }
                     });
                 } else {
-                    console.log(ObjectId(UserObjectID));
+                    //console.log(ObjectId(UserObjectID));
                     collection.update({
                         '_id': ObjectId(UserObjectID)
                     }, {
@@ -4753,7 +4577,7 @@ app.post('/updateEmployee', function(req, res) {
 app.post('/getEmployeeDetails', function(req, res) {
     EmployeeID = req.body.EmployeeID;
 
-    console.log('Employee Details Called -----=========');
+    //console.log('Employee Details Called -----=========');
 
     var resObj = {};
 
@@ -4866,20 +4690,14 @@ app.post('/getcustomerdata', function(req, res) {
                     var dbpassword = users[0].Password;
 
                     var isPasswordMatch = passwordHash.verify(Password, dbpassword);
-
-                    console.log(dbpassword);
-                    console.log(isPasswordMatch);
-
-
-
                     resObj.users = users;
-                    // console.log(resObj);
+                    // //console.log(resObj);
 
                     if (ID == UserID && isPasswordMatch == 'true') {
                         resObj.IsSuccess = true;
                         resObj.message = "success";
                         resObj.data = users;
-                        console.log(resObj);
+                        //console.log(resObj);
                         res.send(resObj);
 
                     } else {
@@ -4985,19 +4803,12 @@ app.post('/addCustomer', function(req, res) {
             function(hashedpassword, callback) {
                 collection.insert({
                     'UserID': UserID,
-
                     'Name': Name,
-
                     'Password': hashedpassword,
                     'Designation': Designation,
-
                     'AssignedStore': ObjectId(AssignedStore),
-
                     'UserType': 4,
-
-
                 });
-                console.log('User inserted');
 
                 callback(null, 'inserted');
             },
@@ -5130,9 +4941,6 @@ app.post('/getEmployeedata', function(req, res) {
 app.post('/deleteEmployee', function(req, res) {
     UserObjectID = req.body.UserObjectID;
 
-    console.log(UserObjectID);
-    console.log('============== Called===========EEEE==');
-
     var resObj = {};
     if (!req.session.loggedInUser) {
         resObj.IsSuccess = false;
@@ -5165,9 +4973,6 @@ app.post('/deleteEmployee', function(req, res) {
 
         async.waterfall([
             function(callback) {
-
-
-
                 collection.find({
                     '_id': ObjectId(UserObjectID)
 
@@ -5186,13 +4991,10 @@ app.post('/deleteEmployee', function(req, res) {
             },
 
             function(response, callback) {
-
-
                 collection.deleteMany({
                     '_id': ObjectId(UserObjectID),
                     'UserType': 3
                 });
-
 
                 resObj.IsSuccess = true;
                 resObj.message = "Employee has been Deleted Successfully";
@@ -5510,7 +5312,7 @@ app.post('/updateCustomeExecutive', function(req, res) {
                 });
             },
             function(userdata, callback) {
-                console.log(userdata);
+                //console.log(userdata);
                 /*bcrypt.genSalt(10, function(err, salt) {
                     if (err)
                         return callback(err);
@@ -5537,7 +5339,7 @@ app.post('/updateCustomeExecutive', function(req, res) {
                     });
 
                 } else {
-                    console.log(ObjectId(UserObjectID));
+                    //console.log(ObjectId(UserObjectID));
                     collection.update({
                         '_id': ObjectId(UserObjectID)
                     }, {
@@ -5571,8 +5373,8 @@ app.post('/updateCustomeExecutive', function(req, res) {
 app.post('/deleteSection', function(req, res) {
     UserObjectID = req.body.UserObjectID;
 
-    console.log(UserObjectID);
-    console.log('==============Delete Section Called============');
+    //console.log(UserObjectID);
+    //console.log('==============Delete Section Called============');
 
     var resObj = {};
     if (!req.session.loggedInUser) {
@@ -5662,16 +5464,11 @@ app.post('/deleteSection', function(req, res) {
                         }
                     }
                 );
-
                 callback(null, 'beacons');
-
-
             },
-
             function(beacons, callback) {
                 beaconcollection.updateMany({
                         'BeaconSection': ObjectId(UserObjectID)
-
                     }, {
                         '$unset': {
                             'BeaconSection': 1,
@@ -5687,20 +5484,12 @@ app.post('/deleteSection', function(req, res) {
                         }
                     }
                 );
-
                 callback(null, 'sections');
-
-
             },
-
             function(sections, callback) {
-
-
                 collection.deleteMany({
                     '_id': ObjectId(UserObjectID),
-
                 });
-
                 resObj.IsSuccess = true;
                 resObj.message = "Section has been Deleted Successfully";
                 res.send(resObj);
@@ -5763,7 +5552,7 @@ app.post('/getSection', function(req, res) {
 app.post('/updateSection', function(req, res) {
 
 
-    console.log('===================update Section called=============================');
+    //console.log('===================update Section called=============================');
     UserObjectID = req.body.UserObjectID;
 
     AssignedStore = req.body.AssignedStore;
@@ -5771,12 +5560,6 @@ app.post('/updateSection', function(req, res) {
     SectionName = req.body.SectionName;
     SectionDesc = req.body.SectionDesc;
     selectedBeacon = req.body.selectedBeacon;
-
-    console.log(UserObjectID);
-    console.log(AssignedStore);
-    console.log(SectionName);
-    console.log(SectionDesc);
-    console.log(selectedBeacon);
 
     SectionName = SectionName.toLowerCase();
     SectionDesc = SectionDesc.toLowerCase();
@@ -5844,8 +5627,6 @@ app.post('/updateSection', function(req, res) {
                     '_id': ObjectId(UserObjectID)
                 }, {
                     '$set': {
-
-
                         'AssignedStore': ObjectId(AssignedStore),
                         'SectionName': SectionName,
                         'SectionDesc': SectionDesc,
@@ -5859,7 +5640,6 @@ app.post('/updateSection', function(req, res) {
             function(updated, callback) {
                 sectionbeacon.updateMany({
                         'BeaconSection': ObjectId(UserObjectID)
-
                     }, {
                         '$unset': {
                             'BeaconSection': 1,
@@ -5876,7 +5656,7 @@ app.post('/updateSection', function(req, res) {
                     }
                 );
 
-                console.log('Section Beacon Updated');
+                //console.log('Section Beacon Updated');
                 callback(null, 'removed');
 
             },
@@ -5898,25 +5678,17 @@ app.post('/updateSection', function(req, res) {
                         }
                     }
                 );
-
-                console.log('Section Beacon Updated');
                 callback(null, 'rec');
 
             },
-
             function(response, callback) {
                 resObj.IsSuccess = true;
                 resObj.message = "Section has been Updated Successfully";
                 res.send(resObj);
                 db.close();
-
-
             }
         ]);
     });
-
-
-
 });
 
 // Get Employee Data For PHP through curl in CRM module
@@ -5926,9 +5698,6 @@ app.post('/getCrmEmployee', function(req, res) {
     var AssignedStore = req.body.AssignedStore;
     var resObj = {};
 
-
-
-
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
             return console.dir(err);
@@ -5936,19 +5705,11 @@ app.post('/getCrmEmployee', function(req, res) {
         var sectionlist = [];
         async.waterfall([
             function(callback) {
-
-
                 var SectionName = '';
-
                 var sectioncollection = db.collection('sections');
-
-
-
                 var sectcollection = {};
                 sectcollection = sectioncollection.find();
                 sectcollection.toArray(function(err, sections) {
-
-
                     for (var b in sections) {
                         sectionlist[sections[b]._id] = sections[b].SectionName;
                     }
@@ -5973,7 +5734,6 @@ app.post('/getCrmEmployee', function(req, res) {
             function(storelist, callback) {
                 var collection = db.collection('users');
 
-
                 var SectionName = '';
                 /*{ "UserType": 2 }*/
                 collection.find({
@@ -5989,7 +5749,6 @@ app.post('/getCrmEmployee', function(req, res) {
                             users[u].SectionName = sectionlist[ObjectId(users[u].AssignedSection)];
                             users[u].searchfield =
                                 users[u].Name + ' ' + users[u].UserID + ' ' + users[u].Designation + ' ' + users[u].StoreName + ' ' + users[u].SectionName;
-
                             userlist.push(users[u]);
                         }
                         resObj.IsSuccess = true;
@@ -6013,18 +5772,10 @@ app.post('/getCrmEmployee', function(req, res) {
     });
 });
 
-
-
-
 // Get Employee List For Admin
 app.post('/getCrmEmployeeListByAdmin', function(req, res) {
-
     var UserType = req.body.UserType;
-
     var resObj = {};
-
-
-
 
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
@@ -6033,30 +5784,19 @@ app.post('/getCrmEmployeeListByAdmin', function(req, res) {
         var sectionlist = [];
         async.waterfall([
             function(callback) {
-
-
                 var SectionName = '';
-
                 var sectioncollection = db.collection('sections');
-
-
-
                 var sectcollection = {};
                 sectcollection = sectioncollection.find();
                 sectcollection.toArray(function(err, sections) {
-
-
                     for (var b in sections) {
                         sectionlist[sections[b]._id] = sections[b].SectionName;
                     }
-
                     callback(null, sectionlist);
                 });
             },
-
             function(sectionlist, callback) {
                 var collection = db.collection('stores');
-
                 var storecollection = {};
                 storecollection = collection.find();
                 storecollection.toArray(function(err, stores) {
@@ -6075,8 +5815,6 @@ app.post('/getCrmEmployeeListByAdmin', function(req, res) {
                 /*{ "UserType": 2 }*/
                 collection.find({
                     'UserType': Number(UserType)
-
-
                 }).toArray(function(err, users) {
                     var userlist = [];
                     if (users && users.length > 0) {
@@ -6136,8 +5874,6 @@ app.post('/getStore_DeviceCount', function(req, res) {
         }
 
         var devicecollection = db.collection('device');
-
-
         devicecollection.aggregate([{
             '$lookup': {
                 'from': "beacons",
@@ -6175,9 +5911,7 @@ app.post('/getStore_DeviceCount', function(req, res) {
 });
 
 app.get('/getsettings', function(req, res) {
-
     var resObj = {};
-
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
             return console.dir(err);
@@ -6191,9 +5925,7 @@ app.get('/getsettings', function(req, res) {
                 collection.find().toArray(function(err, settings) {
                     callback(null, settings);
                 });
-
             },
-
             function(settingdata, callback) {
                 if (settingdata && settingdata.length > 0) {
                     resObj.IsSuccess = true;
@@ -6212,11 +5944,8 @@ app.get('/getsettings', function(req, res) {
 
 
 app.post('/updateSettingData', function(req, res) {
-
     GeoFancingRange = req.body.GeoFancingRange;
-
     MinStayTimeOfCustomerForEmployee = req.body.MinStayTimeOfCustomerForEmployee;
-
     CustomerWelcomeMessage = req.body.CustomerWelcomeMessage;
     EmployeeCustomerIntimation = req.body.EmployeeCustomerIntimation;
 
@@ -6286,8 +6015,6 @@ app.post('/getuserdataByUserType', function(req, res) {
         assert.equal(null, err);
 
         var collection = db.collection('users');
-
-
 
         async.waterfall([
             function(callback) {
@@ -6397,7 +6124,7 @@ app.post('/getsectionInStore', function(req, res) {
             })
         }
         collectionRows.toArray(function(err, sections) {
-            console.log(sections);
+            //console.log(sections);
             if (sections && sections.length > 0) {
 
                 for (var dvc in sections) {
@@ -6468,8 +6195,8 @@ function pushnotification_fcm_common(resObj, gcmToken, notification_user_id, Mob
 
             fcm.send(message, function(err, response) {
                 if (err) {
-                    console.log("Something has gone wrong!");
-                    console.dir(err);
+                    //console.log("Something has gone wrong!");
+                    //console.dir(err);
                 } else {
                     if (response != 'undefined') {
                         try {
@@ -6492,38 +6219,22 @@ function pushnotification_fcm_common(resObj, gcmToken, notification_user_id, Mob
 
                                 },
                                 function(res2, err, body) {
-                                    console.log('Data coming from service --> ' + JSON.stringify(body));
+                                    //console.log('Data coming from service --> ' + JSON.stringify(body));
                                     if (resObj) {
                                         resObj.send(body);
                                     }
                                 });
                         } catch (err) { console.dir(err.message) }
                     }
-
-                    console.log("Successfully sent with response: ", response);
                 }
             })
-
         }
-
-
     ]);
-    //console.log(message);
-
 }
 
-//sendpushnotification(null, ["APA91bGICXHqn2da36Srtkld3nmIV0_o94tpWTv9y3F2JDJJq_lnbxoZTxiDsRLAsVibM9hMamtoE-5yuVSLh5cpnmU67uEShxFOJoZqesypsNYcUhs2Ats"], 'check notification', 'message body', '');
-
-
-
 //Get Empoloyee details By Department Manager
-
-
 app.post('/getEmployeeDetailsByDeptManager', function(req, res) {
     var DepartmentID = req.body.DepartmentID;
-
-    console.log(DepartmentID);
-    console.log('Employee Details Called -----=========');
 
     var resObj = {};
 
@@ -6551,56 +6262,31 @@ app.post('/getEmployeeDetailsByDeptManager', function(req, res) {
             },
             function(devices, callback) {
                 if (devices && devices.length > 0) {
-
-
                     var assignedEmployee = devices[0].AssignedEmployee;
                     var employeecollection = [];
-                    // var  emplist = [];
-
                     if (assignedEmployee && assignedEmployee.length > 0) {
                         for (var b in assignedEmployee) {
                             employeecollection.push(ObjectId(assignedEmployee[b]));
                         }
                     }
 
-
-
-
                     var emplist = collection.find({
                         '_id': {
                             $in: employeecollection
                         }
                     }).toArray(function(err, employeelist) {
-
-
-                        console.log('--------------------console for department manager@@@@@@@@@@@-------------------------');
-                        console.log(employeelist);
                         callback(null, employeelist);
-
                     });
-
-
-
-
-
                 } else {
                     resObj.IsSuccess = false;
                     resObj.message = "Employee not found";
                     callback(null, false);
                 }
-
-
-
             },
             function(workdone, callback) {
                 resObj.IsSuccess = true;
                 resObj.data = workdone;
-
-                console.log('--------------------console for department manager@@@@@@@@@@@-------------------------');
-                console.log(resObj);
-                console.log('--------------------console for department manager@@@@@@@@@@@@@@-------------------------');
                 res.send(resObj);
-
                 db.close();
             }
         ]);
@@ -6608,14 +6294,7 @@ app.post('/getEmployeeDetailsByDeptManager', function(req, res) {
 });
 
 
-
-
-
-
-
-
 app.post('/getEmployeeByStoreSectionUserType', function(req, res) {
-
     var AssignedStore = req.body.AssignedStore;
     var AssignedSection = req.body.AssignedSection;
     var UserType = req.body.UserType;
@@ -6626,7 +6305,6 @@ app.post('/getEmployeeByStoreSectionUserType', function(req, res) {
         resObj.message = "Invalid Store selected";
         res.send(resObj);
     }
-
 
     MongoClient.connect(mongourl, function(err, db) {
         if (err) {
@@ -6657,11 +6335,6 @@ app.post('/getEmployeeByStoreSectionUserType', function(req, res) {
                     resObj.IsSuccess = false;
                     resObj.message = "No Record Found";
                 }
-                console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-                console.log(resObj);
-
-                console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-
                 res.send(resObj);
                 db.close();
 
@@ -6671,29 +6344,18 @@ app.post('/getEmployeeByStoreSectionUserType', function(req, res) {
 });
 
 
-
 //Add Department Manager
-
-
 app.post('/addDeptManager', function(req, res) {
-
-    console.log(req);
-
     UserID = req.body.UserID;
     Password = req.body.Password;
-
     Name = req.body.Name;
     Designation = req.body.Designation;
     AssignedStore = req.body.AssignedStore;
     AssignedSection = req.body.AssignedSection;
-
     UserID = UserID.toLowerCase();
-
     Name = Name.toLowerCase();
     Designation = Designation.toLowerCase();
     AssignedStore = AssignedStore.toLowerCase();
-    //AssignedSection = AssignedSection.toLowerCase();
-
 
     var resObj = {};
     if (!req.session.loggedInUser) {
@@ -6731,26 +6393,6 @@ app.post('/addDeptManager', function(req, res) {
         res.send(resObj);
         return;
     }
-    //<!------- Assigned Section -------->
-    //  
-    //   if (!AssignedSection) {
-    //        resObj.IsSuccess = false;
-    //        resObj.message = "Please select Store";
-    //        res.send(resObj);
-    //        return;
-    //    }
-    //
-    //    if (AssignedSection.length != 24) {
-    //        resObj.IsSuccess = false;
-    //        resObj.message = "Invalid store selected";
-    //        res.send(resObj);
-    //        return;
-    //    }
-
-
-
-    //<!------ Assigned Section end --->
-
 
 
     MongoClient.connect(mongourl, function(err, db) {
@@ -6798,19 +6440,13 @@ app.post('/addDeptManager', function(req, res) {
             function(hashedpassword, callback) {
                 collection.insert({
                     'UserID': UserID,
-
                     'Name': Name,
-
                     'Password': hashedpassword,
                     'Designation': Designation,
-
                     'AssignedStore': ObjectId(AssignedStore),
                     'AssignedSection': AssignedSection,
                     'UserType': 5,
-
-
                 });
-                console.log('Employee inserted');
 
                 callback(null, 'inserted');
             },
@@ -6828,23 +6464,15 @@ app.post('/addDeptManager', function(req, res) {
 
 
 // Update Department Manage
-
-
-
 app.post('/updateDeptManager', function(req, res) {
     UserID = req.body.UserID;
-    //ResetPassword = req.body.ResetPassword;
     Password = req.body.Password;
-
     Name = req.body.Name;
     Designation = req.body.Designation;
-
     AssignedStore = req.body.AssignedStore;
     AssignedEmployee = req.body.AssignedEmployee;
     UserObjectID = req.body.UserObjectID;
-
     UserID = UserID.toLowerCase();
-
     Name = Name.toLowerCase();
     Designation = Designation.toLowerCase();
 
@@ -6931,8 +6559,6 @@ app.post('/updateDeptManager', function(req, res) {
                 callback(null, hashedPassword);
             },
             function(hashedpassword, callback) {
-                /*console.log(ResetPassword);
-                console.log(hashedpassword);*/
                 if (Password) {
                     collection.update({
                         '_id': ObjectId(UserObjectID)
@@ -6947,7 +6573,6 @@ app.post('/updateDeptManager', function(req, res) {
                         }
                     });
                 } else {
-                    console.log(ObjectId(UserObjectID));
                     collection.update({
                         '_id': ObjectId(UserObjectID)
                     }, {
@@ -6978,7 +6603,6 @@ app.post('/updateDeptManager', function(req, res) {
 app.post('/getDeptManagerData', function(req, res) {
     var resObj = {};
 
-    console.log(req.session);
     if (!req.session.loggedInUser) {
         resObj.IsSuccess = false;
         resObj.message = loginexpiredmessage;
@@ -6989,7 +6613,6 @@ app.post('/getDeptManagerData', function(req, res) {
 
     UserStore = getUserAllotedStore(req);
 
-    //if (req.session.loggedInUser.UserType == 2) {
     if (req.session.loggedInUser.UserType != 1 && !UserStore) {
         resObj.IsSuccess = false;
         resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
@@ -7037,12 +6660,6 @@ app.post('/getDeptManagerData', function(req, res) {
                             } else {
                                 users[u].StoreName = '';
                             }
-
-                            /*if (users[u].section_docs.length > 0) {
-                                users[u].SectionName = users[u].section_docs[0].SectionName;
-                            } else {
-                                users[u].SectionName = '';
-                            }*/
 
                             users[u].searchfield =
                                 users[u].Name + ' ' + users[u].UserID + ' ' + users[u].Designation + ' ' + users[u].StoreName;
