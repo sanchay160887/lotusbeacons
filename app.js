@@ -1328,6 +1328,11 @@ devicecron.schedule('* * * * *', function() {
     });
 });
 
+devicecron.schedule('*/5 * * * *', function() {
+    console.log('Garbage collection called');
+    global.gc();
+});
+
 
 function getUserAllotedStore(req) {
     if (req.session.loggedInUser) {
