@@ -303,12 +303,16 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, CustName, resObj) 
                     BeaconStoreID = beacons.BeaconStore;
                 }
 
-                if (BeaconID != '') {
-                    updateDeviceHistory(callback, beacons, DeviceID, MobileNo, CustName);
-                } else {
-                    callback(null, devices);
+                collection.find({
+                    'MobileNo': MobileNo
+                }).toArray(function(err, devices) {
 
-                }
+                    if (BeaconID != '') {
+                        updateDeviceHistory(callback, beacons, DeviceID, MobileNo, CustName);
+                    } else {
+                        callback(null, devices);
+                    }
+                });
             },
             function(devicedata, callback) {
                 if (BeaconID != '') {
