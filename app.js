@@ -24,6 +24,7 @@ var passwordHash = require('password-hash');
 var session = require('express-session');
 querystring = require('querystring');
 require('timers');
+require('tls').SLAB_BUFFER_SIZE = 100 * 1024 // 100Kb
 var devicecron = require('node-cron');
 //var mongourl = 'mongodb://lotusbeacon:remote@ds161255.mlab.com:61255/lotusbeacon'; //Live Database
 //var mongourl = 'mongodb://lotus:remote@ds137100.mlab.com:37100/lotusbeaconemployee'; //Staging Database
@@ -96,12 +97,12 @@ if (!fs.existsSync(notificationImagesdirectory)) {
 // Socket.io server listens to our app
 var io = require('socket.io').listen(server);
 
-// Send current time to all connected clients
+/*// Send current time to all connected clients
 function sendTime() {
     io.emit('time', {
         time: new Date().toJSON()
     });
-}
+}*/
 
 /*io.on('receiveTime', function(data) {
     console.log('Data coming from client :: ');
@@ -955,15 +956,15 @@ function updateUser_Beacon_History(BeaconObj, UserID, pcallback, resObj) {
 // Emit welcome message on connection
 io.on('connection', function(socket) {
     // Use socket to communicate with this particular client only, sending it it's own id
-    socket.emit('welcome', {
+    /*socket.emit('welcome', {
         message: 'Welcome!',
         id: socket.id
-    });
+    });*/
 
     // Hitting from Client 
-    socket.on('receiveTime', function(data) {
+    /*socket.on('receiveTime', function(data) {
         //console.log('Coming with Data :: ' + JSON.stringify(data));
-    });
+    });*/
 
     socket.on('updateDevice', function(data) {
         //console.log(JSON.stringify(data));
