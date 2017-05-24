@@ -710,7 +710,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         }
     }
 
-    socket.on('updateDeviceHistory_response', function(response) {
+    /*socket.on('updateDeviceHistory_response', function(response) {
         var queriedUrl = $location.search()
         console.log(response);
         console.log(queriedUrl.store);
@@ -728,8 +728,14 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
             $scope.getAllDevicesHistory();
             console.log($scope.selectedBeacon);
         }
+    });*/
 
-    });
+    $interval(function() {
+        if ($scope.selectedStore && $scope.selectedBeacon && $scope.selectedSection) {
+            $scope.getAllDevicesHistory();
+        }
+        $scope.fetchDeviceAnalysis();
+    }, 15000)
 
     $scope.sendNotification = function() {
         apiService.sendNotification().then(function(res) {

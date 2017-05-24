@@ -24,7 +24,7 @@ var passwordHash = require('password-hash');
 var session = require('express-session');
 querystring = require('querystring');
 require('timers');
-require('tls').SLAB_BUFFER_SIZE = 100 * 1024 // 100Kb
+//require('tls').SLAB_BUFFER_SIZE = 100 * 1024 // 100Kb
 var devicecron = require('node-cron');
 //var mongourl = 'mongodb://lotusbeacon:remote@ds161255.mlab.com:61255/lotusbeacon'; //Live Database
 //var mongourl = 'mongodb://lotus:remote@ds137100.mlab.com:37100/lotusbeaconemployee'; //Staging Database
@@ -334,14 +334,14 @@ function updateDevice(BeaconID, DeviceID, Distance, MobileNo, CustName, resObj) 
                 }
             },
             function(response, callback) {
-                io.emit('updateDevice_response', {
+                /*io.emit('updateDevice_response', {
                     'IsSuccess': true,
                     'BeaconID': BeaconID,
                     'StoreID': BeaconStoreID,
                     'MobileNo': MobileNo,
                     'CustName': CustName,
                     'message': 'Data inserted successfully'
-                });
+                });*/
 
                 db.close();
                 if (resObj) {
@@ -369,6 +369,7 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
     //console.log('------------Updating device History--------------');
     var BeaconID = BeaconObj.BeaconID;
     var BeaconStore = BeaconObj.BeaconStore;
+    var BeaconSection = BeaconObj.BeaconSection;
 
     var resObjVal = {};
     if (!(BeaconID && DeviceID && MobileNo)) {
@@ -494,9 +495,10 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                                     //console.log('Checking device listing' + JSON.stringify(notifhistory));
                                     if (!notifhistory || !notifhistory.maxNotificationSentTime ||
                                         notifhistory.maxNotificationSentTime <= customerEmployeeIntervalStart) {
-                                        var empcollection = db.collection('user_beacons_active');
+                                        //From this branch the table is depricated
+                                        //var empcollection = db.collection('user_beacons_active');
 
-                                        empcollection.aggregate([{
+                                        /*empcollection.aggregate([{
                                             $match: {
                                                 'BeaconID': BeaconID
                                             }
@@ -507,77 +509,88 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                                                 foreignField: '_id',
                                                 as: 'user_docs'
                                             }
-                                        }]).sort({ 'Distance': -1 }).toArray(function(err, emplist) {
-                                            if (emplist && emplist.length > 0) {
-                                                var userIds = [];
-                                                var deviceTokens = [];
-                                                for (var e in emplist) {
-                                                    userIds.push(emplist[e].UserID.toString());
-                                                    if (emplist[e].user_docs.length > 0) {
-                                                        deviceTokens.push(emplist[e].user_docs[0].devicetoken);
+                                        }])*/
+
+                                        empcollection.collection.find({
+                                                'UserType': 3,
+                                                'AssignedSection': ObjectId(BeaconSection)
+                                            }).toArray(function(err, emplist) {
+                                                if (emplist && emplist.length > 0) {
+                                                    var userIds = [];
+                                                    var deviceTokens = [];
+                                                    //Depricated from this branch
+                                                    /*for (var e in emplist) {
+                                                        userIds.push(emplist[e].UserID.toString());
+                                                        if (emplist[e].user_docs.length > 0) {
+                                                            deviceTokens.push(emplist[e].user_docs[0].devicetoken);
+                                                        }
+                                                    }*/
+
+                                                    for (var e in emplist) {
+                                                        userIds.push(emplist[e]._id.toString());
+                                                        deviceTokens.push(emplist[e].devicetoken);
                                                     }
-                                                }
 
-                                                if (deviceTokens.length > 0) {
-                                                    var mobileno = '';
-                                                    notifymessage = settings_EmpCustIntimate.replace('«CUSTNAME»', CustName);
+                                                    if (deviceTokens.length > 0) {
+                                                        var mobileno = '';
+                                                        notifymessage = settings_EmpCustIntimate.replace('«CUSTNAME»', CustName);
 
-                                                    var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
-                                                        registration_ids: deviceTokens,
-                                                        data: {
-                                                            'message': notifymessage,
-                                                            'notification_user_id': userIds,
-                                                            'badge': 1,
-                                                            'title': 'Attain',
-                                                            'BeaconID': BeaconObj.BeaconID,
-                                                            'img_url': '',
-                                                            'notification_type': 7,
-                                                        }
-                                                    };
-
-                                                    isNotificationSent = 1;
-                                                    NotificationSentTime = getCurrentTime();
-
-                                                    fcm.send(message, function(err, response) {
-                                                        if (err) {
-                                                            //console.log("Something gone wrong!");
-                                                            console.dir(err);
-                                                            callback(null, devices);
-                                                        } else {
-                                                            //console.log('Notification sent to employees');
-                                                            if (typeof(response) != 'undefined') {
-                                                                var request = require('request');
-                                                                var gcmdata = JSON.stringify(deviceTokens);
-                                                                var userJSON = JSON.stringify(userIds);
-                                                                request.post(lotusURL + 'employee/get_notification_entry', {
-                                                                        form: {
-                                                                            'android_device_token': gcmdata,
-                                                                            'notification_user_id': userJSON,
-                                                                            'mobile_no': MobileNo,
-                                                                            'title': 'Attain',
-                                                                            'BeaconID': BeaconObj.BeaconID,
-                                                                            'message': notifymessage,
-                                                                            //  'notification_img': image_url,
-                                                                            'notification_type': 7,
-                                                                        }
-                                                                    },
-                                                                    function(res2, err, body) {
-                                                                        //console.log('Data coming from employee service --> ' + JSON.stringify(body));
-                                                                        callback(null, devices);
-                                                                    });
-                                                            } else {
-                                                                callback(null, devices);
+                                                        var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
+                                                            registration_ids: deviceTokens,
+                                                            data: {
+                                                                'message': notifymessage,
+                                                                'notification_user_id': userIds,
+                                                                'badge': 1,
+                                                                'title': 'Attain',
+                                                                'BeaconID': BeaconObj.BeaconID,
+                                                                'img_url': '',
+                                                                'notification_type': 7,
                                                             }
-                                                            //console.log("Successfully sent with Employee response: ", response);
-                                                        }
-                                                    });
+                                                        };
+
+                                                        isNotificationSent = 1;
+                                                        NotificationSentTime = getCurrentTime();
+
+                                                        fcm.send(message, function(err, response) {
+                                                            if (err) {
+                                                                //console.log("Something gone wrong!");
+                                                                console.dir(err);
+                                                                callback(null, devices);
+                                                            } else {
+                                                                //console.log('Notification sent to employees');
+                                                                if (typeof(response) != 'undefined') {
+                                                                    var request = require('request');
+                                                                    var gcmdata = JSON.stringify(deviceTokens);
+                                                                    var userJSON = JSON.stringify(userIds);
+                                                                    request.post(lotusURL + 'employee/get_notification_entry', {
+                                                                            form: {
+                                                                                'android_device_token': gcmdata,
+                                                                                'notification_user_id': userJSON,
+                                                                                'mobile_no': MobileNo,
+                                                                                'title': 'Attain',
+                                                                                'BeaconID': BeaconObj.BeaconID,
+                                                                                'message': notifymessage,
+                                                                                //  'notification_img': image_url,
+                                                                                'notification_type': 7,
+                                                                            }
+                                                                        },
+                                                                        function(res2, err, body) {
+                                                                            //console.log('Data coming from employee service --> ' + JSON.stringify(body));
+                                                                            callback(null, devices);
+                                                                        });
+                                                                } else {
+                                                                    callback(null, devices);
+                                                                }
+                                                                //console.log("Successfully sent with Employee response: ", response);
+                                                            }
+                                                        });
+                                                    } else {
+                                                        callback(null, devices);
+                                                    }
                                                 } else {
                                                     callback(null, devices);
                                                 }
-                                            } else {
-                                                callback(null, devices);
-                                            }
-                                        })
+                                            })
                                     } else {
                                         callback(null, devices);
                                     }
@@ -648,14 +661,14 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                         });
                 }
 
-                io.emit('updateDeviceHistory_response', {
+                /*io.emit('updateDeviceHistory_response', {
                     'IsSuccess': true,
                     'BeaconID': BeaconID,
                     'StoreID': BeaconStore,
                     'MobileNo': MobileNo,
                     'CustName': CustName,
                     'message': 'Data updated successfully'
-                });
+                });*/
                 //console.log('coming to last callback');
                 db.close();
                 if (resObj) {
@@ -677,6 +690,7 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
     });
 }
 
+//Not calling from anywhere from 24 May 2017 for optimization work
 /// Employe function for update user Active start
 function updateUser_Active(BeaconID, UserID, Distance, resObj) {
     var UserID = ObjectId(UserID);
@@ -812,6 +826,7 @@ function updateUser_Active(BeaconID, UserID, Distance, resObj) {
     });
 }
 
+//Not calling from anywhere from 24 May 2017 for optimization work
 function updateUser_Beacon_History(BeaconObj, UserID, pcallback, resObj) {
     var BeaconID = BeaconObj.BeaconID;
     var BeaconStore = BeaconObj.BeaconStore;
@@ -972,13 +987,15 @@ io.on('connection', function(socket) {
     });
 
     //Employee socket start from here
-    socket.on('updateUser_Active', function(data) {
+
+    //Employee history maintenance now been commited for sake of optimization of dashboard. 
+    /*socket.on('updateUser_Active', function(data) {
         io.emit('updateUser_Active_response', {
             'IsSuccess': true,
             'message': 'Socket is calling from yourside'
         });
         updateUser_Active(data.BeaconID, data.UserID, data.Distance);
-    });
+    });*/
 
 });
 

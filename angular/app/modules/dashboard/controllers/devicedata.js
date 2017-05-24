@@ -30,6 +30,13 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         }
     });
 
+    $scope.fetchDeviceAnalysis = function() {
+        if ($rootScope.loggedInUser.UserType == 1) {
+            apiService.deviceAnalysis().then(function(res) {
+                $scope.deviceAnalysis = res.data.records;
+            })
+        }
+    }
 
     $scope.checkLoggedInUser = function() {
         apiService.checkloginUser().then(function(res) {
@@ -43,15 +50,6 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
 
         });
     }
-
-    $scope.fetchDeviceAnalysis = function() {
-        if ($rootScope.loggedInUser.UserType == 1) {
-            apiService.deviceAnalysis().then(function(res) {
-                $scope.deviceAnalysis = res.data.records;
-            })
-        }
-    }
-
 
     if (!$rootScope.loggedInUser) {
         $scope.checkLoggedInUser();
@@ -99,7 +97,7 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store) {
             $scope.selectedStore = queriedUrl.store;
             $scope.getAllSection();
-        }        
+        }
         $scope.Initialized = true;
     });
 
@@ -260,7 +258,7 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
                 $scope.sectionInStore = res.data.data;
                 $scope.selectedSection = -1;
                 $scope.SectionInitialized = true;
-            });            
+            });
         } else {
             $scope.sectionInStore = [];
         }
@@ -276,8 +274,8 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         var selectedStore = '';
         if ($scope.selectedStore) {
             selectedStore = $scope.selectedStore;
-        /*} else if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store) {
-            selectedStore = queriedUrl.store;*/
+            /*} else if (typeof(queriedUrl.store) != 'undefined' && queriedUrl.store) {
+                selectedStore = queriedUrl.store;*/
         } else {
             $scope.InvalidInputs = true;
             $scope.beaconData = [];
@@ -287,15 +285,15 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         var selectedSection = '';
         if ($scope.selectedSection) {
             selectedSection = $scope.selectedSection;
-        /*} else if (typeof(queriedUrl.section) != 'undefined' && queriedUrl.section) {
-            selectedSection = queriedUrl.section;*/
+            /*} else if (typeof(queriedUrl.section) != 'undefined' && queriedUrl.section) {
+                selectedSection = queriedUrl.section;*/
         } else {
             $scope.InvalidInputs = true;
             $scope.beaconData = [];
             return;
         }
 
-        console.log(selectedStore, ' ' , selectedSection);
+        console.log(selectedStore, ' ', selectedSection);
 
         if (selectedStore && selectedSection) {
             $scope.BeaconInitialized = false;
@@ -311,6 +309,8 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         }
     }
 
+    /*
+    Depricated now from 24 May 2017
     socket.on('updateDevice_response', function(response) {
         console.log('socket called ==> ' + JSON.stringify(response));
         var queriedUrl = $location.search();
@@ -327,7 +327,14 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         }
 
         $scope.fetchDeviceAnalysis();
-    });
+    });*/
+
+    $interval(function() {
+        if ($scope.selectedStore && $scope.selectedBeacon && $scope.selectedSection) {
+            $scope.loadData();
+        }
+        $scope.fetchDeviceAnalysis();
+    }, 15000)
 
     function in_array(needle, haystack) {
         for (var i in haystack) {
