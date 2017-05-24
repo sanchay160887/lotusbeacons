@@ -5986,7 +5986,7 @@ app.post('/updateSettingData', function(req, res) {
         return;
     }
 
-    if (req.session.loggedInUser.UserType == 2) {
+    if (req.session.loggedInUser.UserType != 1) {
         resObj.IsSuccess = false;
         resObj.message = "You are not accessible to use this feature. Please contact to your administrator";
         res.send(resObj);
@@ -6019,6 +6019,10 @@ app.post('/updateSettingData', function(req, res) {
                         'EmployeeCustomerIntimation': EmployeeCustomerIntimation
                     }
                 });
+
+                settings_StayTime = MinStayTimeOfCustomerForEmployee;
+	            settings_welcomeMessage = CustomerWelcomeMessage;
+	            settings_EmpCustIntimate = EmployeeCustomerIntimation;
 
                 callback(null, 'updated');
             },
