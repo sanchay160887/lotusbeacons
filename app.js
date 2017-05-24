@@ -497,6 +497,7 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                                         notifhistory.maxNotificationSentTime <= customerEmployeeIntervalStart) {
                                         //From this branch the table is depricated
                                         //var empcollection = db.collection('user_beacons_active');
+                                        var empcollection = db.collection('users');
 
                                         /*empcollection.aggregate([{
                                             $match: {
