@@ -222,7 +222,7 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         if ((beaconlist && beaconlist.length > 0) || selectedStore) {
             $scope.Initialized = false;
             apiService.deviceData(beaconlist, selectedStore, selectedSection).then(function(res) {
-                console.log(res);
+                //console.log(res);
                 if (!res.data.IsSuccess && res.data.message == 'Login Expired. Please reload and login again.') {
                     alert('Login Expired.');
                     $location.path("/");
@@ -330,7 +330,7 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
     });*/
 
     $interval(function() {
-        if ($scope.selectedStore && $scope.selectedBeacon && $scope.selectedSection) {
+        if ($scope.selectedStore && $scope.selectedSection) {
             $scope.loadData();
         }
         $scope.fetchDeviceAnalysis();

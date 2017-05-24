@@ -731,7 +731,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     });*/
 
     $interval(function() {
-        if ($scope.selectedStore && $scope.selectedBeacon && $scope.selectedSection) {
+        if ($scope.selectedStore && $scope.selectedSection) {
             $scope.getAllDevicesHistory();
         }
         $scope.fetchDeviceAnalysis();
