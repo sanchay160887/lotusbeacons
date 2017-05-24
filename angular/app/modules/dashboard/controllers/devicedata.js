@@ -68,7 +68,8 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
 
     $scope.connection = true;
     $scope.connection_msg = false;
-    $interval(function() {
+
+    $scope.checkOffline = function(){
         if (Offline.state == 'down') {
             $scope.connection = false;
         } else {
@@ -77,7 +78,9 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
                 $scope.connection_msg = true;
             }
         }
-    }, 2000)
+    }
+
+    $interval($scope.checkOffline, 2000);
 
     $scope.$watchCollection('[connection_msg]', function() {
         if ($scope.connection_msg) {
@@ -329,12 +332,14 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         $scope.fetchDeviceAnalysis();
     });*/
 
-    $interval(function() {
+    $scope.runInterval = function(){
         if ($scope.selectedStore && $scope.selectedSection) {
             $scope.loadData();
         }
         $scope.fetchDeviceAnalysis();
-    }, 15000)
+    }
+
+    $interval($scope.runInterval, 20000);
 
     function in_array(needle, haystack) {
         for (var i in haystack) {
