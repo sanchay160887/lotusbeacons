@@ -512,7 +512,7 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                                             }
                                         }])*/
 
-                                        empcollection.collection.find({
+                                        empcollection.find({
                                                 'UserType': 3,
                                                 'AssignedSection': ObjectId(BeaconSection)
                                             }).toArray(function(err, emplist) {
