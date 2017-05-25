@@ -63,7 +63,7 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
     $scope.deviceAnalysis = {};
 
     $scope.fetchDeviceAnalysis = function() {
-        if ($rootScope.loggedInUser.UserType == 1) {
+        if ($rootScope.loggedInUser && $rootScope.loggedInUser.UserType == 1) {
             apiService.deviceAnalysis().then(function(res) {
                 $scope.deviceAnalysis = res.data.records;
             })

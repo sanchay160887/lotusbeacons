@@ -1540,6 +1540,7 @@ app.post('/getdata', function(req, res) {
 
                     devicecollection.toArray(function(err, devices) {
                         for (var dvc in devices) {
+                            console.log(JSON.stringify(beaconlist[devices[dvc].BeaconID]));
                             devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID].BeaconKey;
                             devices[dvc].StoreName = beaconlist[devices[dvc].BeaconID].StoreName;
                             devices[dvc].UniqueKey = devices[dvc].MobileNo + '‖' + devices[dvc].BeaconID;
@@ -1611,7 +1612,7 @@ app.post('/getdata', function(req, res) {
                                 devicelist.splice(i, 1);
                             }
                         }
-
+                        
                         if (UserID && !devicelist) {
                             var resObj = {};
                             resObj.IsSuccess = false;
@@ -5016,6 +5017,7 @@ app.post('/deleteEmployee', function(req, res) {
                     }
                     callback(null, users);
                 });
+                console.log('ali');
             },
 
             function(response, callback) {
@@ -6786,3 +6788,11 @@ app.post('/deleteDepartmentManager', function(req, res) {
 
     });
 });
+
+
+/*
+For testing device
+
+setInterval(function() {
+  updateDevice("00:A0:50:B3:77:55", "APA91bF0j98Bz5WukCB19k9rxY8-rp781qxFPqYThyDSo580UYQJY7th7frwhtkV1XxhX3pkqU7KVpH-EJzJC_g75026pt6IeTCPDcp6JP2eZvARD33i8EU", "2.5", "9993001001", "Sachin Karnik", null);
+}, 5000);*/

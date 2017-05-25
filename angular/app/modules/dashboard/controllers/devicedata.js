@@ -31,7 +31,7 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
     });
 
     $scope.fetchDeviceAnalysis = function() {
-        if ($rootScope.loggedInUser.UserType == 1) {
+        if ($rootScope.loggedInUser && $rootScope.loggedInUser.UserType == 1) {
             apiService.deviceAnalysis().then(function(res) {
                 $scope.deviceAnalysis = res.data.records;
             })
@@ -333,7 +333,7 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
     });*/
 
     $scope.runInterval = function(){
-        if ($scope.selectedStore && $scope.selectedSection) {
+        if ($rootScope.loggedInUser && $scope.selectedStore && $scope.selectedSection) {
             $scope.loadData();
         }
         $scope.fetchDeviceAnalysis();
