@@ -1540,7 +1540,6 @@ app.post('/getdata', function(req, res) {
 
                     devicecollection.toArray(function(err, devices) {
                         for (var dvc in devices) {
-                            console.log(JSON.stringify(beaconlist[devices[dvc].BeaconID]));
                             devices[dvc].BeaconKey = beaconlist[devices[dvc].BeaconID].BeaconKey;
                             devices[dvc].StoreName = beaconlist[devices[dvc].BeaconID].StoreName;
                             devices[dvc].UniqueKey = devices[dvc].MobileNo + '‖' + devices[dvc].BeaconID;

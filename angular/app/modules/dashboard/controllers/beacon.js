@@ -67,7 +67,6 @@ dashboard.controller("BeaconsController", function($rootScope, $scope, apiServic
                 $scope.beaconData[d].BeaconDescr = '';
                 $scope.beaconData[d].BeaconStore = '';
             }
-            console.log($scope.beaconData);
             $scope.ListInitialized = true;
         });
     }

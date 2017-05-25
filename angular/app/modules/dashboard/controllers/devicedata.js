@@ -339,7 +339,12 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         $scope.fetchDeviceAnalysis();
     }
 
-    $interval($scope.runInterval, 20000);
+    var promise = $interval($scope.runInterval, 20000);
+
+    $scope.$on('$destroy',function(){
+        if(promise)
+            $interval.cancel(promise);   
+    })
 
     function in_array(needle, haystack) {
         for (var i in haystack) {

@@ -738,7 +738,13 @@ dashboard.controller("DeviceHistoryController", function($rootScope, $scope, api
         }*/
         $scope.fetchDeviceAnalysis();
     }
-    $interval($scope.runInterval, 20000);
+    
+    var promise = $interval($scope.runInterval, 20000);
+
+    $scope.$on('$destroy',function(){
+        if(promise)
+            $interval.cancel(promise);   
+    })
 
     $scope.sendNotification = function() {
         apiService.sendNotification().then(function(res) {
