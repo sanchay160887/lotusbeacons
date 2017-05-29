@@ -318,11 +318,11 @@ Date: 05 Jan 2016
                             <input type="checkbox" value="{{ device.UniqueKey }}" ng-click="ShowSelectedTokens()" ng-model="device.checked">
                         </td>
                         <!-- <td>{{ device.DeviceID }}</td> -->
-                        <td>{{ device.DeviceName }}</td>
+                        <td>{{ device.DeviceName | titlecase }}</td>
                         <td>{{ device.DevicePhone }}</td>
-                        <td>{{ device.StayTime}}</td>
-                        <td>{{ device.SectionName }}</td>
-                        <td>{{ device.BeaconKey }}</td>
+                        <td>{{ device.StayTime }}</td>
+                        <td>{{ (device.SectionName && device.SectionName || "Not Alloted Yet") | titlecase }}</td>
+                        <td>{{ device.BeaconKey | titlecase }}</td>
                         <td>
                             <button type="button" class="btn btn-info btn-auto-width" data-toggle="modal" data-target="#search-history-detail" ng-click="deviceHistoryDetailCurrentPage = 1 && getDeviceSearchHistoryDetails(device.DeviceName, device.DevicePhone)"><i class="fa fa-search-plus" aria-hidden="true"></i> History
                             </button>
