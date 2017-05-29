@@ -1383,7 +1383,9 @@ app.post('/getdata', function(req, res) {
 
     SectionID = req.body.SectionID;
 
-    if (typeof(BeaconID) == 'string') {
+    if (Number(BeaconID) == -1){
+        BeaconID = [];
+    } else if (typeof(BeaconID) == 'string') {
         BeaconID = BeaconID.split(',');
     }
 
@@ -1611,7 +1613,7 @@ app.post('/getdata', function(req, res) {
                                 devicelist.splice(i, 1);
                             }
                         }
-                        
+
                         if (UserID && !devicelist) {
                             var resObj = {};
                             resObj.IsSuccess = false;
