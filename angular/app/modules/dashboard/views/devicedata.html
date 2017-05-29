@@ -232,7 +232,7 @@
                         <td>{{ device.DeviceName }}</td>
                         <td>{{ device.DevicePhone }}</td>
                         <td>{{ device.StayTime }}</td>
-                        <td>{{ device.SectionName }}</td>
+                        <td>{{ device.SectionName && device.SectionName || "Not Alloted Yet" }}</td>
                         <td ng-show="selectedStore=='-1'">{{ device.StoreName }}</td>
                         <td>{{ (device.Distance
                             < 0) && ( "Out of range") || (device.Distance | numberEx:2) + ' meter(s)' }}</td>

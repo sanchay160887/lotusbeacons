@@ -1456,7 +1456,7 @@ app.post('/getdata', function(req, res) {
 
                 var collection = db.collection('device_history');
                 collection.aggregate(
-                    [{
+                    [/*{
                         $project: {
                             'cmpDate': { '$cmp': ["$Date", "$DateTo"] },
                             'Date': 1,
@@ -1467,7 +1467,7 @@ app.post('/getdata', function(req, res) {
                             'DeviceID': 1,
                             '_id': 1
                         }
-                    }, {
+                    },*/ {
                         $match: {
                             'Date': {
                                 '$gte': fromDate,
@@ -1476,13 +1476,13 @@ app.post('/getdata', function(req, res) {
                                 $in: beacons,
                             }
                             /*,
-                                                        'StayTime': {
-                                                            $gte: 2
-                                                        }*/
+                            'StayTime': {
+                                $gte: 2
+                            }
                             ,
                             'cmpDate': {
                                 '$lte': 0
-                            }
+                            }*/
                         }
                     }, {
                         $group: {
@@ -1492,7 +1492,10 @@ app.post('/getdata', function(req, res) {
                     }]
                 ).toArray(function(err, devices) {
                     for (var d in devices) {
-                        devicehistory[devices[d]._id.MobileNo] = [];
+                        if (devicehistory[devices[d]._id.MobileNo] == undefined){
+                            devicehistory[devices[d]._id.MobileNo] = [];    
+                        }
+                        
                         devicehistory[devices[d]._id.MobileNo][devices[d]._id.BeaconID] = devices[d]['StayTime'];
                     }
                     callback(null, beaconlist);
@@ -1757,7 +1760,7 @@ app.post('/getDeviceHistorydata', function(req, res) {
                     }
 
                     reccollection = collection.aggregate(
-                        [{
+                        [/*{
                             $project: {
                                 'cmpDate': { '$cmp': ["$Date", "$DateTo"] },
                                 'Date': 1,
@@ -1768,7 +1771,7 @@ app.post('/getDeviceHistorydata', function(req, res) {
                                 'DeviceID': 1,
                                 '_id': 1
                             }
-                        }, {
+                        },*/ {
                             $match: {
                                 'Date': {
                                     '$gte': fromDate,
@@ -1779,10 +1782,10 @@ app.post('/getDeviceHistorydata', function(req, res) {
                                 },
                                 'StayTime': {
                                     $gte: 2
-                                },
+                                }/*,
                                 'cmpDate': {
                                     '$lte': 0
-                                }
+                                }*/
                             }
                         }, {
                             $lookup: {
