@@ -361,7 +361,7 @@ dashboard.controller("DeviceDataController", function($rootScope, $scope, apiSer
         $scope.fetchDeviceAnalysis();
     }
 
-    var promise = $interval($scope.runInterval, 30000);
+    var promise = $interval($scope.runInterval, 60000);
 
     $scope.$on('$destroy',function(){
         if(promise)
