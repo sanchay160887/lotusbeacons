@@ -229,11 +229,11 @@ MongoClient.connect(mongourl, function(err, db) {
 function updateDevice(BeaconID, DeviceID, Distance, MobileNo, CustName, resObj) {
     //console.log('Update Device called to check socket');
     //if (MobileNo && MobileNo == '9584010456') {
-    /*console.log('Beacon ID ' + BeaconID);
+    console.log('Beacon ID ' + BeaconID);
     console.log('Device ID ' + DeviceID);
     console.log('Distance ' + Distance);
     console.log('Mobile No ' + MobileNo);
-    console.log('Customer ' + CustName);*/
+    console.log('Customer ' + CustName);
     //}
     var BeaconStoreID = '';
 
