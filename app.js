@@ -1474,12 +1474,11 @@ app.post('/getdata', function(req, res) {
                             },
                             'BeaconID': {
                                 $in: beacons,
-                            }
-                            /*,
+                            },
                             'StayTime': {
                                 $gte: 2
                             }
-                            ,
+                            /*,
                             'cmpDate': {
                                 '$lte': 0
                             }*/
