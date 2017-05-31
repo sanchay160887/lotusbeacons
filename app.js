@@ -1285,8 +1285,7 @@ app.post('/userDisconnected', function(req, res) {
     ]);
 });
 
-
-devicecron.schedule('* * * * *', function() {
+devicecron.schedule('*/2 * * * *', function() {
     var outofrangelimit = getCurrentTime();
     outofrangelimit = outofrangelimit - (60 * 1 * 1000);
 
@@ -1319,7 +1318,7 @@ devicecron.schedule('* * * * *', function() {
                 }
                 callback(null, true);
             },
-            function(result, callback) {
+            /*function(result, callback) {
                 var ucollection = db.collection('user_beacons_active');
                 var userlist = new Array();
                 //console.log('Employee Cron executed on ' + outofrangelimit);
@@ -1339,7 +1338,7 @@ devicecron.schedule('* * * * *', function() {
                     }
                 }
                 callback(null, userlist);
-            },
+            },*/
             function(lastval, callback) {
                 db.close();
             }
@@ -1474,11 +1473,12 @@ app.post('/getdata', function(req, res) {
                             },
                             'BeaconID': {
                                 $in: beacons,
-                            },
+                            }
+                            /*,
                             'StayTime': {
                                 $gte: 2
                             }
-                            /*,
+                            ,
                             'cmpDate': {
                                 '$lte': 0
                             }*/
