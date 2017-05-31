@@ -402,7 +402,7 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
         var collection = db.collection('device_history');
 
         async.waterfall([
-            function(callback) {
+            /*function(callback) {
                 collection.find({
                     'MobileNo': MobileNo
                 }).toArray(function(err, devicehistory) {
@@ -430,8 +430,8 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                         callback(null, 'next callback');
                     }
                 });
-            },
-            function(data, callback) {
+            },*/
+            function(callback) {
                 collection.find({
                     'MobileNo': MobileNo,
                     'freeze': {
