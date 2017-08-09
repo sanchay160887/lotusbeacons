@@ -444,6 +444,7 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                         $gte: fromDate,
                     }
                 }).sort({ 'DateTo': -1 }).toArray(function(err, devicelist) {
+                    console.log(JSON.stringify(devicelist));
                     callback(null, devicelist);
                 })
             },
