@@ -432,9 +432,9 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                 });
             },*/
             function(callback) {
-                console.log('Mobile Number: ' + MobileNo);
+                /*console.log('Mobile Number: ' + MobileNo);
                 console.log('From Date : ' + fromDate);
-                console.log('Customer Name: ' + CustName);
+                console.log('Customer Name: ' + CustName);*/
                 collection.find({
                     'MobileNo': MobileNo,
                     /*'freeze': {
