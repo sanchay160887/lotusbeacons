@@ -437,14 +437,13 @@ function updateDeviceHistory(pcallback, BeaconObj, DeviceID, MobileNo, CustName,
                 console.log('Customer Name: ' + CustName);
                 collection.find({
                     'MobileNo': MobileNo,
-                    'freeze': {
+                    /*'freeze': {
                         $ne: 1
-                    },
+                    },*/
                     'Date': {
                         $gte: fromDate,
                     }
                 }).sort({ 'DateTo': -1 }).toArray(function(err, devicelist) {
-                    console.log(JSON.stringify(devicelist));
                     callback(null, devicelist);
                 })
             },
