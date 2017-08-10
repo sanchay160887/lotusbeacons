@@ -6252,7 +6252,7 @@ function pushnotification_fcm_common(resObj, gcmToken, notification_user_id, Mob
                                         //'mobile_no': MobileNo,
                                         'title': title,
                                         'message': messagebody,
-                                        //  'notification_img': image_url,
+                                        'notification_img': image_url,
                                         'notification_type': notificationtype,
 
                                     }
