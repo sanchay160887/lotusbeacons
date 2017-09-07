@@ -6795,7 +6795,6 @@ app.post('/deleteDepartmentManager', function(req, res) {
     });
 });
 
-
 /*
 For testing device
 
