@@ -1598,7 +1598,8 @@ app.post('/getdata', function(req, res) {
                                 if (reqbody[r] != false) {
                                     for (var d in devicelist) {
                                         if (typeof(devicelist[d].MobileNo) != 'undefined' && devicelist[d].MobileNo) {
-                                            mobileno = '91' + devicelist[d].MobileNo;
+                                            //mobileno = '91' + devicelist[d].MobileNo;
+                                            mobileno = devicelist[d].MobileNo;
                                         } else {
                                             mobileno = '';
                                         }
@@ -1872,7 +1873,8 @@ app.post('/getDeviceHistorydata', function(req, res) {
                                     if (reqbody[r] != false) {
                                         for (var d in devicelist) {
                                             if (typeof(devicelist[d].MobileNo) != 'undefined' && devicelist[d].MobileNo) {
-                                                mobileno = '91' + devicelist[d].MobileNo;
+                                                //mobileno = '91' + devicelist[d].MobileNo;
+                                                mobileno = devicelist[d].MobileNo;
                                             } else {
                                                 mobileno = '';
                                             }
@@ -3065,7 +3067,7 @@ function sendpushnotification_mobileno(res, gcmMobiles, title, description, imag
                 mobileno = mobileno.split('‖');
                 mobileno = mobileno[0];
                 if (mobileno) {
-                    mobileno = '91' + mobileno;
+                    //mobileno = '91' + mobileno;
                     mobilenos.push(mobileno);
                 }
             }
