@@ -18,6 +18,7 @@ var FCM = require('fcm-node');
 var serverKey = 'AIzaSyCJ7BLdXAhonngXWKpqUtYK3fOdZFi8m_g';
 var fcm = new FCM(serverKey);
 var gcm = require('android-gcm');
+var fcmCustomer = new FCM("AIzaSyCd2UGDnfrGul4sch7ONNVMpyxb2of4U5M");
 var request = require('request');
 var forEach = require('async-foreach').forEach;
 var passwordHash = require('password-hash');
@@ -1602,9 +1603,11 @@ app.post('/getdata', function(req, res) {
                                             mobileno = '';
                                         }
 
-                                        if (mobileno == reqbody[r].mobile_no) {
-                                            devicelist[d].DeviceName = reqbody[r].name;
-                                            devicelist[d].DevicePhone = reqbody[r].mobile_no;
+                                        if (mobileno == reqbody[r].phone) {
+                                            /*devicelist[d].DeviceName = reqbody[r].name;
+                                            devicelist[d].DevicePhone = reqbody[r].mobile_no;*/
+                                            devicelist[d].DeviceName = reqbody[r].first_name + (reqbody[r].last_name ? ' ' + reqbody[r].last_name : '');
+                                            devicelist[d].DevicePhone = reqbody[r].phone;
                                         }
                                     }
                                 }
@@ -1874,9 +1877,11 @@ app.post('/getDeviceHistorydata', function(req, res) {
                                                 mobileno = '';
                                             }
 
-                                            if (mobileno == reqbody[r].mobile_no) {
-                                                devicelist[d].DeviceName = reqbody[r].name;
-                                                devicelist[d].DevicePhone = reqbody[r].mobile_no;
+                                            if (mobileno == reqbody[r].phone) {
+                                                /*devicelist[d].DeviceName = reqbody[r].name;
+                                                devicelist[d].DevicePhone = reqbody[r].mobile_no;*/
+                                                devicelist[d].DeviceName = reqbody[r].first_name + (reqbody[r].last_name ? ' ' + reqbody[r].last_name : '');
+                                                devicelist[d].DevicePhone = reqbody[r].phone;
                                             }
                                         }
                                     }
@@ -3084,7 +3089,8 @@ function sendpushnotification_mobileno(res, gcmMobiles, title, description, imag
                         if (reqbody) {
                             for (var r in reqbody) {
                                 if (reqbody[r] != false) {
-                                    device_tokens.push(reqbody[r].device_token);
+                                    //device_tokens.push(reqbody[r].device_token);
+                                    device_tokens.push(reqbody[r].android_device_token);                                    
                                 }
                             }
                         }
@@ -3100,13 +3106,31 @@ function sendpushnotification_mobileno(res, gcmMobiles, title, description, imag
 }
 
 function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
-    var gcmObject = new gcm.AndroidGcm(GcmGoogleKey);
+    //var gcmObject = new gcm.AndroidGcm(GcmGoogleKey);
     if (!image_url) {
         image_url = '';
     }
 
+
+    /*var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
+        registration_ids: gcmToken,
+
+        data: {
+            'message': messagebody,
+            'notification_user_id': notification_user_id,
+            'badge': 1,
+            'title': title,
+            'BeaconID': BeaconID,
+            //'img_url': 'https://lh4.ggpht.com/mJDgTDUOtIyHcrb69WM0cpaxFwCNW6f0VQ2ExA7dMKpMDrZ0A6ta64OCX3H-NMdRd20=w300',
+            'img_url': image_url,
+            'notification_type': 7,
+        }
+    };
+
+    fcm.send(message, function(err, response) {*/
+
     // initialize new androidGcm object
-    var message = new gcm.Message({
+    var message = {
         registration_ids: gcmToken, //[gcmToken],
         data: {
             'message': messagebody,
@@ -3116,9 +3140,10 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
             'img_url': image_url,
             'notification_type': 6,
         }
-    });
+    };
 
-    gcmObject.send(message, function(err, response) {
+    //gcmObject.send(message, function(err, response) { 
+    fcmCustomer.send(message, function(err, response) {    
         //console.log(response);
         if (err) {
             //console.log('Something went wrong :: ' + err);
@@ -6794,6 +6819,8 @@ app.post('/deleteDepartmentManager', function(req, res) {
 
     });
 });
+
+sendpushnotification(null, ["dkAPduksxUY:APA91bHkaKYn_VSl4X8NuAkgnNYulL1lqR1bta45YZZxtspPKAgHlbv-BcpY3V64CTy7CFRGhnFnjQAJ_fWE1KgrGhtuT3tNkhzS9amavk3wk2UBBPWql6XnCeyJWYq3n2Uz9HN_wHTb"], 'Hello', 'Checking Push Notificatoin', 'https://lh4.ggpht.com/mJDgTDUOtIyHcrb69WM0cpaxFwCNW6f0VQ2ExA7dMKpMDrZ0A6ta64OCX3H-NMdRd20=w300');
 
 /*
 For testing device
