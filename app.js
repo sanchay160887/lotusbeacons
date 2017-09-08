@@ -232,11 +232,11 @@ MongoClient.connect(mongourl, function(err, db) {
 function updateDevice(BeaconID, DeviceID, Distance, MobileNo, CustName, resObj) {
     //console.log('Update Device called to check socket');
     //if (MobileNo && MobileNo == '9584010456') {
-    console.log('Beacon ID ' + BeaconID);
+    /*console.log('Beacon ID ' + BeaconID);
     console.log('Device ID ' + DeviceID);
     console.log('Distance ' + Distance);
     console.log('Mobile No ' + MobileNo);
-    console.log('Customer ' + CustName);
+    console.log('Customer ' + CustName);*/
     //}
     var BeaconStoreID = '';
 
@@ -1575,12 +1575,13 @@ app.post('/getdata', function(req, res) {
                 var devices = [];
                 for (var d in devicelist) {
                     //devices.push(devicelist[d].DeviceID);
-                    devices.push('91' + devicelist[d].MobileNo);
+                    //devices.push('91' + devicelist[d].MobileNo);
+                    devices.push(devicelist[d].MobileNo);
                 }
 
                 var request = require('request');
                 var data = JSON.stringify(devices);
-                ////console.log(data);
+                //console.log(data);
 
                 //request.post('http://lampdemos.com/lotus15/v2/user/get_user_name', {
                 request.post(lotusWebURL + 'user/get_user_name_by_mobileno', {
@@ -1854,7 +1855,8 @@ app.post('/getDeviceHistorydata', function(req, res) {
             function(devicelist, callback) {
                 var devices = [];
                 for (var d in devicelist) {
-                    devices.push('91' + devicelist[d].MobileNo);
+                    //devices.push('91' + devicelist[d].MobileNo);
+                    devices.push(devicelist[d].MobileNo);
                 }
                 var request = require('request');
                 var data = JSON.stringify(devices);
@@ -6824,7 +6826,8 @@ app.post('/deleteDepartmentManager', function(req, res) {
     });
 });
 
-sendpushnotification(null, ["dkAPduksxUY:APA91bHkaKYn_VSl4X8NuAkgnNYulL1lqR1bta45YZZxtspPKAgHlbv-BcpY3V64CTy7CFRGhnFnjQAJ_fWE1KgrGhtuT3tNkhzS9amavk3wk2UBBPWql6XnCeyJWYq3n2Uz9HN_wHTb"], 'Hello', 'Checking Push Notificatoin', 'https://lh4.ggpht.com/mJDgTDUOtIyHcrb69WM0cpaxFwCNW6f0VQ2ExA7dMKpMDrZ0A6ta64OCX3H-NMdRd20=w300');
+//For testing notification
+//sendpushnotification(null, ["dkAPduksxUY:APA91bHkaKYn_VSl4X8NuAkgnNYulL1lqR1bta45YZZxtspPKAgHlbv-BcpY3V64CTy7CFRGhnFnjQAJ_fWE1KgrGhtuT3tNkhzS9amavk3wk2UBBPWql6XnCeyJWYq3n2Uz9HN_wHTb"], 'Hello', 'Checking Push Notificatoin', 'https://lh4.ggpht.com/mJDgTDUOtIyHcrb69WM0cpaxFwCNW6f0VQ2ExA7dMKpMDrZ0A6ta64OCX3H-NMdRd20=w300');
 
 /*
 For testing device
