@@ -11,7 +11,6 @@
     "body-parser": "^1.15.2",
     "express": "^4.16.2",
     "express-session": "^1.15.0",
-    "fcm-node": "^1.2.1",
     "gcm": "^1.0.1",
     "method-override": "^2.3.6",
     "mongodb": "^2.2.6",
