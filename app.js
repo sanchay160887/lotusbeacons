@@ -3158,9 +3158,12 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
     //gcmObject.send(message, function(err, response) { 
     fcmCustomer.send(message, function(err, response) {    
         //console.log(response);
+		
         if (err) {
             //console.log('Something went wrong :: ' + err);
+			resObj.end();
         } else {
+			response = JSON.parse(response);
             if (response.success) {
                 var request = require('request');
                 var gcmdata = JSON.stringify(gcmToken);
@@ -3180,6 +3183,9 @@ function sendpushnotification(resObj, gcmToken, title, messagebody, image_url) {
                         }
                     });
             }
+			else{
+				resObj.end();	
+			}
         }
     });
 }
