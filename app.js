@@ -95,7 +95,7 @@ var server = app.listen(process.env.PORT || 5000, function() {
 });
 
 
-var notificationImagesdirectory = './angular/images/notificationuploads/';
+var notificationImagesdirectory = './angular/images/gallery/';
 
 if (!fs.existsSync(notificationImagesdirectory)) {
     fs.mkdirSync(notificationImagesdirectory);
