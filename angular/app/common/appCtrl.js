@@ -116,6 +116,10 @@ app.controller("appCtrl", ['$rootScope', '$scope', '$state', '$location', 'Flash
                 title: "Dashboard",
                 icon: "dashboard",
                 state: "dashboard"
+            },{
+                title: "Online Empolyees",
+                icon: "thumbs-up",
+                state: "onlineuser"
             }, {
                 title: "Customers in Store",
                 icon: "users",

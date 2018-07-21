@@ -1,0 +1,159 @@
+<style>
+.register_block_1 {
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    display: inline-block;
+    margin: 2% 2%;
+    padding: 20px;
+    vertical-align: top;
+    width: 34%;
+}
+
+.register_block_2 {
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    display: inline-block;
+    margin: 2% 1%;
+    padding: 20px;
+    vertical-align: top;
+    width: 90%;
+}
+
+.content-header {
+    padding: 6% 15px 0;
+    position: relative;
+}
+
+.wait_text {
+    background-color: #d9edf7;
+    border-radius: 3px;
+    color: #31708f;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 8px 10px;
+    font-style: italic;
+    border: 1px solid #bce8f1;
+}
+
+.error {
+    color: red;
+}
+</style>
+<!--
+Author: Ranjithprabhu K
+Page Description: Dashboard Home page
+Date: 05 Jan 2016
+-->
+<!-- Content Header (Page header) -->
+<div ng-show="!connection" class="alert alert-danger">You're offline now. Please check your internet connection</div>
+<div ng-show="connection_msg" class="alert alert-success">Re-connected successfully</div>
+<section class="content-blocks">
+    <section class="content-header">
+        <h1>
+            Employees
+        </h1>
+        <ol class="breadcrumb">
+            <!-- <li><a><i class="fa fa-dashboard"></i> Dashboard</a></li> -->
+            <li><a ui-sref="app.dashboard"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+            <li class="active">Online Employee</li>
+        </ol>
+    </section>
+    
+    <section class="content-body register_block_2">
+    	<div class="row">
+            <div class="col-xs-5">
+                <h4>Online Employees {{ListInitialized}}</h4>
+            </div>
+        </div>
+        <div class="wait_block" ng-if="!ListInitialized">
+            <p class="wait_text">Please Wait...</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-xs-7">
+                <!-- <label for="search">Search:</label> -->
+                <label for="search">Search: <small style="color:purple;">(Please enter atleast 2 characters to get results)</small></label>
+                <input ng-model="q" id="search" class="form-control" placeholder="Filter text" ng-change="userCurrentPage=1">
+                <!-- <small style="color:purple;">Please enter atleast 2 characters to get results</small> -->
+            </div>
+            <div class="col-xs-3">
+                <label for="search">Records/Page:</label>
+                <select ng-model="userPageSize" class="form-control">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-2" style="margin-top: 10px;">
+                <small style="margin-top: 10px;" ng-show="(employeeData | filter: (q.length > 1 ? {searchfield: q } : '')).length > 1"><b>{{ (employeeData | filter: (q.length > 1 ? {searchfield: q } : '')).length || 0 }} Records</b></small>
+                <small style="margin-top: 10px;" ng-show="(employeeData | filter: (q.length > 1 ? {searchfield: q } : '')).length == 1"><b>1 Record</b></small>
+            </div>
+        </div>
+        <!-- Main content -->
+        <table class="table table-striped">
+        	 <th ng-click="O=(O=='UserID' && '-UserID' || 'UserID' )">Employee ID
+                <span ng-show="O=='UserID'">▲</span>
+                <span ng-show="O=='-UserID'">▼</span>
+            </th>
+            <th ng-click="O=(O=='Name' && '-Name' || 'Name' )">Name
+                <span ng-show="O=='Name'">▲</span>
+                <span ng-show="O=='-Name'">▼</span>
+            </th>
+            <th ng-click="O=(O=='StoreName' && '-StoreName' || 'StoreName' )">Assigned Store
+                <span ng-show="O=='StoreName'">▲</span>
+                <span ng-show="O=='-StoreName'">▼</span>
+            </th>
+            <th ng-click="O=(O=='SectionName' && '-SectionName' || 'SectionName' )">Assigned Section
+                <span ng-show="O=='SectionName'">▲</span>
+                <span ng-show="O=='-SectionName'">▼</span>
+            </th>
+            <th ng-click="O=(O=='Designation' && '-Designation' || 'Designation' )">Designation
+                <span ng-show="O=='Designation'">▲</span>
+                <span ng-show="O=='-Designation'">▼</span>
+            </th>
+            <th ng-click="O=(O=='LastSeen' && '-LastSeen' || 'LastSeen' )">LastSeen
+                <span ng-show="O=='LastSeen'">▲</span>
+                <span ng-show="O=='-LastSeen'">▼</span>
+            </th>
+            
+            <tr dir-paginate="u in employeeData | filter: (q.length > 1 ? {searchfield: q } : '') | orderBy : O | itemsPerPage:  userPageSize" current-page="userCurrentPage">
+                <!-- <tr ng-repeat=" | orderBy:Name "> -->
+                <td>{{ u.UserID }}
+                    <!--<input class="form-control" type='text' ng-model="u.UserID" readonly />-->
+                </td>
+                <td>{{ u.Name | titlecase }}
+                    <!--<input class="form-control" type='text' ng-model="u.Name" readonly />-->
+                </td>
+                <td>{{ u.StoreName | uppercase }}
+                   <!-- <input class="form-control" type='text' ng-model="u.StoreName" readonly />-->
+                </td>
+                <td>{{ u.SectionName | titlecase }}
+                    <!--<input class="form-control" type='text' ng-model="u.SectionName" readonly />-->
+                </td>
+                <td>{{ u.Designation | titlecase }}
+                    <!--<input class="form-control" type='text' ng-model="u.Designation" readonly />-->
+                </td>
+                <td ng-if="u.LastSeen == '1'">Not Installed
+                    <!--<input class="form-control" type='text' ng-model="u.Designation" readonly />-->
+                </td>
+                <td ng-if="u.LastSeen != '1'">{{ u.LastSeen | date: 'dd-MM-yyyy h:mma' }}
+                    <!--<input class="form-control" type='text' ng-model="u.Designation" readonly />-->
+                </td>
+                
+            </tr>
+            <tr ng-show="!(employeeData | filter: (q.length > 1 ? {searchfield: q } : '')).length">
+                <td colspan="4">No Record Found</td>
+            </tr>
+        </table>
+        <div>
+            <nav aria-label="Page navigation">
+                <div class="text-center">
+                    <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)" template-url="app/modules/dashboard/views/dirPagination.tpl.html"></dir-pagination-controls>
+                </div>
+            </nav>
+        </div>
+    </section>
+    <!-- /.content -->
+</section>

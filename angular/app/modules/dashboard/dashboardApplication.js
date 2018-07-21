@@ -24,7 +24,15 @@ dashboard.config(["$stateProvider", function($stateProvider) {
             pageTitle: 'Home'
         }
     });
-
+	$stateProvider.state('app.onlineuser', {
+        url: '/onlineuser',
+        templateUrl: 'app/modules/dashboard/views/onlineuser.html',
+        controller: 'OnlineuserController',
+        controllerAs: 'vm',
+        data: {
+            pageTitle: 'Online Users'
+        }
+    });
     //skills page state
     $stateProvider.state('app.skills', {
         url: '/skills',
