@@ -3896,6 +3896,7 @@ app.post('/userLogin', function(req, res) {
                         //isPasswordMatch = true;
 						if(isPasswordMatch === true)
 						{
+							var logDate = new Date();
 							console.log('------------Login Password Matched-------------');
 							if(users[0].FirstLogin == "")
 							{
