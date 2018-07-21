@@ -4714,6 +4714,8 @@ app.post('/getEmployeeDetails', function(req, res) {
 						function(err, res) {
 						if (err){
 							console.log(err);
+						}else{
+							console.log('Mobile App Call for last seen update ------'+UserID+'-------'+logDate);	
 						}
 						});
 						
