@@ -3898,19 +3898,19 @@ app.post('/userLogin', function(req, res) {
 						{
 							var logDate = new Date();
 							console.log('------------Login Password Matched-------------');
-							if(users[0].FirstLogin == "")
+							if(users[0].FirstLogin == "1")
 							{
 								collection.updateOne({ _id: ObjectId(userId)}, { $set: {FirstLogin:logDate,LastSeen:logDate} }, 
 								function(err, res) {
 								if (err){ throw err;}else{
 								
-								console.log("First Login Time updated");}
+								console.log(userId+" First Login time is "+logDate);}
 								});
 							}else{
 							collection.updateOne({ _id: ObjectId(userId)}, { $set: {LastSeen:logDate} }, 
 						function(err, res) {
 						if (err){ throw err;}else{
-							console.log("From Lgoin Last Seen time updated");}
+							console.log(userId+" New Login time is "+logDate);}
 						});
 							
 							
@@ -4715,7 +4715,7 @@ app.post('/getEmployeeDetails', function(req, res) {
 						if (err){
 							console.log(err);
 						}else{
-							console.log('Mobile App Call for last seen update ------'+UserID+'-------'+logDate);	
+							console.log('Mobile App Call for last seen update ------'+EmployeeID+'-------'+logDate);	
 						}
 						});
 						
