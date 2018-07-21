@@ -3906,9 +3906,24 @@ app.post('/userLogin', function(req, res) {
             },
             function(passwordmatched, callback) {
                 if (passwordmatched) {
-                    resObj.message = "Successfully loggedin."
+                    if(users[0].FirstLogin == ""){
+						collection.updateOne({ _id: ObjectId(userId)}, { $set: {FirstLogin:logDate,LastSeen:logDate} }, 
+						function(err, res) {
+						if (err) throw err;
+							console.log("First Login Time updated");
+						});
+						}else{
+							collection.updateOne({ _id: ObjectId(userId)}, { $set: {LastSeen:logDate} }, 
+						function(err, res) {
+						if (err) throw err;
+							console.log("Last Seen time updated");
+						});
+			
+						}
+					resObj.message = "Successfully loggedin."
                     resObj.user = userRecord;
                     resObj.isSuccess = true;
+					
                 } else {
                     resObj.message = "Wrong Password."
                     resObj.isSuccess = false;
@@ -4684,7 +4699,14 @@ app.post('/getEmployeeDetails', function(req, res) {
             },
             function(devices, callback) {
                 if (devices && devices.length > 0) {
-
+					
+					var logDate = new Date();
+					collection.updateOne({ UserID: ObjectId(EmployeeID)}, { $set: {LastSeen:logDate} }, 
+						function(err, res) {
+						if (err) throw err;
+							console.log("Last Seen time updated");
+						});
+						
                     var beaconCollection = db.collection('beacons');
                     var AssignedSection = devices[0].AssignedSection;
 
