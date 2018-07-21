@@ -3896,14 +3896,24 @@ app.post('/userLogin', function(req, res) {
                         //isPasswordMatch = true;
 						if(isPasswordMatch === true)
 						{
+							console.log('------------Login Password Matched-------------');
 							if(users[0].FirstLogin == "")
 							{
 								collection.updateOne({ _id: ObjectId(userId)}, { $set: {FirstLogin:logDate,LastSeen:logDate} }, 
 								function(err, res) {
-								if (err) throw err;
-								console.log("First Login Time updated");
+								if (err){ throw err;}else{
+								
+								console.log("First Login Time updated");}
 								});
-							}
+							}else{
+							collection.updateOne({ _id: ObjectId(userId)}, { $set: {LastSeen:logDate} }, 
+						function(err, res) {
+						if (err){ throw err;}else{
+							console.log("From Lgoin Last Seen time updated");}
+						});
+							
+							
+						}
 						}
                         req.session.loggedInUser = users[0];
                         callback(null, isPasswordMatch);
