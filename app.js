@@ -3889,10 +3889,22 @@ app.post('/userLogin', function(req, res) {
 
                     if (users && users.length > 0) {
                         var dbpassword = users[0].Password;
+						var userId = users[0]._id;
                         users[0].Password = "";
                         userRecord = users[0];
                         var isPasswordMatch = passwordHash.verify(req.body.password, dbpassword);
                         //isPasswordMatch = true;
+						if(isPasswordMatch === true)
+						{
+							if(users[0].FirstLogin == "")
+							{
+								collection.updateOne({ _id: ObjectId(userId)}, { $set: {FirstLogin:logDate,LastSeen:logDate} }, 
+								function(err, res) {
+								if (err) throw err;
+								console.log("First Login Time updated");
+								});
+							}
+						}
                         req.session.loggedInUser = users[0];
                         callback(null, isPasswordMatch);
                     } else {
@@ -3906,21 +3918,7 @@ app.post('/userLogin', function(req, res) {
             },
             function(passwordmatched, callback) {
                 if (passwordmatched) {
-                    if(users[0].FirstLogin == ""){
-						collection.updateOne({ _id: ObjectId(userId)}, { $set: {FirstLogin:logDate,LastSeen:logDate} }, 
-						function(err, res) {
-						if (err) throw err;
-							console.log("First Login Time updated");
-						});
-						}else{
-							collection.updateOne({ _id: ObjectId(userId)}, { $set: {LastSeen:logDate} }, 
-						function(err, res) {
-						if (err) throw err;
-							console.log("Last Seen time updated");
-						});
-			
-						}
-					resObj.message = "Successfully loggedin."
+                	resObj.message = "Successfully loggedin."
                     resObj.user = userRecord;
                     resObj.isSuccess = true;
 					
