@@ -4709,7 +4709,7 @@ app.post('/getEmployeeDetails', function(req, res) {
             function(devices, callback) {
                 if (devices && devices.length > 0) {
 					
-					/*var logDate = new Date();
+					var logDate = new Date();
 					collection.updateOne({ UserID: ObjectId(EmployeeID)}, { $set: {LastSeen:logDate} }, 
 						function(err, res) {
 						if (err){
@@ -4717,7 +4717,7 @@ app.post('/getEmployeeDetails', function(req, res) {
 						}else{
 							console.log('Mobile App Call for last seen update ------'+EmployeeID+'-------'+logDate);	
 						}
-						});*/
+						});
 						
                     var beaconCollection = db.collection('beacons');
                     var AssignedSection = devices[0].AssignedSection;
