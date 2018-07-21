@@ -4701,8 +4701,9 @@ app.post('/getEmployeeDetails', function(req, res) {
 					var logDate = new Date();
 					collection.updateOne({ UserID: ObjectId(EmployeeID)}, { $set: {LastSeen:logDate} }, 
 						function(err, res) {
-						if (err) throw err;
-							console.log("Last Seen time updated");
+						if (err){
+							console.log(err);
+						}
 						});
 						
                     var beaconCollection = db.collection('beacons');
