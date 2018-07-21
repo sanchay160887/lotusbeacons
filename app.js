@@ -4710,7 +4710,7 @@ app.post('/getEmployeeDetails', function(req, res) {
                 if (devices && devices.length > 0) {
 					
 					var logDate = new Date();
-					collection.updateOne({ UserID: ObjectId(EmployeeID)}, { $set: {LastSeen:logDate} }, 
+					collection.updateOne({ _id: ObjectId(EmployeeID)}, { $set: {LastSeen:logDate} }, 
 						function(err, res) {
 						if (err){
 							console.log(err);
