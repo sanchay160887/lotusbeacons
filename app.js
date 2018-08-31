@@ -4005,89 +4005,116 @@ app.post('/getstoreuserscount', function(req, res) {
             return console.dir(err);
         }
         assert.equal(null, err);
-
         async.waterfall([
-            function(callback) {
-                var collection = db.collection('stores');
+             function(callback) {
+         var collection = db.collection('stores');
+         collection.aggregate([    
+                            {
+                            $lookup: {
+                            from: "users",
+                            localField: "_id",
+                            foreignField: "AssignedStore",
+                            as: "tasks"
+                            }
+                            },
+                            { $project: {StoreName: 1, _id: 0, tasks: 1}}        
+                               ]).toArray(function(err, storelist) {
+                                callback(null,storelist);
+                               });},
 
-                UserStore = getUserAllotedStore(req);
-                if (req.session.loggedInUser && req.session.loggedInUser.UserType == 2) {
-                    collection = collection.find(ObjectId(UserStore));
-                } else {
-                    collection = collection.find();
-                }
+                        function(storelist, callback) {
+                            var storeData=Array();
+                            for(i=0;i<storelist.length;i++)
+                            {
+                            storeData.push({StoreName:storelist[i].StoreName,NoOfMobiles:storelist[i].tasks.length});
+                            }
+                            // console.log(storeData)
+                            res.send(storeData);
+                        }
+                           ])
 
-                collection.toArray(function(err, records) {
-                    var stores = [];
-                    if (records && records.length > 0) {
-                        for (var dvc in records) {
-                            stores.push(records[dvc]);
-                        }
-                        callback(null, stores);
-                    }
-                });
-            },
-            function(stores, callback) {
-                var storelist = [];
-                forEach(stores, function(item, index) {
-                    var done = this.async();
-                    async.waterfall([
-                        function(callback2) {
-                            var collection = db.collection('beacons');
-                            collection.find({
-                                'BeaconStore': ObjectId(item._id)
-                            }).toArray(function(err, beacons) {
-                                if (beacons && beacons.length > 0) {
-                                    var beaconsIDs = [];
-                                    for (var dvc in beacons) {
-                                        beaconsIDs.push(beacons[dvc].BeaconID);
-                                    }
-                                    callback2(null, beaconsIDs);
-                                } else {
-                                    callback2(null, {});
-                                }
-                            });
-                        },
-                        function(beaconsIDs, callback2) {
-                            var devicecollection = db.collection('device_history');
-                            devicecollection.aggregate(
-                                    [{
-                                        $match: {
-                                            'BeaconID': {
-                                                $in: beaconsIDs,
-                                            }
-                                        }
-                                    }, {
-                                        $group: {
-                                            _id: { MobileNo: '$MobileNo' },
-                                            lastUpdateTime: { $max: "$DateTo" }
-                                        }
-                                    }]
-                                )
-                                .toArray(function(err, mobilenumbers) {
-                                    if (mobilenumbers && mobilenumbers.length > 0) {
-                                        item.NoOfMobiles = mobilenumbers.length;
-                                        storelist.push(item);
-                                        callback2(null, beaconsIDs);
-                                    } else {
-                                        item.NoOfMobiles = 0;
-                                        storelist.push(item);
-                                        callback2(null, {});
-                                    }
-                                });
-                        },
-                        function(mobiles, callback2) {
-                            done();
-                        }
-                    ]);
-                }, function(notAborted, arr) {
-                    callback(null, storelist);
-                });
-            },
-            function(storelist, callback) {
-                res.send(storelist);
-            }
-        ]);
+        // async.waterfall([
+        //     function(callback) {
+        //         var collection = db.collection('stores');
+
+        //         UserStore = getUserAllotedStore(req);
+        //         if (req.session.loggedInUser && req.session.loggedInUser.UserType == 2) {
+        //             collection = collection.find(ObjectId(UserStore));
+        //         } else {
+        //             collection = collection.find();
+        //         }
+
+        //         collection.toArray(function(err, records) {
+        //             var stores = [];
+        //             if (records && records.length > 0) {
+        //                 for (var dvc in records) {
+        //                     stores.push(records[dvc]);
+        //                 }
+        //                 callback(null, stores);
+        //             }
+        //         });
+        //     },
+        //     function(stores, callback) {
+        //         var storelist = [];
+        //         forEach(stores, function(item, index) {
+        //             var done = this.async();
+        //             async.waterfall([
+        //                 function(callback2) {
+        //                     var collection = db.collection('beacons');
+        //                     collection.find({
+        //                         'BeaconStore': ObjectId(item._id)
+        //                     }).toArray(function(err, beacons) {
+        //                         if (beacons && beacons.length > 0) {
+        //                             var beaconsIDs = [];
+        //                             for (var dvc in beacons) {
+        //                                 beaconsIDs.push(beacons[dvc].BeaconID);
+        //                             }
+        //                             callback2(null, beaconsIDs);
+        //                         } else {
+        //                             callback2(null, {});
+        //                         }
+        //                     });
+        //                 },
+        //                 function(beaconsIDs, callback2) {
+        //                     var devicecollection = db.collection('device_history');
+        //                     devicecollection.aggregate(
+        //                             [{
+        //                                 $match: {
+        //                                     'BeaconID': {
+        //                                         $in: beaconsIDs,
+        //                                     }
+        //                                 }
+        //                             }, {
+        //                                 $group: {
+        //                                     _id: { MobileNo: '$MobileNo' },
+        //                                     lastUpdateTime: { $max: "$DateTo" }
+        //                                 }
+        //                             }]
+        //                         )
+        //                         .toArray(function(err, mobilenumbers) {
+        //                             if (mobilenumbers && mobilenumbers.length > 0) {
+        //                                 item.NoOfMobiles = mobilenumbers.length;
+        //                                 storelist.push(item);
+        //                                 callback2(null, beaconsIDs);
+        //                             } else {
+        //                                 item.NoOfMobiles = 0;
+        //                                 storelist.push(item);
+        //                                 callback2(null, {});
+        //                             }
+        //                         });
+        //                 },
+        //                 function(mobiles, callback2) {
+        //                     done();
+        //                 }
+        //             ]);
+        //         }, function(notAborted, arr) {
+        //             callback(null, storelist);
+        //         });
+        //     },
+        //     function(storelist, callback) {
+        //         res.send(storelist);
+        //     }
+        // ]);
 
     });
 });

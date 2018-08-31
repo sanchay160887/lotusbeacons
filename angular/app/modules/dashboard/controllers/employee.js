@@ -1,4 +1,4 @@
-dashboard.controller("EmployeeController", function($rootScope, $scope, apiService, $http, $interval, $location) { //
+dashboard.controller("EmployeeController", function($rootScope, $scope, apiService, $http, $interval, $location,$timeout) { //
     $scope.employeeForm = {};
     $scope.UserID = '';
     $scope.Password = '';
@@ -65,6 +65,19 @@ dashboard.controller("EmployeeController", function($rootScope, $scope, apiServi
         console.log('going to page ' + num);
     };
 
+    $scope.exportData=function()
+    {
+        var alldata=Array();
+        for(i=0;i<$scope.employeeData.length;i++){
+        alldata.push(
+            {Name:$scope.employeeData[i].Name,Assigned_Store:$scope.employeeData[i].StoreName,Assigned_Section:$scope.employeeData[i].SectionName,Designation:$scope.employeeData[i].Designation,Employee_ID:$scope.employeeData[i].UserID}
+            );
+            }
+         $scope.employeecsvData=alldata;
+         $timeout(function() {
+               $("#employeecsvbutton").trigger('click');                    
+            }, 2000);  
+    }
     $scope.getAllEmployees = function() {
         $scope.ListInitialized = false;
         apiService.employeeData().then(function(res) {
