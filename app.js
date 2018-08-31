@@ -4017,7 +4017,7 @@ app.post('/getstoreuserscount', function(req, res) {
                             as: "tasks"
                             }
                             },
-                            { $project: {StoreName: 1, _id: 0, tasks: 1}}        
+                            { $project: {StoreName: 1,StoreDescr:1,_id: 0, tasks: 1}}        
                                ]).toArray(function(err, storelist) {
                                 callback(null,storelist);
                                });},
@@ -4026,7 +4026,7 @@ app.post('/getstoreuserscount', function(req, res) {
                             var storeData=Array();
                             for(i=0;i<storelist.length;i++)
                             {
-                            storeData.push({StoreName:storelist[i].StoreName,NoOfMobiles:storelist[i].tasks.length});
+                            storeData.push({StoreName:storelist[i].StoreName,StoreDescr:storelist[i].StoreDescr,NoOfMobiles:storelist[i].tasks.length});
                             }
                             // console.log(storeData)
                             res.send(storeData);
